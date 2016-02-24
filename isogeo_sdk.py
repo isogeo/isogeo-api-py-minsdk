@@ -1,6 +1,6 @@
 # -*- coding: UTF-8 -*-
 #!/usr/bin/env python
-from __future__ import (print_function, unicode_literals)
+from __future__ import (absolute_import, print_function, unicode_literals)
 # -----------------------------------------------------------------------------
 # Name:         Isogeo
 # Purpose:      Python minimalist SDK to use Isogeo API
@@ -31,11 +31,12 @@ import requests
 # ########## Classes ###############
 # ##################################
 
+
 class Isogeo(object):
     """
     docstring for Isogeo
     """
-    # useful variables
+    # -- ATTRIBUTES -----------------------------------------------------------
     sub_resources_available = [
                                 "conditions",
                                 "contacts",
@@ -70,6 +71,8 @@ class Isogeo(object):
                             "resource": "Ressources",
                             "service": "Service géographique"
                         }
+
+    # -- BEFORE ALL -----------------------------------------------------------
 
     def __init__(self, client_id, client_secret, lang="en", proxy=None):
         """ Isogeo connection parameters
@@ -135,6 +138,8 @@ class Isogeo(object):
             print("No proxy set. Use default configuration.")
             pass
 
+    # -- API CONNECTION ------------------------------------------------------
+
     def connect(self, client_id=None, client_secret=None):
         """
         Isogeo API uses oAuth  2.0 protocol (http://tools.ietf.org/html/rfc6749)
@@ -176,6 +181,8 @@ class Isogeo(object):
         # end of method
         return (bearer, expiration_date)
 
+    # -- API PATHS ------------------------------------------------------------
+
     def share(self, jeton):
         """
         TO DO
@@ -207,7 +214,6 @@ class Isogeo(object):
                offset=0,
                sub_resources=[],
                whole_share=True,
-               preprocess=0,
                prot="https"):
         """ Search request
 
@@ -231,10 +237,10 @@ class Isogeo(object):
         descending [DEFAULT]\n\t'asc': ascending
         page_size -- limits the number of results. Useful to paginate results display.
         offset -- offset
-        sub_resources -- indicates subresources that should be returned. Must be a list of strings.\\n
+        sub_resources -- subresources that should be returned. Must be a list of strings.\\n
         To get available values: 'isogeo.sub_resources_available'
         whole_share -- option to return all results or only the page size. True by DEFAULT.
-        preprocess -- option to get preprocessed results. It could be much longer...
+        prot -- https [DEFAULT] or http (useful for development and tracking requests).
 
         see: https://docs.google.com/document/d/11dayY1FH1NETn6mn9Pt2y3n8ywVUD0DoKbCi9ct9ZRo/edit?usp=sharing#heading=h.yusgqavk96n1
         """
@@ -294,112 +300,30 @@ class Isogeo(object):
         else:
             pass
 
-        # storing
-        # print(len(metadatas) == len(set(search_rez['li_ids_md'])))  # checking dobles
-
-        if preprocess:
-            self.search_preprocessed(jeton, search_rez)
-        else:
-            pass
-
         # end of method
         return search_rez
 
-    def search_preprocessed(self, jeton, search):
-        """
-        X dernières données modifiées
-        X dernières md modifiées
-        list owners / occurrences
-        list keywords / occurrences
-        list catalogs
-        list ids
-        list contacts / occurrences
-        count / percentage view
-        count / percentage download
-        count / percentage both
-        count / percentage other
-        """
-        # recipient variables
-        ids_md = []
-        resources_types = {}
-        owners = {}
-        keywords = {}
-        theminspire = {}
-        formats = {}
-        srs = {}
-        actions = []
+    def resource(self, jeton, id_resource, sub_resources=[], prot="https"):
+        """ Get complete or partial metadata about one specific resource
+        (ie a vector dataset).
 
-        # parsing tags
-        tags = search.get('tags')
-        for tag in tags.keys():
-            # resources type
-            if tag.startswith('type'):
-                resources_types[self.types_lbl.get(tag[5:])] = tag[5:]
-                continue
-            else:
-                pass
-            # owners
-            if tag.startswith('owner'):
-                owners[tags.get(tag)] = tag[6:]
-                continue
-            else:
-                pass
-            # custom keywords
-            if tag.startswith('keyword:isogeo'):
-                keywords[tags.get(tag)] = tag[15:]
-                continue
-            else:
-                pass
-            # INSPIRE themes
-            if tag.startswith('keyword:inspire-theme'):
-                theminspire[tags.get(tag)] = tag[22:]
-                continue
-            else:
-                pass
-            # formats
-            if tag.startswith('format'):
-                formats[tags.get(tag)] = tag[7:]
-                continue
-            else:
-                pass
-            # coordinate systems
-            if tag.startswith('coordinate-system'):
-                srs[tags.get(tag)] = tag[18:]
-                continue
-            else:
-                pass
-            # available actions
-            if tag.startswith('action'):
-                actions.append(tag[7:])
-                continue
-            else:
-                pass
-
-        # # parsing resources
-        # for md in search.get('results'):
-        #     ids_md.append(md.get('_id'))
-        #     # owners stats
-        #     # owners[md.get('tags')]
-
-        # storing
-        search['actions'] = actions
-        search['datatypes'] = resources_types
-        search['coordsys'] = srs
-        search['formats'] = formats
-        search['inspire'] = theminspire
-        search['keywords'] = keywords
-        # search['li_ids_md'] = ids_md
-        search['owners'] = owners
-
-        # end of method
-        return search
-
-    def resource(self, jeton, id_resource, sub_resources=list, prot="https"):
-        """
-        TO DO
+        Keyword arguments:
+        jeton -- API bearer
+        id_resource -- UUID of the resource to get
+        sub_resources -- subresources that should be returned. Must be a list of strings.\\n
+        To get available values: 'isogeo.sub_resources_available'
+        prot -- https [DEFAULT] or http (useful for development and tracking requests).
         """
         # checking bearer validity
         jeton = self.check_bearer_validity(jeton)
+
+        # sub resources specific parsing
+        if sub_resources == "all":
+            sub_resources = self.sub_resources_available
+        elif type(sub_resources) is list:
+            sub_resources = ",".join(sub_resources)
+        else:
+            return "Error: sub_resources argument must be a list or 'all'"
 
         # handling request parameters
         payload = {
@@ -418,6 +342,8 @@ class Isogeo(object):
         # end of method
         return resource_req.json()
 
+    # -- UTILITIES -----------------------------------------------------------
+
     def check_bearer_validity(self, jeton):
         """
         Isogeo ID delivers authentication bearers which are valid during 24h, so
@@ -431,7 +357,7 @@ class Isogeo(object):
         """
         if (jeton[1].timestamp - arrow.utcnow().timestamp) < 1800:
             jeton = self.connect(self.id, self.ct)
-            # print("Your bearer had expired then has been renewed. Just go on!")
+            print("Your bearer was about to expire, so has been renewed. Just go on!")
         else:
             # print("Your bearer is still valid. Just go on!")
             pass
@@ -527,7 +453,6 @@ if __name__ == '__main__':
                            # sub_resources=["conditions", "contacts"],
                            sub_resources=isogeo.sub_resources_available,
                            # query="keyword:isogeo:2015",
-                           preprocess=preproc,
                            prot='http')
 
     print(search.keys())
@@ -551,8 +476,7 @@ if __name__ == '__main__':
                                query="action:view",
                                page_size=0,
                                whole_share=0,
-                               prot="http",
-                               preprocess=0)
+                               prot="http")
     print("count of resources with view action: {}".format(count_view.get('total')))
 
     kind_ogc = ('wfs', 'wms', 'wmts')
