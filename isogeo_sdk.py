@@ -21,6 +21,7 @@ import base64
 from collections import Counter
 import socket
 import locale
+import logging
 from math import ceil
 
 # 3rd party library
@@ -94,23 +95,23 @@ class Isogeo(object):
 
         # checking internet connection
         if self.check_internet_connection:
-            print("Your're connected to the world!")
+            logging.info("Your're connected to the world!")
             pass
         else:
-            print("It seems that your internet connection isn't available. Check it up and try again!")
-            return
+            logging.error("Internet connection doesn't work.")
+            raise EnvironmentError("Internet connection issue.")
 
         # testing parameters
         if len(client_secret) != 64:
-            print("Your application secret isn't good. Check it.")
-            return
+            logging.error("App secret length issue: it should be 64 chars.")
+            raise ValueError(1, "Your application secret isn't good. Check it.")
         else:
             pass
 
         # setting language
         if lang.lower() not in ("fr", "en"):
-            print("Isogeo API is only available in English ('en', default) or \
-                   French ('fr').\nYour language has been set on English.")
+            logging.info("Isogeo API is only available in English ('en', default) or \
+                         French ('fr').\nYour language has been set on English.")
             self.lang = "en"
         else:
             self.lang = lang.lower()
@@ -126,16 +127,16 @@ class Isogeo(object):
         # handling proxy parameters
         # see: http://docs.python-requests.org/en/latest/user/advanced/#proxies
         if proxy and type(proxy) is dict and 'http' in proxy.keys():
-            print("Proxy activated")
+            logging.info("Proxy activated")
             self.proxies = proxy
         elif proxy and type(proxy) is not dict:
-            print("Proxy syntax error. Must be a dict { 'protocol': 'http://username:password@proxy_url:port' }.\
+            logging.info("Proxy syntax error. Must be a dict { 'protocol': 'http://username:password@proxy_url:port' }.\
                 e.g.: {'http': 'http://martin:p4ssW0rde@10.1.68.1:5678',\
                        'https': 'http://martin:p4ssW0rde@10.1.68.1:5678'}")
             return
         else:
             self.proxies = {}
-            print("No proxy set. Use default configuration.")
+            logging.info("No proxy set. Use default configuration.")
             pass
 
     # -- API CONNECTION ------------------------------------------------------
@@ -169,7 +170,11 @@ class Isogeo(object):
                              proxies=self.proxies)
 
         # just a fast check
-        self.check_api_response(conn)
+        check_params = self.check_api_response(conn)
+        if len(check_params) == 1:
+            pass
+        else:
+            raise ValueError(2, check_params)
 
         # getting access
         axx = conn.json()
@@ -357,9 +362,9 @@ class Isogeo(object):
         """
         if (jeton[1].timestamp - arrow.utcnow().timestamp) < 1800:
             jeton = self.connect(self.id, self.ct)
-            print("Your bearer was about to expire, so has been renewed. Just go on!")
+            logging.info("Your bearer was about to expire, so has been renewed. Just go on!")
         else:
-            # print("Your bearer is still valid. Just go on!")
+            logging.info("Your bearer is still valid. Just go on!")
             pass
 
         # end of method
@@ -370,13 +375,13 @@ class Isogeo(object):
         Check the API response and raise exceptions if needed
         """
         if response.status_code == 200:
-            # print("Everything is OK dude, just go on!")
+            logging.info("Everything is OK dude, just go on!")
             pass
         elif response.status_code >= 400:
-            print("Something's wrong Houston, check your parameters again!")
-            print(dir(response))
-            response.raise_for_status()
-            return 0
+            logging.error("Something's wrong Houston, check your parameters again!")
+            logging.error("{}: {} - {}".format(response.status_code, response.reason, response.json().get("error")))
+            # logging.error(dir(response))
+            return 0, response.status_code
         else:
             pass
 
@@ -407,7 +412,7 @@ class Isogeo(object):
 if __name__ == '__main__':
     """ standalone execution """
     # ------------ Specific imports ----------------
-    import ConfigParser     # to manage options.ini 
+    import ConfigParser     # to manage options.ini
     from os import path
     from random import randrange    # to get a random resource
 
