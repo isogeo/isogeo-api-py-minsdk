@@ -171,9 +171,9 @@ class Isogeo(object):
 
         # just a fast check
         check_params = self.check_api_response(conn)
-        if len(check_params) == 1:
+        if check_params == 1:
             pass
-        else:
+        elif type(check_params) == tuple and len(check_params) == 2:
             raise ValueError(2, check_params)
 
         # getting access
