@@ -34,10 +34,16 @@ import requests
 
 
 class Isogeo(object):
-    """
-    docstring for Isogeo
+    """ Abstraction class for Isogeo REST API.
+    Full doc at: https://goo.gl/V3iB9R
+    Swagger at: http://chantiers.hq.isogeo.fr/docs/Isogeo.Api/latest/Api.V1/
     """
     # -- ATTRIBUTES -----------------------------------------------------------
+    api_urls = {
+                "prod": "api",
+                "qa": "api.qa"
+                }
+
     sub_resources_available = [
                                 "conditions",
                                 "contacts",
@@ -59,6 +65,12 @@ class Isogeo(object):
                                 "within"
                               ]
 
+    thesaurus_available = [
+                           "isogeo",
+                           "iso19115-topic",
+                           "inspire-theme"
+                           ]
+
     tr_types_label_en = {
                             "vector-dataset": "Vector",
                             "raster-dataset": "Raster",
@@ -75,13 +87,15 @@ class Isogeo(object):
 
     # -- BEFORE ALL -----------------------------------------------------------
 
-    def __init__(self, client_id, client_secret, lang="en", proxy=None):
+    def __init__(self, client_id, client_secret,
+                 platform="prod", lang="en", proxy=None):
         """ Isogeo connection parameters
 
         Keyword arguments:
         client_id -- application identifier
-        client_secret -- application
-        secret lang -- language asked for localized tags (INSPIRE themes).
+        client_secret -- application secret
+        platform -- switch between to production or quality assurance platform
+        lang -- language asked for localized tags (INSPIRE themes).
         Could be "en" [DEFAULT] or "fr".
         proxy -- to pass through the local
         proxy. Optional. Must be a dict { 'protocol':
@@ -96,7 +110,6 @@ class Isogeo(object):
         # checking internet connection
         if self.check_internet_connection:
             logging.info("Your're connected to the world!")
-            pass
         else:
             logging.error("Internet connection doesn't work.")
             raise EnvironmentError("Internet connection issue.")
@@ -108,10 +121,21 @@ class Isogeo(object):
         else:
             pass
 
+        # platform to request
+        if platform == "prod":
+            self.base_url = self.api_urls.get(platform)
+            logging.info("Using production platform.")
+        elif platform == "qa":
+            self.base_url = self.api_urls.get(platform)
+            logging.info("Using Quality Assurance platform (reduced perfs).")
+        else:
+            logging.error("Platform must be one of " + self.api_urls)
+            raise ValueError(3, "Platform must be one of " + self.api_urls)
+
         # setting language
         if lang.lower() not in ("fr", "en"):
             logging.info("Isogeo API is only available in English ('en', default) or \
-                         French ('fr').\nYour language has been set on English.")
+                         French ('fr').\Language has been set on English.")
             self.lang = "en"
         else:
             self.lang = lang.lower()
@@ -164,7 +188,8 @@ class Isogeo(object):
 
         # passing request to get a 24h bearer
         # see: http://tools.ietf.org/html/rfc6750#section-2
-        conn = requests.post("https://id.api.isogeo.com/oauth/token",
+        id_url = "https://id.{}.isogeo.com/oauth/token".format(self.base_url)
+        conn = requests.post(id_url,
                              headers=headers,
                              data=payload,
                              proxies=self.proxies)
@@ -181,23 +206,25 @@ class Isogeo(object):
         bearer = axx.get("access_token")
 
         # get the limit date
-        expiration_date = arrow.get(arrow.utcnow().timestamp + axx.get("expires_in"))
+        expiration_date = arrow.get(arrow.utcnow().timestamp
+                          + axx.get("expires_in"))
 
         # end of method
         return (bearer, expiration_date)
 
     # -- API PATHS ------------------------------------------------------------
 
-    def share(self, jeton):
-        """
-        TO DO
+    def share(self, jeton, prot="https"):
+        """ Get information about shares which feed the application
         """
         # checking bearer validity
         jeton = self.check_bearer_validity(jeton)
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + jeton[0]}
-        share_req = requests.get("https://v1.api.isogeo.com/shares/",
+        share_url = "{}://v1.{}.isogeo.com/shares/".format(prot,
+                                                           self.base_url)
+        share_req = requests.get(share_url,
                                  headers=head,
                                  proxies=self.proxies)
 
@@ -276,7 +303,9 @@ class Isogeo(object):
 
         # search request
         head = {"Authorization": "Bearer " + jeton[0]}
-        search_req = requests.get(prot + "://v1.api.isogeo.com/resources/search",
+        search_url = "{}://v1.{}.isogeo.com/resources/search".format(prot,
+                                                                     self.base_url)
+        search_req = requests.get(search_url,
                                   headers=head,
                                   params=payload,
                                   proxies=self.proxies)
@@ -296,7 +325,7 @@ class Isogeo(object):
             # let's parse pages
             for idx in range(0, int(ceil(resources_count / 100)) + 1):
                 payload['_offset'] = idx * 100
-                search_req = requests.get(prot + "://v1.api.isogeo.com/resources/search",
+                search_req = requests.get(search_url,
                                           headers=head,
                                           params=payload)
                 # storing results by addition
@@ -337,7 +366,10 @@ class Isogeo(object):
 
         # resource search
         head = {"Authorization": "Bearer " + jeton[0]}
-        resource_req = requests.get(prot + "://v1.api.isogeo.com/resources/" + id_resource,
+        md_url = "{}://v1.{}.isogeo.com/resources/{}".format(prot,
+                                                             self.base_url,
+                                                             id_resource)
+        resource_req = requests.get(md_url,
                                     headers=head,
                                     params=payload,
                                     proxies=self.proxies
@@ -346,6 +378,26 @@ class Isogeo(object):
 
         # end of method
         return resource_req.json()
+
+    def thesaurus(self, jeton, prot="https"):
+        """ Get information about thesaurus
+        """
+        # checking bearer validity
+        jeton = self.check_bearer_validity(jeton)
+
+        # passing auth parameter
+        head = {"Authorization": "Bearer " + jeton[0]}
+        thez_url = "{}://v1.{}.isogeo.com/thesauri".format(prot,
+                                                           self.base_url)
+        thez_req = requests.get(thez_url,
+                                headers=head,
+                                proxies=self.proxies)
+
+        # checking response
+        self.check_api_response(thez_req)
+
+        # end of method
+        return thez_req.json()
 
     # -- UTILITIES -----------------------------------------------------------
 
@@ -434,6 +486,7 @@ if __name__ == '__main__':
     # instanciating the class
     isogeo = Isogeo(client_id=share_id,
                     client_secret=share_token,
+                    platform="qa",
                     lang="fr")
 
     # check which sub resources are available
@@ -446,10 +499,17 @@ if __name__ == '__main__':
     # option to get some precprocessed stats (needs more time)
     preproc = 1
 
-    # # get share properties
-    # share = isogeo.share(jeton)
-    # print(share)
-    # print(share.get("catalogs"))
+    # get share properties
+    share = isogeo.share(jeton, "http")
+    print(share)
+    print(len(share))
+    print(share[0].keys(), share[0].get("applications"))
+
+    # get thesauri
+    thesauri = isogeo.thesaurus(jeton, "http")
+    print(thesauri)
+    print(len(thesauri))
+    print(thesauri[0].keys())
 
     # let's search for metadatas!
     # print(dir(isogeo))
