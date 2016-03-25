@@ -385,12 +385,18 @@ class Isogeo(object):
         # checking bearer validity
         jeton = self.check_bearer_validity(jeton)
 
+        payload = {
+                   '_include': "count",
+                   'th': "1616597fbc4348c8b11ef9d59cf594c8",
+                   }
+
         # passing auth parameter
         head = {"Authorization": "Bearer " + jeton[0]}
-        thez_url = "{}://v1.{}.isogeo.com/thesauri".format(prot,
-                                                           self.base_url)
+        thez_url = "{}://v1.{}.isogeo.com/groups/08b3054757544463abd06f3ab51ee491/keywords/search".format(prot,
+                                                            self.base_url)
         thez_req = requests.get(thez_url,
                                 headers=head,
+                                params=payload,
                                 proxies=self.proxies)
 
         # checking response
@@ -500,96 +506,96 @@ if __name__ == '__main__':
     preproc = 1
 
     # get share properties
-    share = isogeo.share(jeton, "http")
-    print(share)
-    print(len(share))
-    print(share[0].keys(), share[0].get("applications"))
+    # share = isogeo.share(jeton, "http")
+    # print(share)
+    # print(len(share))
+    # print(share[0].keys(), share[0].get("applications"))
 
     # get thesauri
     thesauri = isogeo.thesaurus(jeton, "http")
-    print(thesauri)
-    print(len(thesauri))
-    print(thesauri[0].keys())
+    print(len(thesauri), thesauri)
+    # print(len(thesauri))
+    # print(thesauri[0].keys())
 
     # let's search for metadatas!
     # print(dir(isogeo))
-    search = isogeo.search(jeton,
-                           # sub_resources='all',
-                           # sub_resources=["conditions", "contacts"],
-                           sub_resources=isogeo.sub_resources_available,
-                           # query="keyword:isogeo:2015",
-                           prot='http')
+    # search = isogeo.search(jeton,
+    #                        # sub_resources='all',
+    #                        # sub_resources=["conditions", "contacts"],
+    #                        sub_resources=isogeo.sub_resources_available,
+    #                        # query="keyword:isogeo:2015",
+    #                        prot='http')
 
-    print(search.keys())
-    print(search.get('query'))
-    print("Total count of metadatas shared: ", search.get("total"))
-    print("Count of resources got by request: {}\n".format(len(search.get("results"))))
-    # print(search.get("results")[0].get("contacts"))
+    # print(search.keys())
+    # print(search.get('query'))
+    # print("Total count of metadatas shared: ", search.get("total"))
+    # print("Count of resources got by request: {}\n".format(len(search.get("results"))))
+    # # print(search.get("results")[0].get("contacts"))
 
-    # get one random resource
-    hatnumber = randrange(0, len(search.get("results")))
-    my_resource = isogeo.resource(jeton,
-                                  search.get("results")[hatnumber].get("_id"),
-                                  sub_resources=isogeo.sub_resources_available,
-                                  prot="http"
-                                  )
-    print(my_resource.keys())
+    # # get one random resource
+    # hatnumber = randrange(0, len(search.get("results")))
+    # my_resource = isogeo.resource(jeton,
+    #                               search.get("results")[hatnumber].get("_id"),
+    #                               sub_resources=isogeo.sub_resources_available,
+    #                               prot="http"
+    #                               )
+    # print(my_resource.keys())
 
-    # count and parse related resources
-    # actions number
-    count_view = isogeo.search(jeton,
-                               query="action:view",
-                               page_size=0,
-                               whole_share=0,
-                               prot="http")
-    print("count of resources with view action: {}".format(count_view.get('total')))
+    # # count and parse related resources
+    # # actions number
+    # count_view = isogeo.search(jeton,
+    #                            query="action:view",
+    #                            page_size=0,
+    #                            whole_share=0,
+    #                            prot="http")
+    # print("count of resources with view action: {}".format(count_view.get('total')))
 
-    kind_ogc = ('wfs', 'wms', 'wmts')
-    kind_esri = ('esriFeatureService', 'esriMapService', 'esriTileService')
+    # kind_ogc = ('wfs', 'wms', 'wmts')
+    # kind_esri = ('esriFeatureService', 'esriMapService', 'esriTileService')
 
-    li_ogc = []
-    li_esri = []
-    li_dl = []
+    # li_ogc = []
+    # li_esri = []
+    # li_dl = []
 
-    for md in search.get('results'):
-        rel_resources = md.get('links')
-        if not rel_resources:
-            continue
-        else:
-            pass
-        for link in rel_resources:
-            # only OGC
-            if link.get('kind') in kind_ogc\
-            or (link.get('type') == 'link' and link.get('link').get('kind') in kind_ogc):
-                li_ogc.append((link.get('title'), link.get('url')))
-                continue
-            else:
-                pass
+    # for md in search.get('results'):
+    #     rel_resources = md.get('links')
+    #     if not rel_resources:
+    #         continue
+    #     else:
+    #         pass
+    #     for link in rel_resources:
+    #         # only OGC
+    #         if link.get('kind') in kind_ogc\
+    #         or (link.get('type') == 'link' and link.get('link').get('kind') in kind_ogc):
+    #             li_ogc.append((link.get('title'), link.get('url')))
+    #             continue
+    #         else:
+    #             pass
 
-            # only Esri
-            if link.get('kind') in kind_esri\
-            or (link.get('type') == 'link' and link.get('link').get('kind') in kind_esri):
-                li_esri.append((link.get('title'), link.get('url')))
-                continue
-            else:
-                pass
+    #         # only Esri
+    #         if link.get('kind') in kind_esri\
+    #         or (link.get('type') == 'link' and link.get('link').get('kind') in kind_esri):
+    #             li_esri.append((link.get('title'), link.get('url')))
+    #             continue
+    #         else:
+    #             pass
 
-            # downloadable
-            if link.get('kind') == 'data' and link.get('actions') == 'download'\
-            or (link.get('type') == 'link' and link.get('link').get('kind') == 'data'):
-                li_dl.append((link.get('title'), link.get('url')))
-                continue
-            else:
-                pass
+    #         # downloadable
+    #         if link.get('kind') == 'data' and link.get('actions') == 'download'\
+    #         or (link.get('type') == 'link' and link.get('link').get('kind') == 'data'):
+    #             li_dl.append((link.get('title'), link.get('url')))
+    #             continue
+    #         else:
+    #             pass
 
-            # secondary
-            if link.get('type') == 'link':
-                # li_dl.append((link.get('title'), link.get('url')))
-                print(link.get('kind'))
-                print(link.get('link'), "\n")
-                continue
-            else:
-                pass
+    #         # secondary
+    #         if link.get('type') == 'link':
+    #             # li_dl.append((link.get('title'), link.get('url')))
+    #             print(link.get('kind'))
+    #             print(link.get('link'), "\n")
+    #             continue
+    #         else:
+    #             pass
 
             # others
             # print(link)
