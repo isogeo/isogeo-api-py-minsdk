@@ -23,6 +23,7 @@ import socket
 import locale
 import logging
 from math import ceil
+from sys import platform as opersys
 
 # 3rd party library
 import arrow
@@ -141,12 +142,23 @@ class Isogeo(object):
             self.lang = lang.lower()
 
         # setting locale according to the language passed
-        if lang.lower() == "fr":
-            locale.setlocale(locale.LC_ALL, str("fra_fra"))
-            self.types_lbl = self.tr_types_label_fr
-        else:
-            locale.setlocale(locale.LC_ALL, str("uk_UK"))
-            self.types_lbl = self.tr_types_label_en
+        try:
+            if opersys == 'win32':
+                if lang.lower() == "fr":
+                    locale.setlocale(locale.LC_ALL, str("fra_fra"))
+                    self.types_lbl = self.tr_types_label_fr
+                else:
+                    locale.setlocale(locale.LC_ALL, str("uk_UK"))
+                    self.types_lbl = self.tr_types_label_en
+            else:
+                if lang.lower() == "fr":
+                    locale.setlocale(locale.LC_ALL, str("fr_FR.utf8"))
+                    self.types_lbl = self.tr_types_label_fr
+                else:
+                    locale.setlocale(locale.LC_ALL, str("en_GB.utf8"))
+                    self.types_lbl = self.tr_types_label_en
+        except locale.Error:
+            logging.error('Selected locale is not installed')
 
         # handling proxy parameters
         # see: http://docs.python-requests.org/en/latest/user/advanced/#proxies
