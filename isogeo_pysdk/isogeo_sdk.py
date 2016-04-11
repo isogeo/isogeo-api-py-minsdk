@@ -33,6 +33,8 @@ import requests
 # ########## Classes ###############
 # ##################################
 
+__all__ = ['Isogeo']
+
 
 class Isogeo(object):
     """ Abstraction class for Isogeo REST API.
