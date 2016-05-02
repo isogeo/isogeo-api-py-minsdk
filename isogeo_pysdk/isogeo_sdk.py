@@ -489,7 +489,10 @@ if __name__ == '__main__':
     from random import randrange    # to get a random resource
 
     # ------------ Settings from ini file ----------------
-    if not path.isfile(path.realpath(r"isogeo_params.ini")):
+    settings_file = r"isogeo_params.ini"
+
+
+    if not path.isfile(path.realpath(settings_file)):
         print("ERROR: to execute this script as standalone, you need to store your Isogeo application settings in a isogeo_params.ini file. You can use the template to set your own.")
         import sys
         sys.exit()
@@ -497,7 +500,7 @@ if __name__ == '__main__':
         pass
 
     config = ConfigParser.SafeConfigParser()
-    config.read(r"isogeo_params.ini")
+    config.read(settings_file)
 
     share_id = config.get('auth', 'app_id')
     share_token = config.get('auth', 'app_secret')
@@ -515,9 +518,6 @@ if __name__ == '__main__':
 
     # getting a token
     jeton = isogeo.connect()
-
-    # option to get some precprocessed stats (needs more time)
-    preproc = 1
 
     # get share properties
     # share = isogeo.share(jeton, "http")
