@@ -12,9 +12,8 @@
 #
 
 # dates
-python-dateutil
-arrow==0.7.0
-pytz==2015.7
+arrow
+pytz
 
 # REST API
-requests==2.9.1
+requests
