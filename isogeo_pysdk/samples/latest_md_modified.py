@@ -17,42 +17,41 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # ##################################
 
 # Standard library
-from ConfigParser import SafeConfigParser   # to manage .ini files
+import ConfigParser     # to manage options.ini
 from os import path
 
 # 3rd party library
 from dateutil.parser import parse as dtparse
 
-# Custom modules
-from ..isogeo_sdk import Isogeo
+# Isogeo
+from isogeo_pysdk import Isogeo
 
 # ############################################################################
 # ######### Main program ###########
 # ##################################
 
-# ------------ Settings from ini file ----------------
-if not path.isfile(path.realpath(r"..\isogeo_params.ini")):
-    print("ERROR: to execute this script as standalone, you need to store your\n\
-          Isogeo application settings in a isogeo_params.ini file.\n\
-          You can use the template to set your own.")
+# storing application parameters into an ini file
+settings_file = r"../isogeo_params.ini"
+
+# testing ini file
+if not path.isfile(path.realpath(settings_file)):
+    print("ERROR: to execute this script as standalone, you need to store your Isogeo application settings in a isogeo_params.ini file. You can use the template to set your own.")
     import sys
     sys.exit()
 else:
     pass
 
-config = SafeConfigParser()
-config.read(r"..\isogeo_params.ini")
+# reading ini file
+config = ConfigParser.SafeConfigParser()
+config.read(settings_file)
 
-settings = {s: dict(config.items(s)) for s in config.sections()}
+share_id = config.get('auth', 'app_id')
+share_token = config.get('auth', 'app_secret')
 
-app_id = settings.get('auth').get('app_id')
-app_secret = settings.get('auth').get('app_secret')
-client_lang = settings.get('basics').get('def_codelang')
-
-# ------------ Connecting to Isogeo API ----------------
+# ------------ Real start ----------------
 # instanciating the class
-isogeo = Isogeo(client_id=app_id,
-                client_secret=app_secret,
+isogeo = Isogeo(client_id=share_id,
+                client_secret=share_token,
                 lang="fr")
 
 token = isogeo.connect()
@@ -65,7 +64,9 @@ latest_data_modified = isogeo.search(token,
                                      sub_resources=["events"]
                                      )
 
-for md in latest_data_modified:
-    print("\n\t" + md.get('title'))
-    print("Last data update: " +
-          dtparse(md.get("modified")).strftime("%a %d %B %Y"))
+
+print("Last 10 data update: ")
+for md in latest_data_modified.get("results"):
+    title = md.get('title')
+    print("\n=> " + title)
+    print("Last update detected: " + dtparse(md.get("modified")[:19]).strftime("%a %d %B %Y"))
