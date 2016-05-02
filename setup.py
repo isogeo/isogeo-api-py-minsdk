@@ -20,7 +20,7 @@ setup(
     author="GeoJulien",
     author_email="julien.moura at isogeo.com",
     description="Abstraction class that makes easier using the Isogeo REST API",
-    long_description=open("README.md").read(),
+    long_description=open("README.rst").read(),
     install_requires=[ "requests>=2.9.1", "arrow>=0.7.0", "pytz>=2015.7" ] ,
     include_package_data=True,
     url="https://github.com/Guts/isogeo-api-py-minsdk",
