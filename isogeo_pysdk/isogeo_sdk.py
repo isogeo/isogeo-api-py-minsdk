@@ -42,51 +42,45 @@ class Isogeo(object):
     Swagger at: http://chantiers.hq.isogeo.fr/docs/Isogeo.Api/latest/Api.V1/
     """
     # -- ATTRIBUTES -----------------------------------------------------------
-    api_urls = {
-                "prod": "api",
+    api_urls = {"prod": "api",
                 "qa": "api.qa"
                 }
 
-    sub_resources_available = [
-                                "conditions",
-                                "contacts",
-                                "coordinate-system",
-                                "events",
-                                "feature-attributes",
-                                "keywords",
-                                "limitations",
-                                "links",
-                                "specifications"
-                              ]
+    sub_resources_available = ["conditions",
+                               "contacts",
+                               "coordinate-system",
+                               "events",
+                               "feature-attributes",
+                               "keywords",
+                               "limitations",
+                               "links",
+                               "specifications"
+                               ]
 
-    geo_relations_available = [
-                                "contains",
-                                "disjoint",
-                                "equal",
-                                "intersects",
-                                "overlaps",
-                                "within"
-                              ]
+    geo_relations_available = ["contains",
+                               "disjoint",
+                               "equal",
+                               "intersects",
+                               "overlaps",
+                               "within"
+                               ]
 
-    thesaurus_available = [
-                           "isogeo",
-                           "iso19115-topic",
-                           "inspire-theme"
-                           ]
+    thesaurus_available = {"isogeo": "1616597fbc4348c8b11ef9d59cf594c8",
+                           "inspire-theme": "",
+                           "iso19115-topic": ""
+                           }
 
-    tr_types_label_en = {
-                            "vector-dataset": "Vector",
-                            "raster-dataset": "Raster",
-                            "resource": "Resources",
-                            "service": "Geographic service"
-                        }
+    tr_types_label_en = {"vector-dataset": "Vector",
+                         "raster-dataset": "Raster",
+                         "resource": "Resources",
+                         "service": "Geographic service"
+                         }
 
-    tr_types_label_fr = {
-                            "vector-dataset": "Vecteur",
-                            "raster-dataset": "Raster",
-                            "resource": "Ressources",
-                            "service": "Service géographique"
-                        }
+    tr_types_label_fr = {"vector-dataset": "Vecteur",
+                         "raster-dataset": "Raster",
+                         "resource": "Ressources",
+                         "service": "Service géographique"
+                         }
 
     # -- BEFORE ALL -----------------------------------------------------------
 
@@ -168,8 +162,9 @@ class Isogeo(object):
             logging.info("Proxy activated")
             self.proxies = proxy
         elif proxy and type(proxy) is not dict:
-            logging.info("Proxy syntax error. Must be a dict { 'protocol': 'http://username:password@proxy_url:port' }.\
-                e.g.: {'http': 'http://martin:p4ssW0rde@10.1.68.1:5678',\
+            logging.info("Proxy syntax error. Must be a dict:\
+                        { 'protocol': 'http://user:password@proxy_url:port' }.\
+                        e.g.: {'http': 'http://martin:1234@10.1.68.1:5678',\
                        'https': 'http://martin:p4ssW0rde@10.1.68.1:5678'}")
             return
         else:
@@ -191,7 +186,7 @@ class Isogeo(object):
         else:
             pass
 
-        # requires a basic Authentication header encoded in Base64 (https://en.wikipedia.org/wiki/Base64)
+        # Basic Authentication header in Base64 (https://en.wikipedia.org/wiki/Base64)
         # see: http://tools.ietf.org/html/rfc2617#section-2
         credentials = base64.b64encode(client_id + ":" + client_secret)
         headers = {"Authorization": "Basic " + credentials}
@@ -302,8 +297,7 @@ class Isogeo(object):
             return "Error: sub_resources argument must be a list or 'all'"
 
         # handling request parameters
-        payload = {
-                   '_include': sub_resources,
+        payload = {'_include': sub_resources,
                    '_lang': self.lang,
                    '_limit': page_size,
                    '_offset': offset,
@@ -374,8 +368,7 @@ class Isogeo(object):
             return "Error: sub_resources argument must be a list or 'all'"
 
         # handling request parameters
-        payload = {
-                   '_include': sub_resources
+        payload = {'_include': sub_resources
                    }
 
         # resource search
@@ -393,15 +386,30 @@ class Isogeo(object):
         # end of method
         return resource_req.json()
 
-    def thesaurus(self, jeton, prot="https"):
+    def thesaurus(self, jeton,
+                  thez_id="1616597fbc4348c8b11ef9d59cf594c8",
+                  page_size=100,
+                  offset=0,
+                  sub_resources=[],
+                  prot="https"):
         """ Get information about thesaurus
         """
         # checking bearer validity
         jeton = self.check_bearer_validity(jeton)
 
-        payload = {
-                   '_include': "count",
-                   'th': "1616597fbc4348c8b11ef9d59cf594c8",
+        # sub resources specific parsing
+        if sub_resources == "all":
+            sub_resources = self.sub_resources_available
+        elif type(sub_resources) is list:
+            sub_resources = ",".join(sub_resources)
+        else:
+            return "Error: sub_resources argument must be a list or 'all'"
+
+        # handling request parameters
+        payload = {'th': thez_id,
+                   '_include': sub_resources,
+                   '_limit': page_size,
+                   '_offset': offset,
                    }
 
         # passing auth parameter
@@ -490,7 +498,6 @@ if __name__ == '__main__':
 
     # ------------ Settings from ini file ----------------
     settings_file = r"isogeo_params.ini"
-
 
     if not path.isfile(path.realpath(settings_file)):
         print("ERROR: to execute this script as standalone, you need to store your Isogeo application settings in a isogeo_params.ini file. You can use the template to set your own.")
