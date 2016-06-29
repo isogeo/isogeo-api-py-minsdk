@@ -67,7 +67,7 @@ thesauri = isogeo.thesaurus(token,
                             )
 
 # looping on keywords
-print(u"Keyword: Workgroup occurences/Total Isogeo")
+print(u"Keyword: Workgroup occurences/Total Isogeo\n_______________\n")
 for keyword in thesauri.get('results'):
     kyw = keyword.get("text")
     print(str("{} : {} / {}").format(kyw.encode("latin1"),
