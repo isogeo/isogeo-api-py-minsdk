@@ -6,6 +6,8 @@
 # ##################################
 
 # standard library
+from codecs import open
+from os import path
 from setuptools import setup, find_packages
 
 # custom module
@@ -13,28 +15,33 @@ import isogeo_pysdk
 
 # SETUP ######################################################################
 
+here = path.abspath(path.dirname(__file__))
+
+# Get the long description from the README file
+with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+    long_description = f.read()
+
 setup(
-    name="Isogeo API Minimalist SDK",
+    name="isogeo-pysdk",
     version=isogeo_pysdk.__version__,
     packages=find_packages(),
     author="GeoJulien",
     author_email="julien.moura at isogeo.com",
-    description="Abstraction class that makes easier using the Isogeo REST API",
-    long_description=open("README.rst").read(),
-    install_requires=[ "requests>=2.9.1", "arrow>=0.7.0", "pytz>=2015.7" ] ,
+    description="Abstraction class to use Isogeo REST API",
+    install_requires=["requests>=2.9.1", "arrow>=0.7.0", "pytz>=2015.7"],
     include_package_data=True,
     url="https://github.com/Guts/isogeo-api-py-minsdk",
-    keywords = ["GIS", "metadata", "INSPIRE", "Isogeo"],
+    keywords=["GIS", "metadata", "INSPIRE", "Isogeo"],
+    license='GPL3',
     classifiers=[
         "Intended Audience :: Developers",
-        "Programming Language :: Python",
+        "Programming Language :: Python :: 2",
         "Programming Language :: Python :: 2.7",
-        "Development Status :: 1 - Planning",
-        "License :: GPL3",
+        "Development Status :: 4 - Beta",
+        "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Natural Language :: French",
         "Operating System :: OS Independent",
-        "Topic :: Data and metadata management",
+        "Topic :: Software Development :: Libraries :: Python Modules",
     ],
+    long_description=long_description,
 )
-
-
