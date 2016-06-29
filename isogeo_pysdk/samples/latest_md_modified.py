@@ -64,10 +64,11 @@ latest_data_modified = isogeo.search(token,
                                      sub_resources=["events"]
                                      )
 
-
-print("Last 10 data update \n Title: last update datetime")
+print("Last 10 data updated \nTitle | datetime\n\t description")
 for md in latest_data_modified.get("results"):
     title = md.get('title')
-    print(str("{}: {}").format(title.encode("latin1"),
-                               dtparse(md.get("modified")[:19]).strftime("%a %d %B %Y")
-                               ))
+    evt_description = md.get("events")[0].get("description")
+    print(str("___________________\n\n{} | {} \n\t {}").
+          format(title.encode("utf8"),
+                 dtparse(md.get("modified")[:19]).strftime("%a %d %B %Y"),
+                 evt_description.encode("utf8")))
