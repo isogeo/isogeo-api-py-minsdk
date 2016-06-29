@@ -1,10 +1,17 @@
 Python minimalist SDK to use Isogeo REST API
-==========
+=============================================
 
 Lib still under development.
+Unofficial.
 
 Installing
 ==========
+
+To use:
+
+.. code-block:: shell
+
+    pip install isogeo-pysdk
 
 For developers:
 
@@ -20,7 +27,7 @@ Getting Help
 There is a basic documentation about the  `Isogeo API <https://docs.google.com/document/d/11dayY1FH1NETn6mn9Pt2y3n8ywVUD0DoKbCi9ct9ZRo/edit?usp=sharing>`_.
 
 Sample
-==========================
+======
 
 .. code-block:: python
 
@@ -41,3 +48,5 @@ Sample
     print(search.get('query'))
     print("Total count of metadatas shared: ", search.get("total"))
     print("Count of resources got by request: {}\n".format(len(search.get("results"))))
+
+Others samples are available in `the source repository <https://github.com/Guts/isogeo-api-py-minsdk/tree/master/isogeo_pysdk/samples>`_.
