@@ -198,10 +198,13 @@ class Isogeo(object):
         # passing request to get a 24h bearer
         # see: http://tools.ietf.org/html/rfc6750#section-2
         id_url = "https://id.{}.isogeo.com/oauth/token".format(self.base_url)
-        conn = requests.post(id_url,
-                             headers=headers,
-                             data=payload,
-                             proxies=self.proxies)
+        try:
+            conn = requests.post(id_url,
+                                 headers=headers,
+                                 data=payload,
+                                 proxies=self.proxies)
+        except ConnectionError:
+            return "No internet connection"
 
         # just a fast check
         check_params = self.check_api_response(conn)
@@ -223,7 +226,7 @@ class Isogeo(object):
 
     # -- API PATHS ------------------------------------------------------------
 
-    def share(self, jeton, prot="https"):
+    def shares(self, jeton, prot="https"):
         """ Get information about shares which feed the application
         """
         # checking bearer validity
@@ -231,8 +234,29 @@ class Isogeo(object):
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + jeton[0]}
-        share_url = "{}://v1.{}.isogeo.com/shares/".format(prot,
-                                                           self.base_url)
+        shares_url = "{}://v1.{}.isogeo.com/shares/".format(prot,
+                                                            self.base_url)
+        shares_req = requests.get(shares_url,
+                                  headers=head,
+                                  proxies=self.proxies)
+
+        # checking response
+        self.check_api_response(shares_req)
+
+        # end of method
+        return shares_req.json()
+
+    def share(self, jeton, share_id, prot="https"):
+        """ Get information about a share and its applications
+        """
+        # checking bearer validity
+        jeton = self.check_bearer_validity(jeton)
+
+        # passing auth parameter
+        head = {"Authorization": "Bearer " + jeton[0]}
+        share_url = "{}://v1.{}.isogeo.com/shares/{}".format(prot,
+                                                             self.base_url,
+                                                             share_id)
         share_req = requests.get(share_url,
                                  headers=head,
                                  proxies=self.proxies)
@@ -253,7 +277,8 @@ class Isogeo(object):
                order_dir="desc",
                page_size=100,
                offset=0,
-               sub_resources=[],
+               specific_md=None,
+               sub_resources=None,
                whole_share=True,
                prot="https"):
         """ Search request
@@ -272,12 +297,12 @@ class Isogeo(object):
         'overlaps', 'within'. To get available values: 'isogeo.geo_relations_available'.
         order_by -- to sort results. \n\tAvailable values:\n\t'_created': metadata
         creation date [DEFAULT]\n\t'_modified': metadata last update\n\t'title': metadata title\n\t'created': data
-        creation date (possibly None)\n\t'modified': data last update date
-        (possibly None).
+        creation date (possibly None)\n\t'modified': data last update date\n\t'relevance': relevance score.
         order_dir -- sorting direction. \n\tAvailable values:\n\t'desc':
         descending [DEFAULT]\n\t'asc': ascending
         page_size -- limits the number of results. Useful to paginate results display.
         offset -- offset
+        specific_md -- Limits the search to the specified identifiers
         sub_resources -- subresources that should be returned. Must be a list of strings.\\n
         To get available values: 'isogeo.sub_resources_available'
         whole_share -- option to return all results or only the page size. True by DEFAULT.
@@ -288,16 +313,27 @@ class Isogeo(object):
         # checking bearer validity
         jeton = self.check_bearer_validity(jeton)
 
+        # specific resources specific parsing
+        if type(specific_md) is list:
+            specific_md = ",".join(specific_md)
+        elif type(specific_md) is None:
+            specific_md = ""
+        else:
+            return "Error: specific_md argument must be a list or None"
+
         # sub resources specific parsing
         if sub_resources == "all":
             sub_resources = self.sub_resources_available
         elif type(sub_resources) is list:
             sub_resources = ",".join(sub_resources)
+        elif type(sub_resources) is None:
+            sub_resources = ""
         else:
             return "Error: sub_resources argument must be a list or 'all'"
 
         # handling request parameters
-        payload = {'_include': sub_resources,
+        payload = {'_id': specific_md,
+                   '_include': sub_resources,
                    '_lang': self.lang,
                    '_limit': page_size,
                    '_offset': offset,
@@ -430,10 +466,9 @@ class Isogeo(object):
     # -- UTILITIES -----------------------------------------------------------
 
     def check_bearer_validity(self, jeton):
-        """
-        Isogeo ID delivers authentication bearers which are valid during 24h, so
-        this method checks the validity of the token (jeton in French) with a
-        30 mn anticipation limit, and renews it if necessary.
+        """ Isogeo ID delivers authentication bearers which are valid during
+        24h, so this method checks the validity of the token (jeton in French)
+        with a 30 mn anticipation limit, and renews it if necessary.
 
         jeton = must be a tuple like (bearer, expiration_date)
 
