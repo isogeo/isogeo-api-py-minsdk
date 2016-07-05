@@ -21,7 +21,7 @@ import ConfigParser     # to manage options.ini
 from os import path
 
 # 3rd party library
-from dateutil.parser import parse as dtparse
+import requests
 
 # Isogeo
 from isogeo_pysdk import Isogeo
@@ -57,7 +57,26 @@ isogeo = Isogeo(client_id=share_id,
 token = isogeo.connect()
 
 # ------------ REAL START ----------------------------
-share = isogeo.share(token, "http")
-print(share)
-print(len(share))
-print(share[0].keys(), share[0].get("applications"))
+shares = isogeo.shares(token)
+print("This application is supplied by {} shares: ".format(len(shares)))
+
+for share in shares:
+    # Share caracteristics
+    name = share.get("name").encode("utf8")
+    creator_name = share.get("_creator").get("contact").get("name")
+    creator_id = share.get("_creator").get("_tag")[6:]
+    print("\nShare name: ", name, " owned by workgroup ", creator_name)
+
+    # OpenCatalog URL construction
+    share_details = isogeo.share(token, share_id=share.get("_id"))
+    url_OC = "http://open.isogeo.com/s/{}/{}".format(share.get("_id"),
+                                                     share_details.get("urlToken"))
+
+    # Testing URL
+    request = requests.get(url_OC)
+    if request.status_code == 200:
+        print("OpenCatalog available at: ", url_OC)
+    else:
+        print("OpenCatalog is not set for this share."
+              "\nGo and add it: https://app.isogeo.com/groups/{}/admin/shares/{}".format(creator_id,
+                                                                                         share.get("_id")))
