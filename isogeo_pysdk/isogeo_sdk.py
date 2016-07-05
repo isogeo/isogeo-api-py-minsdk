@@ -314,21 +314,22 @@ class Isogeo(object):
         jeton = self.check_bearer_validity(jeton)
 
         # specific resources specific parsing
-        if type(specific_md) is list:
+        if type(specific_md) is list and len(specific_md) > 0:
             specific_md = ",".join(specific_md)
         elif type(specific_md) is None:
             specific_md = ""
         else:
-            return "Error: specific_md argument must be a list or None"
+            specific_md = ""
 
         # sub resources specific parsing
         if sub_resources == "all":
             sub_resources = self.sub_resources_available
-        elif type(sub_resources) is list:
+        elif type(sub_resources) is list and len(sub_resources) > 0:
             sub_resources = ",".join(sub_resources)
         elif type(sub_resources) is None:
             sub_resources = ""
         else:
+            sub_resources = ""
             return "Error: sub_resources argument must be a list or 'all'"
 
         # handling request parameters
@@ -551,42 +552,32 @@ if __name__ == '__main__':
     # instanciating the class
     isogeo = Isogeo(client_id=share_id,
                     client_secret=share_token,
-                    platform="qa",
+                    platform="prod",
                     lang="fr")
-
-    # check which sub resources are available
-    # print(isogeo.sub_resources_available)
-    # print(isogeo.tr_types_label_fr)
 
     # getting a token
     jeton = isogeo.connect()
 
-    # get share properties
-    # share = isogeo.share(jeton, "http")
-    # print(share)
-    # print(len(share))
-    # print(share[0].keys(), share[0].get("applications"))
-
     # get thesauri
-    thesauri = isogeo.thesaurus(jeton, "http")
-    print(len(thesauri), thesauri)
+    # thesauri = isogeo.thesaurus(jeton, "http")
+    # print(len(thesauri), thesauri)
     # print(len(thesauri))
     # print(thesauri[0].keys())
 
     # let's search for metadatas!
     # print(dir(isogeo))
-    # search = isogeo.search(jeton,
-    #                        # sub_resources='all',
-    #                        # sub_resources=["conditions", "contacts"],
-    #                        sub_resources=isogeo.sub_resources_available,
-    #                        # query="keyword:isogeo:2015",
-    #                        prot='http')
+    search = isogeo.search(jeton,
+                           # sub_resources='all',
+                           # sub_resources=["conditions", "contacts"],
+                           sub_resources=isogeo.sub_resources_available,
+                           # query="keyword:isogeo:2015",
+                           prot='http')
 
-    # print(search.keys())
-    # print(search.get('query'))
-    # print("Total count of metadatas shared: ", search.get("total"))
-    # print("Count of resources got by request: {}\n".format(len(search.get("results"))))
-    # # print(search.get("results")[0].get("contacts"))
+    print(search.keys())
+    print(search.get('query'))
+    print("Total count of metadatas shared: ", search.get("total"))
+    print("Count of resources got by request: {}\n".format(len(search.get("results"))))
+    print(search.get("results")[0].get("contacts"))
 
     # # get one random resource
     # hatnumber = randrange(0, len(search.get("results")))
