@@ -131,8 +131,9 @@ class Isogeo(object):
 
         # setting language
         if lang.lower() not in ("fr", "en"):
-            logging.info("Isogeo API is only available in English ('en', default) or \
-                         French ('fr').\Language has been set on English.")
+            logging.info("Isogeo API is only available in English ('en', "
+                         "default) or French ('fr'). "
+                         "Language has been set on English.")
             self.lang = "en"
         else:
             self.lang = lang.lower()
@@ -162,10 +163,10 @@ class Isogeo(object):
             logging.info("Proxy activated")
             self.proxies = proxy
         elif proxy and type(proxy) is not dict:
-            logging.info("Proxy syntax error. Must be a dict:\
-                        { 'protocol': 'http://user:password@proxy_url:port' }.\
-                        e.g.: {'http': 'http://martin:1234@10.1.68.1:5678',\
-                       'https': 'http://martin:p4ssW0rde@10.1.68.1:5678'}")
+            logging.info("Proxy syntax error. Must be a dict: { 'protocol': "
+                         "'http://user:password@proxy_url:port' }."
+                         "e.g.: {'http': 'http://martin:1234@10.1.68.1:5678',"
+                         "'https': 'http://martin:p4ssW0rde@10.1.68.1:5678'}")
             return
         else:
             self.proxies = {}
@@ -316,7 +317,7 @@ class Isogeo(object):
         # specific resources specific parsing
         if type(specific_md) is list and len(specific_md) > 0:
             specific_md = ",".join(specific_md)
-        elif type(specific_md) is None:
+        elif specific_md is None:
             specific_md = ""
         else:
             specific_md = ""
@@ -326,11 +327,11 @@ class Isogeo(object):
             sub_resources = self.sub_resources_available
         elif type(sub_resources) is list and len(sub_resources) > 0:
             sub_resources = ",".join(sub_resources)
-        elif type(sub_resources) is None:
+        elif sub_resources is None:
             sub_resources = ""
         else:
             sub_resources = ""
-            return "Error: sub_resources argument must be a list or 'all'"
+            return "Error: sub_resources arg must be a list, 'all' or empty"
 
         # handling request parameters
         payload = {'_id': specific_md,
@@ -536,7 +537,9 @@ if __name__ == '__main__':
     settings_file = r"isogeo_params.ini"
 
     if not path.isfile(path.realpath(settings_file)):
-        print("ERROR: to execute this script as standalone, you need to store your Isogeo application settings in a isogeo_params.ini file. You can use the template to set your own.")
+        print("ERROR: to execute this script as standalone, you need to store "
+              "your Isogeo application settings in a isogeo_params.ini file. "
+              "You can use the template to set your own.")
         import sys
         sys.exit()
     else:
@@ -552,7 +555,6 @@ if __name__ == '__main__':
     # instanciating the class
     isogeo = Isogeo(client_id=share_id,
                     client_secret=share_token,
-                    platform="prod",
                     lang="fr")
 
     # getting a token
@@ -569,9 +571,11 @@ if __name__ == '__main__':
     search = isogeo.search(jeton,
                            # sub_resources='all',
                            # sub_resources=["conditions", "contacts"],
-                           sub_resources=isogeo.sub_resources_available,
+                           # sub_resources=isogeo.sub_resources_available,
                            # query="keyword:isogeo:2015",
-                           prot='http')
+                           prot='https')
+
+    assert(type(search) != unicode)
 
     print(search.keys())
     print(search.get('query'))
