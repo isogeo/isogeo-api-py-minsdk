@@ -114,7 +114,7 @@ class Isogeo(object):
         # testing parameters
         if len(client_secret) != 64:
             logging.error("App secret length issue: it should be 64 chars.")
-            raise ValueError(1, "Your application secret isn't good. Check it.")
+            raise ValueError(1, "Secret isn't good: : it must be 64 chars.")
         else:
             pass
 
@@ -475,9 +475,9 @@ class Isogeo(object):
         jeton = must be a tuple like (bearer, expiration_date)
 
         see: http://tools.ietf.org/html/rfc6750#section-2
-        FI: 24h = 86400 seconds, 30 mn = 1800
+        FI: 24h = 86400 seconds, 30 mn = 1800, 5 mn = 300
         """
-        if (jeton[1].timestamp - arrow.utcnow().timestamp) < 1800:
+        if (jeton[1].timestamp - arrow.utcnow().timestamp) < 60:
             jeton = self.connect(self.id, self.ct)
             logging.info("Your bearer was about to expire, so has been renewed. Just go on!")
         else:
@@ -496,7 +496,9 @@ class Isogeo(object):
             pass
         elif response.status_code >= 400:
             logging.error("Something's wrong Houston, check your parameters again!")
-            logging.error("{}: {} - {}".format(response.status_code, response.reason, response.json().get("error")))
+            logging.error("{}: {} - {}".format(response.status_code,
+                                               response.reason,
+                                               response.json().get("error")))
             # logging.error(dir(response))
             return 0, response.status_code
         else:
@@ -600,60 +602,6 @@ if __name__ == '__main__':
     #                            whole_share=0,
     #                            prot="http")
     # print("count of resources with view action: {}".format(count_view.get('total')))
-
-    # kind_ogc = ('wfs', 'wms', 'wmts')
-    # kind_esri = ('esriFeatureService', 'esriMapService', 'esriTileService')
-
-    # li_ogc = []
-    # li_esri = []
-    # li_dl = []
-
-    # for md in search.get('results'):
-    #     rel_resources = md.get('links')
-    #     if not rel_resources:
-    #         continue
-    #     else:
-    #         pass
-    #     for link in rel_resources:
-    #         # only OGC
-    #         if link.get('kind') in kind_ogc\
-    #         or (link.get('type') == 'link' and link.get('link').get('kind') in kind_ogc):
-    #             li_ogc.append((link.get('title'), link.get('url')))
-    #             continue
-    #         else:
-    #             pass
-
-    #         # only Esri
-    #         if link.get('kind') in kind_esri\
-    #         or (link.get('type') == 'link' and link.get('link').get('kind') in kind_esri):
-    #             li_esri.append((link.get('title'), link.get('url')))
-    #             continue
-    #         else:
-    #             pass
-
-    #         # downloadable
-    #         if link.get('kind') == 'data' and link.get('actions') == 'download'\
-    #         or (link.get('type') == 'link' and link.get('link').get('kind') == 'data'):
-    #             li_dl.append((link.get('title'), link.get('url')))
-    #             continue
-    #         else:
-    #             pass
-
-    #         # secondary
-    #         if link.get('type') == 'link':
-    #             # li_dl.append((link.get('title'), link.get('url')))
-    #             print(link.get('kind'))
-    #             print(link.get('link'), "\n")
-    #             continue
-    #         else:
-    #             pass
-
-            # others
-            # print(link)
-
-    # print("\n\tOGC: ", li_ogc)
-    # print("\n\tEsri: ", li_esri)
-    # print("\n\tDownload: ", li_dl)
 
     # if preproc == 1:
     #     print(search.get('owners'))
