@@ -52,8 +52,11 @@ class Isogeo(object):
                                "events",
                                "feature-attributes",
                                "keywords",
+                               "layers",
                                "limitations",
                                "links",
+                               "operations",
+                               "serviceLayers",
                                "specifications"
                                ]
 
