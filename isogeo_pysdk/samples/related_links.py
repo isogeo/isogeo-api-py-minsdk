@@ -60,7 +60,8 @@ jeton = isogeo.connect()
 # let's search for metadatas!
 search = isogeo.search(jeton,
                        page_size=10,
-                       sub_resources=["links"])
+                       sub_resources=["layers", "links",
+                                      "operations", "serviceLayers"])
 
 # ------------ Parsing resources ----------------
 kind_ogc = ('wfs', 'wms', 'wmts')
@@ -71,11 +72,13 @@ li_esri = []
 li_dl = []
 
 for md in search.get('results'):
-    rel_resources = md.get('links')
-    if not rel_resources:
+    rel_resources = md.get("links")
+    rel_layers = md.get("serviceLayers")
+    if not rel_resources or not rel_layers:
         continue
     else:
         pass
+    # related resources
     for link in rel_resources:
         # only OGC
         if link.get('kind') in kind_ogc\
@@ -112,6 +115,10 @@ for md in search.get('results'):
 
         # others
 
-print("\n\tOGC: ", li_ogc)
-print("\n\tEsri: ", li_esri)
+    # service layers associated
+    print(len(rel_layers))
+    print(rel_layers)
+
+# print("\n\tOGC: ", li_ogc)
+# print("\n\tEsri: ", li_esri)
 # print("\n\tDownload: ", li_dl)
