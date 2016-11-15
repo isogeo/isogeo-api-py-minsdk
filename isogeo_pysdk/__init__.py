@@ -6,6 +6,6 @@
     http://www.isogeo.com/
 """
 
-__version__ = "2.17.0-441"
+__version__ = "2.17.0-450"
 
 from isogeo_sdk import Isogeo
