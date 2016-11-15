@@ -176,6 +176,9 @@ class Isogeo(object):
             logging.info("No proxy set. Use default configuration.")
             pass
 
+        # get API version
+        logging.info("API version in use: {}".format(self.get_api_version()))
+
     # -- API CONNECTION ------------------------------------------------------
 
     def connect(self, client_id=None, client_secret=None):
@@ -433,7 +436,7 @@ class Isogeo(object):
                   offset=0,
                   sub_resources=[],
                   prot="https"):
-        """ Get information about thesaurus
+        """Gets information about thesaurus
         """
         # checking bearer validity
         jeton = self.check_bearer_validity(jeton)
@@ -471,7 +474,7 @@ class Isogeo(object):
     # -- DOWNLOADS -----------------------------------------------------------
 
     def xml19139(self, jeton, id_resource, prot="https"):
-        """Get resource exported into XML ISO 19139"""
+        """Gets resource exported into XML ISO 19139"""
 
         # checking bearer validity
         jeton = self.check_bearer_validity(jeton)
@@ -513,9 +516,7 @@ class Isogeo(object):
         return jeton
 
     def check_api_response(self, response):
-        """
-        Check the API response and raise exceptions if needed
-        """
+        """Checks the API response and raise exceptions if needed."""
         if response.status_code == 200:
             logging.info("Everything is OK dude, just go on!")
             pass
@@ -532,8 +533,23 @@ class Isogeo(object):
         # end of method
         return 1
 
+    def get_api_version(self, prot="https"):
+        """Gets Isogeo API version. No need for authentication."""
+        # resource search
+        api_version_url = "{}://v1.{}.isogeo.com/about".format(prot,
+                                                               self.base_url
+                                                               )
+        api_version_req = requests.get(api_version_url,
+                                       proxies=self.proxies
+                                       )
+        # checking response
+        self.check_api_response(api_version_req)
+
+        # end of method
+        return api_version_req.json().get("version")
+
     def check_internet_connection(self, remote_server="www.isogeo.com"):
-        """ Test if an internet connection is operational
+        """Tests if an internet connection is operational
         source: http://stackoverflow.com/a/20913928/2556577
         """
         try:
@@ -558,7 +574,6 @@ if __name__ == '__main__':
     # ------------ Specific imports ----------------
     import ConfigParser     # to manage options.ini
     from os import path
-    from random import randrange    # to get a random resource
 
     # ------------ Settings from ini file ----------------
     settings_file = r"isogeo_params.ini"
@@ -594,7 +609,6 @@ if __name__ == '__main__':
     # print(thesauri[0].keys())
 
     # let's search for metadatas!
-    # print(dir(isogeo))
     search = isogeo.search(jeton,
                            # sub_resources='all',
                            # sub_resources=["conditions", "contacts"],
@@ -603,38 +617,3 @@ if __name__ == '__main__':
                            prot='https')
 
     assert(type(search) != unicode)
-
-    print(search.keys())
-    print(search.get('query'))
-    print("Total count of metadatas shared: ", search.get("total"))
-    print("Count of resources got by request: {}\n".format(len(search.get("results"))))
-    print(search.get("results")[0].get("contacts"))
-
-    # # get one random resource
-    # hatnumber = randrange(0, len(search.get("results")))
-    # my_resource = isogeo.resource(jeton,
-    #                               search.get("results")[hatnumber].get("_id"),
-    #                               sub_resources=isogeo.sub_resources_available,
-    #                               prot="http"
-    #                               )
-    # print(my_resource.keys())
-
-    # # count and parse related resources
-    # # actions number
-    # count_view = isogeo.search(jeton,
-    #                            query="action:view",
-    #                            page_size=0,
-    #                            whole_share=0,
-    #                            prot="http")
-    # print("count of resources with view action: {}".format(count_view.get('total')))
-
-    # if preproc == 1:
-    #     print(search.get('owners'))
-    #     print(search.get('datatypes'))
-    #     print(search.get('keywords'))
-    #     print(search.get('inspire'))
-    #     print(search.get('formats'))
-    #     print(search.get('coordsys'))
-    #     print(search.get('actions'))
-    # else:
-    #     pass
