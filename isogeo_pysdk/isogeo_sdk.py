@@ -468,6 +468,28 @@ class Isogeo(object):
         # end of method
         return thez_req.json()
 
+    # -- DOWNLOADS -----------------------------------------------------------
+
+    def xml19139(self, jeton, id_resource, prot="https"):
+        """Get resource exported into XML ISO 19139"""
+
+        # checking bearer validity
+        jeton = self.check_bearer_validity(jeton)
+
+        # resource search
+        head = {"Authorization": "Bearer " + jeton[0]}
+        md_url = "{}://v1.{}.isogeo.com/resources/{}.xml".format(prot,
+                                                                 self.base_url,
+                                                                 id_resource)
+        xml_req = requests.get(md_url,
+                               headers=head,
+                               stream=True,
+                               proxies=self.proxies
+                               )
+
+        # end of method
+        return xml_req
+
     # -- UTILITIES -----------------------------------------------------------
 
     def check_bearer_validity(self, jeton):
