@@ -19,6 +19,7 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # Standard library
 import ConfigParser     # to manage options.ini
 from os import path
+from random import randrange    # to get a random resource
 
 # Isogeo
 from isogeo_pysdk import Isogeo
@@ -52,7 +53,6 @@ isogeo = Isogeo(client_id=share_id,
 
 # check which sub resources are available
 print(isogeo.sub_resources_available)
-print(isogeo.tr_types_label_fr)
 
 # getting a token
 jeton = isogeo.connect()
@@ -61,7 +61,16 @@ jeton = isogeo.connect()
 print(dir(isogeo))
 search = isogeo.search(jeton)
 
-print(search.keys())
+print(sorted(search.keys()))
 print(search.get('query'))
 print("Total count of metadatas shared: ", search.get("total"))
 print("Count of resources got by request: {}\n".format(len(search.get("results"))))
+
+# get one random resource
+hatnumber = randrange(0, len(search.get("results")))
+my_resource = isogeo.resource(jeton,
+                              search.get("results")[hatnumber].get("_id"),
+                              sub_resources=isogeo.sub_resources_available,
+                              prot="http"
+                              )
+print(sorted(my_resource.keys()))
