@@ -21,6 +21,11 @@ For developers:
     cd isogeo-api-py-minsdk
     python setup.py install
 
+Getting API keys
+================
+
+.. _Write to us: projects+api@isogeo.com
+
 Getting Help
 ============
 
