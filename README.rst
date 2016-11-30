@@ -11,7 +11,7 @@ To use:
 
 .. code-block:: shell
 
-    pip install isogeo-pysdk
+    pip install --user isogeo-pysdk
 
 For developers:
 
@@ -24,7 +24,7 @@ For developers:
 Getting API keys
 ================
 
-.. _Write to us: projects+api@isogeo.com
+`Send us your request by email <mailto:projects+api@isogeo.com>`_.
 
 Getting Help
 ============
