@@ -29,11 +29,14 @@ from sys import platform as opersys
 import arrow
 import requests
 
+# modules
+from utils.api_strings_translator import IsogeoTranslator
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 
-__all__ = ['Isogeo']
+__all__ = ['Isogeo', 'IsogeoTranslator']
 
 
 class Isogeo(object):
@@ -617,3 +620,6 @@ if __name__ == '__main__':
                            prot='https')
 
     assert(type(search) != unicode)
+
+    # API Version
+    print("Current Isogeo public API version: ", isogeo.get_api_version())
