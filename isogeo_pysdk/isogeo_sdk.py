@@ -382,7 +382,8 @@ class Isogeo(object):
                 payload['_offset'] = idx * 100
                 search_req = requests.get(search_url,
                                           headers=head,
-                                          params=payload)
+                                          params=payload,
+                                          proxies=self.proxies)
                 # storing results by addition
                 metadatas.extend(search_req.json().get('results'))
             search_rez['results'] = metadatas
