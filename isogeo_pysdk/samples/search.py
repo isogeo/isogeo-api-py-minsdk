@@ -23,6 +23,7 @@ from random import randrange    # to get a random resource
 
 # Isogeo
 from isogeo_pysdk import Isogeo
+from isogeo_pysdk import IsogeoTranslator
 
 # #############################################################################
 # ######## Main program ############
@@ -71,6 +72,22 @@ hatnumber = randrange(0, len(search.get("results")))
 my_resource = isogeo.resource(jeton,
                               search.get("results")[hatnumber].get("_id"),
                               sub_resources=isogeo.sub_resources_available,
-                              prot="http"
+                              prot="https"
                               )
+
 print(sorted(my_resource.keys()))
+
+
+# use integrated translator
+tr = IsogeoTranslator("FR")
+if my_resource.get("contacts"):
+    ct = my_resource.get("contacts")[0]
+    print("\nRaw contact role: " + ct.get("role"))
+    # English
+    tr = IsogeoTranslator("EN")
+    print("English contact role: " + tr.tr("roles", ct.get("role")))
+    # French
+    tr = IsogeoTranslator("FR")
+    print("Rôle du contact en français: " + tr.tr("roles", ct.get("role")))
+else:
+    print("This resource doesn't have any contact. Try again!")
