@@ -6,6 +6,8 @@
     http://www.isogeo.com/
 """
 
-__version__ = "2.17.0-450"
+from .isogeo_sdk import Isogeo
+from .translator import IsogeoTranslator
 
-from isogeo_sdk import Isogeo
+__version__ = "2.17.0-452"
+VERSION = __version__
