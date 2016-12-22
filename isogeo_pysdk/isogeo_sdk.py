@@ -607,7 +607,17 @@ if __name__ == '__main__':
                            # query="keyword:isogeo:2015",
                            prot='https')
 
+    # quick & dirty tests
     assert(type(search) != unicode)
+    assert(type(search) == dict)
+    assert("envelope" in search.keys())
+    assert("limit" in search.keys())
+    assert("offset" in search.keys())
+    assert("query" in search.keys())
+    assert("results" in search.keys())
+    assert("tags" in search.keys())
+    assert("total" in search.keys())
+    assert(type(search.get("results")) == list)
 
     # API Version
     print("Current Isogeo public API version: ", isogeo.get_api_version())
