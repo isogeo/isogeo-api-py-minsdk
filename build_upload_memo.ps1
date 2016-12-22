@@ -1,5 +1,5 @@
 <#dependencies#>
-pip install twine
+pip install twine --upgrade
 
 <#metadata#>
 python setup.py egg_info
