@@ -30,7 +30,10 @@ import arrow
 import requests
 
 # modules
-from utils.api_strings_translator import IsogeoTranslator
+try:
+    from . import translator
+except ValueError:
+    import translator
 
 # #############################################################################
 # ########## Classes ###############
@@ -75,18 +78,6 @@ class Isogeo(object):
                            "inspire-theme": "",
                            "iso19115-topic": ""
                            }
-
-    tr_types_label_en = {"vector-dataset": "Vector",
-                         "raster-dataset": "Raster",
-                         "resource": "Resources",
-                         "service": "Geographic service"
-                         }
-
-    tr_types_label_fr = {"vector-dataset": "Vecteur",
-                         "raster-dataset": "Raster",
-                         "resource": "Ressources",
-                         "service": "Service géographique"
-                         }
 
     # -- BEFORE ALL -----------------------------------------------------------
 
@@ -149,17 +140,13 @@ class Isogeo(object):
             if opersys == 'win32':
                 if lang.lower() == "fr":
                     locale.setlocale(locale.LC_ALL, str("fra_fra"))
-                    self.types_lbl = self.tr_types_label_fr
                 else:
                     locale.setlocale(locale.LC_ALL, str("uk_UK"))
-                    self.types_lbl = self.tr_types_label_en
             else:
                 if lang.lower() == "fr":
                     locale.setlocale(locale.LC_ALL, str("fr_FR.utf8"))
-                    self.types_lbl = self.tr_types_label_fr
                 else:
                     locale.setlocale(locale.LC_ALL, str("en_GB.utf8"))
-                    self.types_lbl = self.tr_types_label_en
         except locale.Error:
             logging.error('Selected locale is not installed')
 
@@ -606,7 +593,7 @@ if __name__ == '__main__':
     # getting a token
     jeton = isogeo.connect()
 
-    # get thesauri
+    # get thesauri=
     # thesauri = isogeo.thesaurus(jeton, "http")
     # print(len(thesauri), thesauri)
     # print(len(thesauri))
