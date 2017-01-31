@@ -28,11 +28,12 @@ from sys import platform as opersys
 # 3rd party library
 import arrow
 import requests
+from requests.auth import HTTPBasicAuth
 
 # modules
 try:
     from . import translator
-except ValueError:
+except (ValueError, SystemError):
     import translator
 
 # #############################################################################
@@ -116,6 +117,7 @@ class Isogeo(object):
             pass
 
         # platform to request
+        self.platform = platform
         if platform == "prod":
             self.base_url = self.api_urls.get(platform)
             logging.info("Using production platform.")
@@ -152,7 +154,7 @@ class Isogeo(object):
 
         # handling proxy parameters
         # see: http://docs.python-requests.org/en/latest/user/advanced/#proxies
-        if proxy and type(proxy) is dict and 'http' in proxy.keys():
+        if proxy and type(proxy) is dict and 'http' in list(proxy.keys()):
             logging.info("Proxy activated")
             self.proxies = proxy
         elif proxy and type(proxy) is not dict:
@@ -185,9 +187,6 @@ class Isogeo(object):
 
         # Basic Authentication header in Base64 (https://en.wikipedia.org/wiki/Base64)
         # see: http://tools.ietf.org/html/rfc2617#section-2
-        credentials = base64.b64encode(client_id + ":" + client_secret)
-        headers = {"Authorization": "Basic " + credentials}
-
         # using Client Credentials Grant method
         # see: http://tools.ietf.org/html/rfc6749#section-4.4
         payload = {"grant_type":"client_credentials"}
@@ -197,7 +196,8 @@ class Isogeo(object):
         id_url = "https://id.{}.isogeo.com/oauth/token".format(self.base_url)
         try:
             conn = requests.post(id_url,
-                                 headers=headers,
+                                 # auth=HTTPBasicAuth(client_id, client_secret),
+                                 auth=(client_id, client_secret),
                                  data=payload,
                                  proxies=self.proxies)
         except ConnectionError:
@@ -563,7 +563,7 @@ class Isogeo(object):
 if __name__ == '__main__':
     """ standalone execution """
     # ------------ Specific imports ----------------
-    import ConfigParser     # to manage options.ini
+    import configparser     # to manage options.ini
     from os import path
 
     # ------------ Settings from ini file ----------------
@@ -578,7 +578,7 @@ if __name__ == '__main__':
     else:
         pass
 
-    config = ConfigParser.SafeConfigParser()
+    config = configparser.SafeConfigParser()
     config.read(settings_file)
 
     share_id = config.get('auth', 'app_id')
@@ -608,16 +608,18 @@ if __name__ == '__main__':
                            prot='https')
 
     # quick & dirty tests
-    assert(type(search) != unicode)
+    assert(type(search) != str)
     assert(type(search) == dict)
-    assert("envelope" in search.keys())
-    assert("limit" in search.keys())
-    assert("offset" in search.keys())
-    assert("query" in search.keys())
-    assert("results" in search.keys())
-    assert("tags" in search.keys())
-    assert("total" in search.keys())
+    assert("envelope" in list(search.keys()))
+    assert("limit" in list(search.keys()))
+    assert("offset" in list(search.keys()))
+    assert("query" in list(search.keys()))
+    assert("results" in list(search.keys()))
+    assert("tags" in list(search.keys()))
+    assert("total" in list(search.keys()))
     assert(type(search.get("results")) == list)
 
     # API Version
-    print("Current Isogeo public API version: ", isogeo.get_api_version())
+    print("Current Isogeo public API version: ",
+          isogeo.get_api_version(),
+          isogeo.platform.upper())
