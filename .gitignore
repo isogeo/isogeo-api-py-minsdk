@@ -70,5 +70,5 @@ isogeo_params.ini
 
 # virtual environments
 venv/
-virtenv/
+virtenv*/
 virtualenv/
