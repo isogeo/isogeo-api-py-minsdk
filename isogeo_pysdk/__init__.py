@@ -9,5 +9,5 @@
 from .isogeo_sdk import Isogeo
 from .translator import IsogeoTranslator
 
-__version__ = "2.17.0-452"
+__version__ = "2.17.1-465"
 VERSION = __version__
