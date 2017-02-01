@@ -17,17 +17,15 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # ##################################
 
 # Standard library
-import base64
-from collections import Counter
-import socket
 import locale
 import logging
+import socket
 from math import ceil
 from sys import platform as opersys
 
 # 3rd party library
 import requests
-from requests.auth import HTTPBasicAuth
+# from requests.auth import HTTPBasicAuth
 
 # modules
 try:
@@ -52,50 +50,49 @@ class Isogeo(object):
                 "qa": "api.qa"
                 }
 
-    sub_resources_available = ["conditions",
-                               "contacts",
-                               "coordinate-system",
-                               "events",
-                               "feature-attributes",
-                               "keywords",
-                               "layers",
-                               "limitations",
-                               "links",
-                               "operations",
-                               "serviceLayers",
-                               "specifications"
-                               ]
+    SUBRESOURCES = ["conditions",
+                    "contacts",
+                    "coordinate-system",
+                    "events",
+                    "feature-attributes",
+                    "keywords",
+                    "layers",
+                    "limitations",
+                    "links",
+                    "operations",
+                    "serviceLayers",
+                    "specifications"
+                    ]
 
-    geo_relations_available = ["contains",
-                               "disjoint",
-                               "equal",
-                               "intersects",
-                               "overlaps",
-                               "within"
-                               ]
+    GEORELATIONS = ["contains",
+                    "disjoint",
+                    "equal",
+                    "intersects",
+                    "overlaps",
+                    "within"
+                    ]
 
-    thesaurus_available = {"isogeo": "1616597fbc4348c8b11ef9d59cf594c8",
-                           "inspire-theme": "",
-                           "iso19115-topic": ""
-                           }
+    THESAURI_DICT = {"isogeo": "1616597fbc4348c8b11ef9d59cf594c8",
+                     "inspire-theme": "926c676c380046d7af99bcae343ac813",
+                     "iso19115-topic": "926f969ee2bb470a84066625f68b96bb"
+                     }
 
     # -- BEFORE ALL -----------------------------------------------------------
 
     def __init__(self, client_id, client_secret,
                  platform="prod", lang="en", proxy=None):
         """ Isogeo connection parameters
-
-        Keyword arguments:
-        client_id -- application identifier
-        client_secret -- application secret
-        platform -- switch between to production or quality assurance platform
-        lang -- language asked for localized tags (INSPIRE themes).
-        Could be "en" [DEFAULT] or "fr".
-        proxy -- to pass through the local
-        proxy. Optional. Must be a dict { 'protocol':
-        'http://username:password@proxy_url:port' }.\ e.g.: {'http':
-        'http://martin:p4ssW0rde@10.1.68.1:5678',\ 'https':
-        'http://martin:p4ssW0rde@10.1.68.1:5678'}")
+            Keyword arguments:
+            client_id -- application identifier
+            client_secret -- application secret
+            platform -- switch between to production or quality assurance platform
+            lang -- language asked for localized tags (INSPIRE themes).
+            Could be "en" [DEFAULT] or "fr".
+            proxy -- to pass through the local
+            proxy. Optional. Must be a dict { 'protocol':
+            'http://username:password@proxy_url:port' }.\ e.g.: {'http':
+            'http://martin:p4ssW0rde@10.1.68.1:5678',\ 'https':
+            'http://martin:p4ssW0rde@10.1.68.1:5678'}")
         """
         super(Isogeo, self).__init__()
         self.id = client_id
@@ -174,8 +171,8 @@ class Isogeo(object):
 
     def connect(self, client_id=None, client_secret=None):
         """
-        Isogeo API uses oAuth  2.0 protocol (http://tools.ietf.org/html/rfc6749)
-        see: https://docs.google.com/document/d/11dayY1FH1NETn6mn9Pt2y3n8ywVUD0DoKbCi9ct9ZRo/edit?usp=sharing#heading=h.1rjxk9mvjoc0
+        Isogeo API uses oAuth 2.0 protocol (http://tools.ietf.org/html/rfc6749)
+        see: https://goo.gl/V3iB9R#heading=h.ataz6wo4mxc5
         """
         # instanciated or direct call
         if not client_id and not client_secret:
@@ -188,14 +185,13 @@ class Isogeo(object):
         # see: http://tools.ietf.org/html/rfc2617#section-2
         # using Client Credentials Grant method
         # see: http://tools.ietf.org/html/rfc6749#section-4.4
-        payload = {"grant_type":"client_credentials"}
+        payload = {"grant_type": "client_credentials"}
 
         # passing request to get a 24h bearer
         # see: http://tools.ietf.org/html/rfc6750#section-2
         id_url = "https://id.{}.isogeo.com/oauth/token".format(self.base_url)
         try:
             conn = requests.post(id_url,
-                                 # auth=HTTPBasicAuth(client_id, client_secret),
                                  auth=(client_id, client_secret),
                                  data=payload,
                                  proxies=self.proxies)
@@ -217,49 +213,8 @@ class Isogeo(object):
 
     # -- API PATHS ------------------------------------------------------------
 
-    def shares(self, jeton, prot="https"):
-        """ Get information about shares which feed the application
-        """
-        # checking bearer validity
-        jeton = self.check_bearer_validity(jeton)
-
-        # passing auth parameter
-        head = {"Authorization": "Bearer " + jeton[0]}
-        shares_url = "{}://v1.{}.isogeo.com/shares/".format(prot,
-                                                            self.base_url)
-        shares_req = requests.get(shares_url,
-                                  headers=head,
-                                  proxies=self.proxies)
-
-        # checking response
-        self.check_api_response(shares_req)
-
-        # end of method
-        return shares_req.json()
-
-    def share(self, jeton, share_id, prot="https"):
-        """ Get information about a share and its applications
-        """
-        # checking bearer validity
-        jeton = self.check_bearer_validity(jeton)
-
-        # passing auth parameter
-        head = {"Authorization": "Bearer " + jeton[0]}
-        share_url = "{}://v1.{}.isogeo.com/shares/{}".format(prot,
-                                                             self.base_url,
-                                                             share_id)
-        share_req = requests.get(share_url,
-                                 headers=head,
-                                 proxies=self.proxies)
-
-        # checking response
-        self.check_api_response(share_req)
-
-        # end of method
-        return share_req.json()
-
     def search(self,
-               jeton,
+               token,
                query="",
                bbox=None,
                poly=None,
@@ -275,7 +230,7 @@ class Isogeo(object):
         """ Search request
 
         Keyword arguments:
-        jeton -- API bearer
+        token -- API bearer
         query -- search terms. It could be a simple string like 'oil' or a tag
         like 'keyword:isogeo:formations' or 'keyword:inspire-theme:landcover'.
         \nThe AND operator is applied when various tags are passed.\nEmpty by default.
@@ -285,7 +240,7 @@ class Isogeo(object):
         \nCould be completed by the georel parameter.
         georel -- spatial operator to apply to the bbox or poly parameters.\
         \n\tAvailable values: 'contains', 'disjoint', 'equals', 'intersects' [DEFAULT],\
-        'overlaps', 'within'. To get available values: 'isogeo.geo_relations_available'.
+        'overlaps', 'within'. To get available values: 'isogeo.GEORELATIONS'.
         order_by -- to sort results. \n\tAvailable values:\n\t'_created': metadata
         creation date [DEFAULT]\n\t'_modified': metadata last update\n\t'title': metadata title\n\t'created': data
         creation date (possibly None)\n\t'modified': data last update date\n\t'relevance': relevance score.
@@ -295,14 +250,14 @@ class Isogeo(object):
         offset -- offset
         specific_md -- Limits the search to the specified identifiers
         sub_resources -- subresources that should be returned. Must be a list of strings.\\n
-        To get available values: 'isogeo.sub_resources_available'
+        To get available values: 'isogeo.SUBRESOURCES'
         whole_share -- option to return all results or only the page size. True by DEFAULT.
         prot -- https [DEFAULT] or http (useful for development and tracking requests).
 
-        see: https://docs.google.com/document/d/11dayY1FH1NETn6mn9Pt2y3n8ywVUD0DoKbCi9ct9ZRo/edit?usp=sharing#heading=h.yusgqavk96n1
+        see: https://goo.gl/V3iB9R
         """
         # checking bearer validity
-        jeton = self.check_bearer_validity(jeton)
+        token = self.check_bearer_validity(token)
 
         # specific resources specific parsing
         if type(specific_md) is list and len(specific_md) > 0:
@@ -314,7 +269,7 @@ class Isogeo(object):
 
         # sub resources specific parsing
         if sub_resources == "all":
-            sub_resources = self.sub_resources_available
+            sub_resources = self.SUBRESOURCES
         elif type(sub_resources) is list and len(sub_resources) > 0:
             sub_resources = ",".join(sub_resources)
         elif sub_resources is None:
@@ -338,7 +293,7 @@ class Isogeo(object):
                    }
 
         # search request
-        head = {"Authorization": "Bearer " + jeton[0]}
+        head = {"Authorization": "Bearer " + token[0]}
         search_url = "{}://v1.{}.isogeo.com/resources/search".format(prot,
                                                                      self.base_url)
         search_req = requests.get(search_url,
@@ -353,7 +308,7 @@ class Isogeo(object):
         resources_count = search_rez.get('total')  # total of metadatas shared
 
         # handling Isogeo API pagination
-        # see: https://docs.google.com/document/d/11dayY1FH1NETn6mn9Pt2y3n8ywVUD0DoKbCi9ct9ZRo/edit?usp=sharing#heading=h.bg6le8mcd07z
+        # see: https://goo.gl/V3iB9R#heading=h.bg6le8mcd07z
         if resources_count > page_size and whole_share:
             # if API returned more than one page of results, let's get the rest!
             metadatas = []  # a recipient list
@@ -374,34 +329,35 @@ class Isogeo(object):
         # end of method
         return search_rez
 
-    def resource(self, jeton, id_resource, sub_resources=[], prot="https"):
+    def resource(self, token, id_resource, sub_resources=[], prot="https"):
         """ Get complete or partial metadata about one specific resource
         (ie a vector dataset).
 
         Keyword arguments:
-        jeton -- API bearer
+        token -- API bearer
         id_resource -- UUID of the resource to get
         sub_resources -- subresources that should be returned. Must be a list of strings.\\n
-        To get available values: 'isogeo.sub_resources_available'
+        To get available values: 'isogeo.SUBRESOURCES'
         prot -- https [DEFAULT] or http (useful for development and tracking requests).
         """
         # checking bearer validity
-        jeton = self.check_bearer_validity(jeton)
+        token = self.check_bearer_validity(token)
 
         # sub resources specific parsing
         if sub_resources == "all":
-            sub_resources = self.sub_resources_available
+            sub_resources = self.SUBRESOURCES
         elif type(sub_resources) is list:
             sub_resources = ",".join(sub_resources)
         else:
             return "Error: sub_resources argument must be a list or 'all'"
 
         # handling request parameters
-        payload = {'_include': sub_resources
+        payload = {"id": id_resource,
+                   "_include": sub_resources
                    }
 
         # resource search
-        head = {"Authorization": "Bearer " + jeton[0]}
+        head = {"Authorization": "Bearer " + token[0]}
         md_url = "{}://v1.{}.isogeo.com/resources/{}".format(prot,
                                                              self.base_url,
                                                              id_resource)
@@ -415,8 +371,50 @@ class Isogeo(object):
         # end of method
         return resource_req.json()
 
-    def thesaurus(self, jeton,
+    def shares(self, token, prot="https"):
+        """ Get information about shares which feed the application
+        """
+        # checking bearer validity
+        token = self.check_bearer_validity(token)
+
+        # passing auth parameter
+        head = {"Authorization": "Bearer " + token[0]}
+        shares_url = "{}://v1.{}.isogeo.com/shares/".format(prot,
+                                                            self.base_url)
+        shares_req = requests.get(shares_url,
+                                  headers=head,
+                                  proxies=self.proxies)
+
+        # checking response
+        self.check_api_response(shares_req)
+
+        # end of method
+        return shares_req.json()
+
+    def share(self, token, share_id, prot="https"):
+        """ Get information about a share and its applications
+        """
+        # checking bearer validity
+        token = self.check_bearer_validity(token)
+
+        # passing auth parameter
+        head = {"Authorization": "Bearer " + token[0]}
+        share_url = "{}://v1.{}.isogeo.com/shares/{}".format(prot,
+                                                             self.base_url,
+                                                             share_id)
+        share_req = requests.get(share_url,
+                                 headers=head,
+                                 proxies=self.proxies)
+
+        # checking response
+        self.check_api_response(share_req)
+
+        # end of method
+        return share_req.json()
+
+    def thesaurus(self, token,
                   thez_id="1616597fbc4348c8b11ef9d59cf594c8",
+                  owner_id="08b3054757544463abd06f3ab51ee491",
                   page_size=100,
                   offset=0,
                   sub_resources=[],
@@ -424,11 +422,11 @@ class Isogeo(object):
         """Gets information about thesaurus
         """
         # checking bearer validity
-        jeton = self.check_bearer_validity(jeton)
+        token = self.check_bearer_validity(token)
 
         # sub resources specific parsing
         if sub_resources == "all":
-            sub_resources = self.sub_resources_available
+            sub_resources = self.SUBRESOURCES
         elif type(sub_resources) is list:
             sub_resources = ",".join(sub_resources)
         else:
@@ -442,9 +440,11 @@ class Isogeo(object):
                    }
 
         # passing auth parameter
-        head = {"Authorization": "Bearer " + jeton[0]}
-        thez_url = "{}://v1.{}.isogeo.com/groups/08b3054757544463abd06f3ab51ee491/keywords/search".format(prot,
-                                                            self.base_url)
+        head = {"Authorization": "Bearer " + token[0]}
+        thez_url = "{}://v1.{}.isogeo.com/groups/{}/keywords/search"\
+                   .format(prot,
+                           owner_id,
+                           self.base_url)
         thez_req = requests.get(thez_url,
                                 headers=head,
                                 params=payload,
@@ -456,22 +456,47 @@ class Isogeo(object):
         # end of method
         return thez_req.json()
 
+    def thesauri(self, token, prot="https"):
+        """Gets list of available thesauri"""
+        # checking bearer validity
+        token = self.check_bearer_validity(token)
+
+        # passing auth parameter
+        head = {"Authorization": "Bearer " + token[0]}
+        thez_url = "{}://v1.{}.isogeo.com/thesauri".format(prot,
+                                                           self.base_url)
+        thez_req = requests.get(thez_url,
+                                headers=head,
+                                proxies=self.proxies)
+
+        # checking response
+        self.check_api_response(thez_req)
+
+        # end of method
+        return thez_req.json()
+
     # -- DOWNLOADS -----------------------------------------------------------
 
-    def xml19139(self, jeton, id_resource, prot="https"):
+    def xml19139(self, token, id_resource, proxy_url=None, prot="https"):
         """Gets resource exported into XML ISO 19139"""
 
         # checking bearer validity
-        jeton = self.check_bearer_validity(jeton)
+        token = self.check_bearer_validity(token)
+
+        # handling request parameters
+        payload = {'proxyUrl': proxy_url,
+                   'id': id_resource,
+                   }
 
         # resource search
-        head = {"Authorization": "Bearer " + jeton[0]}
+        head = {"Authorization": "Bearer " + token[0]}
         md_url = "{}://v1.{}.isogeo.com/resources/{}.xml".format(prot,
                                                                  self.base_url,
                                                                  id_resource)
         xml_req = requests.get(md_url,
                                headers=head,
                                stream=True,
+                               params=payload,
                                proxies=self.proxies
                                )
 
@@ -585,19 +610,13 @@ if __name__ == '__main__':
                     lang="fr")
 
     # getting a token
-    jeton = isogeo.connect()
-
-    # get thesauri=
-    # thesauri = isogeo.thesaurus(jeton, "http")
-    # print(len(thesauri), thesauri)
-    # print(len(thesauri))
-    # print(thesauri[0].keys())
+    token = isogeo.connect()
 
     # let's search for metadatas!
-    search = isogeo.search(jeton,
+    search = isogeo.search(token,
                            # sub_resources='all',
                            # sub_resources=["conditions", "contacts"],
-                           # sub_resources=isogeo.sub_resources_available,
+                           # sub_resources=isogeo.SUBRESOURCES,
                            # query="keyword:isogeo:2015",
                            prot='https')
 
