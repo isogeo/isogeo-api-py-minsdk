@@ -26,7 +26,6 @@ from math import ceil
 from sys import platform as opersys
 
 # 3rd party library
-import arrow
 import requests
 from requests.auth import HTTPBasicAuth
 
@@ -212,14 +211,9 @@ class Isogeo(object):
 
         # getting access
         axx = conn.json()
-        bearer = axx.get("access_token")
-
-        # get the limit date
-        expiration_date = arrow.get(arrow.utcnow().timestamp
-                          + axx.get("expires_in"))
 
         # end of method
-        return (bearer, expiration_date)
+        return (axx.get("access_token"), axx.get("expires_in"))
 
     # -- API PATHS ------------------------------------------------------------
 
@@ -486,25 +480,25 @@ class Isogeo(object):
 
     # -- UTILITIES -----------------------------------------------------------
 
-    def check_bearer_validity(self, jeton):
+    def check_bearer_validity(self, token):
         """ Isogeo ID delivers authentication bearers which are valid during
-        24h, so this method checks the validity of the token (jeton in French)
+        24h, so this method checks the validity of the token (token in French)
         with a 30 mn anticipation limit, and renews it if necessary.
 
-        jeton = must be a tuple like (bearer, expiration_date)
+        token = must be a tuple like (bearer, expiration_date)
 
         see: http://tools.ietf.org/html/rfc6750#section-2
         FI: 24h = 86400 seconds, 30 mn = 1800, 5 mn = 300
         """
-        if (jeton[1].timestamp - arrow.utcnow().timestamp) < 60:
-            jeton = self.connect(self.id, self.ct)
+        if token[1] < 60:
+            token = self.connect(self.id, self.ct)
             logging.info("Your bearer was about to expire, so has been renewed. Just go on!")
         else:
             logging.info("Your bearer is still valid. Just go on!")
             pass
 
         # end of method
-        return jeton
+        return token
 
     def check_api_response(self, response):
         """Checks the API response and raise exceptions if needed."""

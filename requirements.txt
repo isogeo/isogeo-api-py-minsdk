@@ -11,15 +11,11 @@
 #
 #
 
-# dates
-arrow
-pytz
-
 # REST API
 requests==2.*
 
 # proxy
-pypac==0.2.*
+# pypac==0.2.*
 
 # Python 2 backwards compatibility
 configparser; python_version < '3.0'

@@ -29,8 +29,6 @@ setup(
     author_email="julien.moura at isogeo.com",
     description="Abstraction class to use Isogeo REST API",
     install_requires=["requests>=2.9.1",
-                      "arrow>=0.7.0",
-                      "pytz>=2015.7",
                       "future",
                       ],
     extras_require={
