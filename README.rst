@@ -4,12 +4,10 @@ Python minimalist SDK to use Isogeo REST API
 
 .. image:: https://badge.fury.io/py/isogeo-pysdk.svg
     :target: https://badge.fury.io/py/isogeo-pysdk
-
-.. |Python27| image:: https://img.shields.io/badge/python-2.7-blue.svg
-.. _Python27: https://badge.fury.io/py/isogeo-pysdk
-
-.. |Python35| image:: https://img.shields.io/badge/python-3.5-blue.svg
-.. _Python35: https://badge.fury.io/py/isogeo-pysdk
+.. image:: https://img.shields.io/badge/python-2.7-blue.svg
+    :target: https://badge.fury.io/py/isogeo-pysdk
+.. image:: https://img.shields.io/badge/python-3.5-blue.svg
+    :target: https://badge.fury.io/py/isogeo-pysdk
 
 Unofficial lib.
 API keys are required to use it.
@@ -76,8 +74,8 @@ Authentication
 ---------------
 
 - [X] group application (oAuth2 Credentials Grant)
-- [] user confidential application (oAuth2 Authorization Code Grant)
-- [] user public application (oAuth2 Implicit Grant)
+- [ ] user confidential application (oAuth2 Authorization Code Grant)
+- [ ] user public application (oAuth2 Implicit Grant)
 - [X] token auto refresh
 
 Resources search ( GET /resources/search )
