@@ -16,7 +16,7 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # ##################################
 
 # Standard library
-import ConfigParser     # to manage options.ini
+import configparser     # to manage options.ini
 from os import path
 
 # Isogeo
@@ -38,7 +38,7 @@ else:
     pass
 
 # reading ini file
-config = ConfigParser.SafeConfigParser()
+config = configparser.SafeConfigParser()
 config.read(settings_file)
 
 share_id = config.get('auth', 'app_id')

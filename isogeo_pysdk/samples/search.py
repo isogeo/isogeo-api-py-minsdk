@@ -17,7 +17,7 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # ##################################
 
 # Standard library
-import ConfigParser     # to manage options.ini
+import configparser     # to manage options.ini
 from os import path
 from random import randrange    # to get a random resource
 
@@ -41,7 +41,7 @@ else:
     pass
 
 # reading ini file
-config = ConfigParser.SafeConfigParser()
+config = configparser.SafeConfigParser()
 config.read(settings_file)
 
 share_id = config.get('auth', 'app_id')
@@ -53,7 +53,7 @@ isogeo = Isogeo(client_id=share_id,
                 client_secret=share_token)
 
 # check which sub resources are available
-print(isogeo.sub_resources_available)
+print(isogeo.SUBRESOURCES)
 
 # getting a token
 jeton = isogeo.connect()
@@ -71,7 +71,7 @@ print("Count of resources got by request: {}\n".format(len(search.get("results")
 hatnumber = randrange(0, len(search.get("results")))
 my_resource = isogeo.resource(jeton,
                               search.get("results")[hatnumber].get("_id"),
-                              sub_resources=isogeo.sub_resources_available,
+                              sub_resources=isogeo.SUBRESOURCES,
                               prot="https"
                               )
 
