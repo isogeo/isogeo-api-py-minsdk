@@ -23,9 +23,10 @@ from os import path
 
 # Isogeo
 from isogeo_pysdk import Isogeo
+from urllib import quote_plus
 
 # 3rd party
-import geojson
+from geomet import wkt
 
 # ############################################################################
 # ######### Main program ###########
@@ -58,6 +59,8 @@ token = isogeo.connect()
 
 # ------------ REAL START ----------------------------
 
+geo_relation = "within"
+
 # opening a geojson file
 gson_input = r'samples_boundingbox.geojson'
 with open(gson_input) as data_file:
@@ -71,22 +74,38 @@ basic_search = isogeo.search(token,
 print("Comparing count of results returned: ")
 print("\t- without any filter = ", basic_search.get('total'))
 
-for feature in data['features']:
+for feature in data.get('features'):
     # just for VIPolygons
-    if feature['geometry']['type'] != "Polygon":
+    if feature.get('geometry').get('type') != "Polygon":
         print("Geometry type must be a polygon")
         continue
     else:
         pass
-    # search & display results
-    bbox = str(feature['bbox'])[1:-1]
-    filtered_search = isogeo.search(token,
-                                    page_size=0,
-                                    whole_share=0,
-                                    bbox=bbox)
-    print(str("\t- {} = {}\t({})")
-          .format(feature['properties']['name'].encode("utf8"),
-                  filtered_search.get('total'),
+    # get bounding box and convex hull
+    bbox = ','.join(str(round(c, 3)) for c in feature.get('bbox'))
+    poly = wkt.dumps(feature.get("geometry"), decimals=3)
+
+    # search & display results - with bounding box
+    filtered_search_bbox = isogeo.search(token,
+                                         page_size=0,
+                                         whole_share=0,
+                                         bbox=bbox,
+                                         georel=geo_relation)
+    print(str("\t- {} (BOX) = {}\t{}")
+          .format(feature.get('properties').get('name').encode("utf8"),
+                  filtered_search_bbox.get('total'),
                   bbox
+                  ),
+          )
+    # search & display results - with convex hull
+    filtered_search_geo = isogeo.search(token,
+                                        page_size=0,
+                                        whole_share=0,
+                                        poly=poly,
+                                        georel=geo_relation)
+    print(str("\t- {} (GEO) = {}\t{}")
+          .format(feature.get('properties').get('name').encode("utf8"),
+                  filtered_search_geo.get('total'),
+                  poly
                   ),
           )
