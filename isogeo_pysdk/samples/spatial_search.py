@@ -23,9 +23,10 @@ from os import path
 
 # Isogeo
 from isogeo_pysdk import Isogeo
-from urllib import quote_plus
+from urllib import quote
 
 # 3rd party
+import geojson
 from geomet import wkt
 
 # ############################################################################
@@ -64,7 +65,12 @@ geo_relation = "within"
 # opening a geojson file
 gson_input = r'samples_boundingbox.geojson'
 with open(gson_input) as data_file:
-    data = json.load(data_file)
+    # data = json.load(data_file)
+    data = data_file.read()
+    data = geojson.loads(data)
+
+validation = geojson.is_valid(data)
+print(validation)
 
 # search & compare
 basic_search = isogeo.search(token,
@@ -84,6 +90,8 @@ for feature in data.get('features'):
     # get bounding box and convex hull
     bbox = ','.join(str(round(c, 3)) for c in feature.get('bbox'))
     poly = wkt.dumps(feature.get("geometry"), decimals=3)
+
+    # print(quote(poly))
 
     # search & display results - with bounding box
     filtered_search_bbox = isogeo.search(token,
