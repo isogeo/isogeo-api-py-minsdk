@@ -21,6 +21,7 @@ import locale
 import logging
 import socket
 from math import ceil
+import re
 from sys import platform as opersys
 
 # 3rd party library
@@ -661,6 +662,53 @@ class Isogeo(object):
 
     # -- DOWNLOADS -----------------------------------------------------------
 
+    def dl_hosted(self, token, id_resource, resource_link, proxy_url=None, prot="https"):
+        """Gets resource exported into XML ISO 19139"""
+        # check resource link compliance
+        if type(resource_link) is dict and resource_link.get("type") == "hosted":
+            id_link = resource_link.get("_id")
+            print("youhou")
+            pass
+        else:
+            return "Error: resource link passed is not valid or not a hosted one."
+
+        # checking bearer validity
+        token = self.check_bearer_validity(token)
+
+        # handling request parameters
+        payload = {'proxyUrl': proxy_url}
+
+        # resource search
+        head = {"Authorization": "Bearer " + token[0]}
+        hosted_url = "{}://v1.{}.isogeo.com/resources/{}/links/{}.bin"\
+                     .format(prot,
+                             self.base_url,
+                             id_resource,
+                             id_link)
+
+        hosted_req = requests.get(hosted_url,
+                                  headers=head,
+                                  stream=True,
+                                  params=payload,
+                                  proxies=self.proxies
+                                  )
+
+        # get filename from header
+        content_disposition = hosted_req.headers.get("Content-Disposition")
+        filename = re.findall("filename=(.+)", content_disposition)
+
+        # well-formed size
+        in_size = resource_link.get("size")
+        for size_cat in ('octets', 'Ko', 'Mo', 'Go'):
+            if in_size < 1024.0:
+                out_size = "%3.1f %s" % (in_size, size_cat)
+            in_size /= 1024.0
+
+        out_size = "%3.1f %s" % (in_size, " To")
+
+        # end of method
+        return (hosted_req, filename[0], out_size)
+
     def xml19139(self, token, id_resource, proxy_url=None, prot="https"):
         """Gets resource exported into XML ISO 19139"""
 
@@ -766,7 +814,7 @@ class Isogeo(object):
 if __name__ == '__main__':
     """ standalone execution """
     # ------------ Specific imports ----------------
-    import configparser     # to manage options.ini
+    import configparser    # to manage options.ini
     from os import path
 
     # ------------ Settings from ini file ----------------
