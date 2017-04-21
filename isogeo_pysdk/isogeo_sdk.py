@@ -371,6 +371,8 @@ class Isogeo(object):
         # end of method
         return resource_req.json()
 
+    # -- SHARES and APPLICATIONS ---------------------------------------------
+
     def shares(self, token, prot="https"):
         """ Get information about shares which feed the application
         """
@@ -412,52 +414,10 @@ class Isogeo(object):
         # end of method
         return share_req.json()
 
-    def thesaurus(self, token,
-                  thez_id="1616597fbc4348c8b11ef9d59cf594c8",
-                  owner_id="08b3054757544463abd06f3ab51ee491",
-                  page_size=100,
-                  offset=0,
-                  sub_resources=[],
-                  prot="https"):
-        """Gets information about thesaurus
-        """
-        # checking bearer validity
-        token = self.check_bearer_validity(token)
-
-        # sub resources specific parsing
-        if sub_resources == "all":
-            sub_resources = self.SUBRESOURCES
-        elif type(sub_resources) is list:
-            sub_resources = ",".join(sub_resources)
-        else:
-            return "Error: sub_resources argument must be a list or 'all'"
-
-        # handling request parameters
-        payload = {'th': thez_id,
-                   '_include': sub_resources,
-                   '_limit': page_size,
-                   '_offset': offset,
-                   }
-
-        # passing auth parameter
-        head = {"Authorization": "Bearer " + token[0]}
-        thez_url = "{}://v1.{}.isogeo.com/groups/{}/keywords/search"\
-                   .format(prot,
-                           owner_id,
-                           self.base_url)
-        thez_req = requests.get(thez_url,
-                                headers=head,
-                                params=payload,
-                                proxies=self.proxies)
-
-        # checking response
-        self.check_api_response(thez_req)
-
-        # end of method
-        return thez_req.json()
+    # -- KEYWORDS -----------------------------------------------------------
 
     def thesauri(self, token, prot="https"):
-        """Gets list of available thesauri"""
+        """Get list of available thesauri."""
         # checking bearer validity
         token = self.check_bearer_validity(token)
 
@@ -474,6 +434,230 @@ class Isogeo(object):
 
         # end of method
         return thez_req.json()
+
+    def thesaurus(self, token, thez_id="1616597fbc4348c8b11ef9d59cf594c8", prot="https"):
+        """Get a thesaurus."""
+        # checking bearer validity
+        token = self.check_bearer_validity(token)
+
+        # handling request parameters
+        payload = {'tid': thez_id,
+                   }
+
+        # passing auth parameter
+        head = {"Authorization": "Bearer " + token[0]}
+        thez_url = "{}://v1.{}.isogeo.com/thesauri/{}".format(prot,
+                                                              self.base_url,
+                                                              thez_id)
+        thez_req = requests.get(thez_url,
+                                headers=head,
+                                params=payload,
+                                proxies=self.proxies)
+
+        # checking response
+        self.check_api_response(thez_req)
+
+        # end of method
+        return thez_req.json()
+
+    def keywords(self,
+                 token,
+                 specific_tag,
+                 sub_resources=["count"],
+                 prot="https"):
+        """Search for specified keywords."""
+        # checking bearer validity
+        token = self.check_bearer_validity(token)
+
+        # specific tags specific parsing
+        if type(specific_tag) is list and len(specific_tag) > 0:
+            specific_tag = ",".join(specific_tag)
+        elif specific_tag is None:
+            specific_tag = ""
+        else:
+            specific_tag = ""
+
+        # sub resources specific parsing
+        if sub_resources == "all":
+            sub_resources = self.SUBRESOURCES
+        elif type(sub_resources) is list and len(sub_resources) > 0:
+            sub_resources = ",".join(sub_resources)
+        elif sub_resources is None:
+            sub_resources = ""
+        else:
+            sub_resources = ""
+            return "Error: sub_resources arg must be a list, 'all' or empty"
+
+        # handling request parameters
+        payload = {'_include': sub_resources,
+                   'kid': specific_tag,
+                   }
+
+        # search request
+        head = {"Authorization": "Bearer " + token[0]}
+        keywords_url = "{}://v1.{}.isogeo.com/keywords/{}"\
+                       .format(prot,
+                               self.base_url,
+                               specific_tag)
+
+        kwds_req = requests.get(keywords_url,
+                                headers=head,
+                                params=payload,
+                                proxies=self.proxies)
+
+        # checking response
+        self.check_api_response(kwds_req)
+
+        # end of method
+        return kwds_req.json()
+
+    def keywords_thesaurus(self,
+                           token,
+                           thez_id,
+                           query="",
+                           offset=0,
+                           order_by="text",
+                           order_dir="desc",
+                           page_size=20,
+                           specific_md=None,
+                           specific_tag=None,
+                           sub_resources=["count"],
+                           prot="https"):
+        """Search for keywords within a specific thesaurus."""
+        # checking bearer validity
+        token = self.check_bearer_validity(token)
+
+        # specific resources specific parsing
+        if type(specific_md) is list and len(specific_md) > 0:
+            specific_md = ",".join(specific_md)
+        elif specific_md is None:
+            specific_md = ""
+        else:
+            specific_md = ""
+
+        # specific tags specific parsing
+        if type(specific_tag) is list and len(specific_tag) > 0:
+            specific_tag = ",".join(specific_tag)
+        elif specific_tag is None:
+            specific_tag = ""
+        else:
+            specific_tag = ""
+
+        # sub resources specific parsing
+        if sub_resources == "all":
+            sub_resources = self.SUBRESOURCES
+        elif type(sub_resources) is list and len(sub_resources) > 0:
+            sub_resources = ",".join(sub_resources)
+        elif sub_resources is None:
+            sub_resources = ""
+        else:
+            sub_resources = ""
+            return "Error: sub_resources arg must be a list, 'all' or empty"
+
+        # handling request parameters
+        payload = {'_id': specific_md,
+                   '_include': sub_resources,
+                   '_limit': page_size,
+                   '_offset': offset,
+                   '_tag': specific_tag,
+                   'tid': thez_id,
+                   'ob': order_by,
+                   'od': order_dir,
+                   'q': query,
+                   }
+
+        # search request
+        head = {"Authorization": "Bearer " + token[0]}
+        keywords_url = "{}://v1.{}.isogeo.com/thesauri/{}/keywords/search"\
+                       .format(prot,
+                               self.base_url,
+                               thez_id)
+
+        kwds_req = requests.get(keywords_url,
+                                headers=head,
+                                params=payload,
+                                proxies=self.proxies)
+
+        # checking response
+        self.check_api_response(kwds_req)
+
+        # end of method
+        return kwds_req.json()
+
+    def keywords_workgroup(self,
+                           token,
+                           owner_id,
+                           query="",
+                           thez_id="1616597fbc4348c8b11ef9d59cf594c8",
+                           offset=0,
+                           order_by="text",
+                           order_dir="desc",
+                           page_size=20,
+                           specific_md=None,
+                           specific_tag=None,
+                           sub_resources=["count"],
+                           prot="https"):
+        """Search for keywords within a specific workgroup."""
+        # checking bearer validity
+        token = self.check_bearer_validity(token)
+
+        # specific resources specific parsing
+        if type(specific_md) is list and len(specific_md) > 0:
+            specific_md = ",".join(specific_md)
+        elif specific_md is None:
+            specific_md = ""
+        else:
+            specific_md = ""
+
+        # specific tags specific parsing
+        if type(specific_tag) is list and len(specific_tag) > 0:
+            specific_tag = ",".join(specific_tag)
+        elif specific_tag is None:
+            specific_tag = ""
+        else:
+            specific_tag = ""
+
+        # sub resources specific parsing
+        if sub_resources == "all":
+            sub_resources = self.SUBRESOURCES
+        elif type(sub_resources) is list and len(sub_resources) > 0:
+            sub_resources = ",".join(sub_resources)
+        elif sub_resources is None:
+            sub_resources = ""
+        else:
+            sub_resources = ""
+            return "Error: sub_resources arg must be a list, 'all' or empty"
+
+        # handling request parameters
+        payload = {'_id': specific_md,
+                   '_include': sub_resources,
+                   '_limit': page_size,
+                   '_offset': offset,
+                   '_tag': specific_tag,
+                   'gid': owner_id,
+                   'th': thez_id,
+                   'ob': order_by,
+                   'od': order_dir,
+                   'q': query,
+                   }
+
+        # search request
+        head = {"Authorization": "Bearer " + token[0]}
+        keywords_url = "{}://v1.{}.isogeo.com/groups/{}/keywords/search"\
+                       .format(prot,
+                               self.base_url,
+                               owner_id)
+
+        kwds_req = requests.get(keywords_url,
+                                headers=head,
+                                params=payload,
+                                proxies=self.proxies)
+
+        # checking response
+        self.check_api_response(kwds_req)
+
+        # end of method
+        return kwds_req.json()
 
     # -- DOWNLOADS -----------------------------------------------------------
 
