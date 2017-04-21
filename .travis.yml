@@ -4,7 +4,12 @@ python:
   - "3.4"
   - "3.5"
   - "3.6"
+cache: pip
 # command to install dependencies!
-install: "pip install -r requirements.txt"
+install:
+  - "pip install -r requirements.txt"
+  - "pip install git+https://github.com/Guts/isogeo-api-py-minsdk"
+
 # command to run tests!
-script: python tests/test_build_travis.py
+script:
+  - python tests/test_build_travis.py
