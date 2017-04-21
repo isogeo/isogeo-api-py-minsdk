@@ -8,6 +8,9 @@ Python minimalist SDK to use Isogeo REST API
     :target: https://badge.fury.io/py/isogeo-pysdk
 .. image:: https://img.shields.io/badge/python-3.5-blue.svg
     :target: https://badge.fury.io/py/isogeo-pysdk
+.. image:: https://travis-ci.org/Guts/isogeo-api-py-minsdk.svg?branch=master
+    :target: https://travis-ci.org/Guts/isogeo-api-py-minsdk
+    :alt: Travis build status
 
 Unofficial lib.
 API keys are required to use it.
