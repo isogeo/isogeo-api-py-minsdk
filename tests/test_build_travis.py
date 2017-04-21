@@ -9,7 +9,7 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 #
 # Python:       2.7.x
 # Created:      22/12/2015
-# Updated:      10/01/2016
+# Updated:      21/04/2017
 # -----------------------------------------------------------------------------
 
 # #############################################################################
@@ -18,52 +18,80 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 
 # Standard library
 from os import environ
-from random import randrange    # to get a random resource
+from random import randrange
 
 # Isogeo
 from isogeo_pysdk import Isogeo
 from isogeo_pysdk import IsogeoTranslator
 
+# 3rd party library
+from dateutil.parser import parse as dtparse
+
 # #############################################################################
 # ######## Main program ############
 # ##################################
-
 
 # API access
 share_id = environ.get('ISOGEO_API_DEV_ID')
 share_token = environ.get('ISOGEO_API_DEV_SECRET')
 
-# ------------ Real start ----------------
 # instanciating the class
 isogeo = Isogeo(client_id=share_id,
                 client_secret=share_token)
-
-# check which sub resources are available
-print(isogeo.SUBRESOURCES)
+print("\nIsogeo class methods: ", dir(isogeo))
+print("Available _include values: ", isogeo.SUBRESOURCES)
 
 # getting a token
-jeton = isogeo.connect()
+token = isogeo.connect()
 
-# let's search for metadatas!
-print(dir(isogeo))
-search = isogeo.search(jeton)
-
-print(sorted(search.keys()))
-print(search.get('query'))
-print("Total count of metadatas shared: ", search.get("total"))
+# -- BASIC SEARCH ------------------------------------------------------------
+search = isogeo.search(token)
+print("\nAPI response keys for a generic search: ", sorted(search.keys()))
+print("Sent query parameters: ", search.get("query"))
+print("Count of metadatas shared: ", search.get("total"))
 print("Count of resources got by request: {}\n".format(len(search.get("results"))))
 
+# -- FULL SPECIFIC METADATA --------------------------------------------------
 # get one random resource
 hatnumber = randrange(0, len(search.get("results")))
-my_resource = isogeo.resource(jeton,
+my_resource = isogeo.resource(token,
                               search.get("results")[hatnumber].get("_id"),
                               sub_resources=isogeo.SUBRESOURCES,
                               prot="https"
                               )
 
-print(sorted(my_resource.keys()))
+print("\nAPI response keys for a specific metadata search: ",
+      sorted(my_resource.keys()))
 
 
+# -- ADVANCED SEARCHES ---------------------------------------------------------
+# get 10 last data modified
+latest_data_modified = isogeo.search(token,
+                                     page_size=10,
+                                     order_by="modified",
+                                     whole_share=0,
+                                     sub_resources=["events"])
+
+print("\nLast 10 data updated \nTitle | datetime\n\t description")
+for md in latest_data_modified.get("results"):
+    title = md.get('title')
+    evt_description = md.get("events")[0].get("description")
+    print(str("___________________\n\n{} | {} \n\t {}").
+          format(title.encode("utf8"),
+                 dtparse(md.get("modified")[:19]).strftime("%a %d %B %Y"),
+                 evt_description.encode("utf8")))
+
+
+# filter on IDs list
+specific_ids = isogeo.search(token,
+                             specific_md=["754209f115c040a48d43ffc262b16500"],
+                             page_size=10,
+                             sub_resources="all")
+
+print(specific_ids.get("results"))
+
+
+# -- MISCELLANEOUS -----------------------------------------------------------
 # use integrated translator
 tr = IsogeoTranslator("FR")
 if my_resource.get("contacts"):
