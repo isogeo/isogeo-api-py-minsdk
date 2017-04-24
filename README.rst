@@ -97,7 +97,7 @@ Resources search parameters:
 - [X] box (filter on WGS84 boundging box)
 - [X] geo (filter on WKT polygon)
 - [X] rel (geometric operation to apply on 2 previous filters)
-- [ ] s share segregation
+- [X] s share segregation
 
 
 Resource details ( GET /resources/{rid} )
@@ -119,16 +119,18 @@ Others:
 Keyword details ( GET /keyword/{kid} )
 ---------------------------------------
 
-- [ ] kid (keyword UUID)
-- [ ] _include (subresources management)
-- [ ] searches for keywords in a specific workgroup ( GET /groups/{gid}/keywords/search  )
+- [X] kid (keyword UUID)
+- [X] _include (subresources management)
+- [X] searches for keywords in a specific workgroup ( GET /groups/{gid}/keywords/search  )
+
+These requests are not publicly available.
 
 Thesaurus ( GET /thesauri )
 ----------------------------------
 
 - [X] list of available thesauri
 - [X] specific thesaurus ( GET /thesauri/tid )
-- [ ] searches for keywords in a specific thesaurus ( GET /thesauri/{tid}/keywords/search )
+- [X] searches for keywords in a specific thesaurus ( GET /thesauri/{tid}/keywords/search )
 
 Shares  ( GET /shares )
 ----------------------------------------------
@@ -140,9 +142,11 @@ Miscellaneous & bonus
 ----------------------
 
 - [X] check API version
-- [X] pick between different Isogeo API platform (PROD, QA, INT)
+- [X] check database version
+- [X] pick between different Isogeo API platform (PROD, QA, [INT])
 - [X] set protocol requests to HTTPS (default) or HTTP (only for GET requests not for authentication)
-- [X] get every API label automaticlaly translated (not only INSPIRE themes)
+- [X] get every API label automatically translated (not only INSPIRE themes)
 - [X] additional search parameter to automatically get full results without have to iterate with _limit and _offset
 - [X] option (`ALL`) to quickly get every subresources through _include parameter
-- [-] handle proxies setting (only for basic auth - not pac nor ntml)
+- [X] method to easily download Isogeo hosted data
+- [-] handle proxies setting (only for basic auth - not PAC nor NTLM)
