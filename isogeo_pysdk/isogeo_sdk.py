@@ -199,6 +199,13 @@ class Isogeo(object):
                                  proxies=self.proxies)
         except ConnectionError:
             return "No internet connection"
+        except requests.exceptions.SSLError as e:
+            logging.error(e)
+            conn = requests.post(id_url,
+                                 auth=(client_id, client_secret),
+                                 data=payload,
+                                 proxies=self.proxies,
+                                 verify=False)
 
         # just a fast check
         check_params = self.check_api_response(conn)
@@ -301,10 +308,18 @@ class Isogeo(object):
         head = {"Authorization": "Bearer " + token[0]}
         search_url = "{}://v1.{}.isogeo.com/resources/search".format(prot,
                                                                      self.base_url)
-        search_req = requests.get(search_url,
-                                  headers=head,
-                                  params=payload,
-                                  proxies=self.proxies)
+        try:
+            search_req = requests.get(search_url,
+                                      headers=head,
+                                      params=payload,
+                                      proxies=self.proxies)
+        except requests.exceptions.SSLError as e:
+            logging.error(e)
+            search_req = requests.get(search_url,
+                                      headers=head,
+                                      params=payload,
+                                      proxies=self.proxies,
+                                      verify=False)
         # fast response check
         self.check_api_response(search_req)
 
@@ -818,7 +833,6 @@ class Isogeo(object):
         self.check_api_response(version_req)
 
         # end of method
-        return api_version_req.json().get("version")
         return version_req.json().get("version")
 
     def check_internet_connection(self, remote_server="www.isogeo.com"):
