@@ -224,6 +224,7 @@ class Isogeo(object):
                order_dir="desc",
                page_size=100,
                offset=0,
+               share=None,
                specific_md=None,
                sub_resources=None,
                whole_share=True,
@@ -249,6 +250,7 @@ class Isogeo(object):
         descending [DEFAULT]\n\t'asc': ascending
         page_size -- limits the number of results. Useful to paginate results display.
         offset -- offset
+        share -- share segregation
         specific_md -- Limits the search to the specified identifiers
         sub_resources -- subresources that should be returned. Must be a list of strings.\\n
         To get available values: 'isogeo.SUBRESOURCES'
@@ -291,6 +293,7 @@ class Isogeo(object):
                    'ob': order_by,
                    'od': order_dir,
                    'q': query,
+                   's': share,
                    }
 
         # search request
