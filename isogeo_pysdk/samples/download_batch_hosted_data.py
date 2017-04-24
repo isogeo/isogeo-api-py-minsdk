@@ -44,7 +44,6 @@ config.read(settings_file)
 share_id = config.get('auth', 'app_id')
 share_token = config.get('auth', 'app_secret')
 
-# ------------ Real start ----------------
 # instanciating the class
 isogeo = Isogeo(client_id=share_id,
                 client_secret=share_token,
@@ -52,7 +51,7 @@ isogeo = Isogeo(client_id=share_id,
 
 token = isogeo.connect()
 
-# ------------ REAL START ----------------------------
+# ------------ REAL START ----------------------------------------------------
 
 latest_data_modified = isogeo.search(token,
                                      page_size=10,
