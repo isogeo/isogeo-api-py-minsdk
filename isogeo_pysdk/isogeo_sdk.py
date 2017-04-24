@@ -114,7 +114,7 @@ class Isogeo(object):
             pass
 
         # platform to request
-        self.platform = platform
+        self.platform = platform.lower()
         if platform == "prod":
             self.base_url = self.api_urls.get(platform)
             logging.info("Using production platform.")
