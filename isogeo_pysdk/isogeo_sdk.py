@@ -166,7 +166,8 @@ class Isogeo(object):
             pass
 
         # get API version
-        logging.info("API version in use: {}".format(self.get_api_version()))
+        logging.info("Isogeo API version: {}".format(self.get_isogeo_version()))
+        logging.info("Isogeo DB version: {}".format(self.get_isogeo_version("db")))
 
     # -- API CONNECTION ------------------------------------------------------
 
@@ -778,20 +779,47 @@ class Isogeo(object):
         # end of method
         return 1
 
-    def get_api_version(self, prot="https"):
-        """Gets Isogeo API version. No need for authentication."""
-        # resource search
-        api_version_url = "{}://v1.{}.isogeo.com/about".format(prot,
-                                                               self.base_url
-                                                               )
-        api_version_req = requests.get(api_version_url,
+    def get_isogeo_version(self, component="api", prot="https"):
+        """Gets Isogeo components versions. No need for authentication."""
+        # which component
+        if component == "api":
+            version_url = "{}://v1.{}.isogeo.com/about"\
+                          .format(prot,
+                                  self.base_url
+                                  )
+        elif component == "db":
+            version_url = "{}://v1.{}.isogeo.com/about/database"\
+                          .format(prot,
+                                  self.base_url
+                                  )
+        elif component == "app" and self.platform == "prod":
+            version_url = "https://app.isogeo.com/about"
+        elif component == "app" and self.platform == "qa":
+            version_url = "https://qa-isogeo-app.azurewebsites.net/about"
+        elif component == "app" and self.platform == "int":
+            version_url = "{}://v1.api.int.hq.isogeo.fr/about"\
+                          .format(prot)
+        else:
+            raise ValueError("Component value is one theses values:"
+                             "api [default], db, app.")
+
+        # send request
+        try:
+            version_req = requests.get(version_url,
                                        proxies=self.proxies
                                        )
+        except requests.exceptions.SSLError as e:
+            logging.error(e)
+            version_req = requests.get(version_url,
+                                   proxies=self.proxies,
+                                   verify=False
+                                   )
         # checking response
-        self.check_api_response(api_version_req)
+        self.check_api_response(version_req)
 
         # end of method
         return api_version_req.json().get("version")
+        return version_req.json().get("version")
 
     def check_internet_connection(self, remote_server="www.isogeo.com"):
         """Tests if an internet connection is operational
