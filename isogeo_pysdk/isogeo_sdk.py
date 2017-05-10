@@ -146,8 +146,8 @@ class Isogeo(object):
                     locale.setlocale(locale.LC_ALL, str("fr_FR.utf8"))
                 else:
                     locale.setlocale(locale.LC_ALL, str("en_GB.utf8"))
-        except locale.Error:
-            logging.error('Selected locale is not installed')
+        except locale.Error as e:
+            logging.error('Selected locale is not installed', e)
 
         # handling proxy parameters
         # see: http://docs.python-requests.org/en/latest/user/advanced/#proxies
@@ -364,12 +364,12 @@ class Isogeo(object):
         token = self.check_bearer_validity(token)
 
         # sub resources specific parsing
-        if sub_resources == "all":
+        if sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
         elif type(sub_resources) is list:
             sub_resources = ",".join(sub_resources)
         else:
-            return "Error: sub_resources argument must be a list or 'all'"
+            raise ValueError("Error: sub_resources argument must be a list or 'all'")
 
         # handling request parameters
         payload = {"id": id_resource,
@@ -768,9 +768,9 @@ class Isogeo(object):
         """
         if token[1] < 60:
             token = self.connect(self.id, self.ct)
-            logging.info("Your bearer was about to expire, so has been renewed. Just go on!")
+            logging.debug("Your bearer was about to expire, so has been renewed. Just go on!")
         else:
-            logging.info("Your bearer is still valid. Just go on!")
+            logging.debug("Your bearer is still valid. Just go on!")
             pass
 
         # end of method
@@ -779,7 +779,7 @@ class Isogeo(object):
     def check_api_response(self, response):
         """Checks the API response and raise exceptions if needed."""
         if response.status_code == 200:
-            logging.info("Everything is OK dude, just go on!")
+            logging.debug("Everything is OK dude, just go on!")
             pass
         elif response.status_code >= 400:
             logging.error("Something's wrong Houston, check your parameters again!")
