@@ -42,10 +42,12 @@ __all__ = ['Isogeo', 'IsogeoTranslator']
 
 
 class Isogeo(object):
-    """ Abstraction class for Isogeo REST API.
+    """Abstraction class for Isogeo REST API.
+
     Full doc at: https://goo.gl/V3iB9R
     Swagger at: http://chantiers.hq.isogeo.fr/docs/Isogeo.Api/latest/Api.V1/
     """
+
     # -- ATTRIBUTES -----------------------------------------------------------
     api_urls = {"prod": "api",
                 "qa": "api.qa"
@@ -82,8 +84,9 @@ class Isogeo(object):
 
     def __init__(self, client_id, client_secret,
                  platform="prod", lang="en", proxy=None):
-        """ Isogeo connection parameters
-            Keyword arguments:
+        r"""Isogeo API class initialization.
+
+        Keyword arguments:
             client_id -- application identifier
             client_secret -- application secret
             platform -- switch between to production or quality assurance platform
@@ -93,7 +96,7 @@ class Isogeo(object):
             proxy. Optional. Must be a dict { 'protocol':
             'http://username:password@proxy_url:port' }.\ e.g.: {'http':
             'http://martin:p4ssW0rde@10.1.68.1:5678',\ 'https':
-            'http://martin:p4ssW0rde@10.1.68.1:5678'}")
+            'http://martin:p4ssW0rde@10.1.68.1:5678'})
         """
         super(Isogeo, self).__init__()
         self.id = client_id
@@ -172,7 +175,8 @@ class Isogeo(object):
     # -- API CONNECTION ------------------------------------------------------
 
     def connect(self, client_id=None, client_secret=None):
-        """
+        """Authenticate application and get token bearer.
+
         Isogeo API uses oAuth 2.0 protocol (http://tools.ietf.org/html/rfc6749)
         see: https://goo.gl/V3iB9R#heading=h.ataz6wo4mxc5
         """
@@ -237,7 +241,7 @@ class Isogeo(object):
                sub_resources=None,
                whole_share=True,
                prot="https"):
-        """ Search request
+        r"""Search request.
 
         Keyword arguments:
         token -- API bearer
@@ -279,7 +283,7 @@ class Isogeo(object):
             specific_md = ""
 
         # sub resources specific parsing
-        if sub_resources == "all":
+        if type(sub_resources) is str and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
         elif type(sub_resources) is list and len(sub_resources) > 0:
             sub_resources = ",".join(sub_resources)
@@ -287,7 +291,8 @@ class Isogeo(object):
             sub_resources = ""
         else:
             sub_resources = ""
-            return "Error: sub_resources arg must be a list, 'all' or empty"
+            raise ValueError("Error: sub_resources argument must be a list,"
+                             "'all' or empty")
 
         # handling request parameters
         payload = {'_id': specific_md,
@@ -350,13 +355,12 @@ class Isogeo(object):
         return search_rez
 
     def resource(self, token, id_resource, sub_resources=[], prot="https"):
-        """ Get complete or partial metadata about one specific resource
-        (ie a vector dataset).
+        """Get complete or partial metadata about one specific resource.
 
         Keyword arguments:
         token -- API bearer
         id_resource -- UUID of the resource to get
-        sub_resources -- subresources that should be returned. Must be a list of strings.\\n
+        sub_resources -- subresources that should be returned. Must be a list of strings.
         To get available values: 'isogeo.SUBRESOURCES'
         prot -- https [DEFAULT] or http (useful for development and tracking requests).
         """
@@ -364,12 +368,16 @@ class Isogeo(object):
         token = self.check_bearer_validity(token)
 
         # sub resources specific parsing
-        if sub_resources.lower() == "all":
+        if type(sub_resources) is str and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
-        elif type(sub_resources) is list:
+        elif type(sub_resources) is list and len(sub_resources) > 0:
             sub_resources = ",".join(sub_resources)
+        elif sub_resources is None:
+            sub_resources = ""
         else:
-            raise ValueError("Error: sub_resources argument must be a list or 'all'")
+            sub_resources = ""
+            raise ValueError("Error: sub_resources argument must be a list,"
+                             "'all' or empty")
 
         # handling request parameters
         payload = {"id": id_resource,
@@ -394,8 +402,7 @@ class Isogeo(object):
     # -- SHARES and APPLICATIONS ---------------------------------------------
 
     def shares(self, token, prot="https"):
-        """ Get information about shares which feed the application
-        """
+        """Get information about shares which feed the application."""
         # checking bearer validity
         token = self.check_bearer_validity(token)
 
@@ -414,8 +421,7 @@ class Isogeo(object):
         return shares_req.json()
 
     def share(self, token, share_id, prot="https"):
-        """ Get information about a share and its applications
-        """
+        """Get information about a specific share and its applications."""
         # checking bearer validity
         token = self.check_bearer_validity(token)
 
@@ -498,7 +504,7 @@ class Isogeo(object):
             specific_tag = ""
 
         # sub resources specific parsing
-        if sub_resources == "all":
+        if type(sub_resources) is str and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
         elif type(sub_resources) is list and len(sub_resources) > 0:
             sub_resources = ",".join(sub_resources)
@@ -506,7 +512,8 @@ class Isogeo(object):
             sub_resources = ""
         else:
             sub_resources = ""
-            return "Error: sub_resources arg must be a list, 'all' or empty"
+            raise ValueError("Error: sub_resources argument must be a list,"
+                             "'all' or empty")
 
         # handling request parameters
         payload = {'_include': sub_resources,
@@ -564,7 +571,7 @@ class Isogeo(object):
             specific_tag = ""
 
         # sub resources specific parsing
-        if sub_resources == "all":
+        if type(sub_resources) is str and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
         elif type(sub_resources) is list and len(sub_resources) > 0:
             sub_resources = ",".join(sub_resources)
@@ -572,7 +579,8 @@ class Isogeo(object):
             sub_resources = ""
         else:
             sub_resources = ""
-            return "Error: sub_resources arg must be a list, 'all' or empty"
+            raise ValueError("Error: sub_resources argument must be a list,"
+                             "'all' or empty")
 
         # handling request parameters
         payload = {'_id': specific_md,
@@ -638,7 +646,7 @@ class Isogeo(object):
             specific_tag = ""
 
         # sub resources specific parsing
-        if sub_resources == "all":
+        if type(sub_resources) is str and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
         elif type(sub_resources) is list and len(sub_resources) > 0:
             sub_resources = ",".join(sub_resources)
@@ -646,7 +654,8 @@ class Isogeo(object):
             sub_resources = ""
         else:
             sub_resources = ""
-            return "Error: sub_resources arg must be a list, 'all' or empty"
+            raise ValueError("Error: sub_resources argument must be a list,"
+                             "'all' or empty")
 
         # handling request parameters
         payload = {'_id': specific_md,
@@ -682,7 +691,7 @@ class Isogeo(object):
     # -- DOWNLOADS -----------------------------------------------------------
 
     def dl_hosted(self, token, id_resource, resource_link, proxy_url=None, prot="https"):
-        """Gets resource exported into XML ISO 19139"""
+        """Download hosted resource."""
         # check resource link compliance
         if type(resource_link) is dict and resource_link.get("type") == "hosted":
             id_link = resource_link.get("_id")
@@ -729,8 +738,7 @@ class Isogeo(object):
         return (hosted_req, filename[0], out_size)
 
     def xml19139(self, token, id_resource, proxy_url=None, prot="https"):
-        """Gets resource exported into XML ISO 19139"""
-
+        """Get resource exported into XML ISO 19139."""
         # checking bearer validity
         token = self.check_bearer_validity(token)
 
@@ -757,7 +765,9 @@ class Isogeo(object):
     # -- UTILITIES -----------------------------------------------------------
 
     def check_bearer_validity(self, token):
-        """ Isogeo ID delivers authentication bearers which are valid during
+        """Check API Bearer token validity.
+
+        Isogeo ID delivers authentication bearers which are valid during
         24h, so this method checks the validity of the token (token in French)
         with a 30 mn anticipation limit, and renews it if necessary.
 
@@ -768,21 +778,22 @@ class Isogeo(object):
         """
         if token[1] < 60:
             token = self.connect(self.id, self.ct)
-            logging.debug("Your bearer was about to expire, so has been renewed. Just go on!")
+            logging.debug("Bearer was about to expire, so has been renewed."
+                          " Just go on!")
         else:
-            logging.debug("Your bearer is still valid. Just go on!")
+            logging.debug("Bearer is still valid. Just go on!")
             pass
 
         # end of method
         return token
 
     def check_api_response(self, response):
-        """Checks the API response and raise exceptions if needed."""
+        """Check API response and raise exceptions if needed."""
         if response.status_code == 200:
             logging.debug("Everything is OK dude, just go on!")
             pass
         elif response.status_code >= 400:
-            logging.error("Something's wrong Houston, check your parameters again!")
+            logging.error("Something's wrong Houston, check settings again!")
             logging.error("{}: {} - {}".format(response.status_code,
                                                response.reason,
                                                response.json().get("error")))
@@ -795,7 +806,7 @@ class Isogeo(object):
         return 1
 
     def get_isogeo_version(self, component="api", prot="https"):
-        """Gets Isogeo components versions. No need for authentication."""
+        """Get Isogeo components versions. No need for authentication."""
         # which component
         if component == "api":
             version_url = "{}://v1.{}.isogeo.com/about"\
@@ -826,9 +837,9 @@ class Isogeo(object):
         except requests.exceptions.SSLError as e:
             logging.error(e)
             version_req = requests.get(version_url,
-                                   proxies=self.proxies,
-                                   verify=False
-                                   )
+                                       proxies=self.proxies,
+                                       verify=False
+                                       )
         # checking response
         self.check_api_response(version_req)
 
@@ -836,7 +847,8 @@ class Isogeo(object):
         return version_req.json().get("version")
 
     def check_internet_connection(self, remote_server="www.isogeo.com"):
-        """Tests if an internet connection is operational
+        """Test if an internet connection is operational.
+
         source: http://stackoverflow.com/a/20913928/2556577
         """
         try:
