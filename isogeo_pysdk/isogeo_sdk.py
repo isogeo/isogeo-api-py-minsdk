@@ -284,7 +284,6 @@ class Isogeo(object):
             specific_md = ""
 
         # sub resources specific parsing
-        print(type(sub_resources))
         if isinstance(sub_resources, string_types) and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
         elif type(sub_resources) is list and len(sub_resources) > 0:
@@ -370,7 +369,7 @@ class Isogeo(object):
         token = self.check_bearer_validity(token)
 
         # sub resources specific parsing
-        if type(sub_resources) is str and sub_resources.lower() == "all":
+        if isinstance(sub_resources, string_types) and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
         elif type(sub_resources) is list and len(sub_resources) > 0:
             sub_resources = ",".join(sub_resources)
@@ -506,7 +505,7 @@ class Isogeo(object):
             specific_tag = ""
 
         # sub resources specific parsing
-        if type(sub_resources) is str and sub_resources.lower() == "all":
+        if isinstance(sub_resources, string_types) and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
         elif type(sub_resources) is list and len(sub_resources) > 0:
             sub_resources = ",".join(sub_resources)
@@ -573,7 +572,7 @@ class Isogeo(object):
             specific_tag = ""
 
         # sub resources specific parsing
-        if type(sub_resources) is str and sub_resources.lower() == "all":
+        if isinstance(sub_resources, string_types) and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
         elif type(sub_resources) is list and len(sub_resources) > 0:
             sub_resources = ",".join(sub_resources)
@@ -648,7 +647,7 @@ class Isogeo(object):
             specific_tag = ""
 
         # sub resources specific parsing
-        if type(sub_resources) is str and sub_resources.lower() == "all":
+        if isinstance(sub_resources, string_types) and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
         elif type(sub_resources) is list and len(sub_resources) > 0:
             sub_resources = ",".join(sub_resources)

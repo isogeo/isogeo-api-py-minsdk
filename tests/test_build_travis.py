@@ -41,6 +41,19 @@ isogeo = Isogeo(client_id=share_id,
 print("\nIsogeo class methods: ", dir(isogeo))
 print("Available _include values: ", isogeo.SUBRESOURCES)
 
+# API Version
+print("Current Isogeo public API version: ",
+      isogeo.get_isogeo_version(),
+      isogeo.platform.upper())
+# DB version
+print("Current Isogeo public database version: ",
+      isogeo.get_isogeo_version(component="db"),
+      isogeo.platform.upper())
+# APP version
+print("Current Isogeo web application version: ",
+      isogeo.get_isogeo_version(component="app"),
+      isogeo.platform.upper())
+
 # getting a token
 token = isogeo.connect()
 
@@ -49,7 +62,19 @@ search = isogeo.search(token)
 print("\nAPI response keys for a generic search: ", sorted(search.keys()))
 print("Sent query parameters: ", search.get("query"))
 print("Count of metadatas shared: ", search.get("total"))
-print("Count of resources got by request: {}\n".format(len(search.get("results"))))
+print("Count of resources got by request: {}\n"
+      .format(len(search.get("results"))))
+
+assert(type(search) != str)
+assert(type(search) == dict)
+assert("envelope" in list(search.keys()))
+assert("limit" in list(search.keys()))
+assert("offset" in list(search.keys()))
+assert("query" in list(search.keys()))
+assert("results" in list(search.keys()))
+assert("tags" in list(search.keys()))
+assert("total" in list(search.keys()))
+assert(type(search.get("results")) == list)
 
 # -- FULL SPECIFIC METADATA --------------------------------------------------
 # get one random resource
