@@ -14,4 +14,4 @@ install:
 # command to run tests!
 script:
   - python tests/test_build_travis.py
-  - pep8 --first isogeo_pysdk/isogeo_pysdk.py
+  - pep8 --first isogeo_pysdk/isogeo_sdk.py
