@@ -151,7 +151,7 @@ class Isogeo(object):
                 else:
                     locale.setlocale(locale.LC_ALL, str("en_GB.utf8"))
         except locale.Error as e:
-            logging.error('Selected locale is not installed', e)
+            logging.error('Selected locale is not installed: '.format(e))
 
         # handling proxy parameters
         # see: http://docs.python-requests.org/en/latest/user/advanced/#proxies
