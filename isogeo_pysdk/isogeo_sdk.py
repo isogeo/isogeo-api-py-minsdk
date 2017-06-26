@@ -879,8 +879,9 @@ if __name__ == '__main__':
     settings_file = r"isogeo_params.ini"
 
     if not path.isfile(path.realpath(settings_file)):
-        raise FileNotFoundError("ERROR: to execute this script as standalone, you need to store "
-                                "your Isogeo application settings in a isogeo_params.ini file. "
+        raise FileNotFoundError("ERROR: to execute this script as standalone, "
+                                "you need to store your Isogeo application "
+                                "settings in a isogeo_params.ini file. "
                                 "You can use the template to set your own.")
     else:
         pass
@@ -898,18 +899,6 @@ if __name__ == '__main__':
                     lang="fr",
                     # platform="qa"
                     )
-    # API Version
-    print("Current Isogeo public API version: ",
-          isogeo.get_isogeo_version(),
-          isogeo.platform.upper())
-    # DB version
-    print("Current Isogeo public database version: ",
-          isogeo.get_isogeo_version(component="db"),
-          isogeo.platform.upper())
-    # APP version
-    print("Current Isogeo web application version: ",
-          isogeo.get_isogeo_version(component="app"),
-          isogeo.platform.upper())
 
     # getting a token
     token = isogeo.connect()
@@ -921,24 +910,5 @@ if __name__ == '__main__':
                            # sub_resources=isogeo.SUBRESOURCES,
                            # query="keyword:isogeo:2015",
                            prot='https')
-    print("Count of resources got by request: {}\n".format(len(search.get("results"))))
 
-    # quick & dirty tests
-    assert(type(search) != str)
-    assert(type(search) == dict)
-    assert("envelope" in list(search.keys()))
-    assert("limit" in list(search.keys()))
-    assert("offset" in list(search.keys()))
-    assert("query" in list(search.keys()))
-    assert("results" in list(search.keys()))
-    assert("tags" in list(search.keys()))
-    assert("total" in list(search.keys()))
-    assert(type(search.get("results")) == list)
 
-    # shares information
-    shares = isogeo.shares(token)
-    share = shares[0]
-    # print(share.get("_id"))
-    search_share_segregated = isogeo.search(token, share=share.get("_id"))
-    print("Count of resources got by request: {}\n"
-          .format(len(search_share_segregated.get("results"))))
