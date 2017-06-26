@@ -106,15 +106,21 @@ for md in latest_data_modified.get("results"):
                  dtparse(md.get("modified")[:19]).strftime("%a %d %B %Y"),
                  evt_description.encode("utf8")))
 
-
 # filter on IDs list
 specific_ids = isogeo.search(token,
-                             specific_md=["754209f115c040a48d43ffc262b16500"],
+                             specific_md=md.get("_id"),
                              page_size=10,
                              sub_resources="all")
 
 print(specific_ids.get("results"))
 
+# -- SHARES -----------------------------------------------------------
+# shares information
+shares = isogeo.shares(token)
+share = shares[0]
+search_share_segregated = isogeo.search(token, share=share.get("_id"))
+print("Count of resources got by request: {}\n"
+      .format(len(search_share_segregated.get("results"))))
 
 # -- MISCELLANEOUS -----------------------------------------------------------
 # use integrated translator

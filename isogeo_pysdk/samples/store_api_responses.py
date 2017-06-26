@@ -32,7 +32,9 @@ settings_file = r"../isogeo_params.ini"
 
 # testing ini file
 if not path.isfile(path.realpath(settings_file)):
-    print("ERROR: to execute this script as standalone, you need to store your Isogeo application settings in a isogeo_params.ini file. You can use the template to set your own.")
+    print("ERROR: to execute this script as standalone, you need to store "
+          "your Isogeo application settings in a isogeo_params.ini file."
+          " You can use the template to set your own.")
     import sys
     sys.exit()
 else:
