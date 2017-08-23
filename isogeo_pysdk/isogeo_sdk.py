@@ -201,6 +201,7 @@ class Isogeo(object):
         # using Client Credentials Grant method
         # see: http://tools.ietf.org/html/rfc6749#section-4.4
         payload = {"grant_type": "client_credentials"}
+        head = {"user-agent": "python-sdk/2.19.451"}
 
         # passing request to get a 24h bearer
         # see: http://tools.ietf.org/html/rfc6750#section-2
@@ -208,6 +209,7 @@ class Isogeo(object):
         try:
             conn = requests.post(id_url,
                                  auth=(client_id, client_secret),
+                                 headers=head,
                                  data=payload,
                                  proxies=self.proxies)
         except ConnectionError:
@@ -321,7 +323,8 @@ class Isogeo(object):
         self.check_request_parameters(payload)
 
         # search request
-        head = {"Authorization": "Bearer " + token[0]}
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": "python-sdk/2.19.451"}
         search_url = "{}://v1.{}.isogeo.com/resources/search".format(prot,
                                                                      self.base_url)
         try:
@@ -396,7 +399,8 @@ class Isogeo(object):
                    }
 
         # resource search
-        head = {"Authorization": "Bearer " + token[0]}
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": "isogeo-pysdk/2.19.451"}
         md_url = "{}://v1.{}.isogeo.com/resources/{}".format(prot,
                                                              self.base_url,
                                                              id_resource)
@@ -418,7 +422,8 @@ class Isogeo(object):
         token = self.check_bearer_validity(token)
 
         # passing auth parameter
-        head = {"Authorization": "Bearer " + token[0]}
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": "isogeo-pysdk/2.19.451"}
         shares_url = "{}://v1.{}.isogeo.com/shares/".format(prot,
                                                             self.base_url)
         shares_req = requests.get(shares_url,
@@ -437,7 +442,8 @@ class Isogeo(object):
         token = self.check_bearer_validity(token)
 
         # passing auth parameter
-        head = {"Authorization": "Bearer " + token[0]}
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": "isogeo-pysdk/2.19.451"}
         share_url = "{}://v1.{}.isogeo.com/shares/{}".format(prot,
                                                              self.base_url,
                                                              share_id)
@@ -459,7 +465,8 @@ class Isogeo(object):
         token = self.check_bearer_validity(token)
 
         # passing auth parameter
-        head = {"Authorization": "Bearer " + token[0]}
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": "isogeo-pysdk/2.19.451"}
         thez_url = "{}://v1.{}.isogeo.com/thesauri".format(prot,
                                                            self.base_url)
         thez_req = requests.get(thez_url,
@@ -482,7 +489,8 @@ class Isogeo(object):
                    }
 
         # passing auth parameter
-        head = {"Authorization": "Bearer " + token[0]}
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": "isogeo-pysdk/2.19.451"}
         thez_url = "{}://v1.{}.isogeo.com/thesauri/{}".format(prot,
                                                               self.base_url,
                                                               thez_id)
@@ -532,7 +540,8 @@ class Isogeo(object):
                    }
 
         # search request
-        head = {"Authorization": "Bearer " + token[0]}
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": "isogeo-pysdk/2.19.451"}
         keywords_url = "{}://v1.{}.isogeo.com/keywords/{}"\
                        .format(prot,
                                self.base_url,
@@ -606,7 +615,8 @@ class Isogeo(object):
                    }
 
         # search request
-        head = {"Authorization": "Bearer " + token[0]}
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": "isogeo-pysdk/2.19.451"}
         keywords_url = "{}://v1.{}.isogeo.com/thesauri/{}/keywords/search"\
                        .format(prot,
                                self.base_url,
@@ -682,7 +692,8 @@ class Isogeo(object):
                    }
 
         # search request
-        head = {"Authorization": "Bearer " + token[0]}
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": "isogeo-pysdk/2.19.451"}
         keywords_url = "{}://v1.{}.isogeo.com/groups/{}/keywords/search"\
                        .format(prot,
                                self.base_url,
@@ -718,7 +729,8 @@ class Isogeo(object):
         payload = {'proxyUrl': proxy_url}
 
         # resource search
-        head = {"Authorization": "Bearer " + token[0]}
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": "isogeo-pysdk/2.19.451"}
         hosted_url = "{}://v1.{}.isogeo.com/resources/{}/links/{}.bin"\
                      .format(prot,
                              self.base_url,
@@ -759,7 +771,8 @@ class Isogeo(object):
                    }
 
         # resource search
-        head = {"Authorization": "Bearer " + token[0]}
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": "isogeo-pysdk/2.19.451"}
         md_url = "{}://v1.{}.isogeo.com/resources/{}.xml".format(prot,
                                                                  self.base_url,
                                                                  id_resource)
