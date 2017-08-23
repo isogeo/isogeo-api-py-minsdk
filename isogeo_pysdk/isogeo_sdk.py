@@ -457,7 +457,6 @@ class Isogeo(object):
         # end of method
         return share_req.json()
 
-
     # -- LICENCES ---------------------------------------------
     def licenses(self, token, owner_id, prot="https"):
         """Get information about licenses owned by a specific workgroup."""
@@ -956,7 +955,7 @@ class Isogeo(object):
         logging.debug(li_args)
         # li_filters = [i.split(":")[0] for i in li_args]
         # li_values = [i.split(":")[1:] for i in li_args]
-        dico_filters = {i.split(":")[0] : i.split(":")[1:] for i in li_args}
+        dico_filters = {i.split(":")[0]: i.split(":")[1:] for i in li_args}
         print(dico_filters)
 
         # Unicity
@@ -1020,7 +1019,6 @@ if __name__ == '__main__':
                            # sub_resources='all',
                            # sub_resources=["conditions", "contacts"],
                            # sub_resources=isogeo.SUBRESOURCES,
-                           # query="keyword:isogeo:2015",
+                           query="keyword:isogeo:2015\
+                                  type:dataset",
                            prot='https')
-
-
