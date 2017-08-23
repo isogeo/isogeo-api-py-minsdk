@@ -20,6 +20,7 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 import locale
 import logging
 import socket
+from collections import Counter
 from math import ceil
 import re
 from six import string_types
@@ -66,6 +67,13 @@ class Isogeo(object):
                     "operations",
                     "serviceLayers",
                     "specifications"
+                    ]
+
+    FILTER_TYPES = ["dataset",
+                    "raster-dataset",
+                    "vector-dataset",
+                    "resource",
+                    "service"
                     ]
 
     GEORELATIONS = ["contains",
@@ -309,6 +317,8 @@ class Isogeo(object):
                    'q': query,
                    's': share,
                    }
+
+        self.check_request_parameters(payload)
 
         # search request
         head = {"Authorization": "Bearer " + token[0]}
@@ -864,6 +874,34 @@ class Isogeo(object):
             pass
         # end of method
         return False
+
+    def check_request_parameters(self, parameters={}):
+        """Check paramaters passed to avoid errors and help debug."""
+        # FILTERS
+        li_args = parameters.get("q").split()
+        logging.debug(li_args)
+        # li_filters = [i.split(":")[0] for i in li_args]
+        # li_values = [i.split(":")[1:] for i in li_args]
+        dico_filters = {i.split(":")[0] : i.split(":")[1:] for i in li_args}
+        print(dico_filters)
+
+        # Unicity
+        filters_count = Counter(dico_filters.keys())
+        li_filters_must_be_unique = ("coordinate-system",
+                                     "format",
+                                     "owner",
+                                     "type")
+
+        for i in filters_count:
+            if i in li_filters_must_be_unique and filters_count.get(i) > 1:
+                raise ValueError("This query filter must be unique: {}"
+                                 .format(i))
+
+        # Values
+        if dico_filters.get("type")[0].lower() not in self.FILTER_TYPES:
+            raise ValueError("type value must be one of: {}"
+                             .format(" | ".join(self.FILTER_TYPES)))
+
 
 # ##############################################################################
 # ##### Stand alone program ########
