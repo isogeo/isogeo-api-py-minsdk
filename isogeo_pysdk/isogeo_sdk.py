@@ -457,6 +457,64 @@ class Isogeo(object):
         # end of method
         return share_req.json()
 
+
+    # -- LICENCES ---------------------------------------------
+    def licenses(self, token, owner_id, prot="https"):
+        """Get information about licenses owned by a specific workgroup."""
+        # checking bearer validity
+        token = self.check_bearer_validity(token)
+
+        # handling request parameters
+        payload = {'gid': owner_id,
+                   }
+
+        # search request
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": "isogeo-pysdk/2.19.451"}
+        licenses_url = "{}://v1.{}.isogeo.com/groups/{}/licenses"\
+                       .format(prot,
+                               self.base_url,
+                               owner_id
+                               )
+        licenses_req = requests.get(licenses_url,
+                                    headers=head,
+                                    params=payload,
+                                    proxies=self.proxies)
+
+        # checking response
+        self.check_api_response(licenses_req)
+
+        # end of method
+        return licenses_req.json()
+
+    def license(self, token, license_id, prot="https"):
+        """Get details about a specific license."""
+        # checking bearer validity
+        token = self.check_bearer_validity(token)
+
+        # handling request parameters
+        payload = {'lid': license_id,
+                   }
+
+        # search request
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": "isogeo-pysdk/2.19.451"}
+        license_url = "{}://v1.{}.isogeo.com/licenses/{}"\
+                      .format(prot,
+                              self.base_url,
+                              license_id
+                              )
+        license_req = requests.get(license_url,
+                                   headers=head,
+                                   params=payload,
+                                   proxies=self.proxies)
+
+        # checking response
+        self.check_api_response(license_req)
+
+        # end of method
+        return license_req.json()
+
     # -- KEYWORDS -----------------------------------------------------------
 
     def thesauri(self, token, prot="https"):
