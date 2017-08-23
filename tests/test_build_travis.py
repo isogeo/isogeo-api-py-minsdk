@@ -88,7 +88,6 @@ my_resource = isogeo.resource(token,
 print("\nAPI response keys for a specific metadata search: ",
       sorted(my_resource.keys()))
 
-
 # -- ADVANCED SEARCHES ---------------------------------------------------------
 # get 10 last data modified
 latest_data_modified = isogeo.search(token,
@@ -97,14 +96,9 @@ latest_data_modified = isogeo.search(token,
                                      whole_share=0,
                                      sub_resources=["events"])
 
-print("\nLast 10 data updated \nTitle | datetime\n\t description")
 for md in latest_data_modified.get("results"):
     title = md.get('title')
     evt_description = md.get("events")[0].get("description")
-    print(str("___________________\n\n{} | {} \n\t {}").
-          format(title.encode("utf8"),
-                 dtparse(md.get("modified")[:19]).strftime("%a %d %B %Y"),
-                 evt_description.encode("utf8")))
 
 # filter on IDs list
 specific_ids = isogeo.search(token,
