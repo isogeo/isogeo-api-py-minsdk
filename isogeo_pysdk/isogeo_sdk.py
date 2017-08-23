@@ -876,9 +876,12 @@ class Isogeo(object):
             pass
         elif response.status_code >= 400:
             logging.error("Something's wrong Houston, check settings again!")
-            logging.error("{}: {} - {}".format(response.status_code,
-                                               response.reason,
-                                               response.json().get("error")))
+            # logging.error(dir(response.request))
+            logging.error("{}: {} - {} - URL: {}"
+                          .format(response.status_code,
+                                  response.reason,
+                                  response.json().get("error"),
+                                  response.request.url))
             # logging.error(dir(response))
             return 0, response.status_code
         else:
