@@ -138,6 +138,14 @@ Shares  ( GET /shares )
 - [X] list accessible shares
 - [X] specific share ( GET /shares/sid )
 
+Licenses  ( GET /licenses )
+----------------------------------------------
+
+- [X] list licenses of a workgroup
+- [X] details on a specific license ( GET /license/lid )
+
+These requests are not publicly available.
+
 Miscellaneous & bonus
 ----------------------
 
@@ -149,4 +157,5 @@ Miscellaneous & bonus
 - [X] additional search parameter to automatically get full results without have to iterate with _limit and _offset
 - [X] option (`ALL`) to quickly get every subresources through _include parameter
 - [X] method to easily download Isogeo hosted data
+- [/] automatic check on values passed into query parameter to the API - *Work in progress*
 - [-] handle proxies setting (only for basic auth - not PAC nor NTLM)
