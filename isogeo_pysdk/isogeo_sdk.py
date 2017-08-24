@@ -971,7 +971,7 @@ class Isogeo(object):
                                  .format(i))
 
         # Values
-        if dico_filters.get("type")[0].lower() not in self.FILTER_TYPES:
+        if dico_filters.get("type", ("dataset",))[0].lower() not in self.FILTER_TYPES:
             raise ValueError("type value must be one of: {}"
                              .format(" | ".join(self.FILTER_TYPES)))
 
