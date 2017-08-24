@@ -8,10 +8,10 @@ cache: pip
 # command to install dependencies!
 install:
   - "pip install -r requirements.txt"
-  - "pip install --upgrade python-dateutil pep8"
+  # - "pip install --upgrade python-dateutil pep8"
   - "pip install git+https://github.com/Guts/isogeo-api-py-minsdk"
 
 # command to run tests!
 script:
-  - python tests/test_build_travis.py
+  - python -m unittest discover
   - pep8 isogeo_pysdk/isogeo_sdk.py --ignore="E265,E501" --statistics --show-source
