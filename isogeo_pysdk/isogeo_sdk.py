@@ -32,8 +32,10 @@ import requests
 
 # modules
 try:
+    from . import checker
     from . import translator
 except (ValueError, SystemError):
+    import checker
     import translator
 
 # #############################################################################
@@ -68,6 +70,21 @@ class Isogeo(object):
                     "serviceLayers",
                     "specifications"
                     ]
+
+    FILTER_KEYS = {"action": [],
+                   "catalog": [],
+                   "contact:group": [],
+                   "contact:isogeo": [],
+                   "coordinate-system": [],
+                   "format": [],
+                   "has-no": [],
+                   "keyword:isogeo": [],
+                   "keyword:inspire-theme": [],
+                   "license:group": [],
+                   "license:isogeo": [],
+                   "owner": [],
+                   "text": [],
+                   "type": []}
 
     FILTER_TYPES = ["dataset",
                     "raster-dataset",
@@ -251,7 +268,8 @@ class Isogeo(object):
                specific_md=None,
                sub_resources=None,
                whole_share=True,
-               prot="https"):
+               prot="https",
+               check=True):
         r"""Search request.
 
         Keyword arguments:
@@ -320,7 +338,10 @@ class Isogeo(object):
                    's': share,
                    }
 
-        self.check_request_parameters(payload)
+        if check:
+            self.check_request_parameters(payload)
+        else:
+            pass
 
         # search request
         head = {"Authorization": "Bearer " + token[0],
@@ -949,17 +970,15 @@ class Isogeo(object):
         return False
 
     def check_request_parameters(self, parameters={}):
-        """Check paramaters passed to avoid errors and help debug."""
+        """Check parameters passed to avoid errors and help debug."""
         # FILTERS
         li_args = parameters.get("q").split()
         logging.debug(li_args)
-        # li_filters = [i.split(":")[0] for i in li_args]
         # li_values = [i.split(":")[1:] for i in li_args]
-        dico_filters = {i.split(":")[0]: i.split(":")[1:] for i in li_args}
-        print(dico_filters)
 
         # Unicity
-        filters_count = Counter(dico_filters.keys())
+        li_filters = [i.split(":")[0] for i in li_args]
+        filters_count = Counter(li_filters)
         li_filters_must_be_unique = ("coordinate-system",
                                      "format",
                                      "owner",
@@ -968,12 +987,62 @@ class Isogeo(object):
         for i in filters_count:
             if i in li_filters_must_be_unique and filters_count.get(i) > 1:
                 raise ValueError("This query filter must be unique: {}"
-                                 .format(i))
+                                 " and it occured {} times."
+                                 .format(i, filters_count.get(i)))
+
+        # dict
+        dico_query = self.FILTER_KEYS.copy()
+        for i in li_args:
+            if i.startswith("action"):
+                dico_query["action"].append(i.split(":")[1:][0])
+                continue
+            elif i.startswith("catalog"):
+                dico_query["catalog"].append(i.split(":")[1:][0])
+                continue
+            elif i.startswith("contact") and i.split(":")[1] == "group":
+                dico_query["contact:group"].append(i.split(":")[1:][1])
+                continue
+            elif i.startswith("contact"):
+                dico_query["contact:isogeo"].append(i.split(":", 1)[1])
+                continue
+            elif i.startswith("coordinate-system"):
+                dico_query["coordinate-system"].append(i.split(":")[1:][0])
+                continue
+            elif i.startswith("format"):
+                dico_query["format"].append(i.split(":")[1:][0])
+                continue
+            elif i.startswith("has-no"):
+                dico_query["has-no"].append(i.split(":")[1:][0])
+                continue
+            elif i.startswith("keyword:isogeo"):
+                dico_query["keyword:isogeo"].append(i.split(":")[1:][1])
+                continue
+            elif i.startswith("keyword:inspire-theme"):
+                dico_query["keyword:inspire-theme"].append(i.split(":")[1:][1])
+                continue
+            elif i.startswith("license:isogeo"):
+                dico_query["license:isogeo"].append(i.split(":")[1:][1:])
+                continue
+            elif i.startswith("license"):
+                dico_query["license:group"].append(i.split(":", 1)[1:][0:])
+                continue
+            elif i.startswith("owner"):
+                dico_query["owner"].append(i.split(":")[1:][0])
+                continue
+            elif i.startswith("type"):
+                dico_query["type"].append(i.split(":")[1:][0])
+                continue
+            else:
+                print(i.split(":")[1], i.split(":")[1].isdigit())
+                dico_query["text"].append(i)
+                pass
 
         # Values
+        dico_filters = {i.split(":")[0]: i.split(":")[1:] for i in li_args}
         if dico_filters.get("type", ("dataset",))[0].lower() not in self.FILTER_TYPES:
             raise ValueError("type value must be one of: {}"
                              .format(" | ".join(self.FILTER_TYPES)))
+        logging.debug(dico_filters)
 
 
 # ##############################################################################
@@ -985,6 +1054,11 @@ if __name__ == '__main__':
     # ------------ Specific imports ----------------
     import configparser    # to manage options.ini
     from os import path
+
+    # ------------ Log & debug ----------------
+    logger = logging.getLogger()
+    logging.captureWarnings(True)
+    logger.setLevel(logging.WARNING)
 
     # ------------ Settings from ini file ----------------
     settings_file = r"isogeo_params.ini"

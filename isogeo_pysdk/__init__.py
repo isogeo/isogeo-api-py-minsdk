@@ -7,6 +7,7 @@
 """
 
 from .isogeo_sdk import Isogeo
+from .checker import IsogeoChecker
 from .translator import IsogeoTranslator
 
 __version__ = "2.18.1.2"
