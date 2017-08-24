@@ -62,7 +62,7 @@ class AuthBadCodes(unittest.TestCase):
         bearer = isogeo.connect()
         self.assertIsInstance(bearer, tuple)
         self.assertEqual(len(bearer), 2)
-        self.assertIsInstance(bearer[0], unicode)
+        self.assertIsInstance(bearer[0], basestring)
         self.assertIsInstance(bearer[1], int)
 
 # #############################################################################
