@@ -24,8 +24,6 @@ from random import randrange
 from isogeo_pysdk import Isogeo
 from isogeo_pysdk import IsogeoTranslator
 
-# 3rd party library
-from dateutil.parser import parse as dtparse
 
 # #############################################################################
 # ######## Main program ############
@@ -38,7 +36,7 @@ share_token = environ.get('ISOGEO_API_DEV_SECRET')
 # instanciating the class
 isogeo = Isogeo(client_id=share_id,
                 client_secret=share_token)
-print("\nIsogeo class methods: ", dir(isogeo))
+
 print("Available _include values: ", isogeo.SUBRESOURCES)
 
 # API Version
@@ -65,15 +63,6 @@ print("Count of metadatas shared: ", search.get("total"))
 print("Count of resources got by request: {}\n"
       .format(len(search.get("results"))))
 
-assert(type(search) != str)
-assert(type(search) == dict)
-assert("envelope" in list(search.keys()))
-assert("limit" in list(search.keys()))
-assert("offset" in list(search.keys()))
-assert("query" in list(search.keys()))
-assert("results" in list(search.keys()))
-assert("tags" in list(search.keys()))
-assert("total" in list(search.keys()))
 assert(type(search.get("results")) == list)
 
 # -- FULL SPECIFIC METADATA --------------------------------------------------
@@ -88,7 +77,7 @@ my_resource = isogeo.resource(token,
 print("\nAPI response keys for a specific metadata search: ",
       sorted(my_resource.keys()))
 
-# -- ADVANCED SEARCHES ---------------------------------------------------------
+# -- ADVANCED SEARCHES -------------------------------------------------------
 # get 10 last data modified
 latest_data_modified = isogeo.search(token,
                                      page_size=10,
@@ -106,7 +95,7 @@ specific_ids = isogeo.search(token,
                              page_size=10,
                              sub_resources="all")
 
-print(specific_ids.get("results"))
+# print(specific_ids.get("results"))
 
 # -- SHARES -----------------------------------------------------------
 # shares information

@@ -7,66 +7,61 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # ##################################
 
 # Standard library
-import ConfigParser     # to manage options.ini
-from os import path
+from os import environ
 import unittest
- 
+
 # module target
-from isogeo_pysdk import Isogeo
+from isogeo_pysdk import Isogeo, __version__ as pysdk_version
+
+
+# #############################################################################
+# ######## Globals #################
+# ##################################
+
+# API access
+share_id = environ.get('ISOGEO_API_DEV_ID')
+share_token = environ.get('ISOGEO_API_DEV_SECRET')
 
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 
-class TestIsogeo(unittest.TestCase):
 
-    # ------------ Basic methods ---------------------------------------------
+class Search(unittest.TestCase):
+    """Test search to Isogeo API."""
+    print('Isogeo PySDK version: {0}'.format(pysdk_version))
+
+    # standard methods
     def setUp(self):
-        """Before"""
-        # reading config file
-        settings_file = "../isogeo_pysdk/isogeo_params.ini"
-        if not path.isfile(settings_file):
-            return
-        else:
-            pass
-        config = ConfigParser.SafeConfigParser()
-        config.read(settings_file)
-        self.share_id = config.get('auth', 'app_id')
-        self.share_token = config.get('auth', 'app_secret')
+        """Executed before each test."""
+        self.isogeo = Isogeo(client_id=share_id,
+                             client_secret=share_token)
+        self.bearer = self.isogeo.connect()
 
-        self.isogeo = Isogeo(client_id=self.share_id,
-                             client_secret=self.share_token)
-        self.jeton = self.isogeo.connect()
-     
     def tearDown(self):
-        """After"""
-        # print("Cleaned up!")
+        """Executed after each test."""
+        pass
 
-    # ------------ Tests methods ---------------------------------------------
-
-    def test_authentication(self):
-        """Authentication and connection to Isogeo API"""
-        # jeton = isogeo.connect()
-
-    def test_connection(self):
-        """Authentication and connection to Isogeo API"""
-        self.jeton = self.isogeo.connect()
-
+    # tests
     def test_search(self):
-        """Isogeo API search"""
-        search_empty = self.isogeo.search(self.jeton)
- 
-        assert(type(search_empty) != unicode)
-        assert(type(search_empty) == dict)
-        assert("envelope" in search_empty.keys())
-        assert("limit" in search_empty.keys())
-        assert("offset" in search_empty.keys())
-        assert("query" in search_empty.keys())
-        assert("results" in search_empty.keys())
-        assert("tags" in search_empty.keys())
-        assert("total" in search_empty.keys())
-        assert(type(search_empty.get("results")) == list)
- 
+        """Basic search."""
+        search = self.isogeo.search(self.bearer)
+        self.assertIsInstance(search, dict)
+        self.assertIn("envelope", search)
+        self.assertIn("limit", search)
+        self.assertIn("offset", search)
+        self.assertIn("query", search)
+        self.assertIn("results", search)
+        self.assertIn("tags", search)
+        self.assertIn("total", search)
+
+    def test_bad_parameter_search(self):
+        """Search with bad parameter."""
+        with self.assertRaises(ValueError):
+            self.isogeo.search(self.bearer,
+                               query="type:youpi")
+
+
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
