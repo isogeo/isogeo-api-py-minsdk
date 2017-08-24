@@ -61,6 +61,18 @@ class Search(unittest.TestCase):
             self.isogeo.search(self.bearer,
                                query="type:youpi")
 
+    def test_parameter_not_unique_search(self):
+        """SDK raises error for search with a parameter that must be unique."""
+        with self.assertRaises(ValueError):
+            self.isogeo.search(self.bearer,
+                               query="type:vector-dataset type:raster-dataset")
+            self.isogeo.search(self.bearer,
+                               query="format:shp format:dwg")
+            self.isogeo.search(self.bearer,
+                               query="coordinate-system:32517 coordinate-system:4326")
+            self.isogeo.search(self.bearer,
+                               query="owner:32f7e95ec4e94ca3bc1afda960003882 owner:08b3054757544463abd06f3ab51ee491")
+
 
 # ##############################################################################
 # ##### Stand alone program ########

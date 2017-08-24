@@ -57,7 +57,7 @@ class AuthBadCodes(unittest.TestCase):
             isogeo.connect()
 
     def test_successed_auth(self):
-        """Bad API ID and secret."""
+        """When a search works, check the response structure."""
         isogeo = Isogeo(client_id=share_id,
                         client_secret=share_token)
         bearer = isogeo.connect()
