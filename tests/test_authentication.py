@@ -12,6 +12,7 @@ import unittest
 
 # Isogeo
 from isogeo_pysdk import Isogeo, __version__ as pysdk_version
+from six import string_types
 
 # #############################################################################
 # ######## Globals #################
@@ -62,7 +63,7 @@ class AuthBadCodes(unittest.TestCase):
         bearer = isogeo.connect()
         self.assertIsInstance(bearer, tuple)
         self.assertEqual(len(bearer), 2)
-        self.assertIsInstance(bearer[0], basestring)
+        self.assertIsInstance(bearer[0], string_types)
         self.assertIsInstance(bearer[1], int)
 
 # #############################################################################
