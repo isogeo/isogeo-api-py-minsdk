@@ -130,7 +130,7 @@ class Isogeo(object):
             'http://martin:p4ssW0rde@10.1.68.1:5678'})
         """
         super(Isogeo, self).__init__()
-        self.id = client_id
+        self.app_id = client_id
         self.ct = client_secret
 
         # checking internet connection
@@ -213,7 +213,7 @@ class Isogeo(object):
         """
         # instanciated or direct call
         if not client_id and not client_secret:
-            client_id = self.id
+            client_id = self.app_id
             client_secret = self.ct
         else:
             pass
@@ -306,7 +306,7 @@ class Isogeo(object):
         see: https://goo.gl/V3iB9R
         """
         # checking bearer validity
-        token = checker.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # specific resources specific parsing
         if type(specific_md) is list and len(specific_md) > 0:
@@ -405,7 +405,7 @@ class Isogeo(object):
         prot -- https [DEFAULT] or http (useful for development and tracking requests).
         """
         # checking bearer validity
-        token = checker.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # sub resources specific parsing
         if isinstance(sub_resources, string_types) and sub_resources.lower() == "all":
@@ -445,7 +445,7 @@ class Isogeo(object):
     def shares(self, token, prot="https"):
         """Get information about shares which feed the application."""
         # checking bearer validity
-        token = checker.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + token[0],
@@ -465,7 +465,7 @@ class Isogeo(object):
     def share(self, token, share_id, prot="https"):
         """Get information about a specific share and its applications."""
         # checking bearer validity
-        token = checker.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + token[0],
@@ -487,7 +487,7 @@ class Isogeo(object):
     def licenses(self, token, owner_id, prot="https"):
         """Get information about licenses owned by a specific workgroup."""
         # checking bearer validity
-        token = checker.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # handling request parameters
         payload = {'gid': owner_id,
@@ -515,7 +515,7 @@ class Isogeo(object):
     def license(self, token, license_id, prot="https"):
         """Get details about a specific license."""
         # checking bearer validity
-        token = checker.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # handling request parameters
         payload = {'lid': license_id,
@@ -545,7 +545,7 @@ class Isogeo(object):
     def thesauri(self, token, prot="https"):
         """Get list of available thesauri."""
         # checking bearer validity
-        token = checker.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + token[0],
@@ -565,7 +565,7 @@ class Isogeo(object):
     def thesaurus(self, token, thez_id="1616597fbc4348c8b11ef9d59cf594c8", prot="https"):
         """Get a thesaurus."""
         # checking bearer validity
-        token = checker.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # handling request parameters
         payload = {'tid': thez_id,
@@ -595,7 +595,7 @@ class Isogeo(object):
                  prot="https"):
         """Search for specified keywords."""
         # checking bearer validity
-        token = checker.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # specific tags specific parsing
         if type(specific_tag) is list and len(specific_tag) > 0:
@@ -655,7 +655,7 @@ class Isogeo(object):
                            prot="https"):
         """Search for keywords within a specific thesaurus."""
         # checking bearer validity
-        token = checker.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # specific resources specific parsing
         if type(specific_md) is list and len(specific_md) > 0:
@@ -731,7 +731,7 @@ class Isogeo(object):
                            prot="https"):
         """Search for keywords within a specific workgroup."""
         # checking bearer validity
-        token = checker.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # specific resources specific parsing
         if type(specific_md) is list and len(specific_md) > 0:
@@ -806,7 +806,7 @@ class Isogeo(object):
             return "Error: resource link passed is not valid or not a hosted one."
 
         # checking bearer validity
-        token = checker.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # handling request parameters
         payload = {'proxyUrl': proxy_url}
@@ -846,7 +846,7 @@ class Isogeo(object):
     def xml19139(self, token, id_resource, proxy_url=None, prot="https"):
         """Get resource exported into XML ISO 19139."""
         # checking bearer validity
-        token = checker.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # handling request parameters
         payload = {'proxyUrl': proxy_url,

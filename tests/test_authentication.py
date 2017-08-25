@@ -11,7 +11,7 @@ from os import environ
 import unittest
 
 # Isogeo
-from isogeo_pysdk import Isogeo, __version__ as pysdk_version
+from isogeo_pysdk import Isogeo, IsogeoChecker, __version__ as pysdk_version
 from six import string_types
 
 # #############################################################################
@@ -21,6 +21,8 @@ from six import string_types
 # API access
 share_id = environ.get('ISOGEO_API_DEV_ID')
 share_token = environ.get('ISOGEO_API_DEV_SECRET')
+
+checker = IsogeoChecker()
 
 # #############################################################################
 # ######## Classes #################
@@ -65,6 +67,29 @@ class AuthBadCodes(unittest.TestCase):
         self.assertEqual(len(bearer), 2)
         self.assertIsInstance(bearer[0], string_types)
         self.assertIsInstance(bearer[1], int)
+
+    def test_checker_validity_bearer_valid(self):
+        """When a search works, check the response structure."""
+        isogeo = Isogeo(client_id=share_id,
+                        client_secret=share_token)
+        bearer = isogeo.connect()
+        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect()), tuple)
+        self.assertEqual(len(checker.check_bearer_validity(bearer, isogeo.connect())), 2)
+        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect())[0],
+                              string_types)
+        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect())[1], int)
+
+    def test_checker_validity_bearer_expired(self):
+        """When a search works, check the response structure."""
+        isogeo = Isogeo(client_id=share_id,
+                        client_secret=share_token)
+        bearer = isogeo.connect()
+        bearer = (bearer[0], 50)
+        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect()), tuple)
+        self.assertEqual(len(checker.check_bearer_validity(bearer, isogeo.connect())), 2)
+        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect())[0],
+                              string_types)
+        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect())[1], int)
 
 # #############################################################################
 # ######## Standalone ##############

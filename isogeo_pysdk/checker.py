@@ -77,7 +77,7 @@ class IsogeoChecker(object):
         # end of method
         return False
 
-    def check_bearer_validity(self, token):
+    def check_bearer_validity(self, token, connect_mtd):
         """Check API Bearer token validity.
 
         Isogeo ID delivers authentication bearers which are valid during
@@ -90,7 +90,7 @@ class IsogeoChecker(object):
         FI: 24h = 86400 seconds, 30 mn = 1800, 5 mn = 300
         """
         if token[1] < 60:
-            token = self.connect(self.id, self.ct)
+            token = connect_mtd
             logging.debug("Token was about to expire, so has been renewed.")
         else:
             logging.debug("Token is still valid.")
