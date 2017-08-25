@@ -19,8 +19,6 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # Standard library
 import locale
 import logging
-import socket
-from collections import Counter
 from math import ceil
 import re
 from six import string_types
@@ -38,11 +36,18 @@ except (ValueError, SystemError):
     import checker
     import translator
 
+# ##############################################################################
+# ########## Globals ###############
+# ##################################
+
+checker = checker.IsogeoChecker()
+version = "2.18.1.2"
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 
-__all__ = ['Isogeo', 'IsogeoTranslator']
+__all__ = ["Isogeo", "IsogeoTranslator", "IsogeoChecker"]
 
 
 class Isogeo(object):
@@ -57,7 +62,7 @@ class Isogeo(object):
                 "qa": "api.qa"
                 }
 
-    SUBRESOURCES = ["conditions",
+    SUBRESOURCES = ("conditions",
                     "contacts",
                     "coordinate-system",
                     "events",
@@ -69,7 +74,7 @@ class Isogeo(object):
                     "operations",
                     "serviceLayers",
                     "specifications"
-                    ]
+                    )
 
     FILTER_KEYS = {"action": [],
                    "catalog": [],
@@ -86,20 +91,20 @@ class Isogeo(object):
                    "text": [],
                    "type": []}
 
-    FILTER_TYPES = ["dataset",
+    FILTER_TYPES = ("dataset",
                     "raster-dataset",
                     "vector-dataset",
                     "resource",
                     "service"
-                    ]
+                    )
 
-    GEORELATIONS = ["contains",
+    GEORELATIONS = ("contains",
                     "disjoint",
                     "equal",
                     "intersects",
                     "overlaps",
                     "within"
-                    ]
+                    )
 
     THESAURI_DICT = {"isogeo": "1616597fbc4348c8b11ef9d59cf594c8",
                      "inspire-theme": "926c676c380046d7af99bcae343ac813",
@@ -129,7 +134,7 @@ class Isogeo(object):
         self.ct = client_secret
 
         # checking internet connection
-        if self.check_internet_connection:
+        if checker.check_internet_connection:
             logging.info("Your're connected to the world!")
         else:
             logging.error("Internet connection doesn't work.")
@@ -218,7 +223,7 @@ class Isogeo(object):
         # using Client Credentials Grant method
         # see: http://tools.ietf.org/html/rfc6749#section-4.4
         payload = {"grant_type": "client_credentials"}
-        head = {"user-agent": "python-sdk/2.19.451"}
+        head = {"user-agent": "isogeo-pysdk/{}".format(version)}
 
         # passing request to get a 24h bearer
         # see: http://tools.ietf.org/html/rfc6750#section-2
@@ -240,7 +245,7 @@ class Isogeo(object):
                                  verify=False)
 
         # just a fast check
-        check_params = self.check_api_response(conn)
+        check_params = checker.check_api_response(conn)
         if check_params == 1:
             pass
         elif type(check_params) == tuple and len(check_params) == 2:
@@ -301,7 +306,7 @@ class Isogeo(object):
         see: https://goo.gl/V3iB9R
         """
         # checking bearer validity
-        token = self.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token)
 
         # specific resources specific parsing
         if type(specific_md) is list and len(specific_md) > 0:
@@ -339,13 +344,13 @@ class Isogeo(object):
                    }
 
         if check:
-            self.check_request_parameters(payload)
+            checker.check_request_parameters(payload)
         else:
             pass
 
         # search request
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "python-sdk/2.19.451"}
+                "user-agent": "isogeo-pysdk/{}".format(version)}
         search_url = "{}://v1.{}.isogeo.com/resources/search".format(prot,
                                                                      self.base_url)
         try:
@@ -361,7 +366,7 @@ class Isogeo(object):
                                       proxies=self.proxies,
                                       verify=False)
         # fast response check
-        self.check_api_response(search_req)
+        checker.check_api_response(search_req)
 
         # serializing result into dict and storing resources in variables
         search_rez = search_req.json()
@@ -400,7 +405,7 @@ class Isogeo(object):
         prot -- https [DEFAULT] or http (useful for development and tracking requests).
         """
         # checking bearer validity
-        token = self.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token)
 
         # sub resources specific parsing
         if isinstance(sub_resources, string_types) and sub_resources.lower() == "all":
@@ -430,7 +435,7 @@ class Isogeo(object):
                                     params=payload,
                                     proxies=self.proxies
                                     )
-        self.check_api_response(resource_req)
+        checker.check_api_response(resource_req)
 
         # end of method
         return resource_req.json()
@@ -440,7 +445,7 @@ class Isogeo(object):
     def shares(self, token, prot="https"):
         """Get information about shares which feed the application."""
         # checking bearer validity
-        token = self.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token)
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + token[0],
@@ -452,7 +457,7 @@ class Isogeo(object):
                                   proxies=self.proxies)
 
         # checking response
-        self.check_api_response(shares_req)
+        checker.check_api_response(shares_req)
 
         # end of method
         return shares_req.json()
@@ -460,7 +465,7 @@ class Isogeo(object):
     def share(self, token, share_id, prot="https"):
         """Get information about a specific share and its applications."""
         # checking bearer validity
-        token = self.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token)
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + token[0],
@@ -473,7 +478,7 @@ class Isogeo(object):
                                  proxies=self.proxies)
 
         # checking response
-        self.check_api_response(share_req)
+        checker.check_api_response(share_req)
 
         # end of method
         return share_req.json()
@@ -482,7 +487,7 @@ class Isogeo(object):
     def licenses(self, token, owner_id, prot="https"):
         """Get information about licenses owned by a specific workgroup."""
         # checking bearer validity
-        token = self.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token)
 
         # handling request parameters
         payload = {'gid': owner_id,
@@ -502,7 +507,7 @@ class Isogeo(object):
                                     proxies=self.proxies)
 
         # checking response
-        self.check_api_response(licenses_req)
+        checker.check_api_response(licenses_req)
 
         # end of method
         return licenses_req.json()
@@ -510,7 +515,7 @@ class Isogeo(object):
     def license(self, token, license_id, prot="https"):
         """Get details about a specific license."""
         # checking bearer validity
-        token = self.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token)
 
         # handling request parameters
         payload = {'lid': license_id,
@@ -530,7 +535,7 @@ class Isogeo(object):
                                    proxies=self.proxies)
 
         # checking response
-        self.check_api_response(license_req)
+        checker.check_api_response(license_req)
 
         # end of method
         return license_req.json()
@@ -540,7 +545,7 @@ class Isogeo(object):
     def thesauri(self, token, prot="https"):
         """Get list of available thesauri."""
         # checking bearer validity
-        token = self.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token)
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + token[0],
@@ -552,7 +557,7 @@ class Isogeo(object):
                                 proxies=self.proxies)
 
         # checking response
-        self.check_api_response(thez_req)
+        checker.check_api_response(thez_req)
 
         # end of method
         return thez_req.json()
@@ -560,7 +565,7 @@ class Isogeo(object):
     def thesaurus(self, token, thez_id="1616597fbc4348c8b11ef9d59cf594c8", prot="https"):
         """Get a thesaurus."""
         # checking bearer validity
-        token = self.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token)
 
         # handling request parameters
         payload = {'tid': thez_id,
@@ -578,7 +583,7 @@ class Isogeo(object):
                                 proxies=self.proxies)
 
         # checking response
-        self.check_api_response(thez_req)
+        checker.check_api_response(thez_req)
 
         # end of method
         return thez_req.json()
@@ -590,7 +595,7 @@ class Isogeo(object):
                  prot="https"):
         """Search for specified keywords."""
         # checking bearer validity
-        token = self.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token)
 
         # specific tags specific parsing
         if type(specific_tag) is list and len(specific_tag) > 0:
@@ -631,7 +636,7 @@ class Isogeo(object):
                                 proxies=self.proxies)
 
         # checking response
-        self.check_api_response(kwds_req)
+        checker.check_api_response(kwds_req)
 
         # end of method
         return kwds_req.json()
@@ -650,7 +655,7 @@ class Isogeo(object):
                            prot="https"):
         """Search for keywords within a specific thesaurus."""
         # checking bearer validity
-        token = self.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token)
 
         # specific resources specific parsing
         if type(specific_md) is list and len(specific_md) > 0:
@@ -706,7 +711,7 @@ class Isogeo(object):
                                 proxies=self.proxies)
 
         # checking response
-        self.check_api_response(kwds_req)
+        checker.check_api_response(kwds_req)
 
         # end of method
         return kwds_req.json()
@@ -726,7 +731,7 @@ class Isogeo(object):
                            prot="https"):
         """Search for keywords within a specific workgroup."""
         # checking bearer validity
-        token = self.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token)
 
         # specific resources specific parsing
         if type(specific_md) is list and len(specific_md) > 0:
@@ -783,7 +788,7 @@ class Isogeo(object):
                                 proxies=self.proxies)
 
         # checking response
-        self.check_api_response(kwds_req)
+        checker.check_api_response(kwds_req)
 
         # end of method
         return kwds_req.json()
@@ -801,7 +806,7 @@ class Isogeo(object):
             return "Error: resource link passed is not valid or not a hosted one."
 
         # checking bearer validity
-        token = self.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token)
 
         # handling request parameters
         payload = {'proxyUrl': proxy_url}
@@ -841,7 +846,7 @@ class Isogeo(object):
     def xml19139(self, token, id_resource, proxy_url=None, prot="https"):
         """Get resource exported into XML ISO 19139."""
         # checking bearer validity
-        token = self.check_bearer_validity(token)
+        token = checker.check_bearer_validity(token)
 
         # handling request parameters
         payload = {'proxyUrl': proxy_url,
@@ -865,50 +870,6 @@ class Isogeo(object):
         return xml_req
 
     # -- UTILITIES -----------------------------------------------------------
-
-    def check_bearer_validity(self, token):
-        """Check API Bearer token validity.
-
-        Isogeo ID delivers authentication bearers which are valid during
-        24h, so this method checks the validity of the token (token in French)
-        with a 30 mn anticipation limit, and renews it if necessary.
-
-        token = must be a tuple like (bearer, expiration_date)
-
-        see: http://tools.ietf.org/html/rfc6750#section-2
-        FI: 24h = 86400 seconds, 30 mn = 1800, 5 mn = 300
-        """
-        if token[1] < 60:
-            token = self.connect(self.id, self.ct)
-            logging.debug("Bearer was about to expire, so has been renewed."
-                          " Just go on!")
-        else:
-            logging.debug("Bearer is still valid. Just go on!")
-            pass
-
-        # end of method
-        return token
-
-    def check_api_response(self, response):
-        """Check API response and raise exceptions if needed."""
-        if response.status_code == 200:
-            logging.debug("Everything is OK dude, just go on!")
-            pass
-        elif response.status_code >= 400:
-            logging.error("Something's wrong Houston, check settings again!")
-            # logging.error(dir(response.request))
-            logging.error("{}: {} - {} - URL: {}"
-                          .format(response.status_code,
-                                  response.reason,
-                                  response.json().get("error"),
-                                  response.request.url))
-            # logging.error(dir(response))
-            return 0, response.status_code
-        else:
-            pass
-
-        # end of method
-        return 1
 
     def get_isogeo_version(self, component="api", prot="https"):
         """Get Isogeo components versions. No need for authentication."""
@@ -946,104 +907,10 @@ class Isogeo(object):
                                        verify=False
                                        )
         # checking response
-        self.check_api_response(version_req)
+        checker.check_api_response(version_req)
 
         # end of method
         return version_req.json().get("version")
-
-    def check_internet_connection(self, remote_server="www.isogeo.com"):
-        """Test if an internet connection is operational.
-
-        source: http://stackoverflow.com/a/20913928/2556577
-        """
-        try:
-            # see if we can resolve the host name -- tells us if there is
-            # a DNS listening
-            host = socket.gethostbyname(remote_server)
-            # connect to the host -- tells us if the host is actually
-            # reachable
-            s = socket.create_connection((host, 80), 2)
-            return True
-        except:
-            pass
-        # end of method
-        return False
-
-    def check_request_parameters(self, parameters={}):
-        """Check parameters passed to avoid errors and help debug."""
-        # FILTERS
-        li_args = parameters.get("q").split()
-        logging.debug(li_args)
-        # li_values = [i.split(":")[1:] for i in li_args]
-
-        # Unicity
-        li_filters = [i.split(":")[0] for i in li_args]
-        filters_count = Counter(li_filters)
-        li_filters_must_be_unique = ("coordinate-system",
-                                     "format",
-                                     "owner",
-                                     "type")
-
-        for i in filters_count:
-            if i in li_filters_must_be_unique and filters_count.get(i) > 1:
-                raise ValueError("This query filter must be unique: {}"
-                                 " and it occured {} times."
-                                 .format(i, filters_count.get(i)))
-
-        # dict
-        dico_query = self.FILTER_KEYS.copy()
-        for i in li_args:
-            if i.startswith("action"):
-                dico_query["action"].append(i.split(":")[1:][0])
-                continue
-            elif i.startswith("catalog"):
-                dico_query["catalog"].append(i.split(":")[1:][0])
-                continue
-            elif i.startswith("contact") and i.split(":")[1] == "group":
-                dico_query["contact:group"].append(i.split(":")[1:][1])
-                continue
-            elif i.startswith("contact"):
-                dico_query["contact:isogeo"].append(i.split(":", 1)[1])
-                continue
-            elif i.startswith("coordinate-system"):
-                dico_query["coordinate-system"].append(i.split(":")[1:][0])
-                continue
-            elif i.startswith("format"):
-                dico_query["format"].append(i.split(":")[1:][0])
-                continue
-            elif i.startswith("has-no"):
-                dico_query["has-no"].append(i.split(":")[1:][0])
-                continue
-            elif i.startswith("keyword:isogeo"):
-                dico_query["keyword:isogeo"].append(i.split(":")[1:][1])
-                continue
-            elif i.startswith("keyword:inspire-theme"):
-                dico_query["keyword:inspire-theme"].append(i.split(":")[1:][1])
-                continue
-            elif i.startswith("license:isogeo"):
-                dico_query["license:isogeo"].append(i.split(":")[1:][1:])
-                continue
-            elif i.startswith("license"):
-                dico_query["license:group"].append(i.split(":", 1)[1:][0:])
-                continue
-            elif i.startswith("owner"):
-                dico_query["owner"].append(i.split(":")[1:][0])
-                continue
-            elif i.startswith("type"):
-                dico_query["type"].append(i.split(":")[1:][0])
-                continue
-            else:
-                print(i.split(":")[1], i.split(":")[1].isdigit())
-                dico_query["text"].append(i)
-                pass
-
-        # Values
-        dico_filters = {i.split(":")[0]: i.split(":")[1:] for i in li_args}
-        if dico_filters.get("type", ("dataset",))[0].lower() not in self.FILTER_TYPES:
-            raise ValueError("type value must be one of: {}"
-                             .format(" | ".join(self.FILTER_TYPES)))
-        logging.debug(dico_filters)
-
 
 # ##############################################################################
 # ##### Stand alone program ########

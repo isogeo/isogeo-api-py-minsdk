@@ -6,9 +6,9 @@
     http://www.isogeo.com/
 """
 
-from .isogeo_sdk import Isogeo
+from .isogeo_sdk import Isogeo, version
 from .checker import IsogeoChecker
 from .translator import IsogeoTranslator
 
-__version__ = "2.18.1.2"
+__version__ = version
 VERSION = __version__

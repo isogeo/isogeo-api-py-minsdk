@@ -17,6 +17,7 @@ Complementary set of tools to make some checks on requests to Isogeo API.
 # Standard library
 import logging
 from collections import Counter
+import socket
 
 # ##############################################################################
 # ########## Globals ###############
@@ -57,6 +58,68 @@ class IsogeoChecker(object):
         """Set text dictionary depending on language passed."""
         super(IsogeoChecker, self).__init__()
 
+    def check_internet_connection(self, remote_server="https://www.isogeo.com"):
+        """Test if an internet connection is operational.
+
+        source: http://stackoverflow.com/a/20913928/2556577
+        """
+        try:
+            # see if we can resolve the host name -- tells us if there is
+            # a DNS listening
+            host = socket.gethostbyname(remote_server)
+            # connect to the host -- tells us if the host is actually
+            # reachable
+            socket.create_connection((host, 80), 2)
+            return True
+        except Exception as e:
+            logging.error(e)
+            pass
+        # end of method
+        return False
+
+    def check_bearer_validity(self, token):
+        """Check API Bearer token validity.
+
+        Isogeo ID delivers authentication bearers which are valid during
+        24h, so this method checks the validity of the token (token in French)
+        with a 30 mn anticipation limit, and renews it if necessary.
+
+        token = must be a tuple like (bearer, expiration_date)
+
+        see: http://tools.ietf.org/html/rfc6750#section-2
+        FI: 24h = 86400 seconds, 30 mn = 1800, 5 mn = 300
+        """
+        if token[1] < 60:
+            token = self.connect(self.id, self.ct)
+            logging.debug("Token was about to expire, so has been renewed.")
+        else:
+            logging.debug("Token is still valid.")
+            pass
+
+        # end of method
+        return token
+
+    def check_api_response(self, response):
+        """Check API response and raise exceptions if needed."""
+        if response.status_code == 200:
+            logging.debug("Everything is OK dude, just go on!")
+            pass
+        elif response.status_code >= 400:
+            logging.error("Something's wrong Houston, check settings again!")
+            # logging.error(dir(response.request))
+            logging.error("{}: {} - {} - URL: {}"
+                          .format(response.status_code,
+                                  response.reason,
+                                  response.json().get("error"),
+                                  response.request.url))
+            # logging.error(dir(response))
+            return 0, response.status_code
+        else:
+            pass
+
+        # end of method
+        return 1
+
     def check_request_parameters(self, parameters={}):
         """Check parameters passed to avoid errors and help debug."""
         # FILTERS
@@ -79,7 +142,7 @@ class IsogeoChecker(object):
                                  .format(i, filters_count.get(i)))
 
         # dict
-        dico_query = self.FILTER_KEYS.copy()
+        dico_query = FILTER_KEYS.copy()
         for i in li_args:
             if i.startswith("action"):
                 dico_query["action"].append(i.split(":")[1:][0])
@@ -127,9 +190,9 @@ class IsogeoChecker(object):
 
         # Values
         dico_filters = {i.split(":")[0]: i.split(":")[1:] for i in li_args}
-        if dico_filters.get("type", ("dataset",))[0].lower() not in self.FILTER_TYPES:
+        if dico_filters.get("type", ("dataset",))[0].lower() not in FILTER_TYPES:
             raise ValueError("type value must be one of: {}"
-                             .format(" | ".join(self.FILTER_TYPES)))
+                             .format(" | ".join(FILTER_TYPES)))
         logging.debug(dico_filters)
 
 # ##############################################################################
