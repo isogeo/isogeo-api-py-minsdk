@@ -20,4 +20,4 @@ requests==2.18.4
 # Python 2 backwards compatibility
 configparser==3.5.0; python_version < '3.0'
 future==0.16.0
-six
+six==1.11.0
