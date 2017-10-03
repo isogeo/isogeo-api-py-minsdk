@@ -871,6 +871,19 @@ class Isogeo(object):
 
     # -- UTILITIES -----------------------------------------------------------
 
+    def get_app_properties(self, token, prot="https"):
+        """Get information about the application declared on Isogeo."""
+        mng_base_url = "https://manage.isogeo.com/applications/"
+        first_share = isogeo.shares(token)[0].get("applications")[0]
+        app = {"admin_url": mng_base_url + first_share.get("_id"),
+               "creation_date": first_share.get("_created"),
+               "last_update": first_share.get("_modified"),
+               "name": first_share.get("name"),
+               "type": first_share.get("type"),
+               "url": first_share.get("url")
+               }
+        self.app_properties = app
+
     def get_isogeo_version(self, component="api", prot="https"):
         """Get Isogeo components versions. No need for authentication."""
         # which component
