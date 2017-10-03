@@ -66,7 +66,7 @@ with open("out_api_search_empty.json", "w") as json_basic:
               )
 
 # basic search
-request = isogeo.search(token, whole_share=0)
+request = isogeo.search(token, page_size=10, whole_share=0)
 with open("out_api_search_basic.json", "w") as json_basic:
     json.dump(request,
               json_basic,
@@ -75,8 +75,17 @@ with open("out_api_search_basic.json", "w") as json_basic:
               )
 
 # complete search
-request = isogeo.search(token, whole_share=1, sub_resources="all")
+request = isogeo.search(token, whole_share=1, page_size=10, sub_resources="all")
 with open("out_api_search_complete.json", "w") as json_basic:
+    json.dump(request,
+              json_basic,
+              sort_keys=True,
+              indent=4,
+              )
+
+# shares informations
+request = isogeo.shares(token)
+with open("out_api_shares.json", "w") as json_basic:
     json.dump(request,
               json_basic,
               sort_keys=True,
