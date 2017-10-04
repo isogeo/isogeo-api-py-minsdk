@@ -896,7 +896,7 @@ class Isogeo(object):
     def get_app_properties(self, token, prot="https"):
         """Get information about the application declared on Isogeo."""
         mng_base_url = "https://manage.isogeo.com/applications/"
-        first_share = isogeo.shares(token)[0].get("applications")[0]
+        first_share = self.shares(token)[0].get("applications")[0]
         app = {"admin_url": mng_base_url + first_share.get("_id"),
                "creation_date": first_share.get("_created"),
                "last_update": first_share.get("_modified"),
