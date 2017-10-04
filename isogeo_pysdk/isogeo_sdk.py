@@ -395,7 +395,7 @@ class Isogeo(object):
 
         # augment option
         if augment:
-            self.add_tags_shares(search_rez.get("tags"))
+            self.add_tags_shares(token, search_rez.get("tags"))
             logger.debug("Results tags augmented")
         else:
             logger.debug("No augmentation")
@@ -880,8 +880,12 @@ class Isogeo(object):
 
     # -- UTILITIES -----------------------------------------------------------
 
-    def add_tags_shares(self, results_tags=dict()):
+    def add_tags_shares(self, token, results_tags=dict()):
         """Add shares list to the tags attributes in search results."""
+        # checking bearer validity
+        token = checker.check_bearer_validity(token, self.connect(self.app_id,
+                                                                  self.ct))
+        # check if shares_id have already been retrieved or not
         if not hasattr(self, "shares_id"):
             shares = self.shares(token)
             self.shares_id = {"share:{}".format(i.get("_id")): i.get("name")
@@ -896,15 +900,22 @@ class Isogeo(object):
     def get_app_properties(self, token, prot="https"):
         """Get information about the application declared on Isogeo."""
         mng_base_url = "https://manage.isogeo.com/applications/"
-        first_share = self.shares(token)[0].get("applications")[0]
-        app = {"admin_url": mng_base_url + first_share.get("_id"),
-               "creation_date": first_share.get("_created"),
-               "last_update": first_share.get("_modified"),
-               "name": first_share.get("name"),
-               "type": first_share.get("type"),
-               "url": first_share.get("url")
-               }
-        self.app_properties = app
+        # checking bearer validity
+        token = checker.check_bearer_validity(token, self.connect(self.app_id,
+                                                                  self.ct))
+        # check if shares_id have already been retrieved or not
+        if not hasattr(self, "shares_id"):
+            first_share = self.shares(token)[0].get("applications")[0]
+            app = {"admin_url": mng_base_url + first_share.get("_id"),
+                   "creation_date": first_share.get("_created"),
+                   "last_update": first_share.get("_modified"),
+                   "name": first_share.get("name"),
+                   "type": first_share.get("type"),
+                   "url": first_share.get("url")
+                   }
+            self.app_properties = app
+        else:
+            pass
 
     def get_isogeo_version(self, component="api", prot="https"):
         """Get Isogeo components versions. No need for authentication."""
