@@ -77,7 +77,7 @@ class Search(unittest.TestCase):
         """Augmented search."""
         # normal
         search = self.isogeo.search(self.bearer, page_size=0,
-                                    whole_share=0, augment=1)
+                                    whole_share=0, augment=0)
         tags_shares = [i for i in search.get("tags") if i.startswith("share:")]
         self.assertEqual(len(tags_shares), 0)
 
