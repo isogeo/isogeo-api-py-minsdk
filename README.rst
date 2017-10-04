@@ -158,6 +158,7 @@ Miscellaneous & bonus
 - [X] get every API label automatically translated (not only INSPIRE themes)
 - [X] additional search parameter to automatically get full results without have to iterate with _limit and _offset
 - [X] option (`ALL`) to quickly get every subresources through _include parameter
+- [X] option (`augment`) to dynamically add shares ids to a search results tags (#6)
 - [X] method to easily download Isogeo hosted data
 - [X] method to easily get application properties from shares request
 - [/] automatic check on values passed into query parameter to the API - *Work in progress*

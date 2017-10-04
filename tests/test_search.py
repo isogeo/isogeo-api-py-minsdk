@@ -45,7 +45,7 @@ class Search(unittest.TestCase):
     # tests
     def test_search(self):
         """Basic search."""
-        search = self.isogeo.search(self.bearer)
+        search = self.isogeo.search(self.bearer, page_size=0, whole_share=0)
         self.assertIsInstance(search, dict)
         self.assertIn("envelope", search)
         self.assertIn("limit", search)
@@ -72,6 +72,20 @@ class Search(unittest.TestCase):
                                query="coordinate-system:32517 coordinate-system:4326")
             self.isogeo.search(self.bearer,
                                query="owner:32f7e95ec4e94ca3bc1afda960003882 owner:08b3054757544463abd06f3ab51ee491")
+
+    def test_search_augmented(self):
+        """Augmented search."""
+        # normal
+        search = self.isogeo.search(self.bearer, page_size=0,
+                                    whole_share=0, augment=1)
+        tags_shares = [i for i in search.get("tags") if i.startswith("share:")]
+        self.assertEqual(len(tags_shares), 0)
+
+        # augmented
+        search = self.isogeo.search(self.bearer, page_size=0,
+                                    whole_share=0, augment=1)
+        tags_shares = [i for i in search.get("tags") if i.startswith("share:")]
+        self.assertNotEqual(len(tags_shares), 0)
 
 
 # ##############################################################################

@@ -273,8 +273,9 @@ class Isogeo(object):
                specific_md=None,
                sub_resources=None,
                whole_share=True,
-               prot="https",
-               check=True):
+               check=True,
+               augment=False,
+               prot="https"):
         r"""Search request.
 
         Keyword arguments:
@@ -301,6 +302,7 @@ class Isogeo(object):
         sub_resources -- subresources that should be returned. Must be a list of strings.\\n
         To get available values: 'isogeo.SUBRESOURCES'
         whole_share -- option to return all results or only the page size. True by DEFAULT.
+        augment -- option to improve API response by adding some values.
         prot -- https [DEFAULT] or http (useful for development and tracking requests).
 
         see: https://goo.gl/V3iB9R
@@ -377,20 +379,27 @@ class Isogeo(object):
         if resources_count > page_size and whole_share:
             # if API returned more than one page of results, let's get the rest!
             metadatas = []  # a recipient list
-            payload['_limit'] = 100  # now it'll get pages of 100 resources
+            payload["_limit"] = 100  # now it'll get pages of 100 resources
             # let's parse pages
             for idx in range(0, int(ceil(resources_count / 100)) + 1):
-                payload['_offset'] = idx * 100
+                payload["_offset"] = idx * 100
                 search_req = requests.get(search_url,
                                           headers=head,
                                           params=payload,
                                           proxies=self.proxies)
                 # storing results by addition
-                metadatas.extend(search_req.json().get('results'))
-            search_rez['results'] = metadatas
+                metadatas.extend(search_req.json().get("results"))
+            search_rez["results"] = metadatas
         else:
             pass
 
+        # augment option
+        if augment:
+            self.add_tags_shares(search_rez.get("tags"))
+            logger.debug("Results tags augmented")
+        else:
+            logger.debug("No augmentation")
+            pass
         # end of method
         return search_rez
 
@@ -870,6 +879,19 @@ class Isogeo(object):
         return xml_req
 
     # -- UTILITIES -----------------------------------------------------------
+
+    def add_tags_shares(self, results_tags=dict()):
+        """Add shares list to the tags attributes in search results."""
+        if not hasattr(self, "shares_id"):
+            shares = self.shares(token)
+            self.shares_id = {"share:{}".format(i.get("_id")): i.get("name")
+                              for i in shares}
+            print(self.shares_id)
+        else:
+            pass
+        results_tags.update(self.shares_id)
+        print(sorted(results_tags))
+        return
 
     def get_app_properties(self, token, prot="https"):
         """Get information about the application declared on Isogeo."""
