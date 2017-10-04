@@ -396,9 +396,9 @@ class Isogeo(object):
         # augment option
         if augment:
             self.add_tags_shares(token, search_rez.get("tags"))
-            logger.debug("Results tags augmented")
+            logging.debug("Results tags augmented")
         else:
-            logger.debug("No augmentation")
+            logging.debug("No augmentation")
             pass
         # end of method
         return search_rez
