@@ -12,12 +12,12 @@
 #
 
 # REST API
-requests==2.*
+requests==2.18.4
 
 # proxy
 # pypac==0.2.*
 
 # Python 2 backwards compatibility
-configparser; python_version < '3.0'
-future
-six
+configparser==3.5.0; python_version < '3.0'
+future==0.16.0
+six==1.11.0
