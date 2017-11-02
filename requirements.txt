@@ -18,6 +18,6 @@ requests==2.*
 # pypac==0.2.*
 
 # Python 2 backwards compatibility
-configparser; python_version < '3.0'
+configparser==3.5.0; python_version < '3.0'
 future
 six
