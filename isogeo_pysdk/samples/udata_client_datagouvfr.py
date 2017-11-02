@@ -58,25 +58,26 @@ class DataGouvFr(object):
     def org_datasets(self, org_id="isogeo", page_size=25, x_fields=None):
         """"""
         # handling request parameters
-        # payload = {'org': org_id,
-        #            'size': page_size,
-        #            'X-Fields': x_fields,
-        #            }
+        payload = {'org': org_id,
+                   'size': page_size,
+                   'X-Fields': x_fields,
+                   }
 
         # search request
         # head = {"X-API-KEY": self.api_key}
-        search_url = "{}organizations/{}/datasets/?size={}"\
+        search_url = "{}organizations/{}/datasets/"\
                      .format(self.base_url,
                              org_id,
-                             page_size
+                             # page_size
                              )
 
         search_req = requests.get(search_url,
                                   # headers=head,
-                                  # params=payload
+                                  params=payload
                                   )
 
         # serializing result into dict and storing resources in variables
+        logger.debug(search_req.url)
         return search_req.json()
 
     def search_datasets(self, license=None, format=None, query=None, featured=None, owner=None, organization=None, badge=None, reuses=None, page_size=20, x_fields=None):
@@ -155,7 +156,7 @@ if __name__ == '__main__':
     api_key = environ.get("DATAGOUV_API_KEY")
     app = DataGouvFr()
     print(dir(app))
-    org_ds = app.org_datasets()
-    # print(sorted(org_ds[0].keys()), len(org_ds), org_ds[0].get("id"))
+    org_ds = app.org_datasets(org_id=orgas.get("isogeo"))
+    print(sorted(org_ds[0].keys()), len(org_ds), org_ds[0].get("id"))
     search_ds = app.search_datasets(badge="spd")
     print(sorted(search_ds.keys()), len(search_ds), search_ds.get("total"))
