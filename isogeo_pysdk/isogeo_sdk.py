@@ -62,7 +62,8 @@ class Isogeo(object):
                 "qa": "api.qa"
                 }
 
-    SUBRESOURCES = ("conditions",
+    SUBRESOURCES = ("_creator",
+                    "conditions",
                     "contacts",
                     "coordinate-system",
                     "events",
@@ -73,7 +74,8 @@ class Isogeo(object):
                     "links",
                     "operations",
                     "serviceLayers",
-                    "specifications"
+                    "specifications",
+                    "tags",
                     )
 
     FILTER_KEYS = {"action": [],
