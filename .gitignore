@@ -72,3 +72,4 @@ isogeo_params.ini
 venv/
 virtenv*/
 virtualenv/
+*.pypirc
