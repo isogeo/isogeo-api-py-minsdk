@@ -100,19 +100,41 @@ def search_tags_as_filters(tags):
         md_types["Donnée"] = "type:dataset"
     else:
         pass
-
+    # printing
+    # print("There are:"
+    #       "\n{} actions"
+    #       "\n{} contacts"
+    #       "\n{} formats"
+    #       "\n{} INSPIRE themes"
+    #       "\n{} keywords"
+    #       "\n{} licenses"
+    #       "\n{} owners"
+    #       "\n{} SRS"
+    #       "\n{} types"
+    #       "\n{} unused".format(len(actions),
+    #                            len(contacts),
+    #                            len(formats),
+    #                            len(inspire),
+    #                            len(keywords),
+    #                            len(licenses),
+    #                            len(owners),
+    #                            len(srs),
+    #                            len(md_types),
+    #                            len(unused)
+    #                            ))
     # storing dicts
-    tags_parsed = {}
-    tags_parsed["actions"] = sorted(actions)
-    tags_parsed["contacts"] = sorted(contacts)
-    tags_parsed["formats"] = sorted(formats)
-    tags_parsed["inspire"] = sorted(inspire)
-    tags_parsed["keywords"] = sorted(keywords)
-    tags_parsed["licenses"] = sorted(licenses)
-    tags_parsed["owners"] = sorted(owners)
-    tags_parsed["srs"] = sorted(srs)
-    tags_parsed["types"] = sorted(md_types)
-    tags_parsed["unused"] = sorted(unused)
+    tags_parsed = {"actions": actions,
+                   "compliance": compliance,
+                   "contacts": contacts,
+                   "formats": formats,
+                   "inspire": inspire,
+                   "keywords": keywords,
+                   "licenses": licenses,
+                   "owners": owners,
+                   "srs": srs,
+                   "types": md_types,
+                   "unused": unused
+                   }
 
     # method ending
     return tags_parsed
@@ -144,6 +166,8 @@ else:
 # TAGS
 tags = data.get("tags")
 filters = search_tags_as_filters(tags)
-
-print(filters.keys())
-print("\n".join(filters.get("types")))
+print(type(filters), filters.keys())
+licenses = filters.get("licenses")
+owners = filters.get("owners")
+print(sorted(owners.keys()))
+print("END")
