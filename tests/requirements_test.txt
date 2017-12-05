@@ -15,5 +15,5 @@ requests==2.*
 configparser==3.5.0; python_version < '3.0'
 future
 six==1.11.0
-pep8
+pep8==1.7.1
 https://github.com/Guts/isogeo-api-py-minsdk/archive/master.zip
