@@ -811,7 +811,6 @@ class Isogeo(object):
         # check resource link compliance
         if type(resource_link) is dict and resource_link.get("type") == "hosted":
             id_link = resource_link.get("_id")
-            print("youhou")
             pass
         else:
             return "Error: resource link passed is not valid or not a hosted one."
@@ -892,7 +891,6 @@ class Isogeo(object):
             shares = self.shares(token)
             self.shares_id = {"share:{}".format(i.get("_id")): i.get("name")
                               for i in shares}
-            print(self.shares_id)
         else:
             pass
         results_tags.update(self.shares_id)
@@ -973,7 +971,7 @@ if __name__ == '__main__':
     # ------------ Log & debug ----------------
     logger = logging.getLogger()
     logging.captureWarnings(True)
-    logger.setLevel(logging.WARNING)
+    logger.setLevel(logging.INFO)
 
     # ------------ Settings from ini file ----------------
     settings_file = r"isogeo_params.ini"
