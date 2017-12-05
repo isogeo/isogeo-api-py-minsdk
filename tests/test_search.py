@@ -59,7 +59,7 @@ class Search(unittest.TestCase):
     def test_search_includes(self):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
-        search = self.isogeo.search(self.bearer, page_size=0, whole_share=0,
+        search = self.isogeo.search(self.bearer, whole_share=0,
                                     specific_md=["461a37319b704b90b49babdd79827e4f",])
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)

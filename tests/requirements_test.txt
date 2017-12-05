@@ -1,0 +1,19 @@
+# Common requirements
+# -----------------------
+# This file collects all required third-party applications that are needed
+# to run this project. Later you can install all these apps in a row
+# using pip. Example:
+#
+#     pip install -r requirements.txt
+#
+#   It's higly recomended to use it within a virtualenv.
+#
+#
+#
+
+requests==2.*
+configparser==3.5.0; python_version < '3.0'
+future
+six==1.11.0
+pep8
+https://github.com/Guts/isogeo-api-py-minsdk/archive/master.zip
