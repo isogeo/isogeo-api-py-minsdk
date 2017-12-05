@@ -894,7 +894,6 @@ class Isogeo(object):
         else:
             pass
         results_tags.update(self.shares_id)
-        print(sorted(results_tags))
         return
 
     def get_app_properties(self, token, prot="https"):
