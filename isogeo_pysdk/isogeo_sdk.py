@@ -957,6 +957,7 @@ class Isogeo(object):
         # end of method
         return version_req.json().get("version")
 
+
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
