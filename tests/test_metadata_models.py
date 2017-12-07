@@ -49,7 +49,7 @@ class Search(unittest.TestCase):
         """Executed after each test."""
         pass
 
-    # tests
+    # metadata models
     def test_search_result_vector_min(self):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
@@ -344,6 +344,48 @@ class Search(unittest.TestCase):
         self.assertIn("type:service", md_tags)
         self.assertIn("owner:32f7e95ec4e94ca3bc1afda960003882", md_tags)
         self.assertIn("provider:manual", md_tags)
+
+    # specific attributes
+    def test_search_result_inspire_compliance(self):
+        """Search with sub-resources included."""
+        # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
+        search = self.isogeo.search(self.bearer, whole_share=0,
+                                    specific_md=["3c649da21ed9405e8d508bfdbe831516",],
+                                    sub_resources=["contacts",])
+        md = search.get("results")[0]
+        self.assertIsInstance(md, dict)
+
+        # basic metadata keys/keys
+        self.assertIn("_id", md)
+        self.assertIn("_created", md)
+        self.assertIn("_modified", md)
+        self.assertIn("_creator", md)
+        self.assertIn("_abilities", md)
+        self.assertIn("title", md)
+        self.assertIn("type", md)
+        self.assertIn("tags", md)
+        self.assertIn("editionProfile", md)
+        self.assertIn("series", md)
+
+        # _tags keys/values
+        md_tags = md.get("tags")
+        self.assertIsInstance(md_tags, dict)
+        self.assertIn("conformity:inspire", md_tags)
+        self.assertIsNone(md_tags.get("conformity:inspire"))
+        self.assertIn("owner:32f7e95ec4e94ca3bc1afda960003882", md_tags)
+        self.assertIn("provider:manual", md_tags)
+
+        # INSPIRE compliance expected keys/values
+        self.assertIn("abstract", md)
+        self.assertIn("collectionContext", md)
+        self.assertIn("envelope", md)
+        self.assertIn("format", md)
+        self.assertIn("formatVersion", md)
+        self.assertIn("scale", md)
+        self.assertIn("encoding", md)
+        self.assertIn("created", md)
+        self.assertIn("contacts", md)
+
 
 # ##############################################################################
 # ##### Stand alone program ########
