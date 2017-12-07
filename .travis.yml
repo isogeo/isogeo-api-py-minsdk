@@ -8,10 +8,10 @@ cache: pip
 # command to install dependencies!
 install:
   - "pip install -r requirements.txt"
-  - "pip install --upgrade pep8"
+  - "pip install --upgrade pycodestyle"
   - "pip install git+https://github.com/Guts/isogeo-api-py-minsdk"
 
 # command to run tests!
 script:
   - python -m unittest discover
-  - pep8 isogeo_pysdk/isogeo_sdk.py --ignore="E265,E501" --statistics --show-source
+  - pycodestyle isogeo_pysdk/isogeo_sdk.py --ignore="E265,E501" --statistics --show-source
