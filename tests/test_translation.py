@@ -8,6 +8,8 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 
 # Standard library
 from os import environ
+import logging
+from sys import exit
 import unittest
 
 # module target
@@ -53,6 +55,11 @@ li_contacts_en = ("Author",
 
 class Translation(unittest.TestCase):
     """Test translation of specific words wihtin Isogeo API."""
+    if not share_id or not share_token:
+        logging.critical("No API credentials set as env variables.")
+        exit()
+    else:
+        pass  
     print('Isogeo PySDK version: {0}'.format(pysdk_version))
 
     # standard methods

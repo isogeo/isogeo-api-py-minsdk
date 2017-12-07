@@ -8,6 +8,8 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 
 # Standard library
 from os import environ
+import logging
+from sys import exit
 import unittest
 
 # module target
@@ -29,6 +31,11 @@ share_token = environ.get('ISOGEO_API_DEV_SECRET')
 
 class Search(unittest.TestCase):
     """Test search to Isogeo API."""
+    if not share_id or not share_token:
+        logging.critical("No API credentials set as env variables.")
+        exit()
+    else:
+        pass            
     print('Isogeo PySDK version: {0}'.format(pysdk_version))
 
     # standard methods
