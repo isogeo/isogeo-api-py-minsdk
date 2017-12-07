@@ -62,45 +62,6 @@ class Search(unittest.TestCase):
         self.assertIn("tags", search)
         self.assertIn("total", search)
 
-    # tests
-    def test_search_includes(self):
-        """Search with sub-resources included."""
-        # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
-        search = self.isogeo.search(self.bearer, whole_share=0,
-                                    specific_md=["461a37319b704b90b49babdd79827e4f",])
-        md = search.get("results")[0]
-        self.assertIsInstance(md, dict)
-        self.assertIn("_id", md)
-        self.assertIn("_created", md)
-        self.assertIn("_modified", md)
-        self.assertIn("_creator", md)
-        self.assertIn("_abilities", md)
-        self.assertIn("title", md)
-        self.assertIn("abstract", md)
-        self.assertIn("path", md)
-        self.assertIn("format", md)
-        self.assertIn("formatVersion", md)
-        self.assertIn("created", md)
-        self.assertIn("modified", md)
-        self.assertIn("published", md)
-        self.assertIn("language", md)
-        self.assertIn("type", md)
-        self.assertIn("tags", md)
-        self.assertIn("envelope", md)
-        self.assertIn("editionProfile", md)
-        self.assertIn("scale", md)
-        self.assertIn("series", md)
-        self.assertIn("distance", md)
-        self.assertIn("validFrom", md)
-        self.assertIn("validTo", md)
-        self.assertIn("updateFrequency", md)
-        self.assertIn("validityComment", md)
-        self.assertIn("encoding", md)
-        self.assertIn("collectionMethod", md)
-        self.assertIn("collectionContext", md)
-        self.assertIn("topologicalConsistency", md)
-        self.assertIn("features", md)
-
     def test_bad_parameter_search(self):
         """Search with bad parameter."""
         with self.assertRaises(ValueError):
