@@ -15,7 +15,7 @@ requests==2.*
 configparser; python_version < '3.0'
 future
 six
-pycodestyle
+pycodestyle==2.3.1
 
 # then it's possible to install frmo the repo:
 # https://github.com/Guts/isogeo-api-py-minsdk/archive/master.zip
