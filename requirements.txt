@@ -22,7 +22,7 @@ configparser; python_version < '3.0'
 future
 
 # samples
-geojson
+geojson==2.3.0
 flask
 oauthlib
 requests_oauthlib
