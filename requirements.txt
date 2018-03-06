@@ -23,6 +23,6 @@ future
 
 # samples
 geojson
-flask
+flask==0.12.2
 oauthlib
 requests_oauthlib
