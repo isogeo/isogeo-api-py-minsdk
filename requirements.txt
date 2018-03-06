@@ -25,4 +25,4 @@ future
 geojson
 flask
 oauthlib
-requests_oauthlib
+requests_oauthlib==0.8.0
