@@ -95,20 +95,8 @@ def profile():
 # ##################################
 
 if __name__ == '__main__':
+    # this disable HTTPS requirement : SHOULD NOT BE USED IN PRODUCTION
     os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
-    # client_id = "python-minimalist-sdk-user-dev-1233ce071cb445669434315bb6c40727"
-    # client_secret = "yxaDOFl6JHafWuKFaL8HgVrC7PsgKgl28KT55dOVJrGgFoKINzUpgyOQxwXuMuHh"
-
-    # url_auth = "https://id.api.isogeo.com/oauth/authorize"
-    # url_token = "https://id.api.isogeo.com/oauth/token"
-    # start authentication
-    # auth = HTTPBasicAuth(client_id, client_secret)
-    # client = BackendApplicationClient(client_id=client_id)
-    # oauth = OAuth2Session(client=client)
-    # token = oauth.fetch_token(token_url='https://id.api.isogeo.com/oauth/token', auth=auth)
-
-
-
 
     if __name__ == "__main__":
         # This allows us to use a plain HTTP callback
