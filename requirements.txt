@@ -11,8 +11,8 @@
 #
 #
 
-# REST API
 requests==2.*
+six
 
 # proxy
 # pypac==0.2.*
@@ -20,4 +20,9 @@ requests==2.*
 # Python 2 backwards compatibility
 configparser; python_version < '3.0'
 future
-six
+
+# samples
+geojson
+flask
+oauthlib
+requests_oauthlib
