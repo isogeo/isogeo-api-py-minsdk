@@ -1,0 +1,14 @@
+{% extends "layout.html" %}
+
+{% block content %}
+
+    <h1>Fécilitations, vous êtes authentifié.e !</h1>
+    <h2>Au choix :</h2>
+    <ul>
+        <li><a href="/search"> Make a raw search</a></li>
+        <li><a href="/profile"> View basic metrics</a></li>
+        <li><a href="/automatic_refresh"> Implicitly refresh the token</a></li>
+        <li><a href="/manual_refresh"> Explicitly refresh the token</a></li>
+    </ul>
+
+{% endblock %}

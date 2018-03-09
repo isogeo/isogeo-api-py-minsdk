@@ -1,44 +1,26 @@
-# -*- coding: UTF-8 -*-
-#!/usr/bin/env python
-from __future__ import (absolute_import, print_function, unicode_literals)
-# -----------------------------------------------------------------------------
-# Name:         Isogeo oAuth2 User Web Client
-# Purpose:      
-#
-# Author:       Julien Moura (@geojulien)
-#
-# Python:       2.7.x
-# Created:      22/04/2017
-# Updated:      10/02/2018
-# -----------------------------------------------------------------------------
-
-# INSPIRED FROM: https://github.com/requests/requests-oauthlib/blob/master/docs/examples/real_world_example_with_refresh.rst
-
-# #############################################################################
-# ########## Libraries #############
-# ##################################
+"""
+    Sample Isogeo User Dashboard based on Flask
+"""
 
 # Standard library
 from configparser import RawConfigParser
-import logging
-import os
+from datetime import datetime
 from pprint import pformat
-from time import time
 
 # 3rd party library
-import requests
+from flask import render_template, request, redirect, session, url_for
+from flask.json import jsonify
+from IsogeoFlask import app
+
 from requests_oauthlib import OAuth2Session
 
-from flask import Flask, request, redirect, session, url_for
-from flask.json import jsonify
-
 # ############################################################################
-# ########## Globals #############
+# ########## Globals ###############
 # ##################################
 
 # GET SECRET SETTINGS
 config = RawConfigParser()
-config.read(r"../isogeo_params.ini")
+config.read(r"isogeo_secret.ini")
 ISOGEO_OAUTH_CLIENT_ID = config.get('auth', 'CLIENT_ID')
 ISOGEO_OAUTH_CLIENT_SECRET = config.get('auth', 'CLIENT_SECRET')
 ISOGEO_OAUTH_URL_AUTH = config.get('auth', 'URL_AUTH')
@@ -49,11 +31,41 @@ ISOGEO_OAUTH_URL_TOKEN_REFRESH = ISOGEO_OAUTH_URL_TOKEN
 # ########## Functions #############
 # ##################################
 
-app = Flask(__name__)
+
+@app.route('/')
+@app.route('/home')
+def home():
+    """Renders the home page."""
+    return render_template(
+        'index.html',
+        title="Page d'accueil",
+        year=datetime.now().year,
+    )
+
+@app.route('/contact')
+def contact():
+    """Renders the contact page."""
+    return render_template(
+        'contact.html',
+        title='Contact',
+        year=datetime.now().year,
+        message='Your contact page.'
+    )
+
+@app.route('/about')
+def about():
+    """Renders the about page."""
+    return render_template(
+        'about.html',
+        title='About',
+        year=datetime.now().year,
+        message='Your application description page.'
+    )
 
 
-@app.route("/")
-def demo():
+# AUTHENTICATION ----------------------------------------------------------
+@app.route("/login")
+def login():
     """Step 1: User Authorization.
 
     Redirect the user/resource owner to the OAuth provider (i.e. Github)
@@ -65,10 +77,6 @@ def demo():
     # State is used to prevent CSRF, keep this for later.
     session['oauth_state'] = state
     return redirect(authorization_url)
-
-
-# Step 2: User authorization, this happens on the provider.
-
 
 @app.route("/callback", methods=["GET"])
 def callback():
@@ -83,9 +91,9 @@ def callback():
 
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID,
                            state=session['oauth_state'])
-    token = isogeo.fetch_token(ISOGEO_OAUTH_URL_TOKEN, client_secret=ISOGEO_OAUTH_CLIENT_SECRET,
+    token = isogeo.fetch_token(ISOGEO_OAUTH_URL_TOKEN,
+                               client_secret=ISOGEO_OAUTH_CLIENT_SECRET,
                                authorization_response=request.url)
-
     # At this point you can fetch protected resources but lets save
     # the token and show how this is done from a persisted token
     # in /search.
@@ -94,12 +102,17 @@ def callback():
     # return redirect(url_for('.search'))
     return redirect(url_for('.menu'))
 
-
 @app.route("/menu", methods=["GET"])
 def menu():
     """
         # Step 4: User pick an option
     """
+    return render_template(
+        'menu.html',
+        title='Menu utilisateur authentifié',
+        year=datetime.now().year,
+    )
+
     return """
     <h1>Congratulations, you have obtained an OAuth 2 token!</h1>
     <h2>What would you like to do next?</h2>
@@ -115,31 +128,6 @@ def menu():
     </pre>
     """ % pformat(session['oauth_token'], indent=4)
 
-# SERACH AND PROFILE ----------------------------------------------------------
-@app.route("/search", methods=["GET"])
-def search():
-    """Fetching a protected resource using an OAuth 2 token.
-    """
-    isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID, token=session['oauth_token'])
-    print(dir(isogeo))
-    print(isogeo.access_token, isogeo.scope)
-    return jsonify(isogeo.get('https://v1.api.isogeo.com/resources/search?q=format:shp') .json())
-
-
-@app.route("/profile", methods=["GET"])
-def profile():
-    """
-        Displaying basic metrics about authenticated user
-    """
-    isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID, token=session['oauth_token'])
-    search = isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0').json()
-    print(search.keys())
-    # raw print
-    return """
-    <h1>isogeo basic metrucs</h1>
-    <p>You have access to %s metadata!</p>
-    """ % search.get("total")
-
 
 # TOKEN MANAGEMENT -----------------------------------------------------------
 @app.route("/automatic_refresh", methods=["GET"])
@@ -151,7 +139,7 @@ def automatic_refresh():
     # We force an expiration by setting expired at in the past.
     # This will trigger an automatic refresh next time we interact with
     # Isogeo API.
-    token['expires_at'] = time() - 10
+    token['expires_at'] = 0
 
     extra = {
         'client_id': ISOGEO_OAUTH_CLIENT_ID,
@@ -188,18 +176,33 @@ def manual_refresh():
     return jsonify(session['oauth_token'])
 
 
-# ##############################################################################
-# ##### Stand alone program ########
-# ##################################
+# SEARCH AND PROFILE ----------------------------------------------------------
+@app.route("/search", methods=["GET"])
+def search():
+    """Fetching a protected resource using an OAuth 2 token.
+    """
+    if not session.get("oauth_token"):
+        return redirect(url_for('.login'))
+    isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID, token=session['oauth_token'])
+    # print(dir(isogeo))
+    # print(isogeo.access_token, isogeo.scope)
+    return jsonify(isogeo.get('https://v1.api.isogeo.com/resources/search?q=owner:0bccc739602f4c709486a0fd5e034f7b keyword:isogeo:donnees-ouvertes routes') .json())
 
-if __name__ == '__main__':
-    # this disable HTTPS requirement : SHOULD NOT BE USED IN PRODUCTION
-    os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
-    if __name__ == "__main__":
-        # This allows us to use a plain HTTP callback
-        os.environ['DEBUG'] = "1"
+@app.route("/profile", methods=["GET"])
+def profile():
+    """
+        Displaying basic metrics about authenticated user
+    """
+    if not session.get("oauth_token"):
+        return redirect(url_for('.login'))
+    isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID, token=session['oauth_token'])
+    search = isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0').json()
+    ct_workgroups = len([i for i in search.get("tags") if i.startswith("owner:")])
+    print(search.keys(), len(search.get("results")))
+    # raw print
+    return """
+    <h1>Isogeo basic metrics</h1>
+    <p>You have access to {} metadata in {} workgroups!</p>
+    """.format(search.get("total"), ct_workgroups)
 
-        # app.secret_key = os.urandom(24)
-        app.secret_key = ISOGEO_OAUTH_CLIENT_SECRET
-        app.run(debug=True)
