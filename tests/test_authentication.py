@@ -63,6 +63,24 @@ class AuthBadCodes(unittest.TestCase):
         with self.assertRaises(ValueError):
             isogeo.connect()
 
+    def test_bad_platform(self):
+        """Bad platform value."""
+        with self.assertRaises(ValueError):
+            isogeo = Isogeo(client_id=share_id,
+                            client_secret=share_token,
+                            platform="skynet"
+                            )
+            del isogeo
+
+    def test_bad_auth_mode(self):
+        """Bad auth mode value."""
+        with self.assertRaises(ValueError):
+            isogeo = Isogeo(client_id=share_id,
+                            client_secret=share_token,
+                            auth_mode="fingerprint"
+                            )
+            del isogeo
+
     def test_successed_auth(self):
         """When a search works, check the response structure."""
         isogeo = Isogeo(client_id=share_id,
@@ -95,6 +113,7 @@ class AuthBadCodes(unittest.TestCase):
         self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect())[0],
                               string_types)
         self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect())[1], int)
+
 
 # #############################################################################
 # ######## Standalone ##############

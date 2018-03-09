@@ -62,6 +62,11 @@ class Isogeo(object):
                 "qa": "api.qa"
                 }
 
+    AUTH_MODES = {"group",
+                 "user_private",
+                 "user_public",
+                 }
+
     SUBRESOURCES = ("_creator",
                     "conditions",
                     "contacts",
@@ -115,7 +120,7 @@ class Isogeo(object):
 
     # -- BEFORE ALL -----------------------------------------------------------
 
-    def __init__(self, client_id, client_secret,
+    def __init__(self, client_id, client_secret, auth_mode="group",
                  platform="prod", lang="en", proxy=None):
         r"""Isogeo API class initialization.
 
@@ -146,6 +151,13 @@ class Isogeo(object):
         if len(client_secret) != 64:
             logging.error("App secret length issue: it should be 64 chars.")
             raise ValueError(1, "Secret isn't good: : it must be 64 chars.")
+        else:
+            pass
+
+        # auth mode
+        if auth_mode not in self.AUTH_MODE:
+            logging.error("Auth mode value is not good: {}".format(auth_mode))
+            raise ValueError("Mode value must be one of " + self.AUTH_MODES)
         else:
             pass
 
