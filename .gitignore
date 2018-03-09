@@ -66,7 +66,11 @@ target/
 ## Custom
 #############
 
+# API
 isogeo_params.ini
+isogeo_secret.ini
+client_secrets.json
+secret.ini
 
 # virtual environments
 *venv*
