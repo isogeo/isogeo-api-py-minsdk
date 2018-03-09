@@ -11,17 +11,22 @@
 #
 #
 
+# utils
+setuptools
+wheel
+
+# required
 requests==2.*
 six
+
+# Python 2 backwards compatibility
+configparser; python_version < '3.0'
+# future
 
 # proxy
 # pypac==0.2.*
 
-# Python 2 backwards compatibility
-configparser; python_version < '3.0'
-future
-
-# samples
+# samples and dev stuff
 geojson
 flask
 oauthlib

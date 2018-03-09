@@ -30,6 +30,7 @@ setup(
     description="Abstraction class to use Isogeo REST API",
     install_requires=["requests>=2.9.1",
                       "future",
+                      "six"
                       ],
     extras_require={
         ":python_version == '2.7'": [
