@@ -13,7 +13,7 @@
 
 # utils
 setuptools
-wheel
+wheel==0.30.0
 
 # required
 requests==2.*
