@@ -157,7 +157,8 @@ class Isogeo(object):
         # auth mode
         if auth_mode not in self.AUTH_MODES:
             logging.error("Auth mode value is not good: {}".format(auth_mode))
-            raise ValueError("Mode value must be one of " + self.AUTH_MODES)
+            raise ValueError("Mode value must be one of: "
+                             .format(" | ".join(self.AUTH_MODES)))
         else:
             pass
 
@@ -170,8 +171,10 @@ class Isogeo(object):
             self.base_url = self.api_urls.get(platform)
             logging.info("Using Quality Assurance platform (reduced perfs).")
         else:
-            logging.error("Platform must be one of " + self.api_urls)
-            raise ValueError(3, "Platform must be one of " + self.api_urls)
+            logging.error("Platform must be one of: {}"
+                          .format(" | ".join(self.api_urls.keys())))
+            raise ValueError(3, "Platform must be one of: {}"
+                                .format(" | ".join(self.api_urls.keys())))
 
         # setting language
         if lang.lower() not in ("fr", "en"):

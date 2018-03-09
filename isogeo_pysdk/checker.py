@@ -195,9 +195,9 @@ class IsogeoChecker(object):
                              .format(" | ".join(FILTER_TYPES)))
         logging.debug(dico_filters)
 
+
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
-
 if __name__ == '__main__':
     """Standalone execution."""
