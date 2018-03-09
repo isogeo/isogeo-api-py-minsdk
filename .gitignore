@@ -69,7 +69,11 @@ target/
 isogeo_params.ini
 
 # virtual environments
-venv/
+*venv*
 virtenv*/
 virtualenv/
 *.pypirc
+
+# PTVS
+*.ptvs
+*.vs
