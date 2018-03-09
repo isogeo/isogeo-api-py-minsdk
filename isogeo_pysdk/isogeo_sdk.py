@@ -63,9 +63,9 @@ class Isogeo(object):
                 }
 
     AUTH_MODES = {"group",
-                 "user_private",
-                 "user_public",
-                 }
+                  "user_private",
+                  "user_public",
+                  }
 
     SUBRESOURCES = ("_creator",
                     "conditions",
@@ -155,7 +155,7 @@ class Isogeo(object):
             pass
 
         # auth mode
-        if auth_mode not in self.AUTH_MODE:
+        if auth_mode not in self.AUTH_MODES:
             logging.error("Auth mode value is not good: {}".format(auth_mode))
             raise ValueError("Mode value must be one of " + self.AUTH_MODES)
         else:
