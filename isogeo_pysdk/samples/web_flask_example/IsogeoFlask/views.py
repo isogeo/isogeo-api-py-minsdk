@@ -3,7 +3,7 @@
 """
 
 # Standard library
-from configparser import RawConfigParser
+import json
 from datetime import datetime
 from pprint import pformat
 
@@ -18,13 +18,15 @@ from requests_oauthlib import OAuth2Session
 # ########## Globals ###############
 # ##################################
 
-# GET SECRET SETTINGS
-config = RawConfigParser()
-config.read(r"isogeo_secret.ini")
-ISOGEO_OAUTH_CLIENT_ID = config.get('auth', 'CLIENT_ID')
-ISOGEO_OAUTH_CLIENT_SECRET = config.get('auth', 'CLIENT_SECRET')
-ISOGEO_OAUTH_URL_AUTH = config.get('auth', 'URL_AUTH')
-ISOGEO_OAUTH_URL_TOKEN = config.get('auth', 'URL_TOKEN')
+# oAuth2 settings from client_secrets.json
+with open('client_secrets.json', "r") as j:
+    api = json.loads(j.read()).get("installed")
+
+ISOGEO_OAUTH_CLIENT_ID = api.get('client_id')
+ISOGEO_OAUTH_CLIENT_SECRET = api.get('client_secret')
+ISOGEO_OAUTH_URL_301 = api.get('redirects_uri')
+ISOGEO_OAUTH_URL_AUTH = api.get('auth_uri')
+ISOGEO_OAUTH_URL_TOKEN = api.get('token_uri')
 ISOGEO_OAUTH_URL_TOKEN_REFRESH = ISOGEO_OAUTH_URL_TOKEN
 
 # ############################################################################
@@ -78,6 +80,7 @@ def login():
     session['oauth_state'] = state
     return redirect(authorization_url)
 
+
 @app.route("/callback", methods=["GET"])
 def callback():
     """ Step 3: Retrieving an access token.
@@ -101,6 +104,7 @@ def callback():
 
     # return redirect(url_for('.search'))
     return redirect(url_for('.menu'))
+
 
 @app.route("/menu", methods=["GET"])
 def menu():
@@ -184,9 +188,7 @@ def search():
     if not session.get("oauth_token"):
         return redirect(url_for('.login'))
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID, token=session['oauth_token'])
-    # print(dir(isogeo))
-    # print(isogeo.access_token, isogeo.scope)
-    return jsonify(isogeo.get('https://v1.api.isogeo.com/resources/search?q=owner:0bccc739602f4c709486a0fd5e034f7b keyword:isogeo:donnees-ouvertes routes') .json())
+    return jsonify(isogeo.get('https://v1.api.isogeo.com/resources/search?') .json())
 
 
 @app.route("/profile", methods=["GET"])
@@ -197,12 +199,27 @@ def profile():
     if not session.get("oauth_token"):
         return redirect(url_for('.login'))
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID, token=session['oauth_token'])
-    search = isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0').json()
-    ct_workgroups = len([i for i in search.get("tags") if i.startswith("owner:")])
-    print(search.keys(), len(search.get("results")))
-    # raw print
-    return """
-    <h1>Isogeo basic metrics</h1>
-    <p>You have access to {} metadata in {} workgroups!</p>
-    """.format(search.get("total"), ct_workgroups)
+    search = isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=5&lang=FR').json()
 
+    # some calculations
+    ct_tags = len(search.get("tags"))
+    ct_workgroups = len([i for i in search.get("tags")
+                         if i.startswith("owner:")])
+    ct_catalogs = len([i for i in search.get("tags")
+                       if i.startswith("catalog:")])
+    # random metadata
+    md1, md2 = search.get("results")[0], search.get("results")[1]
+    mds = {"md1": [md1.get("title"), md1.get("abstract", "Pas de résumé")],
+           "md2": [md2.get("title"), md2.get("abstract", "Pas de résumé")], }
+
+    # to display
+    return render_template(
+        'metrics.html',
+        title='Métriques utilisateur',
+        year=datetime.now().year,
+        ct_mds=search.get("total"),
+        ct_wgs=ct_workgroups,
+        ct_cats=ct_catalogs,
+        ct_tags=ct_tags,
+        mds=mds,
+    )
