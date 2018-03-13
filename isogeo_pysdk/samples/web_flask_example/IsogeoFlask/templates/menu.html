@@ -3,12 +3,13 @@
 {% block content %}
 
     <h1>Fécilitations, vous êtes authentifié.e !</h1>
-    <h2>Au choix :</h2>
-    <ul>
-        <li><a href="/search"> Make a raw search</a></li>
-        <li><a href="/profile"> View basic metrics</a></li>
-        <li><a href="/automatic_refresh"> Implicitly refresh the token</a></li>
-        <li><a href="/manual_refresh"> Explicitly refresh the token</a></li>
-    </ul>
+	    <h2>Côté utilisateur :</h2>
+			<a href="/profile"><button type="button" class="btn btn-outline-info btn-lg"><i class="far fa-user-circle"></i> Métriques utilisateur</button></a>
+			<a href="/search"><button type="button" class="btn btn-outline-info btn-lg"><i class="fab fa-searchengin"></i> Recherche brute sur 10 résultats (JSON)</button></a>
+			<br><hr>
+		<h2>Côté développeur :</h2>
+			<br>
+			<a href="/automatic_refresh"><button type="button" class="btn btn-outline-info btn-lg"><i class="fab fa-keycdn"></i> Token oAuth2 : rafraîchisement automatique</button></a>
+			<a href="/manual_refresh"><button type="button" class="btn btn-outline-info btn-lg"><i class="fas fa-key"></i> Token oAuth2 : rafraîchisement manuel</button></a>
 
 {% endblock %}

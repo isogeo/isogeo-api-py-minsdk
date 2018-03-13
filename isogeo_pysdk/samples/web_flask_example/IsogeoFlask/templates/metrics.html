@@ -61,17 +61,69 @@
           <div class="col-lg-4">
             <img class="rounded-circle" src="https://raw.githubusercontent.com/encharm/Font-Awesome-SVG-PNG/master/black/png/128/users.png" alt="Image : icône de groupe de travail" width="140" height="140">
             <h2>Appartenant à {{ ct_wgs }} groupes de travail</h2>
-            <p>Dans le modèle métier, une métadonnée appartient à un groupe de travail (relation 1 à 1). <br> Les workgroups (ou owners) peuvent s'échanger des données ou les publier vers des applications tierces.</p>
+            <p>Dans le modèle métier, une métadonnée appartient à un groupe de travail (relation 1:1).<br> Les workgroups (ou owners) peuvent s'échanger des données ou les publier vers des applications tierces.</p>
             <p><a class="btn btn-secondary" href="#" role="button">En savoir plus &raquo;</a></p>
           </div><!-- /.col-lg-4 -->
           <div class="col-lg-4">
             <img class="rounded-circle" src="https://raw.githubusercontent.com/encharm/Font-Awesome-SVG-PNG/master/black/png/128/book.png" alt="Image : icône de catalogue" width="140" height="140">
             <h2>Réparties dans {{ ct_cats }} catalogues</h2>
-            <p>Les métadonnées sont qualifiées et l'API permet d'implémenter facilement un moteur de recherche "en entonnoir" basé sur les tags disponibles. <br> Par exemple, cet utilisataur accède à {{ ct_tags }} tags.</p>
-            <p><a class="btn btn-secondary" href="#" role="button">En savoir plus &raquo;</a></p>
+            <p>Les métadonnées sont qualifiées et l'API permet d'implémenter facilement un moteur de recherche "en entonnoir" basé sur les tags disponibles. <br> Par exemple, l'utilisateur connecté accède à {{ ct_tags }} tags.</p>
+            <p><a class="btn btn-secondary" target="_blank" href="http://help.isogeo.com/fr/features/inventory/search.html#les-principes-dune-recherche-optimale" role="button">En savoir plus &raquo;</a></p>
           </div>
         </div>
     </div>
+
+    <!-- MINI CCHART -->
+	<canvas class="my-4" id="md_chart_types" width="900" height="380"></canvas>
+	<canvas class="my-4" id="md_chart_history" width="900" height="380"></canvas>
 </main>
 
+    <!-- Graphs -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.2/Chart.min.js"></script>
+    <script defer>
+      var ctx = document.getElementById("md_chart_types");
+      var DoughnutChart = new Chart(ctx, {
+    	type: 'doughnut',
+    	data: {
+          labels: ["Vecteurs", "Rasters", "Services", "Ressources"],
+          datasets: [{
+            data: {{ stats_types }},
+            backgroundColor: ["rgb(255, 99, 132)",
+            				  "rgb(54, 162, 235)",
+            				  "rgb(255, 205, 86)",
+            				  "rgb(100, 128, 167)",
+            				  ],
+          }],
+        }
+		});
+    </script>
+    <script defer>
+      var ctx2 = document.getElementById("md_chart_history");
+      var lineChart = new Chart(ctx2, {
+        type: 'line',
+        data: {
+          labels: ["2012", "2013", "2014", "2015", "2016", "2017", "2018"],
+          datasets: [{
+            data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
+            lineTension: 0,
+            backgroundColor: 'transparent',
+            borderColor: '#007bff',
+            borderWidth: 4,
+            pointBackgroundColor: '#007bff'
+          }]
+        },
+        options: {
+          scales: {
+            yAxes: [{
+              ticks: {
+                beginAtZero: false
+              }
+            }]
+          },
+          legend: {
+            display: false,
+          }
+        }
+      });
+    </script>
 {% endblock %}

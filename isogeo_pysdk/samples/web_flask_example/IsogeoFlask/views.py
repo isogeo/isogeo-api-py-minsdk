@@ -6,6 +6,7 @@
 import json
 from datetime import datetime
 from pprint import pformat
+from random import randint
 
 # 3rd party library
 from flask import render_template, request, redirect, session, url_for
@@ -44,6 +45,7 @@ def home():
         year=datetime.now().year,
     )
 
+
 @app.route('/contact')
 def contact():
     """Renders the contact page."""
@@ -51,17 +53,7 @@ def contact():
         'contact.html',
         title='Contact',
         year=datetime.now().year,
-        message='Your contact page.'
-    )
-
-@app.route('/about')
-def about():
-    """Renders the about page."""
-    return render_template(
-        'about.html',
-        title='About',
-        year=datetime.now().year,
-        message='Your application description page.'
+        message='Contact Isogeo to get your developper credentials'
     )
 
 
@@ -160,7 +152,7 @@ def automatic_refresh():
                            token_updater=token_updater)
 
     # Trigger the automatic refresh
-    jsonify(isogeo.get('https://v1.api.isogeo.com/resources/search?q=format:shp') .json())
+    jsonify(isogeo.get('https://v1.api.isogeo.com/resources/search?') .json())
     return jsonify(session['oauth_token'])
 
 
@@ -188,7 +180,9 @@ def search():
     if not session.get("oauth_token"):
         return redirect(url_for('.login'))
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID, token=session['oauth_token'])
-    return jsonify(isogeo.get('https://v1.api.isogeo.com/resources/search?') .json())
+    return jsonify(isogeo.get("https://v1.api.isogeo.com/resources/search?"
+                              "_limit=10"
+                              "&_include=conditions,contacts,coordinate-system,feature-attributes,layers") .json())
 
 
 @app.route("/profile", methods=["GET"])
@@ -199,7 +193,7 @@ def profile():
     if not session.get("oauth_token"):
         return redirect(url_for('.login'))
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID, token=session['oauth_token'])
-    search = isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=5&lang=FR').json()
+    search = isogeo.get('https://v1.api.isogeo.com/resources/search?lang=FR&_limit=100').json()
 
     # some calculations
     ct_tags = len(search.get("tags"))
@@ -208,9 +202,21 @@ def profile():
     ct_catalogs = len([i for i in search.get("tags")
                        if i.startswith("catalog:")])
     # random metadata
-    md1, md2 = search.get("results")[0], search.get("results")[1]
+    ct_rez = len(search.get("results", ["No results"]))
+    a, b = randint(0, ct_rez), randint(0, ct_rez)
+    md1, md2 = search.get("results")[a], search.get("results")[b]
     mds = {"md1": [md1.get("title"), md1.get("abstract", "Pas de résumé")],
            "md2": [md2.get("title"), md2.get("abstract", "Pas de résumé")], }
+
+    # pie chart
+    stats_types = [isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0&q=type:vector-dataset').json().get("total", 0),
+                   isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0&q=type:raster-dataset').json().get("total", 0),
+                   isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0&q=type:service').json().get("total", 0),
+                   isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0&q=type:resource').json().get("total", 0),
+                   ]
+
+    # line chart
+    stats_creation = [md.get("_created") for md in search.get("results")]
 
     # to display
     return render_template(
@@ -221,5 +227,7 @@ def profile():
         ct_wgs=ct_workgroups,
         ct_cats=ct_catalogs,
         ct_tags=ct_tags,
+        ct_rez=ct_rez,
         mds=mds,
+        stats_types=stats_types,
     )
