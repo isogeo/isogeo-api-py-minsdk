@@ -215,8 +215,9 @@ def profile():
                    isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0&q=type:resource').json().get("total", 0),
                    ]
 
-    # line chart
-    stats_creation = [md.get("_created") for md in search.get("results")]
+    # NOT USED
+    # # line chart
+    # stats_creation = [md.get("_created") for md in search.get("results")]
 
     # to display
     return render_template(
