@@ -1,9 +1,19 @@
 Isogeo User oAuth2 example - Website with Flask
 ===============================================
 
+*DO NOT USE THIS CODE IN PRODUCTION*
+
 ## Usage
 
-1. Clone/download this [repository](https://github.com/Guts/isogeo-api-py-minsdk), open a prompt, move inside this directory `cd isogeo_pysdk\samples\web_flask_example` (and create a virtualenv)
+Run this sample:
+
+1. Clone/download this [repository](https://github.com/Guts/isogeo-api-py-minsdk),
+2. Open a prompt (bash, powershell...),
+3. move inside this directory `cd isogeo_pysdk\samples\web_flask_example`
+
+### With your installed Python
+
+1. Create a virtualenv (PowerShell: `py -3 -m  venv env`)
 
 2. Install prerequisites:
 
@@ -11,7 +21,7 @@ Isogeo User oAuth2 example - Website with Flask
 	pip install --upgrade -r requirements.txt
 	```
 
-3. Paste the `client_secrets.json`file inside `IsogeoFlask` directory. If you don't have, ask one to Isogeo!
+3. Paste the `client_secrets.json`file inside `web_flask_example` directory. If you don't have, ask one to Isogeo!
 
 4. Run it:
 
@@ -19,4 +29,15 @@ Isogeo User oAuth2 example - Website with Flask
 	python runserver.py
 	```
 
-5. Open your favorite browser to http://localhost:5000
+5. Open your favorite browser to [http://localhost:5000](http://localhost:5000)
+
+### With Docker
+
+```powershell
+# build the container
+docker build -t isogeo-oauth2-sample:latest .
+# launch it in detached mode
+docker run -d -p 5000:5000 isogeo-oauth2-sample
+```
+
+Then, open your favorite browser to [http://localhost:5000](http://localhost:5000)

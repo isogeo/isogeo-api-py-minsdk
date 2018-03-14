@@ -9,6 +9,10 @@
 #   It's higly recomended to use it within a virtualenv.
 #
 
+# utils
+setuptools
+wheel
+
 # web
 flask
 requests_oauthlib
