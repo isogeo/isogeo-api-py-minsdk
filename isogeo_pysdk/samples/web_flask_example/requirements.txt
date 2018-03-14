@@ -14,7 +14,8 @@ setuptools
 wheel
 
 # web
-flask
+flask==0.12.*
+requests==2.18.*
 requests_oauthlib
 
 # Isogeo

@@ -5,7 +5,6 @@
 # Standard library
 import json
 from datetime import datetime
-from pprint import pformat
 from random import randint
 
 # 3rd party library
@@ -62,7 +61,7 @@ def contact():
 def login():
     """Step 1: User Authorization.
 
-    Redirect the user/resource owner to the OAuth provider (i.e. Github)
+    Redirect the user/resource owner to the OAuth provider = Isogeo ID
     using an URL with a few key OAuth parameters.
     """
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID)
@@ -94,7 +93,6 @@ def callback():
     # in /search.
     session['oauth_token'] = token
 
-    # return redirect(url_for('.search'))
     return redirect(url_for('.menu'))
 
 
@@ -107,22 +105,8 @@ def menu():
         'menu.html',
         title='Menu utilisateur authentifié',
         year=datetime.now().year,
+        token_oauth=session['oauth_token'],
     )
-
-    return """
-    <h1>Congratulations, you have obtained an OAuth 2 token!</h1>
-    <h2>What would you like to do next?</h2>
-    <ul>
-        <li><a href="/search"> Make a raw search</a></li>
-        <li><a href="/profile"> View basic metrics</a></li>
-        <li><a href="/automatic_refresh"> Implicitly refresh the token</a></li>
-        <li><a href="/manual_refresh"> Explicitly refresh the token</a></li>
-    </ul>
-
-    <pre>
-    %s
-    </pre>
-    """ % pformat(session['oauth_token'], indent=4)
 
 
 # TOKEN MANAGEMENT -----------------------------------------------------------
@@ -180,9 +164,19 @@ def search():
     if not session.get("oauth_token"):
         return redirect(url_for('.login'))
     isogeo = OAuth2Session(ISOGEO_OAUTH_CLIENT_ID, token=session['oauth_token'])
-    return jsonify(isogeo.get("https://v1.api.isogeo.com/resources/search?"
-                              "_limit=10"
-                              "&_include=conditions,contacts,coordinate-system,feature-attributes,layers") .json())
+
+    # request parameters
+    payload = {"_limit": 10,
+               "_include":"conditions,contacts,coordinate-system,feature-attributes,layers"}
+    search_url = "https://v1.api.isogeo.com/resources/search?"
+
+    search_req = isogeo.get(search_url,
+                            # headers=head,
+                            params=payload)
+    # return jsonify(isogeo.get("https://v1.api.isogeo.com/resources/search?"
+    #                           "_limit=10"
+    #                           "&_include=") .json())
+    return jsonify(search_req.json())
 
 
 @app.route("/profile", methods=["GET"])
@@ -214,10 +208,6 @@ def profile():
                    isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0&q=type:service').json().get("total", 0),
                    isogeo.get('https://v1.api.isogeo.com/resources/search?_limit=0&q=type:resource').json().get("total", 0),
                    ]
-
-    # NOT USED
-    # # line chart
-    # stats_creation = [md.get("_created") for md in search.get("results")]
 
     # to display
     return render_template(
