@@ -74,8 +74,9 @@
     </div>
 
     <!-- MINI CCHART -->
+    <hr>
+    <h2>Sample chart</h2>
 	<canvas class="my-4" id="md_chart_types" width="900" height="380"></canvas>
-	<canvas class="my-4" id="md_chart_history" width="900" height="380"></canvas>
 </main>
 
     <!-- Graphs -->
@@ -96,34 +97,5 @@
           }],
         }
 		});
-    </script>
-    <script defer>
-      var ctx2 = document.getElementById("md_chart_history");
-      var lineChart = new Chart(ctx2, {
-        type: 'line',
-        data: {
-          labels: ["2012", "2013", "2014", "2015", "2016", "2017", "2018"],
-          datasets: [{
-            data: [15339, 21345, 18483, 24003, 23489, 24092, 12034],
-            lineTension: 0,
-            backgroundColor: 'transparent',
-            borderColor: '#007bff',
-            borderWidth: 4,
-            pointBackgroundColor: '#007bff'
-          }]
-        },
-        options: {
-          scales: {
-            yAxes: [{
-              ticks: {
-                beginAtZero: false
-              }
-            }]
-          },
-          legend: {
-            display: false,
-          }
-        }
-      });
     </script>
 {% endblock %}
