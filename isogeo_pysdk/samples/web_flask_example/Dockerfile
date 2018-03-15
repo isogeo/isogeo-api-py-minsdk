@@ -6,11 +6,7 @@ LABEL Description="Image to demonstrate user authentication (oAuth2) mecanism to
 
 # Update the default application repository sources list
 RUN apt-get update && \
-    apt-get install -y \
-        build-essential \
-        python-pip\
-        python-software-properties \
-        python-all-dev \
+    apt-get upgrade -y \
     && \
     rm -rf /var/lib/apt/lists/*
 
