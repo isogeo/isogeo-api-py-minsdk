@@ -36,7 +36,7 @@ Run this sample:
 # build the container
 docker build -t isogeo-oauth2-sample:latest .
 # launch it in detached mode
-docker run -d -p 5000:5000 isogeo-oauth2-sample
+docker run --name isogeo-websample -d -p 5000:5000 isogeo-oauth2-sample
 ```
 
 Then, open your favorite browser to [http://localhost:5000](http://localhost:5000)
