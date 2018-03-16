@@ -28,6 +28,7 @@ FILTER_KEYS = {"action": [],
                "contact:group": [],
                "contact:isogeo": [],
                "coordinate-system": [],
+               "data-source": [],
                "format": [],
                "has-no": [],
                "keyword:isogeo": [],
@@ -37,6 +38,11 @@ FILTER_KEYS = {"action": [],
                "owner": [],
                "text": [],
                "type": []}
+
+FILTER_ACTIONS = ("download",
+                  "other",
+                  "view"
+                  )
 
 FILTER_TYPES = ("dataset",
                 "raster-dataset",
@@ -193,7 +199,11 @@ class IsogeoChecker(object):
         if dico_filters.get("type", ("dataset",))[0].lower() not in FILTER_TYPES:
             raise ValueError("type value must be one of: {}"
                              .format(" | ".join(FILTER_TYPES)))
-        logging.debug(dico_filters)
+        elif dico_filters.get("action", ("download",))[0].lower() not in FILTER_ACTIONS:
+            raise ValueError("action value must be one of: {}"
+                             .format(" | ".join(FILTER_ACTIONS)))
+        else:
+            logging.debug(dico_filters)
 
 
 # ##############################################################################

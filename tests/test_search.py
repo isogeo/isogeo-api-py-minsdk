@@ -21,8 +21,8 @@ from isogeo_pysdk import Isogeo, __version__ as pysdk_version
 # ##################################
 
 # API access
-share_id = environ.get('ISOGEO_API_DEV_ID')
-share_token = environ.get('ISOGEO_API_DEV_SECRET')
+app_id = environ.get('ISOGEO_API_DEV_ID')
+app_secret = environ.get('ISOGEO_API_DEV_SECRET')
 
 # #############################################################################
 # ########## Classes ###############
@@ -31,18 +31,18 @@ share_token = environ.get('ISOGEO_API_DEV_SECRET')
 
 class Search(unittest.TestCase):
     """Test search to Isogeo API."""
-    if not share_id or not share_token:
+    if not app_id or not app_secret:
         logging.critical("No API credentials set as env variables.")
         exit()
     else:
-        pass            
+        pass
     print('Isogeo PySDK version: {0}'.format(pysdk_version))
 
     # standard methods
     def setUp(self):
         """Executed before each test."""
-        self.isogeo = Isogeo(client_id=share_id,
-                             client_secret=share_token)
+        self.isogeo = Isogeo(client_id=app_id,
+                             client_secret=app_secret)
         self.bearer = self.isogeo.connect()
 
     def tearDown(self):
@@ -67,6 +67,8 @@ class Search(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.isogeo.search(self.bearer,
                                query="type:youpi")
+            self.isogeo.search(self.bearer,
+                               query="action:yipiyo")
 
     def test_parameter_not_unique_search(self):
         """SDK raises error for search with a parameter that must be unique."""
