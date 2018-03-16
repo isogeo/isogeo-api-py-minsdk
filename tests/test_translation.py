@@ -21,8 +21,8 @@ from isogeo_pysdk import Isogeo, IsogeoTranslator, __version__ as pysdk_version
 # ##################################
 
 # API access
-share_id = environ.get('ISOGEO_API_DEV_ID')
-share_token = environ.get('ISOGEO_API_DEV_SECRET')
+app_id = environ.get('ISOGEO_API_DEV_ID')
+app_token = environ.get('ISOGEO_API_DEV_SECRET')
 
 li_contacts_fr = ("Auteur",
                   "Point de contact",
@@ -55,18 +55,18 @@ li_contacts_en = ("Author",
 
 class Translation(unittest.TestCase):
     """Test translation of specific words wihtin Isogeo API."""
-    if not share_id or not share_token:
+    if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")
         exit()
     else:
-        pass  
+        pass
     print('Isogeo PySDK version: {0}'.format(pysdk_version))
 
     # standard methods
     def setUp(self):
         """Executed before each test."""
-        self.isogeo = Isogeo(client_id=share_id,
-                             client_secret=share_token,
+        self.isogeo = Isogeo(client_id=app_id,
+                             client_secret=app_token,
                              lang="FR")
         self.bearer = self.isogeo.connect()
         self.md_contacts = self.isogeo.resource(self.bearer,
@@ -95,6 +95,7 @@ class Translation(unittest.TestCase):
         # contacts roles
         for role in self.li_contacts_roles:
             self.assertIn(tr.tr("roles", role), li_contacts_en)
+
 
 # #############################################################################
 # ######## Standalone ##############

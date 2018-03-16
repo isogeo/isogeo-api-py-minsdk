@@ -21,8 +21,8 @@ from six import string_types
 # ##################################
 
 # API access
-share_id = environ.get('ISOGEO_API_DEV_ID')
-share_token = environ.get('ISOGEO_API_DEV_SECRET')
+app_id = environ.get('ISOGEO_API_DEV_ID')
+app_token = environ.get('ISOGEO_API_DEV_SECRET')
 
 checker = IsogeoChecker()
 
@@ -33,7 +33,7 @@ checker = IsogeoChecker()
 
 class AuthBadCodes(unittest.TestCase):
     """Test authentication process."""
-    if not share_id or not share_token:
+    if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")
         exit()
     print('Isogeo PySDK version: {0}'.format(pysdk_version))
@@ -58,16 +58,16 @@ class AuthBadCodes(unittest.TestCase):
 
     def test_bad_id_secret(self):
         """Bad API ID and secret."""
-        isogeo = Isogeo(client_id=share_id[:-2],
-                        client_secret=share_token)
+        isogeo = Isogeo(client_id=app_id[:-2],
+                        client_secret=app_token)
         with self.assertRaises(ValueError):
             isogeo.connect()
 
     def test_bad_platform(self):
         """Bad platform value."""
         with self.assertRaises(ValueError):
-            isogeo = Isogeo(client_id=share_id,
-                            client_secret=share_token,
+            isogeo = Isogeo(client_id=app_id,
+                            client_secret=app_token,
                             platform="skynet"
                             )
             del isogeo
@@ -75,16 +75,16 @@ class AuthBadCodes(unittest.TestCase):
     def test_bad_auth_mode(self):
         """Bad auth mode value."""
         with self.assertRaises(ValueError):
-            isogeo = Isogeo(client_id=share_id,
-                            client_secret=share_token,
+            isogeo = Isogeo(client_id=app_id,
+                            client_secret=app_token,
                             auth_mode="fingerprint"
                             )
             del isogeo
 
     def test_successed_auth(self):
         """When a search works, check the response structure."""
-        isogeo = Isogeo(client_id=share_id,
-                        client_secret=share_token)
+        isogeo = Isogeo(client_id=app_id,
+                        client_secret=app_token)
         bearer = isogeo.connect()
         self.assertIsInstance(bearer, tuple)
         self.assertEqual(len(bearer), 2)
@@ -93,8 +93,8 @@ class AuthBadCodes(unittest.TestCase):
 
     def test_checker_validity_bearer_valid(self):
         """When a search works, check the response structure."""
-        isogeo = Isogeo(client_id=share_id,
-                        client_secret=share_token)
+        isogeo = Isogeo(client_id=app_id,
+                        client_secret=app_token)
         bearer = isogeo.connect()
         self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect()), tuple)
         self.assertEqual(len(checker.check_bearer_validity(bearer, isogeo.connect())), 2)
@@ -104,8 +104,8 @@ class AuthBadCodes(unittest.TestCase):
 
     def test_checker_validity_bearer_expired(self):
         """When a search works, check the response structure."""
-        isogeo = Isogeo(client_id=share_id,
-                        client_secret=share_token)
+        isogeo = Isogeo(client_id=app_id,
+                        client_secret=app_token)
         bearer = isogeo.connect()
         bearer = (bearer[0], 50)
         self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect()), tuple)

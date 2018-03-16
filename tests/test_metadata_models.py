@@ -21,8 +21,8 @@ from isogeo_pysdk import Isogeo, __version__ as pysdk_version
 # ##################################
 
 # API access
-share_id = environ.get('ISOGEO_API_DEV_ID')
-share_token = environ.get('ISOGEO_API_DEV_SECRET')
+app_id = environ.get('ISOGEO_API_DEV_ID')
+app_token = environ.get('ISOGEO_API_DEV_SECRET')
 
 # #############################################################################
 # ########## Classes ###############
@@ -31,18 +31,18 @@ share_token = environ.get('ISOGEO_API_DEV_SECRET')
 
 class Search(unittest.TestCase):
     """Test search to Isogeo API."""
-    if not share_id or not share_token:
+    if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")
         exit()
     else:
-        pass            
+        pass
     print('Isogeo PySDK version: {0}'.format(pysdk_version))
 
     # standard methods
     def setUp(self):
         """Executed before each test."""
-        self.isogeo = Isogeo(client_id=share_id,
-                             client_secret=share_token)
+        self.isogeo = Isogeo(client_id=app_id,
+                             client_secret=app_token)
         self.bearer = self.isogeo.connect()
 
     def tearDown(self):
@@ -69,7 +69,7 @@ class Search(unittest.TestCase):
         self.assertIn("tags", md)
         self.assertIn("editionProfile", md)
         self.assertIn("series", md)
-        
+
         # _creator keys/values
         md_crea = md.get("_creator")
         self.assertIsInstance(md_crea, dict)
@@ -128,7 +128,7 @@ class Search(unittest.TestCase):
         self.assertIn("tags", md)
         self.assertIn("editionProfile", md)
         self.assertIn("series", md)
-        
+
         # _creator keys/values
         md_crea = md.get("_creator")
         self.assertIsInstance(md_crea, dict)
@@ -182,11 +182,11 @@ class Search(unittest.TestCase):
         self.assertIn("_modified", md)
         self.assertIn("_creator", md)
         self.assertIn("_abilities", md)
-        self.assertIn("title", md)        
+        self.assertIn("title", md)
         self.assertIn("type", md)
         self.assertIn("tags", md)
         self.assertIn("editionProfile", md)
-        
+
         # _creator keys/values
         md_crea = md.get("_creator")
         self.assertIsInstance(md_crea, dict)
@@ -246,7 +246,7 @@ class Search(unittest.TestCase):
         self.assertIn("editionProfile", md)
         self.assertIn("series", md)
         self.assertEqual(md.get("series"), 1)
-        
+
         # _creator keys/values
         md_crea = md.get("_creator")
         self.assertIsInstance(md_crea, dict)
@@ -305,7 +305,7 @@ class Search(unittest.TestCase):
         self.assertIn("type", md)
         self.assertIn("tags", md)
         self.assertIn("editionProfile", md)
-        
+
         # _creator keys/values
         md_crea = md.get("_creator")
         self.assertIsInstance(md_crea, dict)
@@ -351,7 +351,7 @@ class Search(unittest.TestCase):
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
         search = self.isogeo.search(self.bearer, whole_share=0,
                                     specific_md=["3c649da21ed9405e8d508bfdbe831516",],
-                                    sub_resources=["contacts",])
+                                    sub_resources=["contacts", ])
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)
 
