@@ -36,6 +36,7 @@ FILTER_KEYS = {"action": [],
                "license:group": [],
                "license:isogeo": [],
                "owner": [],
+               "provider": [],
                "text": [],
                "type": []}
 
@@ -43,6 +44,10 @@ FILTER_ACTIONS = ("download",
                   "other",
                   "view"
                   )
+
+FILTER_PROVIDERS = ("manual",
+                    "auto"
+                    )
 
 FILTER_TYPES = ("dataset",
                 "raster-dataset",
@@ -165,6 +170,9 @@ class IsogeoChecker(object):
             elif i.startswith("coordinate-system"):
                 dico_query["coordinate-system"].append(i.split(":")[1:][0])
                 continue
+            elif i.startswith("data-source"):
+                dico_query["data-source"].append(i.split(":")[1:][0])
+                continue
             elif i.startswith("format"):
                 dico_query["format"].append(i.split(":")[1:][0])
                 continue
@@ -186,11 +194,14 @@ class IsogeoChecker(object):
             elif i.startswith("owner"):
                 dico_query["owner"].append(i.split(":")[1:][0])
                 continue
+            elif i.startswith("provider"):
+                dico_query["provider"].append(i.split(":")[1:][0])
+                continue
             elif i.startswith("type"):
                 dico_query["type"].append(i.split(":")[1:][0])
                 continue
             else:
-                print(i.split(":")[1], i.split(":")[1].isdigit())
+                logging.debug(i.split(":")[1], i.split(":")[1].isdigit())
                 dico_query["text"].append(i)
                 pass
 
@@ -202,6 +213,9 @@ class IsogeoChecker(object):
         elif dico_filters.get("action", ("download",))[0].lower() not in FILTER_ACTIONS:
             raise ValueError("action value must be one of: {}"
                              .format(" | ".join(FILTER_ACTIONS)))
+        elif dico_filters.get("provider", ("manual",))[0].lower() not in FILTER_PROVIDERS:
+            raise ValueError("provider value must be one of: {}"
+                             .format(" | ".join(FILTER_PROVIDERS)))
         else:
             logging.debug(dico_filters)
 

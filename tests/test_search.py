@@ -69,6 +69,8 @@ class Search(unittest.TestCase):
                                query="type:youpi")
             self.isogeo.search(self.bearer,
                                query="action:yipiyo")
+            self.isogeo.search(self.bearer,
+                               query="provider:youplaboum")
 
     def test_parameter_not_unique_search(self):
         """SDK raises error for search with a parameter that must be unique."""
