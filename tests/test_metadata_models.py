@@ -36,7 +36,6 @@ class Search(unittest.TestCase):
         exit()
     else:
         pass
-    print('Isogeo PySDK version: {0}'.format(pysdk_version))
 
     # standard methods
     def setUp(self):
@@ -385,6 +384,71 @@ class Search(unittest.TestCase):
         self.assertIn("encoding", md)
         self.assertIn("created", md)
         self.assertIn("contacts", md)
+
+    # share models
+    def test_shares(self):
+        """Check shares route model response."""
+        shares = self.isogeo.shares(self.bearer)
+        share = shares[0]
+        self.assertIsInstance(share, dict)
+
+        # root keys
+        self.assertIn("_created", share)
+        self.assertIn("_creator", share)
+        self.assertIn("_id", share)
+        self.assertIn("_modified", share)
+        self.assertIn("applications", share)
+        self.assertIn("catalogs", share)
+        self.assertIn("name", share)
+        self.assertIn("rights", share)
+        self.assertIn("type", share)
+        self.assertIn("urlToken", share)
+
+        # root values
+        self.assertIsInstance(share.get("_created"), str)
+        self.assertIsInstance(share.get("_id"), str)
+        self.assertIsInstance(share.get("_modified"), str)
+        self.assertIsInstance(share.get("applications"), list)
+        self.assertIsInstance(share.get("catalogs"), list)
+        self.assertIsInstance(share.get("name"), str)
+        self.assertIsInstance(share.get("catalogs"), list)
+        self.assertIsInstance(share.get("rights"), list)
+        self.assertIsInstance(share.get("type"), str)
+        self.assertIsInstance(share.get("urlToken"), str)
+
+        # _creator keys/values
+        share_crea = share.get("_creator")
+        self.assertIsInstance(share_crea, dict)
+        self.assertIn("_created", share_crea)
+        self.assertIn("_id", share_crea)
+        self.assertIn("_modified", share_crea)
+        self.assertIn("_tag", share_crea)
+        self.assertIn("areKeywordsRestricted", share_crea)
+        self.assertIn("canCreateLegacyServiceLinks", share_crea)
+        self.assertIn("canCreateMetadata", share_crea)
+        self.assertIn("contact", share_crea)
+        self.assertIn("hasCswClient", share_crea)
+        self.assertIn("hasScanFme", share_crea)
+        self.assertIn("keywordsCasing", share_crea)
+        self.assertIn("metadataLanguage", share_crea)
+
+        # _creator subcontact keys/values
+        share_crea_ct = share_crea.get("contact")
+        self.assertIsInstance(share_crea_ct, dict)
+        self.assertIn("_deleted", share_crea_ct)
+        self.assertIn("_id", share_crea_ct)
+        self.assertIn("_tag", share_crea_ct)
+        self.assertIn("addressLine1", share_crea_ct)
+        self.assertIn("addressLine2", share_crea_ct)
+        self.assertIn("available", share_crea_ct)
+        self.assertIn("city", share_crea_ct)
+        self.assertIn("countryCode", share_crea_ct)
+        self.assertIn("email", share_crea_ct)
+        self.assertIn("fax", share_crea_ct)
+        self.assertIn("name", share_crea_ct)
+        self.assertIn("phone", share_crea_ct)
+        self.assertIn("type", share_crea_ct)
+        self.assertIn("zipCode", share_crea_ct)
 
 
 # ##############################################################################
