@@ -7,13 +7,14 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # ##################################
 
 # Standard library
+from six import string_types as str
 from os import environ
 import logging
 from sys import exit
 import unittest
 
 # module target
-from isogeo_pysdk import Isogeo, __version__ as pysdk_version
+from isogeo_pysdk import Isogeo
 
 
 # #############################################################################
