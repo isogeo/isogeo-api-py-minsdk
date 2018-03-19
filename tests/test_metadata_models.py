@@ -401,6 +401,7 @@ class Search(unittest.TestCase):
     def test_shares(self):
         """Check shares route model response."""
         shares = self.isogeo.shares(self.bearer)
+        self.assertIsInstance(shares, list)
         share = shares[0]
         self.assertIsInstance(share, dict)
 
@@ -497,6 +498,153 @@ class Search(unittest.TestCase):
         self.assertIsInstance(share_crea_ct.get("type"), str)
         self.assertIsInstance(share_crea_ct.get("zipCode"), str)
 
+        # applications keys
+        share_apps = share.get("applications")
+        share_app = share_apps[0]
+        self.assertEqual(len(share_app.keys()), 8)
+        self.assertIsInstance(share_app, dict)
+        self.assertIn("_created", share_app)
+        self.assertIn("_id", share_app)
+        self.assertIn("_modified", share_app)
+        self.assertIn("kind", share_app)
+        self.assertIn("name", share_app)
+        self.assertIn("staff", share_app)
+        self.assertIn("type", share_app)
+        self.assertIn("url", share_app)
+
+        # applications values
+        self.assertIsInstance(share_app.get("_created"), str)
+        self.assertIsInstance(share_app.get("_id"), str)
+        self.assertIsInstance(share_app.get("_modified"), str)
+        self.assertIsInstance(share_app.get("kind"), str)
+        self.assertIsInstance(share_app.get("name"), str)
+        self.assertIsInstance(share_app.get("staff"), bool)
+        self.assertIsInstance(share_app.get("type"), str)
+        self.assertIsInstance(share_app.get("url"), str)
+
+    def test_share(self):
+        """Check share route model response."""
+        share = self.isogeo.share(self.bearer,
+                                  share_id="1e07910d365449b59b6596a9b428ecd9")
+
+        self.assertIsInstance(share, dict)
+
+        # root keys
+        self.assertIn("_created", share)
+        self.assertIn("_creator", share)
+        self.assertIn("_id", share)
+        self.assertIn("_modified", share)
+        self.assertIn("applications", share)
+        self.assertIn("catalogs", share)
+        self.assertIn("name", share)
+        self.assertIn("rights", share)
+        self.assertIn("type", share)
+        self.assertIn("urlToken", share)
+
+        # root values
+        self.assertIsInstance(share.get("_created"), str)
+        self.assertIsInstance(share.get("_id"), str)
+        self.assertIsInstance(share.get("_modified"), str)
+        self.assertIsInstance(share.get("applications"), list)
+        self.assertIsInstance(share.get("catalogs"), list)
+        self.assertIsInstance(share.get("name"), str)
+        self.assertIsInstance(share.get("rights"), list)
+        self.assertIsInstance(share.get("type"), str)
+        self.assertIsInstance(share.get("urlToken"), str)
+
+        self.assertIsInstance(dtparse(share.get("_created")), datetime)
+        self.assertIsInstance(dtparse(share.get("_modified")), datetime)
+
+        # _creator keys/values
+        share_crea = share.get("_creator")
+        self.assertIsInstance(share_crea, dict)
+        self.assertIn("_created", share_crea)
+        self.assertIn("_id", share_crea)
+        self.assertIn("_modified", share_crea)
+        self.assertIn("_tag", share_crea)
+        self.assertIn("areKeywordsRestricted", share_crea)
+        self.assertIn("canCreateLegacyServiceLinks", share_crea)
+        self.assertIn("canCreateMetadata", share_crea)
+        self.assertIn("contact", share_crea)
+        self.assertIn("hasCswClient", share_crea)
+        self.assertIn("hasScanFme", share_crea)
+        self.assertIn("keywordsCasing", share_crea)
+        self.assertIn("metadataLanguage", share_crea)
+
+        # creator values
+        self.assertIsInstance(share_crea.get("_created"), str)
+        self.assertIsInstance(share_crea.get("_id"), str)
+        self.assertIsInstance(share_crea.get("_modified"), str)
+        self.assertIsInstance(share_crea.get("_tag"), str)
+        self.assertIsInstance(share_crea.get("areKeywordsRestricted"), bool)
+        self.assertIsInstance(share_crea.get("canCreateLegacyServiceLinks"), bool)
+        self.assertIsInstance(share_crea.get("canCreateMetadata"), bool)
+        self.assertIsInstance(share_crea.get("contact"), dict)
+        self.assertIsInstance(share_crea.get("hasCswClient"), bool)
+        self.assertIsInstance(share_crea.get("hasScanFme"), bool)
+        self.assertIsInstance(share_crea.get("keywordsCasing"), str)
+        self.assertIsInstance(share_crea.get("metadataLanguage"), str)
+
+        self.assertIn(share_crea.get("keywordsCasing"), WG_KEYWORDS_CASING)
+        self.assertIsInstance(dtparse(share_crea.get("_created")), datetime)
+        self.assertIsInstance(dtparse(share_crea.get("_modified")), datetime)
+
+        # _creator subcontact keys
+        share_crea_ct = share_crea.get("contact")
+        self.assertIn("_deleted", share_crea_ct)
+        self.assertIn("_id", share_crea_ct)
+        self.assertIn("_tag", share_crea_ct)
+        self.assertIn("addressLine1", share_crea_ct)
+        self.assertIn("addressLine2", share_crea_ct)
+        self.assertIn("available", share_crea_ct)
+        self.assertIn("city", share_crea_ct)
+        self.assertIn("countryCode", share_crea_ct)
+        self.assertIn("email", share_crea_ct)
+        # self.assertIn("fax", share_crea_ct)
+        self.assertIn("name", share_crea_ct)
+        # self.assertIn("phone", share_crea_ct)
+        self.assertIn("type", share_crea_ct)
+        self.assertIn("zipCode", share_crea_ct)
+
+        # _creator subcontact values
+        self.assertIsInstance(share_crea_ct.get("_deleted"), bool)
+        self.assertIsInstance(share_crea_ct.get("_id"), str)
+        self.assertIsInstance(share_crea_ct.get("_tag"), str)
+        self.assertIsInstance(share_crea_ct.get("addressLine1"), str)
+        self.assertIsInstance(share_crea_ct.get("addressLine2"), str)
+        self.assertIsInstance(share_crea_ct.get("available"), bool)
+        self.assertIsInstance(share_crea_ct.get("city"), str)
+        self.assertIsInstance(share_crea_ct.get("countryCode"), str)
+        self.assertIsInstance(share_crea_ct.get("email"), str)
+        # self.assertIsInstance(share_crea_ct.get("fax"), str)
+        self.assertIsInstance(share_crea_ct.get("name"), str)
+        # self.assertIsInstance(share_crea_ct.get("phone"), str)
+        self.assertIsInstance(share_crea_ct.get("type"), str)
+        self.assertIsInstance(share_crea_ct.get("zipCode"), str)
+
+        # applications keys
+        share_apps = share.get("applications")
+        share_app = share_apps[0]
+        self.assertEqual(len(share_app.keys()), 8)
+        self.assertIsInstance(share_app, dict)
+        self.assertIn("_created", share_app)
+        self.assertIn("_id", share_app)
+        self.assertIn("_modified", share_app)
+        self.assertIn("kind", share_app)
+        self.assertIn("name", share_app)
+        self.assertIn("staff", share_app)
+        self.assertIn("type", share_app)
+        self.assertIn("url", share_app)
+
+        # applications values
+        self.assertIsInstance(share_app.get("_created"), str)
+        self.assertIsInstance(share_app.get("_id"), str)
+        self.assertIsInstance(share_app.get("_modified"), str)
+        self.assertIsInstance(share_app.get("kind"), str)
+        self.assertIsInstance(share_app.get("name"), str)
+        self.assertIsInstance(share_app.get("staff"), bool)
+        self.assertIsInstance(share_app.get("type"), str)
+        self.assertIsInstance(share_app.get("url"), str)
 
 # ##############################################################################
 # ##### Stand alone program ########

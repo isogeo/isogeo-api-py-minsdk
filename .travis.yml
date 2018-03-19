@@ -1,17 +1,18 @@
 language: python
+
 python:
   - "2.7"
   - "3.4"
   - "3.5"
   - "3.6"
 cache: pip
-# command to install dependencies!
+
+# dependencies
 install:
-  - "pip install --upgrade -r requirements.txt"
-  - "pip install --upgrade pycodestyle python-dateutil"
+  - "pip install --upgrade -r tests/requirements_test.txt"
   - "pip install git+https://github.com/Guts/isogeo-api-py-minsdk"
 
-# command to run tests!
+# run tests
 script:
   - python -m unittest discover
   - pycodestyle isogeo_pysdk/isogeo_sdk.py --ignore="E265,E501" --statistics --show-source
