@@ -56,6 +56,11 @@ FILTER_TYPES = ("dataset",
                 "service"
                 )
 
+WG_KEYWORDS_CASING = ("capitalized",
+                      "lowercase",
+                      "mixedCase",
+                      "uppercase",
+                      )
 
 # ##############################################################################
 # ########## Classes ###############

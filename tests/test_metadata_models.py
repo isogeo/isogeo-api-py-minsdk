@@ -7,11 +7,15 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # ##################################
 
 # Standard library
+from datetime import datetime
 from six import string_types as str
 from os import environ
 import logging
 from sys import exit
 import unittest
+
+# 3rd party
+from dateutil.parser import parse as dtparse
 
 # module target
 from isogeo_pysdk import Isogeo
@@ -24,6 +28,13 @@ from isogeo_pysdk import Isogeo
 # API access
 app_id = environ.get('ISOGEO_API_DEV_ID')
 app_token = environ.get('ISOGEO_API_DEV_SECRET')
+
+# MODELS KEY/VALUES
+WG_KEYWORDS_CASING = ("capitalized",
+                      "lowercase",
+                      "mixedCase",
+                      "uppercase",
+                      )
 
 # #############################################################################
 # ########## Classes ###############
@@ -412,10 +423,12 @@ class Search(unittest.TestCase):
         self.assertIsInstance(share.get("applications"), list)
         self.assertIsInstance(share.get("catalogs"), list)
         self.assertIsInstance(share.get("name"), str)
-        self.assertIsInstance(share.get("catalogs"), list)
         self.assertIsInstance(share.get("rights"), list)
         self.assertIsInstance(share.get("type"), str)
         self.assertIsInstance(share.get("urlToken"), str)
+
+        self.assertIsInstance(dtparse(share.get("_created")), datetime)
+        self.assertIsInstance(dtparse(share.get("_modified")), datetime)
 
         # _creator keys/values
         share_crea = share.get("_creator")
@@ -433,9 +446,26 @@ class Search(unittest.TestCase):
         self.assertIn("keywordsCasing", share_crea)
         self.assertIn("metadataLanguage", share_crea)
 
-        # _creator subcontact keys/values
+        # creator values
+        self.assertIsInstance(share_crea.get("_created"), str)
+        self.assertIsInstance(share_crea.get("_id"), str)
+        self.assertIsInstance(share_crea.get("_modified"), str)
+        self.assertIsInstance(share_crea.get("_tag"), str)
+        self.assertIsInstance(share_crea.get("areKeywordsRestricted"), bool)
+        self.assertIsInstance(share_crea.get("canCreateLegacyServiceLinks"), bool)
+        self.assertIsInstance(share_crea.get("canCreateMetadata"), bool)
+        self.assertIsInstance(share_crea.get("contact"), dict)
+        self.assertIsInstance(share_crea.get("hasCswClient"), bool)
+        self.assertIsInstance(share_crea.get("hasScanFme"), bool)
+        self.assertIsInstance(share_crea.get("keywordsCasing"), str)
+        self.assertIsInstance(share_crea.get("metadataLanguage"), str)
+
+        self.assertIn(share_crea.get("keywordsCasing"), WG_KEYWORDS_CASING)
+        self.assertIsInstance(dtparse(share_crea.get("_created")), datetime)
+        self.assertIsInstance(dtparse(share_crea.get("_modified")), datetime)
+
+        # _creator subcontact keys
         share_crea_ct = share_crea.get("contact")
-        self.assertIsInstance(share_crea_ct, dict)
         self.assertIn("_deleted", share_crea_ct)
         self.assertIn("_id", share_crea_ct)
         self.assertIn("_tag", share_crea_ct)
@@ -450,6 +480,22 @@ class Search(unittest.TestCase):
         self.assertIn("phone", share_crea_ct)
         self.assertIn("type", share_crea_ct)
         self.assertIn("zipCode", share_crea_ct)
+
+        # _creator subcontact values
+        self.assertIsInstance(share_crea_ct.get("_deleted"), bool)
+        self.assertIsInstance(share_crea_ct.get("_id"), str)
+        self.assertIsInstance(share_crea_ct.get("_tag"), str)
+        self.assertIsInstance(share_crea_ct.get("addressLine1"), str)
+        self.assertIsInstance(share_crea_ct.get("addressLine2"), str)
+        self.assertIsInstance(share_crea_ct.get("available"), bool)
+        self.assertIsInstance(share_crea_ct.get("city"), str)
+        self.assertIsInstance(share_crea_ct.get("countryCode"), str)
+        self.assertIsInstance(share_crea_ct.get("email"), str)
+        self.assertIsInstance(share_crea_ct.get("fax"), str)
+        self.assertIsInstance(share_crea_ct.get("name"), str)
+        self.assertIsInstance(share_crea_ct.get("phone"), str)
+        self.assertIsInstance(share_crea_ct.get("type"), str)
+        self.assertIsInstance(share_crea_ct.get("zipCode"), str)
 
 
 # ##############################################################################

@@ -36,7 +36,7 @@ class Search(unittest.TestCase):
         exit()
     else:
         pass
-    print('Isogeo PySDK version: {0}'.format(pysdk_version))
+    logging.debug('Isogeo PySDK version: {0}'.format(pysdk_version))
 
     # standard methods
     def setUp(self):
