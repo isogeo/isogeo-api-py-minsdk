@@ -59,7 +59,7 @@ class Isogeo(object):
     """
 
     # -- ATTRIBUTES -----------------------------------------------------------
-    api_urls = {"prod": "api",
+    API_URLS = {"prod": "api",
                 "qa": "api.qa"
                 }
 
@@ -166,16 +166,16 @@ class Isogeo(object):
         # platform to request
         self.platform = platform.lower()
         if platform == "prod":
-            self.base_url = self.api_urls.get(platform)
+            self.base_url = self.API_URLS.get(platform)
             logging.info("Using production platform.")
         elif platform == "qa":
-            self.base_url = self.api_urls.get(platform)
+            self.base_url = self.API_URLS.get(platform)
             logging.info("Using Quality Assurance platform (reduced perfs).")
         else:
             logging.error("Platform must be one of: {}"
-                          .format(" | ".join(self.api_urls.keys())))
+                          .format(" | ".join(self.API_URLS.keys())))
             raise ValueError(3, "Platform must be one of: {}"
-                                .format(" | ".join(self.api_urls.keys())))
+                                .format(" | ".join(self.API_URLS.keys())))
 
         # setting language
         if lang.lower() not in ("fr", "en"):
