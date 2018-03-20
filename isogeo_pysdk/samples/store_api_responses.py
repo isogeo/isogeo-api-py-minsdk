@@ -16,9 +16,8 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # ##################################
 
 # Standard library
-import configparser     # to manage options.ini
 import json
-from os import path
+from os import environ
 
 # Isogeo
 from isogeo_pysdk import Isogeo
@@ -27,30 +26,13 @@ from isogeo_pysdk import Isogeo
 # ######### Main program ###########
 # ##################################
 
-# storing application parameters into an ini file
-settings_file = r"../isogeo_params.ini"
 
-# testing ini file
-if not path.isfile(path.realpath(settings_file)):
-    print("ERROR: to execute this script as standalone, you need to store "
-          "your Isogeo application settings in a isogeo_params.ini file."
-          " You can use the template to set your own.")
-    import sys
-    sys.exit()
-else:
-    pass
-
-# reading ini file
-config = configparser.SafeConfigParser()
-config.read(settings_file)
-
-share_id = config.get('auth', 'app_id')
-share_token = config.get('auth', 'app_secret')
+share_id = environ.get('ISOGEO_API_DEV_ID')
+share_token = environ.get('ISOGEO_API_DEV_SECRET')
 
 # instanciating the class
 isogeo = Isogeo(client_id=share_id,
-                client_secret=share_token,
-                lang="fr")
+                client_secret=share_token)
 
 token = isogeo.connect()
 
@@ -75,7 +57,7 @@ with open("out_api_search_basic.json", "w") as json_basic:
               )
 
 # complete search
-request = isogeo.search(token, whole_share=1, page_size=10, sub_resources="all")
+request = isogeo.search(token, whole_share=1, sub_resources="all")
 with open("out_api_search_complete.json", "w") as json_basic:
     json.dump(request,
               json_basic,
@@ -86,6 +68,15 @@ with open("out_api_search_complete.json", "w") as json_basic:
 # shares informations
 request = isogeo.shares(token)
 with open("out_api_shares.json", "w") as json_basic:
+    json.dump(request,
+              json_basic,
+              sort_keys=True,
+              indent=4,
+              )
+
+share_id = request[0].get("_id")
+request = isogeo.share(token, share_id)
+with open("out_api_share.json", "w") as json_basic:
     json.dump(request,
               json_basic,
               sort_keys=True,
