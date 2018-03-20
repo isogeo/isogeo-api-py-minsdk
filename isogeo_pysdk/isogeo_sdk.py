@@ -33,9 +33,11 @@ import requests
 try:
     from . import checker
     from . import translator
-except (ValueError, SystemError):
+    from . import utils
+except (ImportError, ValueError, SystemError):
     import checker
     import translator
+    import utils
 
 # ##############################################################################
 # ########## Globals ###############
@@ -48,7 +50,7 @@ version = "2.19.1.0"
 # ########## Classes ###############
 # ##################################
 
-__all__ = ["Isogeo", "IsogeoTranslator", "IsogeoChecker"]
+__all__ = ["Isogeo", "IsogeoChecker", "IsogeoTranslator", "IsogeoUtils"]
 
 
 class Isogeo(object):

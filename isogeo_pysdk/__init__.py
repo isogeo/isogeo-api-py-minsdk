@@ -9,6 +9,7 @@
 from .isogeo_sdk import Isogeo, version
 from .checker import IsogeoChecker
 from .translator import IsogeoTranslator
+from .utils import IsogeoUtils
 
 __version__ = version
 VERSION = __version__
