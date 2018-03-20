@@ -23,6 +23,7 @@ from math import ceil
 import re
 from six import string_types
 from sys import platform as opersys
+import uuid
 
 # 3rd party library
 import requests
@@ -910,6 +911,36 @@ class Isogeo(object):
             pass
         results_tags.update(self.shares_id)
         return
+
+    def converter_uuid_urn(self, src=str, mode=0):
+        """
+           Convert a metadata UUID to its URI equivalent. And conversely.
+
+           :param str input: UUID or URI to convert
+           :param bool mode: 0 from UUID to URN\
+                             1 from URN to UUID
+        """
+        # quick parameters check
+        if not isinstance(src, str):
+            raise TypeError("'input' expected a str value.")
+        else:
+            pass
+        if not checker.check_is_uuid(src):
+            raise ValueError("{} is not a correct UUID".format(src))
+        if not isinstance(mode, bool):
+            raise TypeError("'mode' expected a boolean value.")
+        else:
+            pass
+        # operate
+        if mode:
+            # output = "{}-{}-{}-{}-{}".format(src[:8],
+            #                                  src[8:12],
+            #                                  src[12:16],
+            #                                  src[16:20],
+            #                                  src[20:])
+            return uuid.UUID(src).urn
+        else:
+            return uuid.UUID(src).hex
 
     def get_app_properties(self, token, prot="https"):
         """Get information about the application declared on Isogeo."""

@@ -15,9 +15,10 @@ Complementary set of tools to make some checks on requests to Isogeo API.
 # ##################################
 
 # Standard library
-import logging
 from collections import Counter
+import logging
 import socket
+from uuid import UUID
 
 # ##############################################################################
 # ########## Globals ###############
@@ -224,6 +225,24 @@ class IsogeoChecker(object):
         else:
             logging.debug(dico_filters)
 
+    def check_is_uuid(uuid_string, version=4):
+        """
+            Si uuid_string est un code hex valide mais pas un uuid valid,
+            UUID() va quand même le convertir en uuid valide. Pour se prémunir
+            de ce problème, on check la version original (sans les tirets) avec
+            le code hex généré qui doivent être les mêmes.
+        """
+        try:
+            uid = UUID(str(uuid_string), version=version)
+            return uid.hex == str(uuid_string).replace('-', '')
+        except ValueError as e:
+            logging.error("uuid ValueError. {} ({})  -- {}"
+                          .format(type(uuid_string), uuid_string, e))
+            return False
+        except TypeError:
+            logging.error("uuid must be a string. Not: {} ({})"
+                          .format(type(uuid_string), uuid_string))
+            return False
 
 # ##############################################################################
 # ##### Stand alone program ########
