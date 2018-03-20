@@ -101,6 +101,9 @@ def menu():
     """
         # Step 4: User pick an option
     """
+    if not session.get("oauth_token"):
+        return redirect(url_for('.login'))
+
     return render_template(
         'menu.html',
         title='Menu utilisateur authentifié',
