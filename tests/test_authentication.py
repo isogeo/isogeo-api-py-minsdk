@@ -91,29 +91,6 @@ class AuthBadCodes(unittest.TestCase):
         self.assertIsInstance(bearer[0], string_types)
         self.assertIsInstance(bearer[1], int)
 
-    def test_checker_validity_bearer_valid(self):
-        """When a search works, check the response structure."""
-        isogeo = Isogeo(client_id=app_id,
-                        client_secret=app_token)
-        bearer = isogeo.connect()
-        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect()), tuple)
-        self.assertEqual(len(checker.check_bearer_validity(bearer, isogeo.connect())), 2)
-        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect())[0],
-                              string_types)
-        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect())[1], int)
-
-    def test_checker_validity_bearer_expired(self):
-        """When a search works, check the response structure."""
-        isogeo = Isogeo(client_id=app_id,
-                        client_secret=app_token)
-        bearer = isogeo.connect()
-        bearer = (bearer[0], 50)
-        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect()), tuple)
-        self.assertEqual(len(checker.check_bearer_validity(bearer, isogeo.connect())), 2)
-        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect())[0],
-                              string_types)
-        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect())[1], int)
-
 
 # #############################################################################
 # ######## Standalone ##############

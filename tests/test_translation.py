@@ -75,7 +75,6 @@ class Translation(unittest.TestCase):
                                                 )
         self.li_contacts_roles = [i.get("role")
                                   for i in self.md_contacts.get("contacts")]
-        # print(li_contacts_roles)
 
     def tearDown(self):
         """Executed after each test."""

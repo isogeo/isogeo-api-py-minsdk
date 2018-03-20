@@ -225,23 +225,29 @@ class IsogeoChecker(object):
         else:
             logging.debug(dico_filters)
 
-    def check_is_uuid(uuid_string, version=4):
+    def check_is_uuid(self, uuid_str):
         """
-            Si uuid_string est un code hex valide mais pas un uuid valid,
-            UUID() va quand même le convertir en uuid valide. Pour se prémunir
-            de ce problème, on check la version original (sans les tirets) avec
-            le code hex généré qui doivent être les mêmes.
+            Check if it's an Isogeo UUID.
+
+            :param str uuid_str: UUID string to check
         """
+        # handle Isogeo specific UUID in XML exports
+        if "isogeo:metadata" in uuid_str:
+            uuid_str = "urn:uuid:{}".format(uuid_str.split(":")[-1])
+        else:
+            pass
+        # test it
         try:
-            uid = UUID(str(uuid_string), version=version)
-            return uid.hex == str(uuid_string).replace('-', '')
+            uid = UUID(uuid_str)
+            return uid.hex == uuid_str.replace('-', '')\
+                                      .replace('urn:uuid:', '')
         except ValueError as e:
             logging.error("uuid ValueError. {} ({})  -- {}"
-                          .format(type(uuid_string), uuid_string, e))
+                          .format(type(uuid_str), uuid_str, e))
             return False
         except TypeError:
             logging.error("uuid must be a string. Not: {} ({})"
-                          .format(type(uuid_string), uuid_string))
+                          .format(type(uuid_str), uuid_str))
             return False
 
 # ##############################################################################

@@ -15,9 +15,11 @@ from __future__ import (absolute_import, unicode_literals)
 
 # Standard library
 import logging
+import uuid
 
 # 3rd party
 import requests
+from six import string_types
 
 # modules
 try:
@@ -39,13 +41,48 @@ checker = checker.IsogeoChecker()
 class IsogeoUtils(object):
     """Makes easier the translation of Isogeo API specific strings."""
     API_URLS = {"prod": "api",
-                "qa": "api.qa"
+                "qa": "api.qa",
+                # "int": "api.int.hq.isogeo.fr"
                 }
 
-    def __init__(self):
+    def __init__(self, proxies=dict()):
         """Set text dictionary depending on language passed."""
         self.platform, self.base_url = self.set_base_url()
+        self.proxies = proxies
         super(IsogeoUtils, self).__init__()
+
+    def convert_uuid(self, in_uuid=str, mode=0):
+        """
+           Convert a metadata UUID to its URI equivalent. And conversely.
+
+           :param str in_uuid: UUID or URI to convert
+           :param int mode: 0 from UUID to URN\
+                             1 from URN to UUID
+        """
+        # quick parameters check
+        if not isinstance(in_uuid, string_types):
+            raise TypeError("'in_uuid' expected a str value.")
+        else:
+            pass
+        if not checker.check_is_uuid(in_uuid):
+            raise ValueError("{} is not a correct UUID".format(in_uuid))
+        else:
+            pass
+        if not isinstance(mode, int) or mode not in (0, 1):
+            raise TypeError("'mode' expected an integer value: 0 or 1")
+        else:
+            pass
+        # handle Isogeo specific UUID in XML exports
+        if "isogeo:metadata" in in_uuid:
+            in_uuid = "urn:uuid:{}".format(in_uuid.split(":")[-1])
+            logging.debug(in_uuid)
+        else:
+            pass
+        # operate
+        if mode:
+            return uuid.UUID(in_uuid).urn
+        else:
+            return uuid.UUID(in_uuid).hex
 
     def get_isogeo_version(self, component="api", prot="https"):
         """
@@ -95,9 +132,12 @@ class IsogeoUtils(object):
 
     def set_base_url(self, platform="prod"):
         """
-            TO DO
+            Set API base URLs according to platform.
+
+            :param str platform: one of prod | qa | int
         """
         platform = platform.lower()
+        self.platform = platform
         if platform == "prod":
             base_url = self.API_URLS.get(platform)
             logging.debug("Using production platform.")
@@ -119,5 +159,6 @@ class IsogeoUtils(object):
 if __name__ == '__main__':
     """Standalone execution."""
     utils = IsogeoUtils()
-    print(utils.set_base_url("prod"))
-    print(utils.get_isogeo_version())
+    print(utils.convert_uuid(in_uuid="0269803d50c446b09f5060ef7fe3e22b", mode=1))
+    print(utils.convert_uuid(in_uuid="urn:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b", mode=0))
+    print(utils.convert_uuid(in_uuid="urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b", mode=0))

@@ -166,18 +166,19 @@ class Isogeo(object):
             pass
 
         # platform to request
-        self.platform = platform.lower()
-        if platform == "prod":
-            self.base_url = self.API_URLS.get(platform)
-            logging.info("Using production platform.")
-        elif platform == "qa":
-            self.base_url = self.API_URLS.get(platform)
-            logging.info("Using Quality Assurance platform (reduced perfs).")
-        else:
-            logging.error("Platform must be one of: {}"
-                          .format(" | ".join(self.API_URLS.keys())))
-            raise ValueError(3, "Platform must be one of: {}"
-                                .format(" | ".join(self.API_URLS.keys())))
+        # self.platform = platform.lower()
+        # if platform == "prod":
+        #     self.base_url = self.API_URLS.get(platform)
+        #     logging.info("Using production platform.")
+        # elif platform == "qa":
+        #     self.base_url = self.API_URLS.get(platform)
+        #     logging.info("Using Quality Assurance platform (reduced perfs).")
+        # else:
+        #     logging.error("Platform must be one of: {}"
+        #                   .format(" | ".join(self.API_URLS.keys())))
+        #     raise ValueError(3, "Platform must be one of: {}"
+        #                         .format(" | ".join(self.API_URLS.keys())))
+        self.platform, self.base_url = utils.set_base_url(platform)
 
         # setting language
         if lang.lower() not in ("fr", "en"):
@@ -220,8 +221,9 @@ class Isogeo(object):
             pass
 
         # get API version
-        logging.info("Isogeo API version: {}".format(self.get_isogeo_version()))
-        logging.info("Isogeo DB version: {}".format(self.get_isogeo_version("db")))
+        # logging.info("Isogeo API version: {}".format(self.get_isogeo_version()))
+        # logging.info("Isogeo DB version: {}".format(self.get_isogeo_version("db")))
+
 
     # -- API CONNECTION ------------------------------------------------------
 
@@ -914,36 +916,6 @@ class Isogeo(object):
         results_tags.update(self.shares_id)
         return
 
-    def converter_uuid_urn(self, src=str, mode=0):
-        """
-           Convert a metadata UUID to its URI equivalent. And conversely.
-
-           :param str input: UUID or URI to convert
-           :param bool mode: 0 from UUID to URN\
-                             1 from URN to UUID
-        """
-        # quick parameters check
-        if not isinstance(src, str):
-            raise TypeError("'input' expected a str value.")
-        else:
-            pass
-        if not checker.check_is_uuid(src):
-            raise ValueError("{} is not a correct UUID".format(src))
-        if not isinstance(mode, bool):
-            raise TypeError("'mode' expected a boolean value.")
-        else:
-            pass
-        # operate
-        if mode:
-            # output = "{}-{}-{}-{}-{}".format(src[:8],
-            #                                  src[8:12],
-            #                                  src[12:16],
-            #                                  src[16:20],
-            #                                  src[20:])
-            return uuid.UUID(src).urn
-        else:
-            return uuid.UUID(src).hex
-
     def get_app_properties(self, token, prot="https"):
         """Get information about the application declared on Isogeo."""
         mng_base_url = "https://manage.isogeo.com/applications/"
@@ -964,46 +936,20 @@ class Isogeo(object):
         else:
             pass
 
-    def get_isogeo_version(self, component="api", prot="https"):
-        """Get Isogeo components versions. No need for authentication."""
-        # which component
-        if component == "api":
-            version_url = "{}://v1.{}.isogeo.com/about"\
-                          .format(prot,
-                                  self.base_url
-                                  )
-        elif component == "db":
-            version_url = "{}://v1.{}.isogeo.com/about/database"\
-                          .format(prot,
-                                  self.base_url
-                                  )
-        elif component == "app" and self.platform == "prod":
-            version_url = "https://app.isogeo.com/about"
-        elif component == "app" and self.platform == "qa":
-            version_url = "https://qa-isogeo-app.azurewebsites.net/about"
-        elif component == "app" and self.platform == "int":
-            version_url = "{}://v1.api.int.hq.isogeo.fr/about"\
-                          .format(prot)
-        else:
-            raise ValueError("Component value is one theses values:"
-                             "api [default], db, app.")
-
-        # send request
-        try:
-            version_req = requests.get(version_url,
-                                       proxies=self.proxies
-                                       )
-        except requests.exceptions.SSLError as e:
-            logging.error(e)
-            version_req = requests.get(version_url,
-                                       proxies=self.proxies,
-                                       verify=False
-                                       )
-        # checking response
-        checker.check_api_response(version_req)
-
-        # end of method
-        return version_req.json().get("version")
+    # def get_csw_record_by_id(self, id_resource=str):
+    #     """
+    #         TO DOC
+    #     """
+    #     srv_link_xml = "http://services.api.isogeo.com/ows/s/"\
+    #                            "{1}/{2}?"\
+    #                            "service=CSW&version=2.0.2&request=GetRecordById"\
+    #                            "&id=urn:isogeo:metadata:uuid:{0}&"\
+    #                            "elementsetname=full&outputSchema="\
+    #                            "http://www.isotc211.org/2005/gmd"\
+    #                            .format(md_uuid_formatted,
+    #                                    csw_share_id,
+    #                                    csw_share_token)
+    #     pass
 
 
 # ##############################################################################

@@ -161,5 +161,17 @@ Miscellaneous & bonus
 - [X] option (`augment`) to dynamically add shares ids to a search results tags (#6)
 - [X] method to easily download Isogeo hosted data
 - [X] method to easily get application properties from shares request
-- [/] automatic check on values passed into query parameter to the API - *Work in progress*
+- [X] UUID checker and converter (hex <-> urn) to handle specific Isogeo UUID
+- [X] automatic check on values passed into query parameter to the API
 - [-] handle proxies setting (only for basic auth - not PAC nor NTLM)
+
+
+Tests
+=====
+
+To run tests:
+
+.. code-block:: shell
+
+    pip install --upgrade -r tests/requirements_test.txt
+    python -m unittest discover
