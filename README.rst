@@ -51,12 +51,10 @@ Quickstart
 
     from isogeo_pysdk import Isogeo
 
-    # authentify the application
+    # authenticate your client application
     isogeo = Isogeo(client_id=app_id,
                     client_secret=app_secret)
 
-    # get available subresources
-    print(isogeo.SUBRESOURCES)
 
     # get the token
     token = isogeo.connect()
@@ -64,10 +62,12 @@ Quickstart
     # search within catalogs shared to the application
     search = isogeo.search(token)
 
-    print("Search __dict__ keys: ", search.keys())
-    print("Search query parameters: ", search.get('query'))
-    print("Total count of metadatas shared: ", search.get("total"))
-    print("Count of resources got by request: {}\n".format(len(search.get("results"))))
+    # print some statements
+    print(isogeo.SUBRESOURCES)  # available sub resources
+    print("Search __dict__ keys: ", search.keys())  # search response basic structure
+    print("Search query parameters: ", search.get('query'))  # search response query passed
+    print("Total count of metadatas shared: ", search.get("total"))  # total of available resources
+    print("Count of resources got by request: {}\n".format(len(search.get("results"))))  # total of resources returned by search request
 
 Others samples are available in `the source repository <https://github.com/Guts/isogeo-api-py-minsdk/tree/master/isogeo_pysdk/samples>`_.
 
@@ -169,9 +169,12 @@ Miscellaneous & bonus
 Tests
 =====
 
+Tests are performed for each published commit by `Travis <https://travis-ci.org/Guts/isogeo-api-py-minsdk>`_
+
 To run tests:
 
 .. code-block:: shell
 
     pip install --upgrade -r tests/requirements_test.txt
+    python setup.py install
     python -m unittest discover
