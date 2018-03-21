@@ -1,6 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+"""
+    Setup script to package isogeo PySDK Python module
+
+    see: https://github.com/Guts/isogeo-api-py-minsdk/
+"""
+
 # ############################################################################
 # ########## Libraries #############
 # ##################################
@@ -22,12 +28,18 @@ with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
+    # meta
     name="isogeo-pysdk",
     version=isogeo_pysdk.__version__,
-    packages=find_packages(),
-    author="GeoJulien",
-    author_email="julien.moura at isogeo.com",
+    author="GeoJulien for Isogeo",
+    author_email="julien.moura@isogeo.com",
     description="Abstraction class to use Isogeo REST API",
+    long_description=long_description,
+    keywords=["GIS", "metadata", "INSPIRE", "Isogeo",
+              "API", "REST", "geographical data"],
+    license='GPL3',
+    url="https://github.com/Guts/isogeo-api-py-minsdk",
+    # dependencies
     install_requires=["requests>=2.9.1",
                       "future",
                       "six"
@@ -38,11 +50,9 @@ setup(
             "six"
         ],
     },
+    # packaging
+    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     include_package_data=True,
-    url="https://github.com/Guts/isogeo-api-py-minsdk",
-    keywords=["GIS", "metadata", "INSPIRE", "Isogeo",
-              "API", "REST", "geographical data"],
-    license='GPL3',
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Information Technology",
@@ -57,5 +67,4 @@ setup(
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
-    long_description=long_description,
 )
