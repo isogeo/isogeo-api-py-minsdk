@@ -222,8 +222,8 @@ class Isogeo(object):
         logging.info("Isogeo DB version: {}".format(utils.get_isogeo_version("db")))
 
 
-    # -- API CONNECTION ------------------------------------------------------
 
+    # -- API CONNECTION ------------------------------------------------------
     def connect(self, client_id=None, client_secret=None):
         """Authenticate application and get token bearer.
 
@@ -956,8 +956,7 @@ class Isogeo(object):
 if __name__ == '__main__':
     """ standalone execution """
     # ------------ Specific imports ----------------
-    import configparser    # to manage options.ini
-    from os import path
+    from os import environ
 
     # ------------ Log & debug ----------------
     logger = logging.getLogger()
@@ -965,26 +964,20 @@ if __name__ == '__main__':
     logger.setLevel(logging.INFO)
 
     # ------------ Settings from ini file ----------------
-    settings_file = r"isogeo_params.ini"
+    share_id = environ.get('ISOGEO_API_DEV_ID')
+    share_token = environ.get('ISOGEO_API_DEV_SECRET')
 
-    if not path.isfile(path.realpath(settings_file)):
-        raise FileNotFoundError("ERROR: to execute this script as standalone, "
-                                "you need to store your Isogeo application "
-                                "settings in a isogeo_params.ini file. "
-                                "You can use the template to set your own.")
+    if not share_id or not share_token:
+        logging.critical("No API credentials set as env variables.")
+        exit()
     else:
         pass
-
-    config = configparser.SafeConfigParser()
-    config.read(settings_file)
-
-    share_id = config.get('auth', 'app_id')
-    share_token = config.get('auth', 'app_secret')
 
     # ------------ Real start ----------------
     # instanciating the class
     isogeo = Isogeo(client_id=share_id,
                     client_secret=share_token,
+                    mode="group",
                     lang="fr",
                     # platform="qa"
                     )
