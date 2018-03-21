@@ -42,7 +42,9 @@ class Search(unittest.TestCase):
     def setUp(self):
         # """Executed before each test."""
         self.utils = IsogeoUtils()
-        pass
+        self.uuid_hex = "0269803d50c446b09f5060ef7fe3e22b"
+        self.uuid_urn4122 = "urn:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
+        self.uuid_urnIsogeo = "urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
 
     def tearDown(self):
         """Executed after each test."""
@@ -84,19 +86,82 @@ class Search(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.utils.set_base_url(platform="skynet")
 
+    # UUID converter - from HEX
+    def test_hex_to_hex(self):
+        """Test UUID converter from HEX to HEX"""
+        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_hex,
+                                           mode=0)
+        self.assertIsInstance(uuid_out, str)
+        self.assertEqual(uuid_out, self.uuid_hex)
+        self.assertNotIn(":", uuid_out)
+
+    def test_hex_to_urn4122(self):
+        """Test UUID converter from HEX to URN (RFC4122)"""
+        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_hex,
+                                           mode=1)
+        self.assertIsInstance(uuid_out, str)
+        self.assertEqual(uuid_out, self.uuid_urn4122)
+        self.assertNotIn("isogeo:metadata", uuid_out)
+
+    def test_hex_to_urnIsogeo(self):
+        """Test UUID converter from HEX to URN (Isogeo style)"""
+        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_hex,
+                                           mode=2)
+        self.assertIsInstance(uuid_out, str)
+        self.assertEqual(uuid_out, self.uuid_urnIsogeo)
+        self.assertIn("isogeo:metadata", uuid_out)
+
+    # UUID converter - from URN (RFC4122)
+    def test_urn4122_to_hex(self):
+        """Test UUID converter from URN (RFC4122) to HEX"""
+        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urn4122,
+                                           mode=0)
+        self.assertIsInstance(uuid_out, str)
+        self.assertEqual(uuid_out, self.uuid_hex)
+        self.assertNotIn(":", uuid_out)
+
+    def test_urn4122_to_urn4122(self):
+        """Test UUID converter from URN (RFC4122) to URN (RFC4122)"""
+        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urn4122,
+                                           mode=1)
+        self.assertIsInstance(uuid_out, str)
+        self.assertEqual(uuid_out, self.uuid_urn4122)
+        self.assertNotIn("isogeo:metadata", uuid_out)
+
+    def test_urn4122_to_urnIsogeo(self):
+        """Test UUID converter from URN (RFC4122) to URN (Isogeo style)"""
+        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urn4122,
+                                           mode=2)
+        self.assertIsInstance(uuid_out, str)
+        self.assertEqual(uuid_out, self.uuid_urnIsogeo)
+        self.assertIn("isogeo:metadata", uuid_out)
+
+    # UUID converter - from URN (Isogeo style)
+    def test_urnIsogeo_to_hex(self):
+        """Test UUID converter from URN (Isogeo style) to HEX"""
+        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urnIsogeo,
+                                           mode=0)
+        self.assertIsInstance(uuid_out, str)
+        self.assertEqual(uuid_out, self.uuid_hex)
+        self.assertNotIn(":", uuid_out)
+
+    def test_urnIsogeo_to_urn4122(self):
+        """Test UUID converter from URN (Isogeo style) to URN (RFC4122)"""
+        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urnIsogeo,
+                                           mode=1)
+        self.assertIsInstance(uuid_out, str)
+        self.assertEqual(uuid_out, self.uuid_urn4122)
+        self.assertNotIn("isogeo:metadata", uuid_out)
+
+    def test_urnIsogeo_to_urnIsogeo(self):
+        """Test UUID converter from URN (Isogeo style) to URN (Isogeo style)"""
+        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urnIsogeo,
+                                           mode=2)
+        self.assertIsInstance(uuid_out, str)
+        self.assertEqual(uuid_out, self.uuid_urnIsogeo)
+        self.assertIn("isogeo:metadata", uuid_out)
+
     # UUID converter
-    def test_hex_to_urn(self):
-        """Test UUID converter from hex to urn"""
-        self.utils.convert_uuid(in_uuid="0269803d50c446b09f5060ef7fe3e22b",
-                                mode=1)
-
-    def test_urn_to_hex(self):
-        """Test UUID converter from urn to hex"""
-        self.utils.convert_uuid(in_uuid="urn:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b",
-                                mode=0)
-        self.utils.convert_uuid(in_uuid="urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b",
-                                mode=0)
-
     def test_uuid_converter_bad_parameter(self):
         """Raise error if one parameter is bad."""
         with self.assertRaises(ValueError):
