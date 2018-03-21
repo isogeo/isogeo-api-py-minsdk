@@ -218,8 +218,8 @@ class Isogeo(object):
             pass
 
         # get API version
-        # logging.info("Isogeo API version: {}".format(self.get_isogeo_version()))
-        # logging.info("Isogeo DB version: {}".format(self.get_isogeo_version("db")))
+        logging.info("Isogeo API version: {}".format(utils.get_isogeo_version()))
+        logging.info("Isogeo DB version: {}".format(utils.get_isogeo_version("db")))
 
 
     # -- API CONNECTION ------------------------------------------------------
