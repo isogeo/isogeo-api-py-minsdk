@@ -7,8 +7,9 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # ##################################
 
 # Standard library
-from os import environ
 import logging
+from os import environ
+from six import string_types as str
 from sys import exit
 import unittest
 
@@ -175,10 +176,3 @@ class Search(unittest.TestCase):
                                     mode=3)
             self.utils.convert_uuid(in_uuid="0269803d50c446b09f5060ef7fe3e22b",
                                     mode=True)
-
-
-# ##############################################################################
-# ##### Stand alone program ########
-# ##################################
-if __name__ == '__main__':
-    unittest.main()
