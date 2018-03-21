@@ -23,20 +23,16 @@ from math import ceil
 import re
 from six import string_types
 from sys import platform as opersys
-import uuid
 
 # 3rd party library
 import requests
-# from requests.auth import HTTPBasicAuth
 
 # modules
 try:
     from . import checker
-    from . import translator
     from . import utils
 except (ImportError, ValueError, SystemError):
     import checker
-    import translator
     import utils
 
 # ##############################################################################
@@ -45,6 +41,7 @@ except (ImportError, ValueError, SystemError):
 
 checker = checker.IsogeoChecker()
 version = "2.19.1.0"
+utils = utils.IsogeoUtils()
 
 # #############################################################################
 # ########## Classes ###############
