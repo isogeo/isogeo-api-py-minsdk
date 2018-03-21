@@ -221,8 +221,6 @@ class Isogeo(object):
         logging.info("Isogeo API version: {}".format(utils.get_isogeo_version()))
         logging.info("Isogeo DB version: {}".format(utils.get_isogeo_version("db")))
 
-
-
     # -- API CONNECTION ------------------------------------------------------
     def connect(self, client_id=None, client_secret=None):
         """Authenticate application and get token bearer.
