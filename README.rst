@@ -1,25 +1,31 @@
-=============================================
 Python minimalist SDK to use Isogeo REST API
 =============================================
 
 .. image:: https://badge.fury.io/py/isogeo-pysdk.svg
     :target: https://badge.fury.io/py/isogeo-pysdk
+    :alt: PyPI version
+
 .. image:: https://img.shields.io/badge/python-2.7-blue.svg
     :target: https://badge.fury.io/py/isogeo-pysdk
+    :alt: Python 2.7.x compatiblity
+
 .. image:: https://img.shields.io/badge/python-3.5-blue.svg
     :target: https://badge.fury.io/py/isogeo-pysdk
+    :alt: Python 3.5.x compatiblity
+
 .. image:: https://img.shields.io/badge/python-3.6-blue.svg
     :target: https://badge.fury.io/py/isogeo-pysdk
+    :alt: Python 3.6.x compatiblity
+
 .. image:: https://travis-ci.org/Guts/isogeo-api-py-minsdk.svg?branch=master
     :target: https://travis-ci.org/Guts/isogeo-api-py-minsdk
     :alt: Travis build status
 
-Unofficial lib.
-API keys are required to use it.
 
 Getting API keys
 ================
 
+API keys are required to use it.
 `Send us your request by email <mailto:projects+api@isogeo.com>`_.
 
 Getting Help
