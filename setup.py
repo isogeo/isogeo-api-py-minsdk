@@ -16,8 +16,8 @@ from codecs import open
 from os import path
 from setuptools import setup, find_packages
 
-# custom module
-# import isogeo_pysdk
+# package (to get version)
+import isogeo_pysdk
 
 # SETUP ######################################################################
 
@@ -27,6 +27,7 @@ here = path.abspath(path.dirname(__file__))
 with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
     long_description = f.read()
 
+# setup metadata
 setup(
     # meta
     name="isogeo-pysdk",
