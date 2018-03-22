@@ -21,7 +21,7 @@ six
 
 # Python 2 backwards compatibility
 configparser; python_version < '3.0'
-# future
+future; python_version < '3.0'
 
 # proxy
 # pypac==0.2.*

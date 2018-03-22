@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-    Setup script to package isogeo PySDK Python module
+    Setup script to package Isogeo PySDK Python module
 
     see: https://github.com/Guts/isogeo-api-py-minsdk/
 """
@@ -17,7 +17,7 @@ from os import path
 from setuptools import setup, find_packages
 
 # custom module
-import isogeo_pysdk
+# import isogeo_pysdk
 
 # SETUP ######################################################################
 
@@ -31,25 +31,30 @@ setup(
     # meta
     name="isogeo-pysdk",
     version=isogeo_pysdk.__version__,
-    author="GeoJulien for Isogeo",
+    # version=isogeo_pysdk.__version__,
+    author="GeoJulien",
     author_email="julien.moura@isogeo.com",
     description="Abstraction class to use Isogeo REST API",
     long_description=long_description,
-    keywords=["GIS", "metadata", "INSPIRE", "Isogeo",
-              "API", "REST", "geographical data"],
+    long_description_content_type='text/x-rst',
+    keywords="GIS metadata INSPIRE Isogeo API REST geographical data ISO19139",
     license='GPL3',
     url="https://github.com/Guts/isogeo-api-py-minsdk",
+    project_urls={
+        'Bug Reports': 'https://github.com/Guts/isogeo-api-py-minsdk/issues',
+        'Source': 'https://github.com/Guts/isogeo-api-py-minsdk',
+        'Docs - Isogeo API': 'https://www.gitbook.com/book/isogeo/api/details',
+    },
     # dependencies
     install_requires=["requests>=2.9.1",
                       "future",
                       "six"
                       ],
     extras_require={
-        ":python_version == '2.7'": [
-            "configparser",
-            "six"
-        ],
+        "dev": ["configparser"],
+        "test": ["coverage", "pycodestyle", "python-dateutil"],
     },
+    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4',
     # packaging
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     include_package_data=True,
@@ -63,7 +68,6 @@ setup(
         "Programming Language :: Python :: 3.6",
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
-        "Natural Language :: French",
         "Operating System :: OS Independent",
         "Topic :: Software Development :: Libraries :: Python Modules",
     ],
