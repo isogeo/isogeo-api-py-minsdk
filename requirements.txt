@@ -25,9 +25,3 @@ future; python_version < '3.0'
 
 # proxy
 # pypac==0.2.*
-
-# samples and dev stuff
-geojson
-flask
-oauthlib
-requests_oauthlib

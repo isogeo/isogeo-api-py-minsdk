@@ -24,7 +24,10 @@ import isogeo_pysdk
 here = path.abspath(path.dirname(__file__))
 
 # Get the long description from the README file
-with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+# intentionally *not* adding an encoding option to open, See:
+#   https://github.com/pypa/virtualenv/issues/201#issuecomment-3145690
+# with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
+with open(path.join(here, 'README.rst')) as f:
     long_description = f.read()
 
 # setup metadata
@@ -37,7 +40,7 @@ setup(
     author_email="julien.moura@isogeo.com",
     description="Abstraction class to use Isogeo REST API",
     long_description=long_description,
-    long_description_content_type='text/x-rst',
+    # long_description_content_type='text/x-rst',
     keywords="GIS metadata INSPIRE Isogeo API REST geographical data ISO19139",
     license='GPL3',
     url="https://github.com/Guts/isogeo-api-py-minsdk",
