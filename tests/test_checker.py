@@ -9,6 +9,7 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # Standard library
 from os import environ
 import logging
+import socket
 from sys import exit
 import unittest
 
@@ -85,6 +86,7 @@ class AuthBadCodes(unittest.TestCase):
                                                             isogeo.connect())[1],
                               int)
 
+    # UUID
     def test_checker_uuid_valid(self):
         """Test if a valid UUID is matched."""
         uuid_ok_1 = checker.check_is_uuid("0269803d50c446b09f5060ef7fe3e22b")
@@ -112,6 +114,17 @@ class AuthBadCodes(unittest.TestCase):
         self.assertEqual(uuid_bad_1, 0)
         self.assertEqual(uuid_bad_2, 0)
         self.assertEqual(uuid_bad_3, 0)
+
+    # Internet connection
+    def test_checker_internet_ok(self):
+        """Test if a host works to valid connection from a good host."""
+        self.assertEqual(checker.check_internet_connection(), 1)
+        self.assertEqual(checker.check_internet_connection("google.com"), 1)
+
+    def test_checker_internet_bad(self):
+        """Test if a host works to invalid connection from bad hostnames."""
+        self.assertEqual(checker.check_internet_connection("https://www.isogeo.com"), 0)
+        self.assertEqual(checker.check_internet_connection("https://www.google.com"), 0)
 
 
 # #############################################################################

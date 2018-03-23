@@ -141,7 +141,7 @@ class Isogeo(object):
         self.ct = client_secret
 
         # checking internet connection
-        if checker.check_internet_connection:
+        if checker.check_internet_connection():
             logging.info("Your're connected to the world!")
         else:
             logging.error("Internet connection doesn't work.")
@@ -975,7 +975,7 @@ if __name__ == '__main__':
     # instanciating the class
     isogeo = Isogeo(client_id=share_id,
                     client_secret=share_token,
-                    mode="group",
+                    auth_mode="group",
                     lang="fr",
                     # platform="qa"
                     )

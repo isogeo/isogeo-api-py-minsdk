@@ -4,7 +4,7 @@ from __future__ import (absolute_import, unicode_literals)
 # ----------------------------------------------------------------------------
 
 """
-Complementary set of tools to make some checks on requests to Isogeo API.
+    Complementary set of tools to make some checks on requests to Isogeo API.
 """
 
 # Created:      18/08/2017
@@ -75,7 +75,7 @@ class IsogeoChecker(object):
         """Set text dictionary depending on language passed."""
         super(IsogeoChecker, self).__init__()
 
-    def check_internet_connection(self, remote_server="https://www.isogeo.com"):
+    def check_internet_connection(self, remote_server="www.isogeo.com"):
         """Test if an internet connection is operational.
 
         source: http://stackoverflow.com/a/20913928/2556577
@@ -86,13 +86,12 @@ class IsogeoChecker(object):
             host = socket.gethostbyname(remote_server)
             # connect to the host -- tells us if the host is actually
             # reachable
-            socket.create_connection((host, 80), 2)
+            sock = socket.create_connection((host, 80), 2)
+            sock.close()
             return True
         except Exception as e:
             logging.error(e)
-            pass
-        # end of method
-        return False
+            return False
 
     def check_bearer_validity(self, token, connect_mtd):
         """Check API Bearer token validity.
@@ -256,3 +255,4 @@ class IsogeoChecker(object):
 # ##################################
 if __name__ == '__main__':
     """Standalone execution."""
+    checker = IsogeoChecker()
