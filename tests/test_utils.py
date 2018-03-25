@@ -12,10 +12,10 @@ from os import environ
 from six import string_types as str
 from sys import exit
 import unittest
+from six.moves.urllib.parse import urlparse
 
 # module target
 from isogeo_pysdk import IsogeoUtils, __version__ as pysdk_version
-
 
 # #############################################################################
 # ######## Globals #################
@@ -75,7 +75,7 @@ class Search(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.utils.get_isogeo_version(component="youpi")
 
-    # base URLs
+    # Base URLs
     def test_set_base_url(self):
         """"""
         platform, base_url = self.utils.set_base_url()
@@ -86,6 +86,34 @@ class Search(unittest.TestCase):
         """Raise error if platform parameter is bad."""
         with self.assertRaises(ValueError):
             self.utils.set_base_url(platform="skynet")
+
+    # URLs Builders - edit (app)
+    def test_get_edit_url_ok(self):
+        """Test URL builder for edition link on APP"""
+        url = self.utils.get_edit_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
+                                      md_type="vector-dataset",
+                                      owner_id="32f7e95ec4e94ca3bc1afda960003882",
+                                      tab="identification")
+        self.assertIsInstance(url, str)
+        self.assertIn("https://app.isogeo.com", url)
+        self.assertIn("groups", url)
+        urlparse(url)
+
+    def test_get_edit_url_bad_md_uuid(self):
+        """Must raise an error if metadata/resource UUID check fails."""
+        with self.assertRaises(ValueError):
+            self.utils.get_edit_url(md_id="oh_my_bad_i_m_not_a_correct_uuid",
+                                    md_type="vector-dataset",
+                                    owner_id="32f7e95ec4e94ca3bc1afda960003882",
+                                    tab="identification")
+
+    def test_get_edit_url_bad_wg_uuid(self):
+        """Must raise an error if workgroup UUID check fails."""
+        with self.assertRaises(ValueError):
+            self.utils.get_edit_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
+                                    md_type="vector-dataset",
+                                    owner_id="oh_my_bad_i_m_not_a_correct_uuid",
+                                    tab="identification")
 
     # UUID converter - from HEX
     def test_hex_to_hex(self):
@@ -169,7 +197,6 @@ class Search(unittest.TestCase):
             self.utils.convert_uuid(in_uuid="oh_my_bad_i_m_not_a_correct_uuid")
         with self.assertRaises(TypeError):
             self.utils.convert_uuid(in_uuid=2)
-        with self.assertRaises(TypeError):
             self.utils.convert_uuid(in_uuid="0269803d50c446b09f5060ef7fe3e22b",
                                     mode="ups_not_an_int")
             self.utils.convert_uuid(in_uuid="0269803d50c446b09f5060ef7fe3e22b",

@@ -158,6 +158,29 @@ class IsogeoUtils(object):
         # method ending
         return platform.lower(), base_url
 
+    # -- URLs builders -------------------------------------------------------
+    def get_edit_url(self, md_id=str, md_type=str, owner_id=str, tab="identification"):
+        """
+           Constructs the edition URL of a metadata.
+
+           :param str md_id: metadata/resource UUID
+           :param str owner_id: owner UUID
+           :param str tab: target tab in the web form
+        """
+        # checks inputs
+        if not checker.check_is_uuid(md_id)\
+           or not checker.check_is_uuid(owner_id):
+            raise ValueError("One of md_id or owner_id is not a correct UUID.")
+        else:
+            pass
+        if not checker.check_edit_tab(tab, md_type=md_type):
+            raise ValueError("Bad tab name")
+        # construct URL
+        return "https://app.isogeo.com/" \
+               "groups/{}" \
+               "/resources/{}" \
+               "/{}".format(owner_id, md_id, tab)
+
     # -- API AUTH ------------------------------------------------------------
     def credentials_loader(self, f_json, f_ini, e_vars):
         """
