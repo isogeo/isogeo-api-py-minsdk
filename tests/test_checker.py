@@ -9,7 +9,6 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # Standard library
 from os import environ
 import logging
-import socket
 from sys import exit
 import unittest
 
@@ -48,7 +47,7 @@ class AuthBadCodes(unittest.TestCase):
         """Executed after each test."""
         pass
 
-    # tests
+    # auth
     def test_checker_validity_bearer_valid(self):
         """When a search works, check the response structure."""
         isogeo = Isogeo(client_id=app_id,
@@ -125,6 +124,33 @@ class AuthBadCodes(unittest.TestCase):
         """Test if a host works to invalid connection from bad hostnames."""
         self.assertEqual(checker.check_internet_connection("https://www.isogeo.com"), 0)
         self.assertEqual(checker.check_internet_connection("https://www.google.com"), 0)
+
+    # edition tabs
+    def test_check_edit_tab_ok(self):
+        """Test if a good tab is valid"""
+
+        
+
+
+    def test_check_edit_tab_bad(self):
+        """Raise errors"""
+        with self.assertRaises(TypeError):
+            checker.check_edit_tab(tab=1984, md_type="vector-dataset")
+            checker.check_edit_tab(tab="identification",
+                                   md_type=2)
+            checker.check_edit_tab(tab=True,
+                                   md_type=False)
+        with self.assertRaises(ValueError):
+            checker.check_edit_tab(tab="download", md_type="raster-dataset")
+            checker.check_edit_tab(tab="identification", md_type="nogeographic")
+            # resource type
+            checker.check_edit_tab(tab="geography", md_type="resource")
+            checker.check_edit_tab(tab="quality", md_type="resource")
+            checker.check_edit_tab(tab="attributes", md_type="resource")
+            # raster
+            checker.check_edit_tab(tab="attributes", md_type="raster-dataset")
+            # service
+            checker.check_edit_tab(tab="attributes", md_type="service")
 
 
 # #############################################################################

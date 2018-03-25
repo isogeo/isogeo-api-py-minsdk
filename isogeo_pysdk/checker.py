@@ -17,6 +17,7 @@ from __future__ import (absolute_import, unicode_literals)
 # Standard library
 from collections import Counter
 import logging
+from six import string_types
 import socket
 from uuid import UUID
 
@@ -63,6 +64,18 @@ WG_KEYWORDS_CASING = ("capitalized",
                       "uppercase",
                       )
 
+EDIT_TABS = {"identification": ",".join(FILTER_TYPES),
+             "history": ",".join(FILTER_TYPES),
+             "geography": "dataset, raster-dataset, vector-dataset, service",
+             "quality": "dataset, raster-dataset, vector-dataset, service",
+             "attributes": "vector-dataset, series",
+             "constraints": ",".join(FILTER_TYPES),
+             "resources": ",".join(FILTER_TYPES),
+             "contacts": ",".join(FILTER_TYPES),
+             "advanced": ",".join(FILTER_TYPES),
+             "metadata": ",".join(FILTER_TYPES),
+             }
+
 # ##############################################################################
 # ########## Classes ###############
 # ##################################
@@ -76,16 +89,16 @@ class IsogeoChecker(object):
         super(IsogeoChecker, self).__init__()
 
     def check_internet_connection(self, remote_server="www.isogeo.com"):
-        """Test if an internet connection is operational.
+        """
+            Test if an internet connection is operational.
 
-        source: http://stackoverflow.com/a/20913928/2556577
+            source: http://stackoverflow.com/a/20913928/2556577
         """
         try:
             # see if we can resolve the host name -- tells us if there is
             # a DNS listening
             host = socket.gethostbyname(remote_server)
-            # connect to the host -- tells us if the host is actually
-            # reachable
+            # connect to the host -- tells us if it's reachable
             sock = socket.create_connection((host, 80), 2)
             sock.close()
             return True
@@ -248,6 +261,49 @@ class IsogeoChecker(object):
             logging.error("uuid must be a string. Not: {} ({})"
                           .format(type(uuid_str), uuid_str))
             return False
+
+    def check_edit_tab(self, tab, md_type):
+        """
+           Check if asked tab is part of Isogeo web form.
+           Can also apply a strict mode to filter depending on metadata type.
+
+           :param str tab: tab to check
+           :param bool md_type: option to apply the strict mode
+        """
+        # check parameters types
+        if not isinstance(tab, string_types):
+            raise TypeError("'tab' expected a str value.")
+        else:
+            pass
+        if not isinstance(md_type, string_types):
+            raise TypeError("'md_type' expected a str value.")
+        else:
+            pass
+        # check parameters values
+        if tab not in EDIT_TABS:
+            raise ValueError("'{}' isn't a valid edition tab. "
+                             "Available values: {}"
+                             .format(tab, " | ".join(EDIT_TABS))
+                             )
+        else:
+            pass
+        if md_type not in FILTER_TYPES:
+            raise ValueError("'{}' isn't a valid metadata type. "
+                             "Available values: {}"
+                             .format(tab, " | ".join(FILTER_TYPES))
+                             )
+        else:
+            pass
+        # check adequation tab/md_type
+        if md_type not in EDIT_TABS.get(tab):
+            raise ValueError("'{}'  isn't a valid tab for a '{}'' metadata."
+                             " Only for these types: {}."
+                             .format(tab, md_type, EDIT_TABS.get(tab))
+                             )
+            return False
+        else:
+            pass
+        return True
 
 
 # ##############################################################################
