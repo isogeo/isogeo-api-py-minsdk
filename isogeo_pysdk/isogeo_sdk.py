@@ -58,10 +58,6 @@ class Isogeo(object):
     """
 
     # -- ATTRIBUTES -----------------------------------------------------------
-    API_URLS = {"prod": "api",
-                "qa": "api.qa"
-                }
-
     AUTH_MODES = {"group",
                   "user_private",
                   "user_public",
@@ -127,7 +123,7 @@ class Isogeo(object):
         Keyword arguments:
             client_id -- application identifier
             client_secret -- application secret
-            platform -- switch between to production or quality assurance platform
+            platform -- switch between to production or quality assurance
             lang -- language asked for localized tags (INSPIRE themes).
             Could be "en" [DEFAULT] or "fr".
             proxy -- to pass through the local
@@ -141,11 +137,11 @@ class Isogeo(object):
         self.ct = client_secret
 
         # checking internet connection
-        if checker.check_internet_connection():
-            logging.info("Your're connected to the world!")
-        else:
+        if not checker.check_internet_connection():
             logging.error("Internet connection doesn't work.")
             raise EnvironmentError("Internet connection issue.")
+        else:
+            pass
 
         # testing parameters
         if len(client_secret) != 64:
@@ -163,18 +159,6 @@ class Isogeo(object):
             pass
 
         # platform to request
-        # self.platform = platform.lower()
-        # if platform == "prod":
-        #     self.base_url = self.API_URLS.get(platform)
-        #     logging.info("Using production platform.")
-        # elif platform == "qa":
-        #     self.base_url = self.API_URLS.get(platform)
-        #     logging.info("Using Quality Assurance platform (reduced perfs).")
-        # else:
-        #     logging.error("Platform must be one of: {}"
-        #                   .format(" | ".join(self.API_URLS.keys())))
-        #     raise ValueError(3, "Platform must be one of: {}"
-        #                         .format(" | ".join(self.API_URLS.keys())))
         self.platform, self.base_url = utils.set_base_url(platform)
 
         # setting language
@@ -325,10 +309,19 @@ class Isogeo(object):
         see: https://goo.gl/V3iB9R
         """
         # checking bearer validity
-        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
+        token = checker.check_bearer_validity(token,
+                                              self.connect(self.app_id,
+                                                           self.ct))
 
         # specific resources specific parsing
         if type(specific_md) is list and len(specific_md) > 0:
+            # checking UUIDs and poping bad ones
+            for md in specific_md:
+                if not checker.check_is_uuid(md):
+                    specific_md.remove(md)
+                    logging.error("Metadata UUID is not correct: {}"
+                                  .format(md))
+            # joining survivors
             specific_md = ",".join(specific_md)
         elif specific_md is None:
             specific_md = ""
@@ -821,14 +814,24 @@ class Isogeo(object):
 
     # -- DOWNLOADS -----------------------------------------------------------
 
-    def dl_hosted(self, token, id_resource, resource_link, proxy_url=None, prot="https"):
-        """Download hosted resource."""
+    def dl_hosted(self, token, id_resource, resource_link,
+                  proxy_url=None, prot="https"):
+        """Download hosted resource.
+
+            :param str token: API auth token
+            :param str id_resource: metadata UUID
+            :param dict resource_link: link dictionary
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(id_resource):
+            raise ValueError("Metadata ID is not a correct UUID.")
+        else:
+            pass
         # check resource link compliance
         if type(resource_link) is dict and resource_link.get("type") == "hosted":
             id_link = resource_link.get("_id")
-            pass
         else:
-            return "Error: resource link passed is not valid or not a hosted one."
+            raise ValueError("Error: resource link passed is not valid or not a hosted one.")
 
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
@@ -870,8 +873,15 @@ class Isogeo(object):
 
     def xml19139(self, token, id_resource, proxy_url=None, prot="https"):
         """Get resource exported into XML ISO 19139."""
+        # check metadata UUID
+        if not checker.check_is_uuid(id_resource):
+            raise ValueError("Metadata ID is not a correct UUID.")
+        else:
+            pass
         # checking bearer validity
-        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
+        token = checker.check_bearer_validity(token,
+                                              self.connect(self.app_id,
+                                                           self.ct))
 
         # handling request parameters
         payload = {'proxyUrl': proxy_url,
