@@ -107,6 +107,14 @@ class Search(unittest.TestCase):
                                     owner_id="32f7e95ec4e94ca3bc1afda960003882",
                                     tab="identification")
 
+    def test_get_edit_url_bad_md_type(self):
+        """Must raise an error if metadata/resource type check fails."""
+        with self.assertRaises(ValueError):
+            self.utils.get_edit_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
+                                    md_type="bad_md_type",
+                                    owner_id="32f7e95ec4e94ca3bc1afda960003882",
+                                    tab="identification")
+
     def test_get_edit_url_bad_wg_uuid(self):
         """Must raise an error if workgroup UUID check fails."""
         with self.assertRaises(ValueError):
@@ -114,6 +122,14 @@ class Search(unittest.TestCase):
                                     md_type="vector-dataset",
                                     owner_id="oh_my_bad_i_m_not_a_correct_uuid",
                                     tab="identification")
+
+    def test_get_edit_url_bad_tab(self):
+        """Must raise an error if tab check fails."""
+        with self.assertRaises(ValueError):
+            self.utils.get_edit_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
+                                    md_type="raster-dataset",
+                                    owner_id="32f7e95ec4e94ca3bc1afda960003882",
+                                    tab="attributes")
 
     # -- UUID converter - from HEX -------------------------------------------
     def test_hex_to_hex(self):
