@@ -10,6 +10,12 @@ Welcome to Isogeo PySDK's documentation!
    :maxdepth: 2
    :caption: Contents:
 
+.. module:: isogeo-pysdk
+.. moduleauthor:: Julien Moura
+
+:Author: Julien Moura (Isogeo)
+:Source code: https://github.com/Guts/isogeo-api-py-minsdk/
+:Issues: https://github.com/Guts/isogeo-api-py-minsdk/issues
 
 
 Indices and tables
