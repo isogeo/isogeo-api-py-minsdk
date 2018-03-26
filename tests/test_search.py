@@ -172,6 +172,20 @@ class Search(unittest.TestCase):
         tags_shares = [i for i in search.get("tags") if i.startswith("share:")]
         self.assertNotEqual(len(tags_shares), 0)
 
+    def test_app_properties(self):
+        """Test if application properties are well added."""
+        self.isogeo.get_app_properties(self.bearer)
+        hasattr(self.isogeo, "app_properties")
+        props = self.isogeo.app_properties
+        self.assertIsInstance(props, dict)
+        self.assertIn("admin_url", props)
+        self.assertIn("creation_date", props)
+        self.assertIn("last_update", props)
+        self.assertIn("name", props)
+        self.assertIn("type", props)
+        self.assertIn("kind", props)
+        self.assertIn("url", props)
+
 
 # ##############################################################################
 # ##### Stand alone program ########

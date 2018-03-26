@@ -866,7 +866,11 @@ class Isogeo(object):
         return (hosted_req, filename[0], out_size)
 
     def xml19139(self, token, id_resource, proxy_url=None, prot="https"):
-        """Get resource exported into XML ISO 19139."""
+        """Get resource exported into XML ISO 19139.
+
+            :param str token: API auth token
+            :param str id_resource: metadata UUID to export
+        """
         # check metadata UUID
         if not checker.check_is_uuid(id_resource):
             raise ValueError("Metadata ID is not a correct UUID.")
@@ -884,7 +888,7 @@ class Isogeo(object):
 
         # resource search
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "isogeo-pysdk/2.19.451"}
+                "user-agent": self.app_name}
         md_url = "{}://v1.{}.isogeo.com/resources/{}.xml".format(prot,
                                                                  self.base_url,
                                                                  id_resource)
@@ -912,24 +916,28 @@ class Isogeo(object):
                               for i in shares}
         else:
             pass
+        # update query tags
         results_tags.update(self.shares_id)
-        return
 
     def get_app_properties(self, token, prot="https"):
-        """Get information about the application declared on Isogeo."""
+        """Get information about the application declared on Isogeo.
+
+            :param str token: API auth token
+        """
         mng_base_url = "https://manage.isogeo.com/applications/"
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id,
                                                                   self.ct))
-        # check if shares_id have already been retrieved or not
-        if not hasattr(self, "shares_id"):
-            first_share = self.shares(token)[0].get("applications")[0]
-            app = {"admin_url": mng_base_url + first_share.get("_id"),
-                   "creation_date": first_share.get("_created"),
-                   "last_update": first_share.get("_modified"),
-                   "name": first_share.get("name"),
-                   "type": first_share.get("type"),
-                   "url": first_share.get("url")
+        # check if app properties have already been retrieved or not
+        if not hasattr(self, "app_properties"):
+            first_app = self.shares(token)[0].get("applications")[0]
+            app = {"admin_url": mng_base_url + first_app.get("_id"),
+                   "creation_date": first_app.get("_created"),
+                   "last_update": first_app.get("_modified"),
+                   "name": first_app.get("name"),
+                   "type": first_app.get("type"),
+                   "kind": first_app.get("kind"),
+                   "url": first_app.get("url")
                    }
             self.app_properties = app
         else:
