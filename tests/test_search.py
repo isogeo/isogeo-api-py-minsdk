@@ -9,6 +9,7 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # Standard library
 from os import environ
 import logging
+from random import randint
 from sys import exit
 import unittest
 
@@ -61,8 +62,56 @@ class Search(unittest.TestCase):
         self.assertIn("results", search)
         self.assertIn("tags", search)
         self.assertIn("total", search)
+        # Search with _limit=0 must be empty of results.
+        self.assertEqual(len(search.get("results")), 0)
 
-    def test_bad_parameter_search(self):
+    def test_search_length(self):
+        """Searches with differents page sizes or filter on specific md."""
+        rand = randint(1, 100)
+
+        # requests
+        search_default = self.isogeo.search(self.bearer,   # default value= 100
+                                            whole_share=0)
+        search_10 = self.isogeo.search(self.bearer, page_size=10,
+                                       whole_share=0)
+        search_20 = self.isogeo.search(self.bearer, page_size=20,
+                                       whole_share=0)
+        search_50 = self.isogeo.search(self.bearer, page_size=50,
+                                       whole_share=0)
+        search_100 = self.isogeo.search(self.bearer, page_size=100,
+                                        whole_share=0)
+        search_sup100 = self.isogeo.search(self.bearer, page_size=103,
+                                           whole_share=0)
+        search_rand = self.isogeo.search(self.bearer, page_size=rand,
+                                         whole_share=0)
+
+        # compare pages size and length of results
+        self.assertEqual(len(search_default.get("results")), 100)
+        self.assertEqual(len(search_10.get("results")), 10)
+        self.assertEqual(len(search_20.get("results")), 20)
+        self.assertEqual(len(search_50.get("results")), 50)
+        self.assertEqual(len(search_100.get("results")), 100)
+        self.assertEqual(len(search_sup100.get("results")), 100)
+        self.assertEqual(len(search_rand.get("results")), rand)
+
+    def test_search_specifc_mds(self):
+        """Searches filtering on specific metadata."""
+        # get random metadata within a small search
+        search_10 = self.isogeo.search(self.bearer,
+                                       page_size=10,
+                                       whole_share=0)
+        md_a, md_b = search_10.get("results")[randint(0, 5)].get("_id"),\
+                     search_10.get("results")[randint(6, 9)].get("_id")
+        # get random metadata within a small search
+        search_ids_1 = self.isogeo.search(self.bearer,
+                                          specific_md=[md_a, ])
+        search_ids_2 = self.isogeo.search(self.bearer,
+                                          specific_md=[md_a, md_b])
+        # test length
+        self.assertEqual(len(search_ids_1.get("results")), 1)
+        self.assertEqual(len(search_ids_2.get("results")), 2)
+
+    def test_search_bad_parameter_query(self):
         """Search with bad parameter."""
         with self.assertRaises(ValueError):
             self.isogeo.search(self.bearer,
@@ -88,13 +137,26 @@ class Search(unittest.TestCase):
         """SDK raises error for search with a parameter that must be unique."""
         with self.assertRaises(ValueError):
             self.isogeo.search(self.bearer,
-                               query="type:vector-dataset type:raster-dataset")
+                               query="coordinate-system:32517 coordinate-system:4326")
             self.isogeo.search(self.bearer,
                                query="format:shp format:dwg")
             self.isogeo.search(self.bearer,
-                               query="coordinate-system:32517 coordinate-system:4326")
-            self.isogeo.search(self.bearer,
                                query="owner:32f7e95ec4e94ca3bc1afda960003882 owner:08b3054757544463abd06f3ab51ee491")
+            self.isogeo.search(self.bearer,
+                               query="type:vector-dataset type:raster-dataset")
+        # disabling check, it should not raise anything
+        self.isogeo.search(self.bearer,
+                           query="coordinate-system:32517 coordinate-system:4326",
+                           check=0)
+        self.isogeo.search(self.bearer,
+                           query="format:shp format:dwg",
+                           check=0)
+        self.isogeo.search(self.bearer,
+                           query="owner:32f7e95ec4e94ca3bc1afda960003882 owner:08b3054757544463abd06f3ab51ee491",
+                           check=0)
+        self.isogeo.search(self.bearer,
+                           query="type:vector-dataset type:raster-dataset",
+                           check=0)
 
     def test_search_augmented(self):
         """Augmented search."""

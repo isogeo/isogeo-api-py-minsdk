@@ -51,7 +51,7 @@ class Search(unittest.TestCase):
         """Executed after each test."""
         pass
 
-    # Isogeo components versions
+    #  -  Isogeo components versions -----------------------------------------
     def test_get_isogeo_version_api(self):
         """"""
         version_api = self.utils.get_isogeo_version(component="api")
@@ -75,7 +75,7 @@ class Search(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.utils.get_isogeo_version(component="youpi")
 
-    # Base URLs
+    # -- Base URLs -----------------------------------------------------------
     def test_set_base_url(self):
         """"""
         platform, base_url = self.utils.set_base_url()
@@ -87,7 +87,7 @@ class Search(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.utils.set_base_url(platform="skynet")
 
-    # URLs Builders - edit (app)
+    # -- URLs Builders - edit (app) ------------------------------------------
     def test_get_edit_url_ok(self):
         """Test URL builder for edition link on APP"""
         url = self.utils.get_edit_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
@@ -115,7 +115,7 @@ class Search(unittest.TestCase):
                                     owner_id="oh_my_bad_i_m_not_a_correct_uuid",
                                     tab="identification")
 
-    # UUID converter - from HEX
+    # -- UUID converter - from HEX -------------------------------------------
     def test_hex_to_hex(self):
         """Test UUID converter from HEX to HEX"""
         uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_hex,
