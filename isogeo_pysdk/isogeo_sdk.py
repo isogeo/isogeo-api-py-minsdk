@@ -117,7 +117,8 @@ class Isogeo(object):
     # -- BEFORE ALL -----------------------------------------------------------
 
     def __init__(self, client_id, client_secret, auth_mode="group",
-                 platform="prod", lang="en", proxy=None):
+                 platform="prod", lang="en", proxy=None,
+                 app_name="isogeo-pysdk/{}".format(version)):
         r"""Isogeo API class initialization.
 
         Keyword arguments:
@@ -135,6 +136,7 @@ class Isogeo(object):
         super(Isogeo, self).__init__()
         self.app_id = client_id
         self.ct = client_secret
+        self.app_name = app_name
 
         # checking internet connection
         if not checker.check_internet_connection():
@@ -224,7 +226,7 @@ class Isogeo(object):
         # using Client Credentials Grant method
         # see: http://tools.ietf.org/html/rfc6749#section-4.4
         payload = {"grant_type": "client_credentials"}
-        head = {"user-agent": "isogeo-pysdk/{}".format(version)}
+        head = {"user-agent": self.app_name}
 
         # passing request to get a 24h bearer
         # see: http://tools.ietf.org/html/rfc6750#section-2
@@ -362,7 +364,7 @@ class Isogeo(object):
 
         # search request
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "isogeo-pysdk/{}".format(version)}
+                "user-agent": self.app_name}
         search_url = "{}://v1.{}.isogeo.com/resources/search".format(prot,
                                                                      self.base_url)
         try:
