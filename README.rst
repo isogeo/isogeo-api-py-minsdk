@@ -148,6 +148,7 @@ Miscellaneous & bonus
 - [X] option (`augment`) to dynamically add shares ids to a search results tags (#6)
 - [X] method to easily download Isogeo hosted data
 - [X] method to easily get application properties from shares request
+- [X] method to easily get metadata edition URL on https://app.isogeo.com (handle direct tabs) - #23
 - [X] UUID checker and converter (hex <-> urn) to handle specific Isogeo UUID
 - [X] automatic check on values passed into query parameter to the API
 - [-] handle proxies setting (only for basic auth - not PAC nor NTLM)
