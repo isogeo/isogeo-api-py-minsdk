@@ -72,6 +72,18 @@ class Search(unittest.TestCase):
             self.isogeo.search(self.bearer,
                                query="provider:youplaboum")
 
+    def test_search_bad_parameter_geographic(self):
+        """Search with bad parameter."""
+        # geometric operator
+        with self.assertRaises(ValueError):
+            # georel should'nt be used without box or geo
+            self.isogeo.search(self.bearer,
+                               georel="intersects")
+            # georel bad value
+            self.isogeo.search(self.bearer,
+                               box="-4.970,30.69418,8.258,51.237",
+                               georel="cross")
+
     def test_parameter_not_unique_search(self):
         """SDK raises error for search with a parameter that must be unique."""
         with self.assertRaises(ValueError):

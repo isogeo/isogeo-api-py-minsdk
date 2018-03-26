@@ -58,6 +58,14 @@ FILTER_TYPES = ("dataset",
                 "service"
                 )
 
+GEORELATIONS = ("contains",
+                "disjoint",
+                "equal",
+                "intersects",
+                "overlaps",
+                "within"
+                )
+
 WG_KEYWORDS_CASING = ("capitalized",
                       "lowercase",
                       "mixedCase",
@@ -151,10 +159,9 @@ class IsogeoChecker(object):
 
     def check_request_parameters(self, parameters={}):
         """Check parameters passed to avoid errors and help debug."""
-        # FILTERS
+        # -- SEMANTIC QUERY ---------------------------------------------------
         li_args = parameters.get("q").split()
         logging.debug(li_args)
-        # li_values = [i.split(":")[1:] for i in li_args]
 
         # Unicity
         li_filters = [i.split(":")[0] for i in li_args]
@@ -163,7 +170,6 @@ class IsogeoChecker(object):
                                      "format",
                                      "owner",
                                      "type")
-
         for i in filters_count:
             if i in li_filters_must_be_unique and filters_count.get(i) > 1:
                 raise ValueError("This query filter must be unique: {}"
@@ -236,6 +242,18 @@ class IsogeoChecker(object):
                              .format(" | ".join(FILTER_PROVIDERS)))
         else:
             logging.debug(dico_filters)
+
+        # -- GEOGRAPHIC -------------------------------------------------------
+        in_box = parameters.get("box")
+        in_geo = parameters.get("geo")
+        # geometric relation
+        in_rel = parameters.get("rel")
+        if in_rel and in_box is None and in_geo is None:
+            raise ValueError("'rel' should'nt be used without box or geo.")
+        elif in_rel not in GEORELATIONS and in_rel is not None:
+            raise ValueError("{} is not a correct value for 'georel'."
+                             " Must be one of: {}."
+                             .format(in_rel, " | ".join(GEORELATIONS)))
 
     def check_is_uuid(self, uuid_str):
         """

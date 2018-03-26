@@ -101,14 +101,6 @@ class Isogeo(object):
                     "service"
                     )
 
-    GEORELATIONS = ("contains",
-                    "disjoint",
-                    "equal",
-                    "intersects",
-                    "overlaps",
-                    "within"
-                    )
-
     THESAURI_DICT = {"isogeo": "1616597fbc4348c8b11ef9d59cf594c8",
                      "inspire-theme": "926c676c380046d7af99bcae343ac813",
                      "iso19115-topic": "926f969ee2bb470a84066625f68b96bb"
