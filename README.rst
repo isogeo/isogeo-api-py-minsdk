@@ -1,4 +1,4 @@
-|Version| |Build_Status| |compat_py27| |compat_py35| |compat_py36|
+|Version| |Build_Status| rtdocs| |compat_py27| |compat_py35| |compat_py36|
 
 Isogeo API Python SDK
 =====================
@@ -177,6 +177,13 @@ To package and upload:
 
     .\build_upload.ps1
 
+To build docs:
+
+.. code-block:: powershell
+
+    cd .\docs\
+    .\build_docs.ps1
+
 
 .. |Version| image:: https://badge.fury.io/py/isogeo-pysdk.svg
    :target: https://badge.fury.io/py/isogeo-pysdk
@@ -197,3 +204,7 @@ To package and upload:
 .. |compat_py36| image:: https://img.shields.io/badge/python-3.6-blue.svg
    :target: https://badge.fury.io/py/isogeo-pysdk
    :alt: Python 3.6.x compatiblity
+
+.. |rtdocs| image:: https://readthedocs.org/projects/isogeo-api-pysdk/badge/?version=latest
+   :target: http://isogeo-api-pysdk.readthedocs.io/en/latest/?badge=latest
+   :alt: Documentation Status
