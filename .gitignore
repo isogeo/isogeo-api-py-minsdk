@@ -55,6 +55,7 @@ coverage.xml
 
 # Sphinx documentation
 docs/_build/
+docs/_apidoc/
 
 # PyBuilder
 target/
@@ -77,6 +78,7 @@ secret.ini
 virtenv*/
 virtualenv/
 *.pypirc
+*env*
 
 # PTVS
 *.ptvs
