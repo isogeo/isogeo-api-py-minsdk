@@ -15,6 +15,7 @@ install:
 # run tests
 script:
   - python -m unittest discover
+  # PEP 8
   - pycodestyle isogeo_pysdk/isogeo_sdk.py --ignore="E265,E501" --statistics --show-source
   - pycodestyle isogeo_pysdk/checker.py --ignore="E265,E501" --statistics --show-source
   - pycodestyle isogeo_pysdk/utils.py --ignore="E265,E501" --statistics --show-source

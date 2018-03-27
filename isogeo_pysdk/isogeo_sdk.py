@@ -53,8 +53,18 @@ __all__ = ["Isogeo", "IsogeoChecker", "IsogeoTranslator", "IsogeoUtils"]
 class Isogeo(object):
     """Abstraction class for Isogeo REST API.
 
-    Full doc at: https://goo.gl/V3iB9R
-    Swagger at: http://chantiers.hq.isogeo.fr/docs/Isogeo.Api/latest/Api.V1/
+    Online resources:
+      * Full doc at: https://goo.gl/V3iB9R
+      * Swagger: http://chantiers.hq.isogeo.fr/docs/Isogeo.Api/latest/Api.V1
+
+    :param str client_id: application oAuth2 identifier
+    :param str client_secret: application oAuth2 secret
+    :param dict proxy: dictionary of proxy settings as described in
+     requests (http://docs.python-requests.org/en/master/user/advanced/#proxies)
+    :param str auth_mode: oAuth2 mode to use
+    :param str platform: to request production or quality assurance
+    :param str lang: API localization ("en" or "fr").
+    :param str app_name: to custom the application name and user-agent
     """
 
     # -- ATTRIBUTES -----------------------------------------------------------
@@ -79,52 +89,17 @@ class Isogeo(object):
                     "tags",
                     )
 
-    FILTER_KEYS = {"action": [],
-                   "catalog": [],
-                   "contact:group": [],
-                   "contact:isogeo": [],
-                   "coordinate-system": [],
-                   "format": [],
-                   "has-no": [],
-                   "keyword:isogeo": [],
-                   "keyword:inspire-theme": [],
-                   "license:group": [],
-                   "license:isogeo": [],
-                   "owner": [],
-                   "text": [],
-                   "type": []}
-
-    FILTER_TYPES = ("dataset",
-                    "raster-dataset",
-                    "vector-dataset",
-                    "resource",
-                    "service"
-                    )
-
-    THESAURI_DICT = {"isogeo": "1616597fbc4348c8b11ef9d59cf594c8",
-                     "inspire-theme": "926c676c380046d7af99bcae343ac813",
-                     "iso19115-topic": "926f969ee2bb470a84066625f68b96bb"
-                     }
+    _THESAURI_DICT = {"isogeo": "1616597fbc4348c8b11ef9d59cf594c8",
+                      "inspire-theme": "926c676c380046d7af99bcae343ac813",
+                      "iso19115-topic": "926f969ee2bb470a84066625f68b96bb"
+                      }
 
     # -- BEFORE ALL -----------------------------------------------------------
 
-    def __init__(self, client_id, client_secret, auth_mode="group",
-                 platform="prod", lang="en", proxy=None,
+    def __init__(self, client_id, client_secret, proxy=None, auth_mode="group",
+                 platform="prod", lang="en",
                  app_name="isogeo-pysdk/{}".format(version)):
-        r"""Isogeo API class initialization.
-
-        Keyword arguments:
-            client_id -- application identifier
-            client_secret -- application secret
-            platform -- switch between to production or quality assurance
-            lang -- language asked for localized tags (INSPIRE themes).
-            Could be "en" [DEFAULT] or "fr".
-            proxy -- to pass through the local
-            proxy. Optional. Must be a dict { 'protocol':
-            'http://username:password@proxy_url:port' }.\ e.g.: {'http':
-            'http://martin:p4ssW0rde@10.1.68.1:5678',\ 'https':
-            'http://martin:p4ssW0rde@10.1.68.1:5678'})
-        """
+        """Isogeo API class initialization."""
         super(Isogeo, self).__init__()
         self.app_id = client_id
         self.ct = client_secret
@@ -205,6 +180,9 @@ class Isogeo(object):
 
         Isogeo API uses oAuth 2.0 protocol (http://tools.ietf.org/html/rfc6749)
         see: https://goo.gl/V3iB9R#heading=h.ataz6wo4mxc5
+
+        :param str client_id: application oAuth2 identifier
+        :param str client_secret: application oAuth2 secret
         """
         # instanciated or direct call
         if not client_id and not client_secret:
@@ -271,36 +249,66 @@ class Isogeo(object):
                check=True,
                augment=False,
                prot="https"):
-        r"""Search request.
+        """Search within the resources shared to the application.
 
-        Keyword arguments:
-        token -- API bearer
-        query -- search terms. It could be a simple string like 'oil' or a tag
-        like 'keyword:isogeo:formations' or 'keyword:inspire-theme:landcover'.
-        \nThe AND operator is applied when various tags are passed.\nEmpty by default.
-        bbox -- Bounding box to limit the search. Must be a 4 list of coordinates in WGS84 (EPSG 4326).\
-        \nCould be completed with the georel parameter
-        poly -- Geographic criteria for the search, in WKT format.\
-        \nCould be completed by the georel parameter.
-        georel -- spatial operator to apply to the bbox or poly parameters.\
-        \n\tAvailable values: 'contains', 'disjoint', 'equals', 'intersects' [DEFAULT],\
-        'overlaps', 'within'. To get available values: 'isogeo.GEORELATIONS'.
-        order_by -- to sort results. \n\tAvailable values:\n\t'_created': metadata
-        creation date [DEFAULT]\n\t'_modified': metadata last update\n\t'title': metadata title\n\t'created': data
-        creation date (possibly None)\n\t'modified': data last update date\n\t'relevance': relevance score.
-        order_dir -- sorting direction. \n\tAvailable values:\n\t'desc':
-        descending [DEFAULT]\n\t'asc': ascending
-        page_size -- limits the number of results. Useful to paginate results display.
-        offset -- offset
-        share -- share segregation
-        specific_md -- Limits the search to the specified identifiers
-        sub_resources -- subresources that should be returned. Must be a list of strings.\\n
-        To get available values: 'isogeo.SUBRESOURCES'
-        whole_share -- option to return all results or only the page size. True by DEFAULT.
-        augment -- option to improve API response by adding some values.
-        prot -- https [DEFAULT] or http (useful for development and tracking requests).
+        It's the main method to use.
 
-        see: https://goo.gl/V3iB9R
+        :param str token: API auth token
+        :param str query: search terms and semantic filters. Equivalent of
+         **q** parameter in Isogeo API. It could be a simple
+         string like *oil* or a tag like *keyword:isogeo:formations*
+         or *keyword:inspire-theme:landcover*. The *AND* operator
+         is applied when various tags are passed.
+        :param str bbox: Bounding box to limit the search.
+         Must be a 4 list of coordinates in WGS84 (EPSG 4326).
+         Could be associated with *georel*.
+        :param str poly: Geographic criteria for the search, in WKT format.
+         Could be associated with *georel*.
+        :param str georel: geometric operator to apply to the bbox or poly
+         parameters.
+
+         Available values (see: *isogeo.GEORELATIONS*):
+
+          * 'contains',
+          * 'disjoint',
+          * 'equals',
+          * 'intersects' - [APPLIED BY API if NOT SPECIFIED]
+          * 'overlaps',
+          * 'within'.
+
+        :param str order_by: sorting results.
+
+         Available values:
+
+           * '_created': metadata creation date [DEFAULT if not relevance]
+           * '_modified': metadata last update
+           * 'title': metadata title
+           * 'created': data creation date (possibly None)
+           * 'modified': data last update date
+           * 'relevance': relevance score calculated by API [DEFAULT].
+
+        :param str order_dir: sorting direction.
+
+         Available values:
+            * 'desc': descending
+            * 'asc': ascending
+
+        :param str page_size: limits the number of results.
+         Useful to paginate results display. Default value: 100.
+        :param str offset: offset to start page size
+         from a specific results index
+        :param str share: share UUID to filter on
+        :param list specific_md: list of metadata UUIDs to filter on
+        :param list sub_resources: subresources that should be returned.
+         Must be a list of strings. Available values: *isogeo.SUBRESOURCES*
+        :param str whole_share: option to return all results or only the
+         page size. *True* by DEFAULT.
+        :param str check: option to check query parameters and avoid erros.
+         *True* by DEFAULT.
+        :param str augment: option to improve API response by adding
+         some tags on the fly.
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
         """
         # checking bearer validity
         token = checker.check_bearer_validity(token,
@@ -410,12 +418,13 @@ class Isogeo(object):
     def resource(self, token, id_resource, sub_resources=[], prot="https"):
         """Get complete or partial metadata about one specific resource.
 
-        Keyword arguments:
-        token -- API bearer
-        id_resource -- UUID of the resource to get
-        sub_resources -- subresources that should be returned. Must be a list of strings.
-        To get available values: 'isogeo.SUBRESOURCES'
-        prot -- https [DEFAULT] or http (useful for development and tracking requests).
+        :param str token: API auth token
+        :param str id_resource: metadata UUID to get
+        :param list sub_resources: subresources that should be returned.
+         Must be a list of strings.
+         To get available values: 'isogeo.SUBRESOURCES'
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
         """
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
@@ -439,7 +448,7 @@ class Isogeo(object):
 
         # resource search
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "isogeo-pysdk/2.19.451"}
+                "user-agent": self.app_name}
         md_url = "{}://v1.{}.isogeo.com/resources/{}".format(prot,
                                                              self.base_url,
                                                              id_resource)
@@ -456,13 +465,18 @@ class Isogeo(object):
     # -- SHARES and APPLICATIONS ---------------------------------------------
 
     def shares(self, token, prot="https"):
-        """Get information about shares which feed the application."""
+        """Get information about shares which feed the application.
+
+        :param str token: API auth token
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "isogeo-pysdk/2.19.451"}
+                "user-agent": self.app_name}
         shares_url = "{}://v1.{}.isogeo.com/shares/".format(prot,
                                                             self.base_url)
         shares_req = requests.get(shares_url,
@@ -476,13 +490,19 @@ class Isogeo(object):
         return shares_req.json()
 
     def share(self, token, share_id, prot="https"):
-        """Get information about a specific share and its applications."""
+        """Get information about a specific share and its applications.
+
+        :param str token: API auth token
+        :param str share_id: share UUID
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "isogeo-pysdk/2.19.451"}
+                "user-agent": self.app_name}
         share_url = "{}://v1.{}.isogeo.com/shares/{}".format(prot,
                                                              self.base_url,
                                                              share_id)
@@ -498,7 +518,13 @@ class Isogeo(object):
 
     # -- LICENCES ---------------------------------------------
     def licenses(self, token, owner_id, prot="https"):
-        """Get information about licenses owned by a specific workgroup."""
+        """Get information about licenses owned by a specific workgroup.
+
+        :param str token: API auth token
+        :param str owner_id: workgroup UUID
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
@@ -508,7 +534,7 @@ class Isogeo(object):
 
         # search request
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "isogeo-pysdk/2.19.451"}
+                "user-agent": self.app_name}
         licenses_url = "{}://v1.{}.isogeo.com/groups/{}/licenses"\
                        .format(prot,
                                self.base_url,
@@ -526,7 +552,13 @@ class Isogeo(object):
         return licenses_req.json()
 
     def license(self, token, license_id, prot="https"):
-        """Get details about a specific license."""
+        """Get details about a specific license.
+
+        :param str token: API auth token
+        :param str license_id: license UUID
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
@@ -536,7 +568,7 @@ class Isogeo(object):
 
         # search request
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "isogeo-pysdk/2.19.451"}
+                "user-agent": self.app_name}
         license_url = "{}://v1.{}.isogeo.com/licenses/{}"\
                       .format(prot,
                               self.base_url,
@@ -556,13 +588,18 @@ class Isogeo(object):
     # -- KEYWORDS -----------------------------------------------------------
 
     def thesauri(self, token, prot="https"):
-        """Get list of available thesauri."""
+        """Get list of available thesauri.
+
+        :param str token: API auth token
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "isogeo-pysdk/2.19.451"}
+                "user-agent": self.app_name}
         thez_url = "{}://v1.{}.isogeo.com/thesauri".format(prot,
                                                            self.base_url)
         thez_req = requests.get(thez_url,
@@ -576,7 +613,13 @@ class Isogeo(object):
         return thez_req.json()
 
     def thesaurus(self, token, thez_id="1616597fbc4348c8b11ef9d59cf594c8", prot="https"):
-        """Get a thesaurus."""
+        """Get a thesaurus.
+
+        :param str token: API auth token
+        :param str thez_id: thesaurus UUID
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
@@ -586,7 +629,7 @@ class Isogeo(object):
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "isogeo-pysdk/2.19.451"}
+                "user-agent": self.app_name}
         thez_url = "{}://v1.{}.isogeo.com/thesauri/{}".format(prot,
                                                               self.base_url,
                                                               thez_id)
@@ -606,7 +649,13 @@ class Isogeo(object):
                  specific_tag,
                  sub_resources=["count"],
                  prot="https"):
-        """Search for specified keywords."""
+        """Search for specified keywords.
+
+        :param str token: API auth token
+        :param str specific_tag: keyword to request
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+         """
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
@@ -637,7 +686,7 @@ class Isogeo(object):
 
         # search request
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "isogeo-pysdk/2.19.451"}
+                "user-agent": self.app_name}
         keywords_url = "{}://v1.{}.isogeo.com/keywords/{}"\
                        .format(prot,
                                self.base_url,
@@ -666,7 +715,13 @@ class Isogeo(object):
                            specific_tag=None,
                            sub_resources=["count"],
                            prot="https"):
-        """Search for keywords within a specific thesaurus."""
+        """Search for keywords within a specific thesaurus.
+
+        :param str token: API auth token
+        :param str thez_id: thesaurus UUID
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
 
@@ -712,7 +767,7 @@ class Isogeo(object):
 
         # search request
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "isogeo-pysdk/2.19.451"}
+                "user-agent": self.app_name}
         keywords_url = "{}://v1.{}.isogeo.com/thesauri/{}/keywords/search"\
                        .format(prot,
                                self.base_url,
@@ -742,9 +797,17 @@ class Isogeo(object):
                            specific_tag=None,
                            sub_resources=["count"],
                            prot="https"):
-        """Search for keywords within a specific workgroup."""
+        """Search for keywords within a specific workgroup.
+
+        :param str token: API auth token
+        :param str owner_id: workgroup UUID
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+         """
         # checking bearer validity
-        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
+        token = checker.check_bearer_validity(token,
+                                              self.connect(self.app_id,
+                                                           self.ct))
 
         # specific resources specific parsing
         if type(specific_md) is list and len(specific_md) > 0:
@@ -789,7 +852,7 @@ class Isogeo(object):
 
         # search request
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "isogeo-pysdk/2.19.451"}
+                "user-agent": self.app_name}
         keywords_url = "{}://v1.{}.isogeo.com/groups/{}/keywords/search"\
                        .format(prot,
                                self.base_url,
@@ -812,9 +875,13 @@ class Isogeo(object):
                   proxy_url=None, prot="https"):
         """Download hosted resource.
 
-            :param str token: API auth token
-            :param str id_resource: metadata UUID
-            :param dict resource_link: link dictionary
+        :param str token: API auth token
+        :param str id_resource: metadata UUID
+        :param dict resource_link: link dictionary
+                :param str token: API auth token
+        :param str proxy_url: proxy to use to download
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
         """
         # check metadata UUID
         if not checker.check_is_uuid(id_resource):
@@ -835,7 +902,7 @@ class Isogeo(object):
 
         # resource search
         head = {"Authorization": "Bearer " + token[0],
-                "user-agent": "isogeo-pysdk/2.19.451"}
+                "user-agent": self.app_name}
         hosted_url = "{}://v1.{}.isogeo.com/resources/{}/links/{}.bin"\
                      .format(prot,
                              self.base_url,
@@ -868,8 +935,11 @@ class Isogeo(object):
     def xml19139(self, token, id_resource, proxy_url=None, prot="https"):
         """Get resource exported into XML ISO 19139.
 
-            :param str token: API auth token
-            :param str id_resource: metadata UUID to export
+        :param str token: API auth token
+        :param str id_resource: metadata UUID to export
+        :param str proxy_url: proxy to use to download
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
         """
         # check metadata UUID
         if not checker.check_is_uuid(id_resource):
@@ -905,7 +975,11 @@ class Isogeo(object):
     # -- UTILITIES -----------------------------------------------------------
 
     def add_tags_shares(self, token, results_tags=dict()):
-        """Add shares list to the tags attributes in search results."""
+        """Add shares list to the tags attributes in search results.
+
+        :param str token: API auth token
+        :param dict results_tags: results dict from a request
+        """
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id,
                                                                   self.ct))
@@ -922,7 +996,9 @@ class Isogeo(object):
     def get_app_properties(self, token, prot="https"):
         """Get information about the application declared on Isogeo.
 
-            :param str token: API auth token
+        :param str token: API auth token
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
         """
         mng_base_url = "https://manage.isogeo.com/applications/"
         # checking bearer validity
@@ -1003,3 +1079,7 @@ if __name__ == '__main__':
                            query="keyword:isogeo:2015\
                                   type:dataset",
                            prot='https')
+
+    isogeo.get_app_properties(token)
+    app = isogeo.app_properties
+    # print(app, type(app))
