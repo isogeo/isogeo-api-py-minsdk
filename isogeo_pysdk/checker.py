@@ -90,17 +90,20 @@ EDIT_TABS = {"identification": ",".join(FILTER_TYPES),
 
 
 class IsogeoChecker(object):
-    """Makes easier the translation of Isogeo API specific strings."""
+    """
+        Complementary set of tools to make some checks on requests
+        to Isogeo API.
+    """
 
-    def __init__(self, lang="FR"):
-        """Set text dictionary depending on language passed."""
+    def __init__(self):
         super(IsogeoChecker, self).__init__()
 
     def check_internet_connection(self, remote_server="www.isogeo.com"):
         """
             Test if an internet connection is operational.
+            Src: http://stackoverflow.com/a/20913928/2556577.
 
-            source: http://stackoverflow.com/a/20913928/2556577
+            :param str remote_server: remote server used to check
         """
         try:
             # see if we can resolve the host name -- tells us if there is
@@ -115,16 +118,20 @@ class IsogeoChecker(object):
             return False
 
     def check_bearer_validity(self, token, connect_mtd):
-        """Check API Bearer token validity.
+        """
+            Check API Bearer token validity.
 
-        Isogeo ID delivers authentication bearers which are valid during
-        24h, so this method checks the validity of the token (token in French)
-        with a 30 mn anticipation limit, and renews it if necessary.
+            Isogeo ID delivers authentication bearers which are valid during
+            a certain time. So this method checks the validity of the token
+            with a 30 mn anticipation limit, and renews it if necessary.
+            See: http://tools.ietf.org/html/rfc6750#section-2
 
-        token = must be a tuple like (bearer, expiration_date)
+            FI: 24h = 86400 seconds, 30 mn = 1800, 5 mn = 300
 
-        see: http://tools.ietf.org/html/rfc6750#section-2
-        FI: 24h = 86400 seconds, 30 mn = 1800, 5 mn = 300
+            :param tuple token: auth bearer to check.
+                                Structure: (bearer, expiration_date)
+            :param isogeo_pysdk.connect connect_mtd: method herited
+                                from Isogeo PySDK to get new bearer
         """
         if token[1] < 60:
             token = connect_mtd
@@ -137,28 +144,33 @@ class IsogeoChecker(object):
         return token
 
     def check_api_response(self, response):
-        """Check API response and raise exceptions if needed."""
+        """
+            Check API response and raise exceptions if needed.
+
+            :param requests.models.Response response: request response to check
+        """
+        # check response
         if response.status_code == 200:
-            logging.debug("Everything is OK dude, just go on!")
-            pass
+            return True
         elif response.status_code >= 400:
-            logging.error("Something's wrong Houston, check settings again!")
-            # logging.error(dir(response.request))
             logging.error("{}: {} - {} - URL: {}"
                           .format(response.status_code,
                                   response.reason,
                                   response.json().get("error"),
                                   response.request.url))
-            # logging.error(dir(response))
-            return 0, response.status_code
+            return False, response.status_code
         else:
             pass
 
         # end of method
-        return 1
+        return True
 
-    def check_request_parameters(self, parameters={}):
-        """Check parameters passed to avoid errors and help debug."""
+    def check_request_parameters(self, parameters=dict):
+        """
+            Check parameters passed to avoid errors and help debug.
+
+            :param dict response: search request parameters
+        """
         # -- SEMANTIC QUERY ---------------------------------------------------
         li_args = parameters.get("q").split()
         logging.debug(li_args)
@@ -257,7 +269,7 @@ class IsogeoChecker(object):
 
     def check_is_uuid(self, uuid_str):
         """
-            Check if it's an Isogeo UUID.
+            Check if it's an Isogeo UUID handling specific form.
 
             :param str uuid_str: UUID string to check
         """
@@ -285,8 +297,8 @@ class IsogeoChecker(object):
            Check if asked tab is part of Isogeo web form.
            Can also apply a strict mode to filter depending on metadata type.
 
-           :param str tab: tab to check
-           :param bool md_type: option to apply the strict mode
+           :param str tab: tab to check. Must be one one of EDIT_TABS attribute
+           :param str md_type: metadata type. Must be one one of FILTER_TYPES
         """
         # check parameters types
         if not isinstance(tab, string_types):
