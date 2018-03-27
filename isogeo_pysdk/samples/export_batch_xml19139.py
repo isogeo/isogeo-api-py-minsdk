@@ -26,45 +26,47 @@ from isogeo_pysdk import Isogeo
 # ######### Main program ###########
 # ##################################
 
-# storing application parameters into an ini file
-settings_file = r"../isogeo_params.ini"
+if __name__ == '__main__':
+    """Standalone execution"""
+    # storing application parameters into an ini file
+    settings_file = r"../isogeo_params.ini"
 
-# testing ini file
-if not path.isfile(path.realpath(settings_file)):
-    print("ERROR: to execute this script as standalone, you need to store your Isogeo application settings in a isogeo_params.ini file. You can use the template to set your own.")
-    import sys
-    sys.exit()
-else:
-    pass
+    # testing ini file
+    if not path.isfile(path.realpath(settings_file)):
+        print("ERROR: to execute this script as standalone, you need to store your Isogeo application settings in a isogeo_params.ini file. You can use the template to set your own.")
+        import sys
+        sys.exit()
+    else:
+        pass
 
-# reading ini file
-config = configparser.SafeConfigParser()
-config.read(settings_file)
+    # reading ini file
+    config = configparser.SafeConfigParser()
+    config.read(settings_file)
 
-share_id = config.get('auth', 'app_id')
-share_token = config.get('auth', 'app_secret')
+    share_id = config.get('auth', 'app_id')
+    share_token = config.get('auth', 'app_secret')
 
-# ------------ Real start ----------------
-# instanciating the class
-isogeo = Isogeo(client_id=share_id,
-                client_secret=share_token,
-                lang="fr")
+    # ------------ Real start ----------------
+    # instanciating the class
+    isogeo = Isogeo(client_id=share_id,
+                    client_secret=share_token,
+                    lang="fr")
 
-token = isogeo.connect()
+    token = isogeo.connect()
 
-# ------------ REAL START ----------------------------
+    # ------------ REAL START ----------------------------
 
-latest_data_modified = isogeo.search(token,
-                                     page_size=10,
-                                     order_by="modified",
-                                     whole_share=0
-                                     )
+    latest_data_modified = isogeo.search(token,
+                                         page_size=10,
+                                         order_by="modified",
+                                         whole_share=0
+                                         )
 
-for md in latest_data_modified.get("results"):
-    title = md.get('title')
-    xml_stream = isogeo.xml19139(token,
-                                 md.get("_id"))
+    for md in latest_data_modified.get("results"):
+        title = md.get('title')
+        xml_stream = isogeo.xml19139(token,
+                                     md.get("_id"))
 
-    with open("{}.xml".format(title), 'wb') as fd:
-        for block in xml_stream.iter_content(1024):
-            fd.write(block)
+        with open("{}.xml".format(title), 'wb') as fd:
+            for block in xml_stream.iter_content(1024):
+                fd.write(block)

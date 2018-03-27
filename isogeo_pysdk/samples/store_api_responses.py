@@ -26,59 +26,60 @@ from isogeo_pysdk import Isogeo
 # ######### Main program ###########
 # ##################################
 
+if __name__ == '__main__':
+    """Standalone execution"""
+    share_id = environ.get('ISOGEO_API_DEV_ID')
+    share_token = environ.get('ISOGEO_API_DEV_SECRET')
 
-share_id = environ.get('ISOGEO_API_DEV_ID')
-share_token = environ.get('ISOGEO_API_DEV_SECRET')
+    # instanciating the class
+    isogeo = Isogeo(client_id=share_id,
+                    client_secret=share_token)
 
-# instanciating the class
-isogeo = Isogeo(client_id=share_id,
-                client_secret=share_token)
+    token = isogeo.connect()
 
-token = isogeo.connect()
+    # ------------ REAL START ------------------------------------------------
 
-# ------------ REAL START ----------------------------------------------------
+    # empty search
+    request = isogeo.search(token, page_size=0, whole_share=0)
+    with open("out_api_search_empty.json", "w") as json_basic:
+        json.dump(request,
+                  json_basic,
+                  sort_keys=True,
+                  indent=4,
+                  )
 
-# empty search
-request = isogeo.search(token, page_size=0, whole_share=0)
-with open("out_api_search_empty.json", "w") as json_basic:
-    json.dump(request,
-              json_basic,
-              sort_keys=True,
-              indent=4,
-              )
+    # basic search
+    request = isogeo.search(token, page_size=10, whole_share=0)
+    with open("out_api_search_basic.json", "w") as json_basic:
+        json.dump(request,
+                  json_basic,
+                  sort_keys=True,
+                  indent=4,
+                  )
 
-# basic search
-request = isogeo.search(token, page_size=10, whole_share=0)
-with open("out_api_search_basic.json", "w") as json_basic:
-    json.dump(request,
-              json_basic,
-              sort_keys=True,
-              indent=4,
-              )
+    # complete search
+    request = isogeo.search(token, whole_share=1, sub_resources="all")
+    with open("out_api_search_complete.json", "w") as json_basic:
+        json.dump(request,
+                  json_basic,
+                  sort_keys=True,
+                  indent=4,
+                  )
 
-# complete search
-request = isogeo.search(token, whole_share=1, sub_resources="all")
-with open("out_api_search_complete.json", "w") as json_basic:
-    json.dump(request,
-              json_basic,
-              sort_keys=True,
-              indent=4,
-              )
+    # shares informations
+    request = isogeo.shares(token)
+    with open("out_api_shares.json", "w") as json_basic:
+        json.dump(request,
+                  json_basic,
+                  sort_keys=True,
+                  indent=4,
+                  )
 
-# shares informations
-request = isogeo.shares(token)
-with open("out_api_shares.json", "w") as json_basic:
-    json.dump(request,
-              json_basic,
-              sort_keys=True,
-              indent=4,
-              )
-
-share_id = request[0].get("_id")
-request = isogeo.share(token, share_id)
-with open("out_api_share.json", "w") as json_basic:
-    json.dump(request,
-              json_basic,
-              sort_keys=True,
-              indent=4,
-              )
+    share_id = request[0].get("_id")
+    request = isogeo.share(token, share_id)
+    with open("out_api_share.json", "w") as json_basic:
+        json.dump(request,
+                  json_basic,
+                  sort_keys=True,
+                  indent=4,
+                  )

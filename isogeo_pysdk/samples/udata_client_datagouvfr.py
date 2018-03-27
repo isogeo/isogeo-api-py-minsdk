@@ -141,10 +141,10 @@ class DataGouvFr(object):
         # reuses
         self._REUSES = ("none", "few", "quite", "many")
 
+
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
-
 if __name__ == '__main__':
     """ standalone execution """
     # some organizations to play with

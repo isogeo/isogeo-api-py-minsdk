@@ -29,65 +29,66 @@ from isogeo_pysdk import IsogeoTranslator
 # ######## Main program ############
 # ##################################
 
-# storing application parameters into an ini file
-settings_file = r"../isogeo_params.ini"
+if __name__ == '__main__':
+    """Standalone execution"""
+    # storing application parameters into an ini file
+    settings_file = r"../isogeo_params.ini"
 
-# testing ini file
-if not path.isfile(path.realpath(settings_file)):
-    print("ERROR: to execute this script as standalone, you need to store your Isogeo application settings in a isogeo_params.ini file. You can use the template to set your own.")
-    import sys
-    sys.exit()
-else:
-    pass
+    # testing ini file
+    if not path.isfile(path.realpath(settings_file)):
+        print("ERROR: to execute this script as standalone, you need to store your Isogeo application settings in a isogeo_params.ini file. You can use the template to set your own.")
+        import sys
+        sys.exit()
+    else:
+        pass
 
-# reading ini file
-config = configparser.SafeConfigParser()
-config.read(settings_file)
+    # reading ini file
+    config = configparser.SafeConfigParser()
+    config.read(settings_file)
 
-share_id = config.get('auth', 'app_id')
-share_token = config.get('auth', 'app_secret')
+    share_id = config.get('auth', 'app_id')
+    share_token = config.get('auth', 'app_secret')
 
-# ------------ Real start ----------------
-# instanciating the class
-isogeo = Isogeo(client_id=share_id,
-                client_secret=share_token)
+    # ------------ Real start ----------------
+    # instanciating the class
+    isogeo = Isogeo(client_id=share_id,
+                    client_secret=share_token)
 
-# check which sub resources are available
-print(isogeo.SUBRESOURCES)
+    # check which sub resources are available
+    print(isogeo.SUBRESOURCES)
 
-# getting a token
-jeton = isogeo.connect()
+    # getting a token
+    jeton = isogeo.connect()
 
-# let's search for metadatas!
-print(dir(isogeo))
-search = isogeo.search(jeton)
+    # let's search for metadatas!
+    print(dir(isogeo))
+    search = isogeo.search(jeton)
 
-print(sorted(search.keys()))
-print(search.get('query'))
-print("Total count of metadatas shared: ", search.get("total"))
-print("Count of resources got by request: {}\n".format(len(search.get("results"))))
+    print(sorted(search.keys()))
+    print(search.get('query'))
+    print("Total count of metadatas shared: ", search.get("total"))
+    print("Count of resources got by request: {}\n".format(len(search.get("results"))))
 
-# get one random resource
-hatnumber = randrange(0, len(search.get("results")))
-my_resource = isogeo.resource(jeton,
-                              search.get("results")[hatnumber].get("_id"),
-                              sub_resources=isogeo.SUBRESOURCES,
-                              prot="https"
-                              )
+    # get one random resource
+    hatnumber = randrange(0, len(search.get("results")))
+    my_resource = isogeo.resource(jeton,
+                                  search.get("results")[hatnumber].get("_id"),
+                                  sub_resources=isogeo.SUBRESOURCES,
+                                  prot="https"
+                                  )
 
-print(sorted(my_resource.keys()))
+    print(sorted(my_resource.keys()))
 
-
-# use integrated translator
-tr = IsogeoTranslator("FR")
-if my_resource.get("contacts"):
-    ct = my_resource.get("contacts")[0]
-    print("\nRaw contact role: " + ct.get("role"))
-    # English
-    tr = IsogeoTranslator("EN")
-    print("English contact role: " + tr.tr("roles", ct.get("role")))
-    # French
+    # use integrated translator
     tr = IsogeoTranslator("FR")
-    print("Rôle du contact en français: " + tr.tr("roles", ct.get("role")))
-else:
-    print("This resource doesn't have any contact. Try again!")
+    if my_resource.get("contacts"):
+        ct = my_resource.get("contacts")[0]
+        print("\nRaw contact role: " + ct.get("role"))
+        # English
+        tr = IsogeoTranslator("EN")
+        print("English contact role: " + tr.tr("roles", ct.get("role")))
+        # French
+        tr = IsogeoTranslator("FR")
+        print("Rôle du contact en français: " + tr.tr("roles", ct.get("role")))
+    else:
+        print("This resource doesn't have any contact. Try again!")
