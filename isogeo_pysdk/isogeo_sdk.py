@@ -280,18 +280,18 @@ class Isogeo(object):
 
          Available values:
 
-           * '_created': metadata creation date [DEFAULT if not relevance]
-           * '_modified': metadata last update
-           * 'title': metadata title
-           * 'created': data creation date (possibly None)
-           * 'modified': data last update date
-           * 'relevance': relevance score calculated by API [DEFAULT].
+          * '_created': metadata creation date [DEFAULT if not relevance]
+          * '_modified': metadata last update
+          * 'title': metadata title
+          * 'created': data creation date (possibly None)
+          * 'modified': data last update date
+          * 'relevance': relevance score calculated by API [DEFAULT].
 
         :param str order_dir: sorting direction.
 
          Available values:
-            * 'desc': descending
-            * 'asc': ascending
+          * 'desc': descending
+          * 'asc': ascending
 
         :param str page_size: limits the number of results.
          Useful to paginate results display. Default value: 100.
@@ -653,6 +653,7 @@ class Isogeo(object):
 
         :param str token: API auth token
         :param str specific_tag: keyword to request
+        :param list sub_resources: list of subresources
         :param str prot: https [DEFAULT] or http
          (use it only for dev and tracking needs).
          """

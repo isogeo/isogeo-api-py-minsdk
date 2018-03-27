@@ -193,15 +193,15 @@ dict_md_fields_en = {
 
 
 class IsogeoTranslator(object):
-    """
-        Makes easier the translation of Isogeo API specific strings.
+    """Makes easier the translation of Isogeo API specific strings.
+
+    :param str lang: language code to apply. EN or FR.
     """
 
     def __init__(self, lang="FR"):
-        """
-            Instanciate IsogeoTranslator depending on required language.
+        """Instanciate IsogeoTranslator depending on required language.
 
-            :param str lang: language code to apply. EN or FR.
+        :param str lang: language code to apply. EN or FR.
         """
         if lang == "FR":
             self.translations = dict_md_fields_fr
@@ -211,12 +211,11 @@ class IsogeoTranslator(object):
         super(IsogeoTranslator, self).__init__()
 
     def tr(self, subdomain=None, string_to_translate=""):
-        """
-            Returns translation of string passed.
+        """Returns translation of string passed.
 
-            :param str subdomain: subpart of strings dictionary.
-                Must be one of self.translations.keys() i.e. 'restrictions'
-            :param str string_to_translate: string you want to translate
+        :param str subdomain: subpart of strings dictionary.
+         Must be one of self.translations.keys() i.e. 'restrictions'
+        :param str string_to_translate: string you want to translate
         """
         if subdomain:
             # check subdomain

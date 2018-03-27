@@ -91,7 +91,7 @@ EDIT_TABS = {"identification": ",".join(FILTER_TYPES),
 
 class IsogeoChecker(object):
     """Complementary set of tools to make some checks on requests
-     to Isogeo API.
+    to Isogeo API.
     """
 
     def __init__(self):
@@ -99,7 +99,7 @@ class IsogeoChecker(object):
 
     def check_internet_connection(self, remote_server="www.isogeo.com"):
         """Test if an internet connection is operational.
-         Src: http://stackoverflow.com/a/20913928/2556577.
+        Src: http://stackoverflow.com/a/20913928/2556577.
 
         :param str remote_server: remote server used to check
         """
@@ -119,11 +119,11 @@ class IsogeoChecker(object):
         """Check API Bearer token validity.
 
         Isogeo ID delivers authentication bearers which are valid during
-         a certain time. So this method checks the validity of the token
-         with a 30 mn anticipation limit, and renews it if necessary.
-         See: http://tools.ietf.org/html/rfc6750#section-2
+        a certain time. So this method checks the validity of the token
+        with a 30 mn anticipation limit, and renews it if necessary.
+        See: http://tools.ietf.org/html/rfc6750#section-2
 
-         FI: 24h = 86400 seconds, 30 mn = 1800, 5 mn = 300
+        FI: 24h = 86400 seconds, 30 mn = 1800, 5 mn = 300
 
         :param tuple token: auth bearer to check.
          Structure: (bearer, expiration_date)
@@ -287,8 +287,8 @@ class IsogeoChecker(object):
             return False
 
     def check_edit_tab(self, tab, md_type):
-        """Check if asked tab is part of Isogeo web form.
-         Can also apply a strict mode to filter depending on metadata type.
+        """Check if asked tab is part of Isogeo web form and reliable
+        with metadata type.
 
         :param str tab: tab to check. Must be one one of EDIT_TABS attribute
         :param str md_type: metadata type. Must be one one of FILTER_TYPES

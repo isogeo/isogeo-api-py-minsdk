@@ -39,9 +39,8 @@ checker = checker.IsogeoChecker()
 
 
 class IsogeoUtils(object):
-    """
-        Complementary set of utilitary methods and functions to make it easier
-        using Isogeo API.
+    """Complementary set of utilitary methods and functions to make it easier
+    using Isogeo API.
     """
     API_URLS = {"prod": "api",
                 "qa": "api.qa",
@@ -49,25 +48,24 @@ class IsogeoUtils(object):
                 }
 
     def __init__(self, proxies=dict()):
-        """
-            Instanciate IsogeoUtils module.
+        """Instanciate IsogeoUtils module.
 
-            :param dict proxies: dictionary of proxy settings as described in
-                                requests
-                                (http://docs.python-requests.org/en/master/user/advanced/#proxies)
+        :param dict proxies: dictionary of proxy settings as described in
+         requests. See: http://docs.python-requests.org/en/master/user/advanced/#proxies
         """
         self.platform, self.base_url = self.set_base_url()
         self.proxies = proxies
         super(IsogeoUtils, self).__init__()
 
     def convert_uuid(self, in_uuid=str, mode=0):
-        """
-           Convert a metadata UUID to its URI equivalent. And conversely.
+        """Convert a metadata UUID to its URI equivalent. And conversely.
 
-           :param str in_uuid: UUID or URI to convert
-           :param int mode: 0 to HEX
-                            1 to URN (RFC4122)\
-                            2 to URN (Isogeo specific style)
+        :param str in_uuid: UUID or URI to convert
+        :param int mode: options:
+          * 0 to HEX
+          * 1 to URN (RFC4122)\
+          * 2 to URN (Isogeo specific style)
+
         """
         # quick parameters check
         if not isinstance(in_uuid, string_types):
@@ -100,11 +98,14 @@ class IsogeoUtils(object):
             pass
 
     def get_isogeo_version(self, component="api", prot="https"):
-        """
-            Get Isogeo components versions.
-            Authentication is no required.
+        """Get Isogeo components versions.
+        Authentication is no required.
 
-            :param str component: one of api [default] | db | app
+        :param str component: options:
+          * api [default]
+          * db
+          * app
+
         """
         # which component
         if component == "api":
@@ -146,10 +147,12 @@ class IsogeoUtils(object):
         return version_req.json().get("version")
 
     def set_base_url(self, platform="prod"):
-        """
-            Set API base URLs according to platform.
+        """Set API base URLs according to platform.
 
-            :param str platform: one of prod | qa | int
+        :param str platform: options:
+          * prod [DEFAULT]
+          * qa
+          * int
         """
         platform = platform.lower()
         self.platform = platform
@@ -169,12 +172,11 @@ class IsogeoUtils(object):
 
     # -- URLs builders -------------------------------------------------------
     def get_edit_url(self, md_id=str, md_type=str, owner_id=str, tab="identification"):
-        """
-           Constructs the edition URL of a metadata.
+        """Constructs the edition URL of a metadata.
 
-           :param str md_id: metadata/resource UUID
-           :param str owner_id: owner UUID
-           :param str tab: target tab in the web form
+        :param str md_id: metadata/resource UUID
+        :param str owner_id: owner UUID
+        :param str tab: target tab in the web form
         """
         # checks inputs
         if not checker.check_is_uuid(md_id)\
@@ -192,12 +194,11 @@ class IsogeoUtils(object):
 
     # -- API AUTH ------------------------------------------------------------
     def credentials_loader(self, f_json, f_ini, e_vars):
-        """
-            Loads API credentials from a file or environment variables.
+        """Loads API credentials from a file or environment variables.
 
-            :param str f_json: path to the credentials JSON file:
-            :param str f_ini: path to the credentials INI file
-            :param dict e_vars: dict of environment variables names
+        :param str f_json: path to the credentials JSON file:
+        :param str f_ini: path to the credentials INI file
+        :param dict e_vars: dict of environment variables names
         """
         if f_ini:
             with open('client_secrets.json', "r") as j:
