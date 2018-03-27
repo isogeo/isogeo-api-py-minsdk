@@ -3,8 +3,8 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to Isogeo PySDK's documentation!
-========================================
+Isogeo PySDK's documentation
+============================
 
 .. toctree::
    :maxdepth: 2
@@ -17,7 +17,6 @@ Welcome to Isogeo PySDK's documentation!
 :Source code: https://github.com/Guts/isogeo-api-py-minsdk/
 :Issues: https://github.com/Guts/isogeo-api-py-minsdk/issues
 
-
 Indices and tables
 ==================
 
@@ -25,16 +24,15 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-README
+Modules
 ++++++++
 
 .. toctree::
+    _apidoc/modules
 
-    readme
 
 Cookbook
 ++++++++
 
 .. toctree::
-
     usage
