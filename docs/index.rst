@@ -11,9 +11,9 @@ Isogeo PySDK's documentation
    :caption: Contents:
 
 .. module:: isogeo-pysdk
-.. moduleauthor:: Julien Moura
+.. moduleauthor:: Julien M. (Isogeo)
 
-:Author: Julien Moura (Isogeo)
+:Author: Julien M. (Isogeo)
 :Source code: https://github.com/Guts/isogeo-api-py-minsdk/
 :Issues: https://github.com/Guts/isogeo-api-py-minsdk/issues
 

@@ -39,14 +39,23 @@ checker = checker.IsogeoChecker()
 
 
 class IsogeoUtils(object):
-    """Makes easier the translation of Isogeo API specific strings."""
+    """
+        Complementary set of utilitary methods and functions to make it easier
+        using Isogeo API.
+    """
     API_URLS = {"prod": "api",
                 "qa": "api.qa",
                 # "int": "api.int.hq.isogeo.fr"
                 }
 
     def __init__(self, proxies=dict()):
-        """Set text dictionary depending on language passed."""
+        """
+            Instanciate IsogeoUtils module.
+
+            :param dict proxies: dictionary of proxy settings as described in
+                                requests
+                                (http://docs.python-requests.org/en/master/user/advanced/#proxies)
+        """
         self.platform, self.base_url = self.set_base_url()
         self.proxies = proxies
         super(IsogeoUtils, self).__init__()
