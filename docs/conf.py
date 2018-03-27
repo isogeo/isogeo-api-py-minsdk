@@ -162,7 +162,7 @@ def run_apidoc(_):
 
     cur_dir = os.path.abspath(os.path.dirname(__file__))
     output_path = os.path.join(cur_dir, '_apidoc')
-    modules = os.path.join(cur_dir, r"..\isogeo_pysdk")
+    modules = os.path.join(cur_dir, os.path.normpath(r"../isogeo_pysdk"))
     exclusions = [
         '../isogeo_pysdk/samples',
     ]
