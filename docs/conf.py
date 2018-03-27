@@ -158,7 +158,7 @@ texinfo_documents = [
 
 # -- Options for Sphinx API doc ----------------------------------------------
 def run_apidoc(_):
-    from sphinx.ext.apidoc import main
+    from sphinx.apidoc import main as apidoc_main
 
     cur_dir = os.path.abspath(os.path.dirname(__file__))
     output_path = os.path.join(cur_dir, '_apidoc')
@@ -166,7 +166,7 @@ def run_apidoc(_):
     exclusions = [
         '../isogeo_pysdk/samples',
     ]
-    main(['-e', '-f', '-M', '-o', output_path, modules] + exclusions)
+    apidoc_main([None, '-e', '-f', '-M', '-o', output_path, modules] + exclusions)
 
 
 def setup(app):
