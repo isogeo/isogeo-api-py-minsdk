@@ -1,4 +1,4 @@
-|Version| |Build_Status| rtdocs| |compat_py27| |compat_py35| |compat_py36|
+|Version| |Build_Status| |rtdocs| |compat_py27| |compat_py35| |compat_py36|
 
 Isogeo API Python SDK
 =====================
