@@ -67,8 +67,8 @@ dict_md_fields_fr = {
             "resourceProvider": "Fournisseur",
             "user": "Utilisateur"
             },
-        "frequencyUpdateHelp": "Tous les ",
         "frequencyTypes": {
+            "frequencyUpdateHelp": "Tous les ",
             "years": "an(s)",
             "months": "mois",
             "weeks": "semaine(s)",
@@ -154,8 +154,8 @@ dict_md_fields_en = {
             "resourceProvider": "Resource provider",
             "user": "User"
             },
-        "frequencyUpdateHelp": "Every ",
         "frequencyTypes": {
+            "frequencyUpdateHelp": "Every ",
             "years": "year(s)",
             "months": "month(s)",
             "weeks": "week(s)",
@@ -210,31 +210,27 @@ class IsogeoTranslator(object):
 
         super(IsogeoTranslator, self).__init__()
 
-    def tr(self, subdomain=None, string_to_translate=""):
+    def tr(self, subdomain, string_to_translate=""):
         """Returns translation of string passed.
 
         :param str subdomain: subpart of strings dictionary.
          Must be one of self.translations.keys() i.e. 'restrictions'
         :param str string_to_translate: string you want to translate
         """
-        if subdomain:
-            # check subdomain
-            if subdomain not in self.translations.keys():
-                raise ValueError("'{}' is not a correct subdomain."
-                                 " Must be one of {}"
-                                 .format(subdomain,
-                                         self.translations.keys()))
-            else:
-                pass
-            # translate
-            str_translated = self.translations.get(subdomain,
-                                                   {"error": "Subdomain not found: {}"
-                                                             .format(subdomain)})\
-                                              .get(string_to_translate,
-                                                   "String not found")
+        if subdomain not in self.translations.keys():
+            raise ValueError("'{}' is not a correct subdomain."
+                             " Must be one of {}"
+                             .format(subdomain,
+                                     self.translations.keys()))
         else:
-            str_translated = self.translations.get(string_to_translate,
-                                                   "String not found")
+            pass
+        # translate
+        str_translated = self.translations.get(subdomain,
+                                               {"error": "Subdomain not found: {}"
+                                                         .format(subdomain)})\
+                                          .get(string_to_translate,
+                                               "String not found")
+
         # end of method
         return str_translated
 
