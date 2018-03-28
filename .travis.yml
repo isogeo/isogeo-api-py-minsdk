@@ -20,7 +20,7 @@ script:
   - pycodestyle isogeo_pysdk/checker.py --ignore="E265,E501" --statistics --show-source
   - pycodestyle isogeo_pysdk/utils.py --ignore="E265,E501" --statistics --show-source
   # coverage
-  - coverage run tests/
+  - coverage run -m unittest discover -s tests/
 
 # coverage reporting
 after_success:
