@@ -44,7 +44,6 @@ class IsogeoUtils(object):
     """
     API_URLS = {"prod": "api",
                 "qa": "api.qa",
-                # "int": "api.int.hq.isogeo.fr"
                 }
 
     WEBAPPS = {"oc": {"args": ("md_id", "share_id", "oc_token"),
@@ -76,7 +75,7 @@ class IsogeoUtils(object):
           * 2 to URN (Isogeo specific style)
 
         """
-        # quick parameters check
+        # parameters check
         if not isinstance(in_uuid, string_types):
             raise TypeError("'in_uuid' expected a str value.")
         else:
@@ -85,8 +84,8 @@ class IsogeoUtils(object):
             raise ValueError("{} is not a correct UUID".format(in_uuid))
         else:
             pass
-        if not isinstance(mode, int) or mode not in (0, 1, 2):
-            raise TypeError("'mode' expected an integer value: 0 or 1")
+        if not isinstance(mode, int):
+            raise TypeError("'mode' expects an integer value")
         else:
             pass
         # handle Isogeo specific UUID in XML exports
@@ -104,7 +103,7 @@ class IsogeoUtils(object):
             urn = uuid.UUID(in_uuid).urn
             return "urn:isogeo:metadata:uuid:{}".format(urn.split(":")[2])
         else:
-            pass
+            raise ValueError("'mode' must be  one of: 0 | 1 | 2")
 
     def get_isogeo_version(self, component="api", prot="https"):
         """Get Isogeo components versions.
@@ -131,9 +130,6 @@ class IsogeoUtils(object):
             version_url = "https://app.isogeo.com/about"
         elif component == "app" and self.platform == "qa":
             version_url = "https://qa-isogeo-app.azurewebsites.net/about"
-        elif component == "app" and self.platform == "int":
-            version_url = "{}://v1.api.int.hq.isogeo.fr/about"\
-                          .format(prot)
         else:
             raise ValueError("Component value is one theses values:"
                              "api [default], db, app.")
@@ -194,8 +190,8 @@ class IsogeoUtils(object):
             raise ValueError("One of md_id or owner_id is not a correct UUID.")
         else:
             pass
-        if not checker.check_edit_tab(tab, md_type=md_type):
-            raise ValueError("Bad tab name")
+        if checker.check_edit_tab(tab, md_type=md_type):
+            pass
         # construct URL
         return "https://app.isogeo.com/" \
                "groups/{}" \
@@ -219,9 +215,7 @@ class IsogeoUtils(object):
 
                 return url.format(**kwargs)
             else:
-                webapp_args = self.WEBAPPS.get(webapp).get("args")
-                raise TypeError("'{}' webapp expects {} argument(s):"
-                                " {}"
+                raise TypeError("'{}' webapp expects {} argument(s): {}."
                                 " Args passed: {}"
                                 .format(webapp,
                                         len(webapp_args),
@@ -254,27 +248,27 @@ class IsogeoUtils(object):
                                      "url": webapp_url}
 
     # -- API AUTH ------------------------------------------------------------
-    def credentials_loader(self, f_json, f_ini, e_vars):
-        """Loads API credentials from a file or environment variables.
+    # def credentials_loader(self, f_json, f_ini, e_vars):
+    #     """Loads API credentials from a file or environment variables.
 
-        :param str f_json: path to the credentials JSON file:
-        :param str f_ini: path to the credentials INI file
-        :param dict e_vars: dict of environment variables names
-        """
-        if f_ini:
-            with open('client_secrets.json', "r") as j:
-                api = json.loads(j.read()).get("installed")
-            return api
-        elif f_json:
-            with open('client_secrets.json', "r") as j:
-                api = json.loads(j.read()).get("installed")
-            return api
-        elif e_vars:
-            with open('client_secrets.json', "r") as j:
-                api = json.loads(j.read()).get("installed")
-            return api
-        else:
-            raise ValueError()
+    #     :param str f_json: path to the credentials JSON file:
+    #     :param str f_ini: path to the credentials INI file
+    #     :param dict e_vars: dict of environment variables names
+    #     """
+    #     if f_ini:
+    #         with open('client_secrets.json', "r") as j:
+    #             api = json.loads(j.read()).get("installed")
+    #         return api
+    #     elif f_json:
+    #         with open('client_secrets.json', "r") as j:
+    #             api = json.loads(j.read()).get("installed")
+    #         return api
+    #     elif e_vars:
+    #         with open('client_secrets.json', "r") as j:
+    #             api = json.loads(j.read()).get("installed")
+    #         return api
+    #     else:
+    #         raise ValueError()
 
 
 # ##############################################################################

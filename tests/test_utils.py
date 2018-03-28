@@ -53,22 +53,43 @@ class Search(unittest.TestCase):
 
     #  -  Isogeo components versions -----------------------------------------
     def test_get_isogeo_version_api(self):
-        """"""
-        version_api = self.utils.get_isogeo_version(component="api")
-        version_api_naive = self.utils.get_isogeo_version()
-        self.assertIsInstance(version_api, str)
-        self.assertIsInstance(version_api_naive, str)
-        self.assertEqual(version_api, version_api_naive)
+        """Check API version"""
+        # prod
+        version_api_prod = self.utils.get_isogeo_version(component="api")
+        version_api_naive_prod = self.utils.get_isogeo_version()
+        # qa
+        platform, base_url = self.utils.set_base_url(platform="qa")
+        version_api_qa = self.utils.get_isogeo_version(component="api")
+        version_api_naive_qa = self.utils.get_isogeo_version()
+        # check
+        self.assertIsInstance(version_api_prod, str)
+        self.assertIsInstance(version_api_naive_prod, str)
+        self.assertIsInstance(version_api_qa, str)
+        self.assertIsInstance(version_api_naive_qa, str)
+        self.assertEqual(version_api_prod, version_api_naive_prod)
+        self.assertEqual(version_api_qa, version_api_naive_prod)
 
     def test_get_isogeo_version_app(self):
-        """"""
-        version_app = self.utils.get_isogeo_version(component="app")
-        self.assertIsInstance(version_app, str)
+        """Check APP version"""
+        # prod
+        version_app_prod = self.utils.get_isogeo_version(component="app")
+        # qa
+        platform, base_url = self.utils.set_base_url(platform="qa")
+        version_app_qa = self.utils.get_isogeo_version(component="app")
+        # check
+        self.assertIsInstance(version_app_prod, str)
+        self.assertIsInstance(version_app_qa, str)
 
     def test_get_isogeo_version_db(self):
-        """Check res"""
-        version_db = self.utils.get_isogeo_version(component="db")
-        self.assertIsInstance(version_db, str)
+        """Check DB version"""
+        # prod
+        version_db_prod = self.utils.get_isogeo_version(component="db")
+        # qa
+        platform, base_url = self.utils.set_base_url(platform="qa")
+        version_db_qa = self.utils.get_isogeo_version(component="db")
+        # check
+        self.assertIsInstance(version_db_prod, str)
+        self.assertIsInstance(version_db_qa, str)
 
     def test_get_isogeo_version_bad_parameter(self):
         """Raise error if component parameter is bad."""
@@ -77,10 +98,19 @@ class Search(unittest.TestCase):
 
     # -- Base URLs -----------------------------------------------------------
     def test_set_base_url(self):
-        """"""
+        """Set base URLs"""
+        # by default platform = prod
         platform, base_url = self.utils.set_base_url()
         self.assertIsInstance(platform, str)
         self.assertIsInstance(base_url, str)
+        self.assertEqual(platform, "prod")
+        self.assertEqual(base_url, self.utils.API_URLS.get("prod"))
+        # qa
+        platform, base_url = self.utils.set_base_url(platform="qa")
+        self.assertIsInstance(platform, str)
+        self.assertIsInstance(base_url, str)
+        self.assertEqual(platform, "qa")
+        self.assertEqual(base_url, self.utils.API_URLS.get("qa"))
 
     def test_set_base_url_bad_parameter(self):
         """Raise error if platform parameter is bad."""
@@ -130,6 +160,11 @@ class Search(unittest.TestCase):
                                     md_type="raster-dataset",
                                     owner_id="32f7e95ec4e94ca3bc1afda960003882",
                                     tab="attributes")
+        with self.assertRaises(ValueError):
+            self.utils.get_edit_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
+                                    md_type="raster-dataset",
+                                    owner_id="32f7e95ec4e94ca3bc1afda960003882",
+                                    tab="what_a_tab_name")
 
     # -- URLs Builders - view on web app -------------------------------------
     def test_get_view_url_ok(self):
@@ -152,6 +187,10 @@ class Search(unittest.TestCase):
             self.utils.get_view_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
                                     webapp="my_imaginary_webapp",
                                     portal_url="demo.isogeo.net")
+        with self.assertRaises(TypeError):
+            self.utils.get_view_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
+                                    webapp="pixup_portal",
+                                    my_nice_arg="a_nice_arg")
 
     def test_register_webapp_custom_ok(self):
         """Test register a custom webapp and use it ot build view url."""
@@ -248,16 +287,19 @@ class Search(unittest.TestCase):
         self.assertEqual(uuid_out, self.uuid_urnIsogeo)
         self.assertIn("isogeo:metadata", uuid_out)
 
-    # UUID converter
-    def test_uuid_converter_bad_parameter(self):
-        """Raise error if one parameter is bad."""
+    # UUID converter - bad boys
+    def test_uuid_converter_bad_value(self):
+        """Raise error if one parameter value is bad."""
         with self.assertRaises(ValueError):
             self.utils.convert_uuid(in_uuid="oh_my_bad_i_m_not_a_correct_uuid")
+        with self.assertRaises(ValueError):
+            self.utils.convert_uuid(in_uuid=self.uuid_urnIsogeo,
+                                    mode=4)
+
+    def test_uuid_converter_bad_type(self):
+        """Raise error if one parameter type is bad."""
         with self.assertRaises(TypeError):
             self.utils.convert_uuid(in_uuid=2)
-            self.utils.convert_uuid(in_uuid="0269803d50c446b09f5060ef7fe3e22b",
+        with self.assertRaises(TypeError):
+            self.utils.convert_uuid(in_uuid=self.uuid_urnIsogeo,
                                     mode="ups_not_an_int")
-            self.utils.convert_uuid(in_uuid="0269803d50c446b09f5060ef7fe3e22b",
-                                    mode=3)
-            self.utils.convert_uuid(in_uuid="0269803d50c446b09f5060ef7fe3e22b",
-                                    mode=True)
