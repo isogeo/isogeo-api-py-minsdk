@@ -1,4 +1,4 @@
-|Version| |Build_Status| |rtdocs| |compat_py27| |compat_py35| |compat_py36|
+|Version| |Build_Status| |coverage| |rtdocs| |compat_py27| |compat_py35| |compat_py36|
 
 Isogeo API Python SDK
 =====================
@@ -192,6 +192,10 @@ To build docs:
 .. |Build_Status| image:: https://travis-ci.org/Guts/isogeo-api-py-minsdk.svg?branch=master
    :target: https://travis-ci.org/Guts/isogeo-api-py-minsdk
    :alt: Travis build status
+
+.. |coverage| image:: https://codecov.io/gh/Guts/isogeo-api-py-minsdk/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/Guts/isogeo-api-py-minsdk
+   :alt: Codecov - Coverage status
 
 .. |compat_py27| image:: https://img.shields.io/badge/python-2.7-blue.svg
    :target: https://badge.fury.io/py/isogeo-pysdk
