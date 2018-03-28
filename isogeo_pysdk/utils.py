@@ -47,6 +47,15 @@ class IsogeoUtils(object):
                 # "int": "api.int.hq.isogeo.fr"
                 }
 
+    WEBAPPS = {"oc": {"args": ("md_id", "share_id", "oc_token"),
+                      "url": "https://open.isogeo.com/s/{share_id}"
+                             "/{oc_token}/r/{md_id}"
+                      },
+               "pixup_portal": {"args": ("md_id", "portal_url", ),
+                                "url": "http://{portal_url}/?muid={md_id}"
+                                },
+               }
+
     def __init__(self, proxies=dict()):
         """Instanciate IsogeoUtils module.
 
@@ -191,6 +200,57 @@ class IsogeoUtils(object):
                "groups/{}" \
                "/resources/{}" \
                "/{}".format(owner_id, md_id, tab)
+
+    def get_view_url(self, webapp="oc", **kwargs):
+        """Constructs the view URL of a metadata.
+
+        :param str webapp: web app destination.
+        :param dict \**kwargs: web app specific parameters.
+         For example see WEBAPPS
+        """
+        # build wbeapp URL depending on choosen webapp
+        if webapp in self.WEBAPPS:
+            webapp_args = self.WEBAPPS.get(webapp).get("args")
+            # check kwargs parameters
+            if set(webapp_args) <= set(kwargs):
+                # construct and return url
+                url = self.WEBAPPS.get(webapp).get("url")
+
+                return url.format(**kwargs)
+            else:
+                webapp_args = self.WEBAPPS.get(webapp).get("args")
+                raise TypeError("'{}' webapp expects {} argument(s):"
+                                " {}"
+                                " Args passed: {}"
+                                .format(webapp,
+                                        len(webapp_args),
+                                        webapp_args,
+                                        kwargs))
+        else:
+            raise ValueError("'{}' is not a recognized webapp among: {}."
+                             " Try to register it."
+                             .format(self.WEBAPPS.keys(), webapp))
+
+    def register_webapp(self, webapp_name, webapp_args, webapp_url):
+        """Register a new WEBAPP to use with the view URL builder.
+
+        :param str webapp_name: name of the web app to register
+        :param list webapp_args: dynamic arguments to complete the URL.
+         Typically 'md_id'.
+        :param str webapp_url: URL of the web app to register with
+         args tags to replace. Example:
+         'https://www.ppige-npdc.fr/portail/geocatalogue?uuid={md_id}'
+        """
+        # check parameters
+        for arg in webapp_args:
+            if arg not in webapp_url:
+                raise ValueError("Inconsistent web app arguments and URL."
+                                 " It should contain arguments to replace"
+                                 " dynamically. Example: 'http://webapp.com"
+                                 "/isogeo?metadata={md_id}'")
+        # register
+        self.WEBAPPS[webapp_name] = {"args": webapp_args,
+                                     "url": webapp_url}
 
     # -- API AUTH ------------------------------------------------------------
     def credentials_loader(self, f_json, f_ini, e_vars):
