@@ -158,10 +158,11 @@ class IsogeoUtils(object):
     def set_base_url(self, platform="prod"):
         """Set API base URLs according to platform.
 
-        :param str platform: options:
-          * prod [DEFAULT]
-          * qa
-          * int
+        :param str platform: platform to use. Available values:
+           * prod [DEFAULT]
+           * qa
+           * int
+
         """
         platform = platform.lower()
         self.platform = platform

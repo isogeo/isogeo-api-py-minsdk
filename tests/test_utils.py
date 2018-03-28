@@ -131,6 +131,48 @@ class Search(unittest.TestCase):
                                     owner_id="32f7e95ec4e94ca3bc1afda960003882",
                                     tab="attributes")
 
+    # -- URLs Builders - view on web app -------------------------------------
+    def test_get_view_url_ok(self):
+        """Test URL builder for OpenCatalog and PixupPortal links."""
+        # OpenCatalog
+        oc_url = self.utils.get_view_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
+                                         webapp="oc",
+                                         share_id="1e07910d365449b59b6596a9b428ecd9",
+                                         oc_token="TokenOhDearToken")
+        self.assertEqual(oc_url, "https://open.isogeo.com/s/1e07910d365449b59b6596a9b428ecd9/TokenOhDearToken/r/0269803d50c446b09f5060ef7fe3e22b")
+        # PixUp portal - demo.isogeo.net sample
+        pixup_url = self.utils.get_view_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
+                                            webapp="pixup_portal",
+                                            portal_url="demo.isogeo.net")
+        self.assertEqual(pixup_url, "http://demo.isogeo.net/?muid=0269803d50c446b09f5060ef7fe3e22b")
+
+    def test_get_view_url_bad(self):
+        """Test URL builder for web app with bad parameters."""
+        with self.assertRaises(ValueError):
+            self.utils.get_view_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
+                                    webapp="my_imaginary_webapp",
+                                    portal_url="demo.isogeo.net")
+
+    def test_register_webapp_custom_ok(self):
+        """Test register a custom webapp and use it ot build view url."""
+        # register
+        self.assertNotIn("PPIGE v3", self.utils.WEBAPPS)
+        self.utils.register_webapp(webapp_name="PPIGE v3",
+                                   webapp_args=["md_id", ],
+                                   webapp_url="https://www.ppige-npdc.fr/portail/geocatalogue?uuid={md_id}")
+        self.assertIn("PPIGE v3", self.utils.WEBAPPS)
+        # use it
+        custom_url = self.utils.get_view_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
+                                             webapp="PPIGE v3")
+        self.assertEqual(custom_url, "https://www.ppige-npdc.fr/portail/geocatalogue?uuid=0269803d50c446b09f5060ef7fe3e22b")
+
+    def test_register_webapp_bad(self):
+        """Must raise an error if web app arg is not in url."""
+        with self.assertRaises(ValueError):
+            self.utils.register_webapp(webapp_name="PPIGE v3",
+                                       webapp_args=["md_id", ],
+                                       webapp_url="https://www.ppige-npdc.fr/portail/geocatalogue?uuid=")
+
     # -- UUID converter - from HEX -------------------------------------------
     def test_hex_to_hex(self):
         """Test UUID converter from HEX to HEX"""
