@@ -155,11 +155,6 @@ class IsogeoChecker(object):
                                   response.json().get("error"),
                                   response.request.url))
             return False, response.status_code
-        else:
-            pass
-
-        # end of method
-        return True
 
     def check_request_parameters(self, parameters=dict):
         """Check parameters passed to avoid errors and help debug.
@@ -234,7 +229,7 @@ class IsogeoChecker(object):
             else:
                 logging.debug(i.split(":")[1], i.split(":")[1].isdigit())
                 dico_query["text"].append(i)
-                pass
+                continue
 
         # Values
         dico_filters = {i.split(":")[0]: i.split(":")[1:] for i in li_args}
@@ -267,6 +262,11 @@ class IsogeoChecker(object):
 
         :param str uuid_str: UUID string to check
         """
+        # check uuid type
+        if not isinstance(uuid_str, string_types):
+            raise TypeError("'uuid_str' expected a str value.")
+        else:
+            pass
         # handle Isogeo specific UUID in XML exports
         if "isogeo:metadata" in uuid_str:
             uuid_str = "urn:uuid:{}".format(uuid_str.split(":")[-1])
@@ -280,10 +280,6 @@ class IsogeoChecker(object):
         except ValueError as e:
             logging.error("uuid ValueError. {} ({})  -- {}"
                           .format(type(uuid_str), uuid_str, e))
-            return False
-        except TypeError:
-            logging.error("uuid must be a string. Not: {} ({})"
-                          .format(type(uuid_str), uuid_str))
             return False
 
     def check_edit_tab(self, tab, md_type):
@@ -323,10 +319,8 @@ class IsogeoChecker(object):
                              " Only for these types: {}."
                              .format(tab, md_type, EDIT_TABS.get(tab))
                              )
-            return False
         else:
-            pass
-        return True
+            return True
 
 
 # ##############################################################################

@@ -14,7 +14,7 @@ pip install --upgrade setuptools wheel
 pip install --upgrade -r .\tests\requirements_test.txt
 
 "-- STEP -- Run unit tests"
-python -m unittest discover
+# python -m unittest discover
 
 "-- STEP -- Run coverage"
 coverage run -m unittest discover -s tests/

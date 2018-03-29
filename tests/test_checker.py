@@ -53,17 +53,13 @@ class AuthBadCodes(unittest.TestCase):
         isogeo = Isogeo(client_id=app_id,
                         client_secret=app_token)
         bearer = isogeo.connect()
-        self.assertIsInstance(checker.check_bearer_validity(bearer,
-                                                            isogeo.connect()),
+        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect()),
                               tuple)
-        self.assertEqual(len(checker.check_bearer_validity(bearer,
-                                                           isogeo.connect())),
+        self.assertEqual(len(checker.check_bearer_validity(bearer, isogeo.connect())),
                          2)
-        self.assertIsInstance(checker.check_bearer_validity(bearer,
-                                                            isogeo.connect())[0],
+        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect())[0],
                               string_types)
-        self.assertIsInstance(checker.check_bearer_validity(bearer,
-                                                            isogeo.connect())[1],
+        self.assertIsInstance(checker.check_bearer_validity(bearer, isogeo.connect())[1],
                               int)
 
     def test_checker_validity_bearer_expired(self):
@@ -113,6 +109,10 @@ class AuthBadCodes(unittest.TestCase):
         self.assertEqual(uuid_bad_1, 0)
         self.assertEqual(uuid_bad_2, 0)
         self.assertEqual(uuid_bad_3, 0)
+        # type error
+        uuid_int = 2018
+        with self.assertRaises(TypeError):
+            checker.check_is_uuid(uuid_str=uuid_int)
 
     # Internet connection
     def test_checker_internet_ok(self):
@@ -128,28 +128,142 @@ class AuthBadCodes(unittest.TestCase):
     # edition tabs
     def test_check_edit_tab_ok(self):
         """Test if a good tab is valid"""
-
-        
-
+        # vector-dataset
+        tab_ok_i = checker.check_edit_tab(tab="identification",
+                                          md_type="vector-dataset")
+        tab_ok_h = checker.check_edit_tab(tab="history",
+                                          md_type="vector-dataset")
+        tab_ok_g = checker.check_edit_tab(tab="geography",
+                                          md_type="vector-dataset")
+        tab_ok_q = checker.check_edit_tab(tab="quality",
+                                          md_type="vector-dataset")
+        tab_ok_a = checker.check_edit_tab(tab="attributes",
+                                          md_type="vector-dataset")
+        tab_ok_c = checker.check_edit_tab(tab="constraints",
+                                          md_type="vector-dataset")
+        tab_ok_r = checker.check_edit_tab(tab="resources",
+                                          md_type="vector-dataset")
+        tab_ok_ct = checker.check_edit_tab(tab="contacts",
+                                           md_type="vector-dataset")
+        tab_ok_ad = checker.check_edit_tab(tab="advanced",
+                                           md_type="vector-dataset")
+        tab_ok_m = checker.check_edit_tab(tab="metadata",
+                                          md_type="vector-dataset")
+        self.assertEqual(tab_ok_i, 1)
+        self.assertEqual(tab_ok_h, 1)
+        self.assertEqual(tab_ok_g, 1)
+        self.assertEqual(tab_ok_q, 1)
+        self.assertEqual(tab_ok_a, 1)
+        self.assertEqual(tab_ok_c, 1)
+        self.assertEqual(tab_ok_r, 1)
+        self.assertEqual(tab_ok_ct, 1)
+        self.assertEqual(tab_ok_ad, 1)
+        self.assertEqual(tab_ok_m, 1)
+        # raster-dataset
+        tab_ok_i = checker.check_edit_tab(tab="identification",
+                                          md_type="raster-dataset")
+        tab_ok_h = checker.check_edit_tab(tab="history",
+                                          md_type="raster-dataset")
+        tab_ok_g = checker.check_edit_tab(tab="geography",
+                                          md_type="raster-dataset")
+        tab_ok_q = checker.check_edit_tab(tab="quality",
+                                          md_type="raster-dataset")
+        tab_ok_c = checker.check_edit_tab(tab="constraints",
+                                          md_type="raster-dataset")
+        tab_ok_r = checker.check_edit_tab(tab="resources",
+                                          md_type="raster-dataset")
+        tab_ok_ct = checker.check_edit_tab(tab="contacts",
+                                           md_type="raster-dataset")
+        tab_ok_ad = checker.check_edit_tab(tab="advanced",
+                                           md_type="raster-dataset")
+        tab_ok_m = checker.check_edit_tab(tab="metadata",
+                                          md_type="raster-dataset")
+        self.assertEqual(tab_ok_i, 1)
+        self.assertEqual(tab_ok_h, 1)
+        self.assertEqual(tab_ok_g, 1)
+        self.assertEqual(tab_ok_q, 1)
+        self.assertEqual(tab_ok_c, 1)
+        self.assertEqual(tab_ok_r, 1)
+        self.assertEqual(tab_ok_ct, 1)
+        self.assertEqual(tab_ok_ad, 1)
+        self.assertEqual(tab_ok_m, 1)
+        # services
+        tab_ok_i = checker.check_edit_tab(tab="identification",
+                                          md_type="service")
+        tab_ok_h = checker.check_edit_tab(tab="history",
+                                          md_type="service")
+        tab_ok_g = checker.check_edit_tab(tab="geography",
+                                          md_type="service")
+        tab_ok_q = checker.check_edit_tab(tab="quality",
+                                          md_type="service")
+        tab_ok_c = checker.check_edit_tab(tab="constraints",
+                                          md_type="service")
+        tab_ok_r = checker.check_edit_tab(tab="resources",
+                                          md_type="service")
+        tab_ok_ct = checker.check_edit_tab(tab="contacts",
+                                           md_type="service")
+        tab_ok_ad = checker.check_edit_tab(tab="advanced",
+                                           md_type="service")
+        tab_ok_m = checker.check_edit_tab(tab="metadata",
+                                          md_type="service")
+        self.assertEqual(tab_ok_i, 1)
+        self.assertEqual(tab_ok_h, 1)
+        self.assertEqual(tab_ok_g, 1)
+        self.assertEqual(tab_ok_q, 1)
+        self.assertEqual(tab_ok_c, 1)
+        self.assertEqual(tab_ok_r, 1)
+        self.assertEqual(tab_ok_ct, 1)
+        self.assertEqual(tab_ok_ad, 1)
+        self.assertEqual(tab_ok_m, 1)
+        # resources
+        tab_ok_i = checker.check_edit_tab(tab="identification",
+                                          md_type="resource")
+        tab_ok_h = checker.check_edit_tab(tab="history",
+                                          md_type="resource")
+        tab_ok_c = checker.check_edit_tab(tab="constraints",
+                                          md_type="resource")
+        tab_ok_r = checker.check_edit_tab(tab="resources",
+                                          md_type="resource")
+        tab_ok_ct = checker.check_edit_tab(tab="contacts",
+                                           md_type="resource")
+        tab_ok_ad = checker.check_edit_tab(tab="advanced",
+                                           md_type="resource")
+        tab_ok_m = checker.check_edit_tab(tab="metadata",
+                                          md_type="resource")
+        self.assertEqual(tab_ok_i, 1)
+        self.assertEqual(tab_ok_h, 1)
+        self.assertEqual(tab_ok_c, 1)
+        self.assertEqual(tab_ok_r, 1)
+        self.assertEqual(tab_ok_ct, 1)
+        self.assertEqual(tab_ok_ad, 1)
+        self.assertEqual(tab_ok_m, 1)
 
     def test_check_edit_tab_bad(self):
         """Raise errors"""
         with self.assertRaises(TypeError):
             checker.check_edit_tab(tab=1984, md_type="vector-dataset")
+        with self.assertRaises(TypeError):
             checker.check_edit_tab(tab="identification",
                                    md_type=2)
+        with self.assertRaises(TypeError):
             checker.check_edit_tab(tab=True,
                                    md_type=False)
         with self.assertRaises(ValueError):
             checker.check_edit_tab(tab="download", md_type="raster-dataset")
+        with self.assertRaises(ValueError):
             checker.check_edit_tab(tab="identification", md_type="nogeographic")
             # resource type
+        with self.assertRaises(ValueError):
             checker.check_edit_tab(tab="geography", md_type="resource")
+        with self.assertRaises(ValueError):
             checker.check_edit_tab(tab="quality", md_type="resource")
+        with self.assertRaises(ValueError):
             checker.check_edit_tab(tab="attributes", md_type="resource")
             # raster
+        with self.assertRaises(ValueError):
             checker.check_edit_tab(tab="attributes", md_type="raster-dataset")
             # service
+        with self.assertRaises(ValueError):
             checker.check_edit_tab(tab="attributes", md_type="service")
 
 

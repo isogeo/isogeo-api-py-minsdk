@@ -111,13 +111,59 @@ class Search(unittest.TestCase):
         self.assertEqual(len(search_ids_1.get("results")), 1)
         self.assertEqual(len(search_ids_2.get("results")), 2)
 
+    def test_search_parameter_query_ok(self):
+        """Search with good query parameters."""
+        # workgroup - owner
+        self.isogeo.search(self.bearer,
+                           query="owner:32f7e95ec4e94ca3bc1afda960003882",
+                           page_size=0,
+                           whole_share=0)
+        # inspire themes
+        self.isogeo.search(self.bearer,
+                           query="keyword:inspire-theme:administrativeunits",
+                           page_size=0,
+                           whole_share=0)
+        # SRS
+        self.isogeo.search(self.bearer,
+                           query="coordinate-system:2154",
+                           page_size=0,
+                           whole_share=0)
+        # types
+        self.isogeo.search(self.bearer,
+                           query="type:dataset",
+                           page_size=0,
+                           whole_share=0)
+        self.isogeo.search(self.bearer,
+                           query="type:vector-dataset",
+                           page_size=0,
+                           whole_share=0)
+        self.isogeo.search(self.bearer,
+                           query="type:raster-dataset",
+                           page_size=0,
+                           whole_share=0)
+        self.isogeo.search(self.bearer,
+                           query="type:service",
+                           page_size=0,
+                           whole_share=0)
+        self.isogeo.search(self.bearer,
+                           query="type:resource",
+                           page_size=0,
+                           whole_share=0)
+        # unknown
+        self.isogeo.search(self.bearer,
+                           query="unknown:filter",
+                           page_size=0,
+                           whole_share=0)
+
     def test_search_bad_parameter_query(self):
         """Search with bad parameter."""
         with self.assertRaises(ValueError):
             self.isogeo.search(self.bearer,
                                query="type:youpi")
+        with self.assertRaises(ValueError):
             self.isogeo.search(self.bearer,
                                query="action:yipiyo")
+        with self.assertRaises(ValueError):
             self.isogeo.search(self.bearer,
                                query="provider:youplaboum")
 
@@ -128,9 +174,10 @@ class Search(unittest.TestCase):
             # georel should'nt be used without box or geo
             self.isogeo.search(self.bearer,
                                georel="intersects")
+        with self.assertRaises(ValueError):
             # georel bad value
             self.isogeo.search(self.bearer,
-                               box="-4.970,30.69418,8.258,51.237",
+                               bbox="-4.970,30.69418,8.258,51.237",
                                georel="cross")
 
     def test_parameter_not_unique_search(self):
@@ -138,10 +185,13 @@ class Search(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.isogeo.search(self.bearer,
                                query="coordinate-system:32517 coordinate-system:4326")
+        with self.assertRaises(ValueError):
             self.isogeo.search(self.bearer,
                                query="format:shp format:dwg")
+        with self.assertRaises(ValueError):
             self.isogeo.search(self.bearer,
                                query="owner:32f7e95ec4e94ca3bc1afda960003882 owner:08b3054757544463abd06f3ab51ee491")
+        with self.assertRaises(ValueError):
             self.isogeo.search(self.bearer,
                                query="type:vector-dataset type:raster-dataset")
         # disabling check, it should not raise anything
