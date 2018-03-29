@@ -53,7 +53,7 @@ li_contacts_en = ("Author",
 # ##################################
 
 
-class Translation(unittest.TestCase):
+class IsogeoTranslator(unittest.TestCase):
     """Test translation of specific words wihtin Isogeo API."""
     if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")

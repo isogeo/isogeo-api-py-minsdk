@@ -63,6 +63,14 @@ class AuthBadCodes(unittest.TestCase):
         with self.assertRaises(ValueError):
             isogeo.connect()
 
+    def test_other_language(self):
+        """Try to get other language."""
+        isogeo = Isogeo(client_id=app_id,
+                        client_secret=app_token,
+                        lang="ES")
+        # if other language passed the English is applied
+        self.assertEqual(isogeo.lang, "en")
+
     def test_bad_platform(self):
         """Bad platform value."""
         with self.assertRaises(ValueError):
@@ -80,6 +88,14 @@ class AuthBadCodes(unittest.TestCase):
                             auth_mode="fingerprint"
                             )
             del isogeo
+
+    def test_bad_proxy(self):
+        """Bad auth mode value."""
+        with self.assertRaises(TypeError):
+            Isogeo(client_id=app_id,
+                   client_secret=app_token,
+                   proxy="this_is_my_string_proxy",
+                   )
 
     def test_successed_auth(self):
         """When a search works, check the response structure."""

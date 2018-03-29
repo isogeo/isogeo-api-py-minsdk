@@ -107,7 +107,6 @@ class Isogeo(object):
 
         # checking internet connection
         if not checker.check_internet_connection():
-            logging.error("Internet connection doesn't work.")
             raise EnvironmentError("Internet connection issue.")
         else:
             pass
@@ -156,15 +155,16 @@ class Isogeo(object):
 
         # handling proxy parameters
         # see: http://docs.python-requests.org/en/latest/user/advanced/#proxies
-        if proxy and type(proxy) is dict and 'http' in list(proxy.keys()):
-            logging.info("Proxy activated")
+        if proxy and isinstance(proxy, dict) and 'http' in proxy:
+            logging.debug("Proxy activated")
             self.proxies = proxy
-        elif proxy and type(proxy) is not dict:
-            logging.info("Proxy syntax error. Must be a dict: { 'protocol': "
-                         "'http://user:password@proxy_url:port' }."
-                         "e.g.: {'http': 'http://martin:1234@10.1.68.1:5678',"
-                         "'https': 'http://martin:p4ssW0rde@10.1.68.1:5678'}")
-            return
+        elif proxy and not isinstance(proxy, dict):
+            raise TypeError("Proxy syntax error. Must be a dict:"
+                            "{ 'protocol': "
+                            "'http://user:password@proxy_url:port' }."
+                            " e.g.: "
+                            "{'http': 'http://martin:1234@10.1.68.1:5678',"
+                            "'https': 'http://martin:p4ssW0rde@10.1.68.1:5678'}")
         else:
             self.proxies = {}
             logging.info("No proxy set. Use default configuration.")
@@ -207,7 +207,7 @@ class Isogeo(object):
                                  headers=head,
                                  data=payload,
                                  proxies=self.proxies)
-        except ConnectionError:
+        except requests.exceptions.ConnectionError:
             return "No internet connection"
         except requests.exceptions.SSLError as e:
             logging.error(e)
@@ -243,8 +243,8 @@ class Isogeo(object):
                page_size=100,
                offset=0,
                share=None,
-               specific_md=None,
-               sub_resources=None,
+               specific_md=[],
+               sub_resources=[],
                whole_share=True,
                check=True,
                augment=False,
@@ -316,31 +316,32 @@ class Isogeo(object):
                                                            self.ct))
 
         # specific resources specific parsing
-        if type(specific_md) is list and len(specific_md) > 0:
-            # checking UUIDs and poping bad ones
-            for md in specific_md:
-                if not checker.check_is_uuid(md):
-                    specific_md.remove(md)
-                    logging.error("Metadata UUID is not correct: {}"
-                                  .format(md))
-            # joining survivors
-            specific_md = ",".join(specific_md)
-        elif specific_md is None:
-            specific_md = ""
+        if isinstance(specific_md, list):
+            if len(specific_md) > 0:
+                # checking UUIDs and poping bad ones
+                for md in specific_md:
+                    if not checker.check_is_uuid(md):
+                        specific_md.remove(md)
+                        logging.error("Metadata UUID is not correct: {}"
+                                      .format(md))
+                # joining survivors
+                specific_md = ",".join(specific_md)
+            else:
+                specific_md = ""
         else:
-            specific_md = ""
+            raise TypeError("'specific_md' expects a list")
 
         # sub resources specific parsing
-        if isinstance(sub_resources, string_types) and sub_resources.lower() == "all":
+        if isinstance(sub_resources, string_types)\
+           and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
-        elif type(sub_resources) is list and len(sub_resources) > 0:
-            sub_resources = ",".join(sub_resources)
-        elif sub_resources is None:
-            sub_resources = ""
+        elif isinstance(sub_resources, list):
+            if len(sub_resources) > 0:
+                sub_resources = ",".join(sub_resources)
+            elif sub_resources:
+                sub_resources = ""
         else:
-            sub_resources = ""
-            raise ValueError("Error: sub_resources argument must be a list,"
-                             "'all' or empty")
+            raise TypeError("'sub_resources' expect a list or a str='all'")
 
         # handling request parameters
         payload = {'_id': specific_md,

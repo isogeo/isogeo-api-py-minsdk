@@ -31,7 +31,7 @@ app_token = environ.get('ISOGEO_API_DEV_SECRET')
 # ##################################
 
 
-class Search(unittest.TestCase):
+class ExportXML19139(unittest.TestCase):
     """Test search to Isogeo API."""
     if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")
@@ -88,6 +88,12 @@ class Search(unittest.TestCase):
         self.assertEqual(root[10].tag, "{http://www.isotc211.org/2005/gmd}identificationInfo")
         self.assertEqual(root[11].tag, "{http://www.isotc211.org/2005/gmd}distributionInfo")
         self.assertEqual(root[12].tag, "{http://www.isotc211.org/2005/gmd}dataQualityInfo")
+
+    def test_export_bad(self):
+        """Test errors raised by export function"""
+        with self.assertRaises(ValueError):
+            self.isogeo.xml19139(self.bearer,
+                                 "trust_me_its_an_uuid")
 
 
 # ##############################################################################

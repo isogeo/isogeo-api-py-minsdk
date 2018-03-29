@@ -50,7 +50,7 @@ class Search(unittest.TestCase):
         """Executed after each test."""
         pass
 
-    # tests
+    # basic search and results
     def test_search(self):
         """Basic search."""
         search = self.isogeo.search(self.bearer, page_size=0, whole_share=0)
@@ -94,7 +94,8 @@ class Search(unittest.TestCase):
         self.assertEqual(len(search_sup100.get("results")), 100)
         self.assertEqual(len(search_rand.get("results")), rand)
 
-    def test_search_specifc_mds(self):
+    # specific md
+    def test_search_specifc_mds_ok(self):
         """Searches filtering on specific metadata."""
         # get random metadata within a small search
         search_10 = self.isogeo.search(self.bearer,
@@ -102,25 +103,105 @@ class Search(unittest.TestCase):
                                        whole_share=0)
         md_a, md_b = search_10.get("results")[randint(0, 5)].get("_id"),\
                      search_10.get("results")[randint(6, 9)].get("_id")
+        md_bad = "trust_me_this_is_a_good_uuid"
         # get random metadata within a small search
         search_ids_1 = self.isogeo.search(self.bearer,
                                           specific_md=[md_a, ])
         search_ids_2 = self.isogeo.search(self.bearer,
                                           specific_md=[md_a, md_b])
+        search_ids_3 = self.isogeo.search(self.bearer,
+                                          specific_md=[md_a, md_b, md_bad])
         # test length
         self.assertEqual(len(search_ids_1.get("results")), 1)
         self.assertEqual(len(search_ids_2.get("results")), 2)
+        self.assertEqual(len(search_ids_3.get("results")), 2)
 
+    def test_search_specifc_mds_bad(self):
+        """Searches filtering on specific metadata."""
+        # get random metadata within a small search
+        search_5 = self.isogeo.search(self.bearer,
+                                      page_size=5,
+                                      whole_share=0)
+        md = search_5.get("results")[randint(0, 5)].get("_id")
+        # pass metadata UUID
+        with self.assertRaises(TypeError):
+            self.isogeo.search(self.bearer,
+                               page_size=0,
+                               whole_share=0,
+                               specific_md=md)
+
+    # subresources
+    def test_search_subresources_ok(self):
+        """Searches including subresources."""
+        self.isogeo.search(self.bearer,
+                           page_size=0,
+                           whole_share=0,
+                           sub_resources=["links", "contacts", ])
+
+    def test_search_subresources_all_ok(self):
+        """Searches including subresources."""
+        self.isogeo.search(self.bearer,
+                           page_size=0,
+                           whole_share=0,
+                           sub_resources="all")
+
+    def test_search_subresources_bad(self):
+        """Include sub_resrouces require a list."""
+        with self.assertRaises(TypeError):
+            self.isogeo.search(self.bearer,
+                               page_size=0,
+                               whole_share=0,
+                               sub_resources="links")
+
+    # query
     def test_search_parameter_query_ok(self):
         """Search with good query parameters."""
-        # workgroup - owner
+        # contacts
         self.isogeo.search(self.bearer,
-                           query="owner:32f7e95ec4e94ca3bc1afda960003882",
+                           query="contact:group:643f1035377b4ca59da6f31a39704c34",
+                           page_size=0,
+                           whole_share=0)
+        self.isogeo.search(self.bearer,
+                           query="contact:08b3054757544463abd06f3ab51ee491:fe3e8ef97b8446be92d3c315ccbc70f9",
+                           page_size=0,
+                           whole_share=0)
+        # catalog
+        self.isogeo.search(self.bearer,
+                           query="catalog:633216a375ab48ca8ca72e4a1af7a266",
+                           page_size=0,
+                           whole_share=0)
+        # CSW data-source
+        self.isogeo.search(self.bearer,
+                           query="data-source:ace35ec171da4d0aa2f10e7308dcbdc5",
+                           page_size=0,
+                           whole_share=0)
+        # format
+        self.isogeo.search(self.bearer,
+                           query="format:shp",
+                           page_size=0,
+                           whole_share=0)
+        # has-no
+        self.isogeo.search(self.bearer,
+                           query="has-no:keyword",
                            page_size=0,
                            whole_share=0)
         # inspire themes
         self.isogeo.search(self.bearer,
                            query="keyword:inspire-theme:administrativeunits",
+                           page_size=0,
+                           whole_share=0)
+        # keyword
+        self.isogeo.search(self.bearer,
+                           query="keyword:isogeo:2018",
+                           page_size=0,
+                           whole_share=0)
+        # licenses
+        self.isogeo.search(self.bearer,
+                           query="license:isogeo:63f121e14eda4f47b748595e0bcccc31",
+                           page_size=0,
+                           whole_share=0)
+        self.isogeo.search(self.bearer,
+                           query="license:32f7e95ec4e94ca3bc1afda960003882:76c02a0baf594c77a569b3a1325aee30",
                            page_size=0,
                            whole_share=0)
         # SRS
@@ -147,6 +228,11 @@ class Search(unittest.TestCase):
                            whole_share=0)
         self.isogeo.search(self.bearer,
                            query="type:resource",
+                           page_size=0,
+                           whole_share=0)
+        # workgroup - owner
+        self.isogeo.search(self.bearer,
+                           query="owner:32f7e95ec4e94ca3bc1afda960003882",
                            page_size=0,
                            whole_share=0)
         # unknown
@@ -208,6 +294,7 @@ class Search(unittest.TestCase):
                            query="type:vector-dataset type:raster-dataset",
                            check=0)
 
+    # search utilities
     def test_search_augmented(self):
         """Augmented search."""
         # normal
