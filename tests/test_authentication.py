@@ -31,7 +31,7 @@ checker = IsogeoChecker()
 # ##################################
 
 
-class AuthBadCodes(unittest.TestCase):
+class TestAuthentication(unittest.TestCase):
     """Test authentication process."""
     if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")

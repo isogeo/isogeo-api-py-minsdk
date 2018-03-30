@@ -31,7 +31,7 @@ app_token = environ.get('ISOGEO_API_DEV_SECRET')
 # ##################################
 
 
-class ExportXML19139(unittest.TestCase):
+class TestExportXML19139(unittest.TestCase):
     """Test search to Isogeo API."""
     if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")

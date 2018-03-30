@@ -41,7 +41,7 @@ WG_KEYWORDS_CASING = ("capitalized",
 # ##################################
 
 
-class MetadataModels(unittest.TestCase):
+class TestMetadataModels(unittest.TestCase):
     """Test search to Isogeo API."""
     if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")

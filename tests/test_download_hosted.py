@@ -30,7 +30,7 @@ app_token = environ.get('ISOGEO_API_DEV_SECRET')
 # ##################################
 
 
-class DownloadHosted(unittest.TestCase):
+class TestDownloadHosted(unittest.TestCase):
     """Test download hosted data through Isogeo API."""
     if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")

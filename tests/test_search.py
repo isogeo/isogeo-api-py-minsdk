@@ -30,7 +30,7 @@ app_secret = environ.get('ISOGEO_API_DEV_SECRET')
 # ##################################
 
 
-class Search(unittest.TestCase):
+class TestSearch(unittest.TestCase):
     """Test search to Isogeo API."""
     if not app_id or not app_secret:
         logging.critical("No API credentials set as env variables.")
