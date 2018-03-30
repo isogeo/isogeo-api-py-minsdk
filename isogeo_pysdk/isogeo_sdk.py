@@ -645,66 +645,6 @@ class Isogeo(object):
         # end of method
         return thez_req.json()
 
-    def keywords(self,
-                 token,
-                 specific_tag,
-                 sub_resources=["count"],
-                 prot="https"):
-        """Search for specified keywords.
-
-        :param str token: API auth token
-        :param str specific_tag: keyword to request
-        :param list sub_resources: list of subresources
-        :param str prot: https [DEFAULT] or http
-         (use it only for dev and tracking needs).
-         """
-        # checking bearer validity
-        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
-
-        # specific tags specific parsing
-        if type(specific_tag) is list and len(specific_tag) > 0:
-            specific_tag = ",".join(specific_tag)
-        elif specific_tag is None:
-            specific_tag = ""
-        else:
-            specific_tag = ""
-
-        # sub resources specific parsing
-        if isinstance(sub_resources, string_types) and sub_resources.lower() == "all":
-            sub_resources = self.SUBRESOURCES
-        elif type(sub_resources) is list and len(sub_resources) > 0:
-            sub_resources = ",".join(sub_resources)
-        elif sub_resources is None:
-            sub_resources = ""
-        else:
-            sub_resources = ""
-            raise ValueError("Error: sub_resources argument must be a list,"
-                             "'all' or empty")
-
-        # handling request parameters
-        payload = {'_include': sub_resources,
-                   'kid': specific_tag,
-                   }
-
-        # search request
-        head = {"Authorization": "Bearer " + token[0],
-                "user-agent": self.app_name}
-        keywords_url = "{}://v1.{}.isogeo.com/keywords/{}"\
-                       .format(prot,
-                               self.base_url,
-                               specific_tag)
-
-        kwds_req = requests.get(keywords_url,
-                                headers=head,
-                                params=payload,
-                                proxies=self.proxies)
-
-        # checking response
-        checker.check_api_response(kwds_req)
-
-        # end of method
-        return kwds_req.json()
-
     def keywords_thesaurus(self,
                            token,
                            thez_id,
