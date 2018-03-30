@@ -1,4 +1,4 @@
-|Version| |Build_Status| |coverage| |rtdocs| |compat_py27| |compat_py35| |compat_py36|
+|Version| |Build_Status| |coverage| |rtdocs| |compat_py27| |compat_py34| |compat_py35| |compat_py36|
 
 Isogeo API Python SDK
 =====================
@@ -200,6 +200,10 @@ To build docs:
 .. |compat_py27| image:: https://img.shields.io/badge/python-2.7-blue.svg
    :target: https://badge.fury.io/py/isogeo-pysdk
    :alt: Python 2.7.x compatiblity
+
+.. |compat_py34| image:: https://img.shields.io/badge/python-3.4-blue.svg
+   :target: https://badge.fury.io/py/isogeo-pysdk
+   :alt: Python 3.4.x compatiblity
 
 .. |compat_py35| image:: https://img.shields.io/badge/python-3.5-blue.svg
    :target: https://badge.fury.io/py/isogeo-pysdk
