@@ -221,7 +221,7 @@ class Isogeo(object):
         check_params = checker.check_api_response(conn)
         if check_params == 1:
             pass
-        elif type(check_params) == tuple and len(check_params) == 2:
+        elif isinstance(check_params, tuple) and len(check_params) == 2:
             raise ValueError(2, check_params)
 
         # getting access
@@ -338,7 +338,7 @@ class Isogeo(object):
         elif isinstance(sub_resources, list):
             if len(sub_resources) > 0:
                 sub_resources = ",".join(sub_resources)
-            elif sub_resources:
+            else:
                 sub_resources = ""
         else:
             raise TypeError("'sub_resources' expect a list or a str='all'")
@@ -428,19 +428,21 @@ class Isogeo(object):
          (use it only for dev and tracking needs).
         """
         # checking bearer validity
-        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
+        token = checker.check_bearer_validity(token,
+                                              self.connect(self.app_id,
+                                                           self.ct))
 
         # sub resources specific parsing
-        if isinstance(sub_resources, string_types) and sub_resources.lower() == "all":
+        if isinstance(sub_resources, string_types)\
+           and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
-        elif type(sub_resources) is list and len(sub_resources) > 0:
-            sub_resources = ",".join(sub_resources)
-        elif sub_resources is None:
-            sub_resources = ""
+        elif isinstance(sub_resources, list):
+            if len(sub_resources) > 0:
+                sub_resources = ",".join(sub_resources)
+            else:
+                sub_resources = ""
         else:
-            sub_resources = ""
-            raise ValueError("Error: sub_resources argument must be a list,"
-                             "'all' or empty")
+            raise TypeError("'sub_resources' expect a list or a str='all'")
 
         # handling request parameters
         payload = {"id": id_resource,
@@ -547,7 +549,9 @@ class Isogeo(object):
                                     proxies=self.proxies)
 
         # checking response
-        checker.check_api_response(licenses_req)
+        req_check = checker.check_api_response(licenses_req)
+        if isinstance(req_check, tuple):
+            return req_check
 
         # end of method
         return licenses_req.json()
@@ -596,7 +600,9 @@ class Isogeo(object):
          (use it only for dev and tracking needs).
         """
         # checking bearer validity
-        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
+        token = checker.check_bearer_validity(token,
+                                              self.connect(self.app_id,
+                                                           self.ct))
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + token[0],
@@ -655,7 +661,7 @@ class Isogeo(object):
                            page_size=20,
                            specific_md=None,
                            specific_tag=None,
-                           sub_resources=["count"],
+                           sub_resources=[],
                            prot="https"):
         """Search for keywords within a specific thesaurus.
 
@@ -684,16 +690,16 @@ class Isogeo(object):
             specific_tag = ""
 
         # sub resources specific parsing
-        if isinstance(sub_resources, string_types) and sub_resources.lower() == "all":
+        if isinstance(sub_resources, string_types)\
+           and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
-        elif type(sub_resources) is list and len(sub_resources) > 0:
-            sub_resources = ",".join(sub_resources)
-        elif sub_resources is None:
-            sub_resources = ""
+        elif isinstance(sub_resources, list):
+            if len(sub_resources) > 0:
+                sub_resources = ",".join(sub_resources)
+            else:
+                sub_resources = ""
         else:
-            sub_resources = ""
-            raise ValueError("Error: sub_resources argument must be a list,"
-                             "'all' or empty")
+            raise TypeError("'sub_resources' expect a list or a str='all'")
 
         # handling request parameters
         payload = {'_id': specific_md,
@@ -752,7 +758,7 @@ class Isogeo(object):
                                                            self.ct))
 
         # specific resources specific parsing
-        if type(specific_md) is list and len(specific_md) > 0:
+        if isinstance(specific_md, list) and len(specific_md):
             specific_md = ",".join(specific_md)
         elif specific_md is None:
             specific_md = ""
@@ -760,7 +766,7 @@ class Isogeo(object):
             specific_md = ""
 
         # specific tags specific parsing
-        if type(specific_tag) is list and len(specific_tag) > 0:
+        if isinstance(specific_tag, list) and len(specific_tag):
             specific_tag = ",".join(specific_tag)
         elif specific_tag is None:
             specific_tag = ""
@@ -770,7 +776,7 @@ class Isogeo(object):
         # sub resources specific parsing
         if isinstance(sub_resources, string_types) and sub_resources.lower() == "all":
             sub_resources = self.SUBRESOURCES
-        elif type(sub_resources) is list and len(sub_resources) > 0:
+        elif isinstance(sub_resources, list) and len(sub_resources):
             sub_resources = ",".join(sub_resources)
         elif sub_resources is None:
             sub_resources = ""
@@ -830,19 +836,27 @@ class Isogeo(object):
             raise ValueError("Metadata ID is not a correct UUID.")
         else:
             pass
-        # check resource link compliance
-        if type(resource_link) is dict and resource_link.get("type") == "hosted":
-            id_link = resource_link.get("_id")
+        # check resource link parameter type
+        if not isinstance(resource_link, dict):
+            raise TypeError("Resource link expects a dictionary.")
         else:
-            raise ValueError("Error: resource link passed is not valid or not a hosted one.")
+            pass
+        # check resource link type
+        if not resource_link.get("type") == "hosted":
+            raise ValueError("Resource link passed is not a hosted one: {}"
+                             .format(resource_link.get("type")))
+        else:
+            id_link = resource_link.get("_id")
 
         # checking bearer validity
-        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
+        token = checker.check_bearer_validity(token,
+                                              self.connect(self.app_id,
+                                                           self.ct))
 
         # handling request parameters
         payload = {'proxyUrl': proxy_url}
 
-        # resource search
+        # prepare URL request
         head = {"Authorization": "Bearer " + token[0],
                 "user-agent": self.app_name}
         hosted_url = "{}://v1.{}.isogeo.com/resources/{}/links/{}.bin"\
@@ -850,7 +864,7 @@ class Isogeo(object):
                              self.base_url,
                              id_resource,
                              id_link)
-
+        # send stream request
         hosted_req = requests.get(hosted_url,
                                   headers=head,
                                   stream=True,
