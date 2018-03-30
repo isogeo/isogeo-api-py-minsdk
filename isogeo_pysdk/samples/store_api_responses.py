@@ -83,3 +83,21 @@ if __name__ == '__main__':
                   sort_keys=True,
                   indent=4,
                   )
+
+    # Thesauri
+    request = isogeo.thesauri(token)
+    with open("out_api_thesauri.json", "w") as json_basic:
+        json.dump(request,
+                  json_basic,
+                  sort_keys=True,
+                  indent=4,
+                  )
+
+    thez_id = request[0].get("_id")
+    request = isogeo.thesaurus(token, thez_id)
+    with open("out_api_thesaurus.json", "w") as json_basic:
+        json.dump(request,
+                  json_basic,
+                  sort_keys=True,
+                  indent=4,
+                  )
