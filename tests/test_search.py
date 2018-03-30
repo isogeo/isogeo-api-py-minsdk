@@ -122,7 +122,7 @@ class TestSearch(unittest.TestCase):
         search_5 = self.isogeo.search(self.bearer,
                                       page_size=5,
                                       whole_share=0)
-        md = search_5.get("results")[randint(0, 5)].get("_id")
+        md = search_5.get("results")[randint(0, 4)].get("_id")
         # pass metadata UUID
         with self.assertRaises(TypeError):
             self.isogeo.search(self.bearer,
