@@ -89,8 +89,17 @@ class TestAuthentication(unittest.TestCase):
                             )
             del isogeo
 
+    # Proxy management
+    def test_proxy(self):
+        """Simulate proxy settings assignment."""
+        Isogeo(client_id=app_id,
+               client_secret=app_token,
+               proxy={"http": "http://proxy.localhost:8888",
+                      "https": "http://proxy.localhost:8888",
+                      })
+
     def test_bad_proxy(self):
-        """Bad auth mode value."""
+        """Bad proxy settings."""
         with self.assertRaises(TypeError):
             Isogeo(client_id=app_id,
                    client_secret=app_token,
