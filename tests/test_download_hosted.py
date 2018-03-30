@@ -82,6 +82,15 @@ class TestDownloadHosted(unittest.TestCase):
             self.isogeo.dl_hosted(self.bearer,
                                   id_resource="trust_me_its_an_uuid",
                                   resource_link={})
+        with self.assertRaises(TypeError):
+            self.isogeo.dl_hosted(self.bearer,
+                                  id_resource="ff40128027344640a19cc60af0c5c1d1",
+                                  resource_link="my_resource_link_is_a_nice_string")
+        with self.assertRaises(ValueError):
+            self.isogeo.dl_hosted(self.bearer,
+                                  id_resource="ff40128027344640a19cc60af0c5c1d1",
+                                  resource_link={"type": "url", }
+                                  )
 
 
 # ##############################################################################

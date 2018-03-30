@@ -66,7 +66,7 @@ class TestSearch(unittest.TestCase):
         self.assertEqual(len(search.get("results")), 0)
 
     def test_search_length(self):
-        """Searches with differents page sizes or filter on specific md."""
+        """Searches with differents page sizes."""
         rand = randint(1, 100)
 
         # requests
@@ -82,6 +82,8 @@ class TestSearch(unittest.TestCase):
                                         whole_share=0)
         search_sup100 = self.isogeo.search(self.bearer, page_size=103,
                                            whole_share=0)
+        search_whole = self.isogeo.search(self.bearer, page_size=50,
+                                          whole_share=1)
         search_rand = self.isogeo.search(self.bearer, page_size=rand,
                                          whole_share=0)
 
@@ -93,6 +95,7 @@ class TestSearch(unittest.TestCase):
         self.assertEqual(len(search_100.get("results")), 100)
         self.assertEqual(len(search_sup100.get("results")), 100)
         self.assertEqual(len(search_rand.get("results")), rand)
+        self.assertEqual(len(search_whole.get("results")), search_whole.get("total"))
 
     # specific md
     def test_search_specifc_mds_ok(self):
@@ -144,6 +147,13 @@ class TestSearch(unittest.TestCase):
                            page_size=0,
                            whole_share=0,
                            sub_resources="all")
+
+    def test_search_subresources_empty(self):
+        """Search with empty sub_resources list."""
+        self.isogeo.search(self.bearer,
+                           page_size=0,
+                           whole_share=0,
+                           sub_resources=[])
 
     def test_search_subresources_bad(self):
         """Include sub_resrouces require a list."""
@@ -296,23 +306,33 @@ class TestSearch(unittest.TestCase):
 
     # search utilities
     def test_search_augmented(self):
-        """Augmented search."""
+        """Augmented search with shares UUID"""
+        self.assertFalse(hasattr(self.isogeo, "shares_id"))  # at start, shares_id attribute doesn't exist
         # normal
         search = self.isogeo.search(self.bearer, page_size=0,
                                     whole_share=0, augment=0)
         tags_shares = [i for i in search.get("tags") if i.startswith("share:")]
         self.assertEqual(len(tags_shares), 0)
-
+        self.assertFalse(hasattr(self.isogeo, "shares_id"))    # shares_id attribute still doesn't exist
         # augmented
         search = self.isogeo.search(self.bearer, page_size=0,
                                     whole_share=0, augment=1)
-        tags_shares = [i for i in search.get("tags") if i.startswith("share:")]
+        tags_shares = [i for i in search.get("tags")
+                       if i.startswith("share:")]
         self.assertNotEqual(len(tags_shares), 0)
+        self.assertTrue(hasattr(self.isogeo, "shares_id"))  # now it exists
+        # redo using existing attribute
+        search = self.isogeo.search(self.bearer, page_size=0,
+                                    whole_share=0, augment=1)
 
     def test_app_properties(self):
         """Test if application properties are well added."""
+        self.assertFalse(hasattr(self.isogeo, "app_properties"))
+        # add it
         self.isogeo.get_app_properties(self.bearer)
-        hasattr(self.isogeo, "app_properties")
+        # now it exists
+        self.assertTrue(hasattr(self.isogeo, "app_properties"))
+        # check structure
         props = self.isogeo.app_properties
         self.assertIsInstance(props, dict)
         self.assertIn("admin_url", props)
@@ -322,6 +342,8 @@ class TestSearch(unittest.TestCase):
         self.assertIn("type", props)
         self.assertIn("kind", props)
         self.assertIn("url", props)
+        # redo using existing attribute
+        self.isogeo.get_app_properties(self.bearer)
 
 
 # ##############################################################################
