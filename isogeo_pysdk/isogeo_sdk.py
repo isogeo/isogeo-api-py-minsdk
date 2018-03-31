@@ -651,18 +651,18 @@ class Isogeo(object):
         # end of method
         return thez_req.json()
 
-    def keywords_thesaurus(self,
-                           token,
-                           thez_id,
-                           query="",
-                           offset=0,
-                           order_by="text",
-                           order_dir="desc",
-                           page_size=20,
-                           specific_md=None,
-                           specific_tag=None,
-                           sub_resources=[],
-                           prot="https"):
+    def keywords(self,
+                 token,
+                 thez_id="1616597fbc4348c8b11ef9d59cf594c8",
+                 query="",
+                 offset=0,
+                 order_by="text",
+                 order_dir="desc",
+                 page_size=20,
+                 specific_md=[],
+                 specific_tag=[],
+                 sub_resources=[],
+                 prot="https"):
         """Search for keywords within a specific thesaurus.
 
         :param str token: API auth token
@@ -671,23 +671,34 @@ class Isogeo(object):
          (use it only for dev and tracking needs).
         """
         # checking bearer validity
-        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
+        token = checker.check_bearer_validity(token,
+                                              self.connect(self.app_id,
+                                                           self.ct))
 
         # specific resources specific parsing
-        if type(specific_md) is list and len(specific_md) > 0:
-            specific_md = ",".join(specific_md)
-        elif specific_md is None:
-            specific_md = ""
+        if isinstance(specific_md, list):
+            if len(specific_md) > 0:
+                # checking UUIDs and poping bad ones
+                for md in specific_md:
+                    if not checker.check_is_uuid(md):
+                        specific_md.remove(md)
+                        logging.error("Metadata UUID is not correct: {}"
+                                      .format(md))
+                # joining survivors
+                specific_md = ",".join(specific_md)
+            else:
+                specific_md = ""
         else:
-            specific_md = ""
+            raise TypeError("'specific_md' expects a list")
 
-        # specific tags specific parsing
-        if type(specific_tag) is list and len(specific_tag) > 0:
-            specific_tag = ",".join(specific_tag)
-        elif specific_tag is None:
-            specific_tag = ""
+        # specific tag specific parsing
+        if isinstance(specific_tag, list):
+            if len(specific_tag) > 0:
+                specific_tag = ",".join(specific_tag)
+            else:
+                specific_tag = ""
         else:
-            specific_tag = ""
+            raise TypeError("'specific_tag' expects a list")
 
         # sub resources specific parsing
         if isinstance(sub_resources, string_types)\

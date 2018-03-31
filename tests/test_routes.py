@@ -83,11 +83,14 @@ class TestRoutes(unittest.TestCase):
         # get a workgroup id and a license within tags
         for tag in search.get("tags"):
             if tag.startswith("license:"):
-                lic = tag.split(":")[1]
-                continue
-            elif tag.startswith("owner:"):
+                lic = tag.split(":")[2]
+            else:
+                pass
+
+            if tag.startswith("owner:"):
                 wg = tag.split(":")[1]
-                continue
+            else:
+                pass
 
         # get workgroup licenses
         licenses = self.isogeo.licenses(self.bearer,
@@ -110,9 +113,9 @@ class TestRoutes(unittest.TestCase):
         thez_id = self.isogeo.thesauri(self.bearer)[0]\
                              .get("_id")
         # list tags
-        thez_keywords = self.isogeo.keywords_thesaurus(self.bearer,
-                                                       thez_id=thez_id,
-                                                       page_size=1)
+        thez_keywords = self.isogeo.keywords(self.bearer,
+                                             thez_id=thez_id,
+                                             page_size=1)
         self.assertIsInstance(thez_keywords, dict)
         self.assertIn("limit", thez_keywords)
         self.assertIn("offset", thez_keywords)
