@@ -106,7 +106,7 @@ class TestAuthentication(unittest.TestCase):
                    proxy="this_is_my_string_proxy",
                    )
 
-    def test_successed_auth(self):
+    def test_successed_auth_prod(self):
         """When a search works, check the response structure."""
         isogeo = Isogeo(client_id=app_id,
                         client_secret=app_token)
@@ -116,6 +116,17 @@ class TestAuthentication(unittest.TestCase):
         self.assertIsInstance(bearer[0], string_types)
         self.assertIsInstance(bearer[1], int)
 
+    def test_successed_auth_qa(self):
+        """Try to connect to QA platform."""
+        isogeo = Isogeo(client_id=app_id,
+                        client_secret=app_token,
+                        platform="qa"
+                        )
+        bearer = isogeo.connect()
+        self.assertIsInstance(bearer, tuple)
+        self.assertEqual(len(bearer), 2)
+        self.assertIsInstance(bearer[0], string_types)
+        self.assertIsInstance(bearer[1], int)
 
 # #############################################################################
 # ######## Standalone ##############

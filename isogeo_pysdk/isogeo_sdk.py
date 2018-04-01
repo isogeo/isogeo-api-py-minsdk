@@ -127,7 +127,7 @@ class Isogeo(object):
             pass
 
         # platform to request
-        self.platform, self.base_url = utils.set_base_url(platform)
+        self.platform, self.base_url, self.ssl = utils.set_base_url(platform)
 
         # setting language
         if lang.lower() not in ("fr", "en"):
@@ -206,16 +206,11 @@ class Isogeo(object):
                                  auth=(client_id, client_secret),
                                  headers=head,
                                  data=payload,
-                                 proxies=self.proxies)
-        except requests.exceptions.ConnectionError:
-            return "No internet connection"
-        except requests.exceptions.SSLError as e:
-            logging.error(e)
-            conn = requests.post(id_url,
-                                 auth=(client_id, client_secret),
-                                 data=payload,
                                  proxies=self.proxies,
-                                 verify=False)
+                                 verify=self.ssl)
+        except requests.exceptions.ConnectionError as e:
+            raise requests.exceptions.ConnectionError("Connection to Isogeo ID"
+                                                      "failed: {}".format(e))
 
         # just a fast check
         check_params = checker.check_api_response(conn)
@@ -372,14 +367,12 @@ class Isogeo(object):
             search_req = requests.get(search_url,
                                       headers=head,
                                       params=payload,
-                                      proxies=self.proxies)
-        except requests.exceptions.SSLError as e:
-            logging.error(e)
-            search_req = requests.get(search_url,
-                                      headers=head,
-                                      params=payload,
                                       proxies=self.proxies,
-                                      verify=False)
+                                      verify=self.ssl)
+        except Exception as e:
+            logging.error(e)
+            raise Exception
+
         # fast response check
         checker.check_api_response(search_req)
 
@@ -399,7 +392,8 @@ class Isogeo(object):
                 search_req = requests.get(search_url,
                                           headers=head,
                                           params=payload,
-                                          proxies=self.proxies)
+                                          proxies=self.proxies,
+                                          verify=self.ssl)
                 # storing results by addition
                 metadatas.extend(search_req.json().get("results"))
             search_rez["results"] = metadatas
@@ -458,8 +452,8 @@ class Isogeo(object):
         resource_req = requests.get(md_url,
                                     headers=head,
                                     params=payload,
-                                    proxies=self.proxies
-                                    )
+                                    proxies=self.proxies,
+                                    verify=self.ssl)
         checker.check_api_response(resource_req)
 
         # end of method
@@ -475,7 +469,9 @@ class Isogeo(object):
          (use it only for dev and tracking needs).
         """
         # checking bearer validity
-        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
+        token = checker.check_bearer_validity(token,
+                                              self.connect(self.app_id,
+                                                           self.ct))
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + token[0],
@@ -484,7 +480,8 @@ class Isogeo(object):
                                                             self.base_url)
         shares_req = requests.get(shares_url,
                                   headers=head,
-                                  proxies=self.proxies)
+                                  proxies=self.proxies,
+                                  verify=self.ssl)
 
         # checking response
         checker.check_api_response(shares_req)
@@ -511,7 +508,8 @@ class Isogeo(object):
                                                              share_id)
         share_req = requests.get(share_url,
                                  headers=head,
-                                 proxies=self.proxies)
+                                 proxies=self.proxies,
+                                 verify=self.ssl)
 
         # checking response
         checker.check_api_response(share_req)
@@ -546,7 +544,8 @@ class Isogeo(object):
         licenses_req = requests.get(licenses_url,
                                     headers=head,
                                     params=payload,
-                                    proxies=self.proxies)
+                                    proxies=self.proxies,
+                                    verify=self.ssl)
 
         # checking response
         req_check = checker.check_api_response(licenses_req)
@@ -582,7 +581,8 @@ class Isogeo(object):
         license_req = requests.get(license_url,
                                    headers=head,
                                    params=payload,
-                                   proxies=self.proxies)
+                                   proxies=self.proxies,
+                                   verify=self.ssl)
 
         # checking response
         checker.check_api_response(license_req)
@@ -611,7 +611,8 @@ class Isogeo(object):
                                                            self.base_url)
         thez_req = requests.get(thez_url,
                                 headers=head,
-                                proxies=self.proxies)
+                                proxies=self.proxies,
+                                verify=self.ssl)
 
         # checking response
         checker.check_api_response(thez_req)
@@ -643,7 +644,8 @@ class Isogeo(object):
         thez_req = requests.get(thez_url,
                                 headers=head,
                                 params=payload,
-                                proxies=self.proxies)
+                                proxies=self.proxies,
+                                verify=self.ssl)
 
         # checking response
         checker.check_api_response(thez_req)
@@ -735,7 +737,8 @@ class Isogeo(object):
         kwds_req = requests.get(keywords_url,
                                 headers=head,
                                 params=payload,
-                                proxies=self.proxies)
+                                proxies=self.proxies,
+                                verify=self.ssl)
 
         # checking response
         checker.check_api_response(kwds_req)
@@ -795,8 +798,8 @@ class Isogeo(object):
                                   headers=head,
                                   stream=True,
                                   params=payload,
-                                  proxies=self.proxies
-                                  )
+                                  proxies=self.proxies,
+                                  verify=self.ssl)
 
         # get filename from header
         content_disposition = hosted_req.headers.get("Content-Disposition")
@@ -848,8 +851,8 @@ class Isogeo(object):
                                headers=head,
                                stream=True,
                                params=payload,
-                               proxies=self.proxies
-                               )
+                               proxies=self.proxies,
+                               verify=self.ssl)
 
         # end of method
         return xml_req
@@ -947,11 +950,12 @@ if __name__ == '__main__':
                     client_secret=share_token,
                     auth_mode="group",
                     lang="fr",
-                    # platform="qa"
+                    platform="qa"
                     )
 
     # getting a token
     token = isogeo.connect()
+    print(token)
 
     # let's search for metadatas!
     search = isogeo.search(token,

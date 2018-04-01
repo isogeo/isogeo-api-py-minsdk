@@ -58,7 +58,7 @@ class TestIsogeoUtils(unittest.TestCase):
         version_api_prod = self.utils.get_isogeo_version(component="api")
         version_api_naive_prod = self.utils.get_isogeo_version()
         # qa
-        platform, base_url = self.utils.set_base_url(platform="qa")
+        platform, base_url, ssl = self.utils.set_base_url(platform="qa")
         version_api_qa = self.utils.get_isogeo_version(component="api")
         version_api_naive_qa = self.utils.get_isogeo_version()
         # check
@@ -74,7 +74,7 @@ class TestIsogeoUtils(unittest.TestCase):
         # prod
         version_app_prod = self.utils.get_isogeo_version(component="app")
         # qa
-        platform, base_url = self.utils.set_base_url(platform="qa")
+        platform, base_url, ssl = self.utils.set_base_url(platform="qa")
         version_app_qa = self.utils.get_isogeo_version(component="app")
         # check
         self.assertIsInstance(version_app_prod, str)
@@ -85,7 +85,7 @@ class TestIsogeoUtils(unittest.TestCase):
         # prod
         version_db_prod = self.utils.get_isogeo_version(component="db")
         # qa
-        platform, base_url = self.utils.set_base_url(platform="qa")
+        platform, base_url, ssl = self.utils.set_base_url(platform="qa")
         version_db_qa = self.utils.get_isogeo_version(component="db")
         # check
         self.assertIsInstance(version_db_prod, str)
@@ -100,17 +100,21 @@ class TestIsogeoUtils(unittest.TestCase):
     def test_set_base_url(self):
         """Set base URLs"""
         # by default platform = prod
-        platform, base_url = self.utils.set_base_url()
+        platform, base_url, ssl = self.utils.set_base_url()
         self.assertIsInstance(platform, str)
         self.assertIsInstance(base_url, str)
+        self.assertIsInstance(ssl, bool)
         self.assertEqual(platform, "prod")
         self.assertEqual(base_url, self.utils.API_URLS.get("prod"))
+        self.assertEqual(ssl, True)
         # qa
-        platform, base_url = self.utils.set_base_url(platform="qa")
+        platform, base_url, ssl = self.utils.set_base_url(platform="qa")
         self.assertIsInstance(platform, str)
         self.assertIsInstance(base_url, str)
+        self.assertIsInstance(ssl, bool)
         self.assertEqual(platform, "qa")
         self.assertEqual(base_url, self.utils.API_URLS.get("qa"))
+        self.assertEqual(ssl, False)
 
     def test_set_base_url_bad_parameter(self):
         """Raise error if platform parameter is bad."""

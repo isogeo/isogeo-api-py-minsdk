@@ -61,7 +61,7 @@ class IsogeoUtils(object):
         :param dict proxies: dictionary of proxy settings as described in
          requests. See: http://docs.python-requests.org/en/master/user/advanced/#proxies
         """
-        self.platform, self.base_url = self.set_base_url()
+        self.platform, self.base_url, self.ssl = self.set_base_url()
         self.proxies = proxies
         super(IsogeoUtils, self).__init__()
 
@@ -164,9 +164,11 @@ class IsogeoUtils(object):
         self.platform = platform
         if platform == "prod":
             base_url = self.API_URLS.get(platform)
+            ssl = True
             logging.debug("Using production platform.")
         elif platform == "qa":
             base_url = self.API_URLS.get(platform)
+            ssl = False
             logging.debug("Using Quality Assurance platform (reduced perfs).")
         else:
             logging.error("Platform must be one of: {}"
@@ -174,7 +176,7 @@ class IsogeoUtils(object):
             raise ValueError(3, "Platform must be one of: {}"
                                 .format(" | ".join(self.API_URLS.keys())))
         # method ending
-        return platform.lower(), base_url
+        return platform.lower(), base_url, ssl
 
     # -- URLs builders -------------------------------------------------------
     def get_edit_url(self, md_id=str, md_type=str, owner_id=str, tab="identification"):
