@@ -131,20 +131,15 @@ class IsogeoUtils(object):
         elif component == "app" and self.platform == "qa":
             version_url = "https://qa-isogeo-app.azurewebsites.net/about"
         else:
-            raise ValueError("Component value is one theses values:"
+            raise ValueError("Component value must be one of: "
                              "api [default], db, app.")
 
         # send request
-        try:
-            version_req = requests.get(version_url,
-                                       proxies=self.proxies
-                                       )
-        except requests.exceptions.SSLError as e:
-            logging.error(e)
-            version_req = requests.get(version_url,
-                                       proxies=self.proxies,
-                                       verify=False
-                                       )
+        version_req = requests.get(version_url,
+                                   proxies=self.proxies,
+                                   verify=self.ssl
+                                   )
+
         # checking response
         checker.check_api_response(version_req)
 

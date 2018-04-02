@@ -73,22 +73,6 @@ class Isogeo(object):
                   "user_public",
                   }
 
-    SUBRESOURCES = ("_creator",
-                    "conditions",
-                    "contacts",
-                    "coordinate-system",
-                    "events",
-                    "feature-attributes",
-                    "keywords",
-                    "layers",
-                    "limitations",
-                    "links",
-                    "operations",
-                    "serviceLayers",
-                    "specifications",
-                    "tags",
-                    )
-
     _THESAURI_DICT = {"isogeo": "1616597fbc4348c8b11ef9d59cf594c8",
                       "inspire-theme": "926c676c380046d7af99bcae343ac813",
                       "iso19115-topic": "926f969ee2bb470a84066625f68b96bb"
@@ -311,32 +295,10 @@ class Isogeo(object):
                                                            self.ct))
 
         # specific resources specific parsing
-        if isinstance(specific_md, list):
-            if len(specific_md) > 0:
-                # checking UUIDs and poping bad ones
-                for md in specific_md:
-                    if not checker.check_is_uuid(md):
-                        specific_md.remove(md)
-                        logging.error("Metadata UUID is not correct: {}"
-                                      .format(md))
-                # joining survivors
-                specific_md = ",".join(specific_md)
-            else:
-                specific_md = ""
-        else:
-            raise TypeError("'specific_md' expects a list")
+        specific_md = checker._check_filter_specific_md(specific_md)
 
         # sub resources specific parsing
-        if isinstance(sub_resources, string_types)\
-           and sub_resources.lower() == "all":
-            sub_resources = self.SUBRESOURCES
-        elif isinstance(sub_resources, list):
-            if len(sub_resources) > 0:
-                sub_resources = ",".join(sub_resources)
-            else:
-                sub_resources = ""
-        else:
-            raise TypeError("'sub_resources' expect a list or a str='all'")
+        sub_resources = checker._check_filter_sub_resources(sub_resources)
 
         # handling request parameters
         payload = {'_id': specific_md,
@@ -427,16 +389,7 @@ class Isogeo(object):
                                                            self.ct))
 
         # sub resources specific parsing
-        if isinstance(sub_resources, string_types)\
-           and sub_resources.lower() == "all":
-            sub_resources = self.SUBRESOURCES
-        elif isinstance(sub_resources, list):
-            if len(sub_resources) > 0:
-                sub_resources = ",".join(sub_resources)
-            else:
-                sub_resources = ""
-        else:
-            raise TypeError("'sub_resources' expect a list or a str='all'")
+        sub_resources = checker._check_filter_sub_resources(sub_resources)
 
         # handling request parameters
         payload = {"id": id_resource,
@@ -678,20 +631,7 @@ class Isogeo(object):
                                                            self.ct))
 
         # specific resources specific parsing
-        if isinstance(specific_md, list):
-            if len(specific_md) > 0:
-                # checking UUIDs and poping bad ones
-                for md in specific_md:
-                    if not checker.check_is_uuid(md):
-                        specific_md.remove(md)
-                        logging.error("Metadata UUID is not correct: {}"
-                                      .format(md))
-                # joining survivors
-                specific_md = ",".join(specific_md)
-            else:
-                specific_md = ""
-        else:
-            raise TypeError("'specific_md' expects a list")
+        specific_md = checker._check_filter_specific_md(specific_md)
 
         # specific tag specific parsing
         if isinstance(specific_tag, list):
@@ -703,16 +643,8 @@ class Isogeo(object):
             raise TypeError("'specific_tag' expects a list")
 
         # sub resources specific parsing
-        if isinstance(sub_resources, string_types)\
-           and sub_resources.lower() == "all":
-            sub_resources = self.SUBRESOURCES
-        elif isinstance(sub_resources, list):
-            if len(sub_resources) > 0:
-                sub_resources = ",".join(sub_resources)
-            else:
-                sub_resources = ""
-        else:
-            raise TypeError("'sub_resources' expect a list or a str='all'")
+        sub_resources = checker._check_filter_sub_resources(sub_resources,
+                                                            "keyword")
 
         # handling request parameters
         payload = {'_id': specific_md,

@@ -84,6 +84,25 @@ EDIT_TABS = {"identification": ",".join(FILTER_TYPES),
              "metadata": ",".join(FILTER_TYPES),
              }
 
+_SUBRESOURCES_MD = ("_creator",
+                    "conditions",
+                    "contacts",
+                    "coordinate-system",
+                    "events",
+                    "feature-attributes",
+                    "keywords",
+                    "layers",
+                    "limitations",
+                    "links",
+                    "operations",
+                    "serviceLayers",
+                    "specifications",
+                    "tags",
+                    )
+
+_SUBRESOURCES_KW = ("count",
+                    )
+
 # ##############################################################################
 # ########## Classes ###############
 # ##################################
@@ -322,6 +341,55 @@ class IsogeoChecker(object):
         else:
             return True
 
+    def _check_filter_specific_md(self, specific_md):
+        """Check if specific_md parameter is valid.
+
+        :param list specific_md: list of specific metadata UUID to check
+        """
+        if isinstance(specific_md, list):
+            if len(specific_md) > 0:
+                # checking UUIDs and poping bad ones
+                for md in specific_md:
+                    if not self.check_is_uuid(md):
+                        specific_md.remove(md)
+                        logging.error("Metadata UUID is not correct: {}"
+                                      .format(md))
+                # joining survivors
+                specific_md = ",".join(specific_md)
+            else:
+                specific_md = ""
+        else:
+            raise TypeError("'specific_md' expects a list")
+        return specific_md
+
+    def _check_filter_sub_resources(self, sub_resources, resource="metadata"):
+        """Check if specific_resources parameter is valid.
+
+        :param list sub_resources: sub resources to check
+        :param str resource: resource type to check sub resources.
+         Must be one of: metadata | keyword.
+        """
+        # check resource parameter
+        if resource == "metadata":
+            ref_subresources = _SUBRESOURCES_MD
+        elif resource == "keyword":
+            ref_subresources = _SUBRESOURCES_KW
+        else:
+            raise ValueError("Must be one of: metadata | keyword.")
+
+        # sub resources manager
+        if isinstance(sub_resources, string_types)\
+           and sub_resources.lower() == "all":
+            sub_resources = ",".join(ref_subresources)
+        elif isinstance(sub_resources, list):
+            if len(sub_resources) > 0:
+                sub_resources = ",".join(sub_resources)
+            else:
+                sub_resources = ""
+        else:
+            raise TypeError("'sub_resources' expect a list or a str='all'")
+        return sub_resources
+
 
 # ##############################################################################
 # ##### Stand alone program ########
@@ -329,3 +397,5 @@ class IsogeoChecker(object):
 if __name__ == '__main__':
     """Standalone execution."""
     checker = IsogeoChecker()
+    subresources = checker._check_filter_sub_resources(sub_resources="all")
+    print(subresources)

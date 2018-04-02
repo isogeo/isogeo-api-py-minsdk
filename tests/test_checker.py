@@ -266,6 +266,23 @@ class TestIsogeoChecker(unittest.TestCase):
         with self.assertRaises(ValueError):
             checker.check_edit_tab(tab="attributes", md_type="service")
 
+    def test_check_filter_sub_resources_ok(self):
+        """Return"""
+        # metadata sub resources
+        subresources = checker._check_filter_sub_resources(sub_resources="all",
+                                                           resource="metadata")
+        self.assertIsInstance(subresources, str)
+        # keyword sub resources
+        subresources = checker._check_filter_sub_resources(sub_resources="all",
+                                                           resource="keyword")
+        self.assertIsInstance(subresources, str)
+
+    def test_check_filter_sub_resources_bad(self):
+        """Raise errors"""
+        with self.assertRaises(ValueError):
+            checker._check_filter_sub_resources(sub_resources="all",
+                                                resource="Metadata")
+
 
 # #############################################################################
 # ######## Standalone ##############
