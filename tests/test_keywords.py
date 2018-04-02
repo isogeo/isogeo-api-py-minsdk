@@ -88,6 +88,43 @@ class TestKeywords(unittest.TestCase):
                                  )
 
     # specific md
+    def test_search_specifc_mds_ok(self):
+        """Searches filtering on specific metadata."""
+        # get random metadata within a small search
+        search_10 = self.isogeo.search(self.bearer,
+                                       page_size=10,
+                                       whole_share=0)
+        md_a, md_b = search_10.get("results")[randint(0, 5)].get("_id"),\
+                     search_10.get("results")[randint(6, 9)].get("_id")
+        md_bad = "trust_me_this_is_a_good_uuid"
+        # get random metadata within a small search
+        search_ids_1 = self.isogeo.keywords(self.bearer,
+                                            specific_md=[md_a, ],
+                                            page_size=1)
+        search_ids_2 = self.isogeo.keywords(self.bearer,
+                                            specific_md=[md_a, md_b],
+                                            page_size=1)
+        search_ids_3 = self.isogeo.keywords(self.bearer,
+                                            specific_md=[md_a, md_b, md_bad],
+                                            page_size=1)
+        # test type
+        self.assertIsInstance(search_ids_1, dict)
+        self.assertIsInstance(search_ids_2, dict)
+        self.assertIsInstance(search_ids_3, dict)
+
+    def test_search_specifc_mds_bad(self):
+        """Searches filtering on specific metadata."""
+        # get random metadata within a small search
+        search_5 = self.isogeo.search(self.bearer,
+                                      page_size=5,
+                                      whole_share=0)
+        md = search_5.get("results")[randint(0, 4)].get("_id")
+        # pass metadata UUID
+        with self.assertRaises(TypeError):
+            self.isogeo.search(self.bearer,
+                               page_size=0,
+                               whole_share=0,
+                               specific_md=md)
 
     # specific tag
 

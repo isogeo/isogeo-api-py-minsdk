@@ -271,11 +271,11 @@ class TestIsogeoChecker(unittest.TestCase):
         # metadata sub resources
         subresources = checker._check_filter_sub_resources(sub_resources="all",
                                                            resource="metadata")
-        self.assertIsInstance(subresources, str)
+        self.assertIsInstance(subresources, string_types)
         # keyword sub resources
         subresources = checker._check_filter_sub_resources(sub_resources="all",
                                                            resource="keyword")
-        self.assertIsInstance(subresources, str)
+        self.assertIsInstance(subresources, string_types)
 
     def test_check_filter_sub_resources_bad(self):
         """Raise errors"""
