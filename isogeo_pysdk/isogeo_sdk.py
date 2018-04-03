@@ -480,7 +480,9 @@ class Isogeo(object):
          (use it only for dev and tracking needs).
         """
         # checking bearer validity
-        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
+        token = checker.check_bearer_validity(token,
+                                              self.connect(self.app_id,
+                                                           self.ct))
 
         # handling request parameters
         payload = {'gid': owner_id,
@@ -632,19 +634,11 @@ class Isogeo(object):
 
         # specific resources specific parsing
         specific_md = checker._check_filter_specific_md(specific_md)
-
-        # specific tag specific parsing
-        if isinstance(specific_tag, list):
-            if len(specific_tag) > 0:
-                specific_tag = ",".join(specific_tag)
-            else:
-                specific_tag = ""
-        else:
-            raise TypeError("'specific_tag' expects a list")
-
         # sub resources specific parsing
         sub_resources = checker._check_filter_sub_resources(sub_resources,
                                                             "keyword")
+        # specific tag specific parsing
+        specific_tag = checker._check_filter_specific_tag(specific_tag)
 
         # handling request parameters
         payload = {'_id': specific_md,
@@ -680,23 +674,17 @@ class Isogeo(object):
 
     # -- DOWNLOADS -----------------------------------------------------------
 
-    def dl_hosted(self, token, id_resource, resource_link,
+    def dl_hosted(self, token, resource_link,
                   proxy_url=None, prot="https"):
         """Download hosted resource.
 
         :param str token: API auth token
-        :param str id_resource: metadata UUID
         :param dict resource_link: link dictionary
                 :param str token: API auth token
         :param str proxy_url: proxy to use to download
         :param str prot: https [DEFAULT] or http
          (use it only for dev and tracking needs).
         """
-        # check metadata UUID
-        if not checker.check_is_uuid(id_resource):
-            raise ValueError("Metadata ID is not a correct UUID.")
-        else:
-            pass
         # check resource link parameter type
         if not isinstance(resource_link, dict):
             raise TypeError("Resource link expects a dictionary.")
@@ -707,7 +695,7 @@ class Isogeo(object):
             raise ValueError("Resource link passed is not a hosted one: {}"
                              .format(resource_link.get("type")))
         else:
-            id_link = resource_link.get("_id")
+            pass
 
         # checking bearer validity
         token = checker.check_bearer_validity(token,
@@ -720,11 +708,12 @@ class Isogeo(object):
         # prepare URL request
         head = {"Authorization": "Bearer " + token[0],
                 "user-agent": self.app_name}
-        hosted_url = "{}://v1.{}.isogeo.com/resources/{}/links/{}.bin"\
+
+        hosted_url = "{}://v1.{}.isogeo.com/{}"\
                      .format(prot,
                              self.base_url,
-                             id_resource,
-                             id_link)
+                             resource_link.get("url"))
+
         # send stream request
         hosted_req = requests.get(hosted_url,
                                   headers=head,
@@ -732,10 +721,19 @@ class Isogeo(object):
                                   params=payload,
                                   proxies=self.proxies,
                                   verify=self.ssl)
+        # quick check
+        req_check = checker.check_api_response(hosted_req)
+        if not req_check:
+            raise requests.exceptions.ConnectionError(req_check[1])
+        else:
+            pass
 
         # get filename from header
         content_disposition = hosted_req.headers.get("Content-Disposition")
-        filename = re.findall("filename=(.+)", content_disposition)
+        if content_disposition:
+            filename = re.findall("filename=(.+)", content_disposition)[0]
+        else:
+            filename = resource_link.get("title")
 
         # well-formed size
         in_size = resource_link.get("size")
@@ -747,7 +745,7 @@ class Isogeo(object):
         out_size = "%3.1f %s" % (in_size, " To")
 
         # end of method
-        return (hosted_req, filename[0], out_size)
+        return (hosted_req, filename, out_size)
 
     def xml19139(self, token, id_resource, proxy_url=None, prot="https"):
         """Get resource exported into XML ISO 19139.

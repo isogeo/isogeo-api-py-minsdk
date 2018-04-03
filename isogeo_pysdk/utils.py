@@ -46,6 +46,18 @@ class IsogeoUtils(object):
                 "qa": "api.qa",
                 }
 
+    APP_URLS = {"prod": "https://app.isogeo.com",
+                "qa": "https://qa-isogeo-app.azurewebsites.net",
+                }
+
+    MNG_URLS = {"prod": "https://manage.isogeo.com",
+                "qa": "https://qa-isogeo-manage.azurewebsites.net",
+                }
+
+    OC_URLS = {"prod": "https://open.isogeo.com",
+               "qa": "https://qa-isogeo-open.azurewebsites.net",
+               }
+
     WEBAPPS = {"oc": {"args": ("md_id", "share_id", "oc_token"),
                       "url": "https://open.isogeo.com/s/{share_id}"
                              "/{oc_token}/r/{md_id}"
@@ -190,10 +202,12 @@ class IsogeoUtils(object):
         if checker.check_edit_tab(tab, md_type=md_type):
             pass
         # construct URL
-        return "https://app.isogeo.com/" \
-               "groups/{}" \
+        return "{}" \
+               "/groups/{}" \
                "/resources/{}" \
-               "/{}".format(owner_id, md_id, tab)
+               "/{}".format(self.APP_URLS.get(self.platform),
+                            owner_id,
+                            md_id, tab)
 
     def get_view_url(self, webapp="oc", **kwargs):
         """Constructs the view URL of a metadata.

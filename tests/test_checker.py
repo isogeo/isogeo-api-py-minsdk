@@ -266,9 +266,22 @@ class TestIsogeoChecker(unittest.TestCase):
         with self.assertRaises(ValueError):
             checker.check_edit_tab(tab="attributes", md_type="service")
 
+    # requests parameters
     def test_check_filter_sub_resources_ok(self):
-        """Return"""
-        # metadata sub resources
+        """Check sub resources"""
+        # metadata sub resources - empty
+        subresources = checker._check_filter_sub_resources(sub_resources=[],
+                                                           resource="metadata")
+        self.assertIsInstance(subresources, string_types)
+        # metadata sub resources - 1
+        subresources = checker._check_filter_sub_resources(sub_resources=["links", ],
+                                                           resource="metadata")
+        self.assertIsInstance(subresources, string_types)
+        # metadata sub resources - >1
+        subresources = checker._check_filter_sub_resources(sub_resources=["contacts", "links"],
+                                                           resource="metadata")
+        self.assertIsInstance(subresources, string_types)
+        # metadata sub resources - all
         subresources = checker._check_filter_sub_resources(sub_resources="all",
                                                            resource="metadata")
         self.assertIsInstance(subresources, string_types)
@@ -282,6 +295,53 @@ class TestIsogeoChecker(unittest.TestCase):
         with self.assertRaises(ValueError):
             checker._check_filter_sub_resources(sub_resources="all",
                                                 resource="Metadata")
+        with self.assertRaises(TypeError):
+            checker._check_filter_sub_resources(sub_resources="layers",
+                                                resource="metadata")
+
+    def test_check_filter_specific_md_ok(self):
+        """Check specific md"""
+        uuid_sample_1 = "0269803d50c446b09f5060ef7fe3e22b"
+        uuid_sample_2 = "0269803d50c446b09f5060ef7fe3e22a"
+        # metadata sub resources - empty
+        check = checker._check_filter_specific_md(specific_md=[])
+        self.assertIsInstance(check, string_types)
+        # metadata sub resources - 1
+        check = checker._check_filter_specific_md(specific_md=[uuid_sample_1, ])
+        self.assertIsInstance(check, string_types)
+        # metadata sub resources - >1
+        check = checker._check_filter_specific_md(specific_md=[uuid_sample_1, uuid_sample_2])
+        self.assertIsInstance(check, string_types)
+        # metadata sub resources - with bad uuid
+        check = checker._check_filter_specific_md(specific_md=[uuid_sample_1, "uuid_sample_2"])
+        self.assertIsInstance(check, string_types)
+
+    def test_check_filter_specific_md_bad(self):
+        """Raise errors"""
+        with self.assertRaises(TypeError):
+            checker._check_filter_specific_md(specific_md="oh_yeah_i_m_a_metadata_uuid")
+
+    def test_check_filter_specific_tag_ok(self):
+        """Check specific tag"""
+        kw_sample_1 = "keyword:isogeo:demographie"
+        kw_sample_2 = "keyword:isogeo:2014"
+        # metadata sub resources - empty
+        check = checker._check_filter_specific_tag(specific_tag=[])
+        self.assertIsInstance(check, string_types)
+        # metadata sub resources - 1
+        check = checker._check_filter_specific_tag(specific_tag=[kw_sample_1, ])
+        self.assertIsInstance(check, string_types)
+        # metadata sub resources - >1
+        check = checker._check_filter_specific_tag(specific_tag=[kw_sample_1, kw_sample_2])
+        self.assertIsInstance(check, string_types)
+        # metadata sub resources - with bad uuid
+        check = checker._check_filter_specific_tag(specific_tag=[kw_sample_1, "kw_sample_2"])
+        self.assertIsInstance(check, string_types)
+
+    def test_check_filter_specific_tag_bad(self):
+        """Raise errors"""
+        with self.assertRaises(TypeError):
+            checker._check_filter_specific_tag(specific_tag="oh_yeah_i_m_a_keyword")
 
 
 # #############################################################################

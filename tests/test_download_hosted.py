@@ -8,9 +8,9 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 
 # Standard library
 import logging
-from os import environ
+from os import environ, path
 from sys import exit
-from tempfile import mkstemp
+from tempfile import mkdtemp
 import unittest
 
 # module target
@@ -49,46 +49,50 @@ class TestDownloadHosted(unittest.TestCase):
         """Executed after each test."""
         pass
 
-    # # metadata models
-    # def test_dl_hosted(self):
-    #     """Download an hosted data from Isogeo metadata."""
-    #     search = self.isogeo.search(self.bearer, whole_share=0,
-    #                                 query="action:download type:dataset",
-    #                                 sub_resources=["links", ],
-    #                                 page_size=100)
-    #     # get an hosted link
-    #     for md in search.get("results"):
-    #         for link in md.get("links"):
-    #             if link.get("type") == "hosted":
-    #                 target_link = link
-    #             else:
-    #                 continue
+    def test_dl_hosted(self):
+        """Download an hosted data from Isogeo metadata."""
+        search = self.isogeo.search(self.bearer, whole_share=0,
+                                    query="action:download type:dataset",
+                                    sub_resources=["links", ],
+                                    page_size=100)
+        # get an hosted link
+        for md in search.get("results"):
+            for link in md.get("links"):
+                if link.get("type") == "hosted":
+                    target_link = link
+                else:
+                    continue
 
-    #     # download the XML version
-    #     print(target_link)
-    #     dl_stream = self.isogeo.dl_hosted(self.bearer,
-    #                                       id_resource=md.get("_id"),
-    #                                       resource_link=target_link)
+        # stream hosted data
+        # Example of link dict:
+        # {
+        #  "_id": "c7725558b34a4ea8bfe475ca19e27641",
+        #  "type": "hosted",
+        #  "title": "bootstrap-4.0.0.zip",
+        #  "url": "/resources/b765d9886f4b4fc69df65e5206f39a9d/links/c7725558b34a4ea8bfe475ca19e27641.bin",
+        #  "kind": "data",
+        #  "actions": ["download", ],
+        #  "size": "2253029",
+        # }
+        dl_stream = self.isogeo.dl_hosted(self.bearer,
+                                          resource_link=target_link)
 
-    #     # create tempfile and fill with downloaded XML
-    #     # tmp_output = mkstemp(prefix="IsogeoPySDK_" + md.get("_id")[:5])
-    #     with open(dl_stream[1], 'wb') as fd:
-    #         for block in dl_stream[0].iter_content(1024):
-    #             fd.write(block)
+        # create tempfile and fill with downloaded XML
+        tmp_output = mkdtemp(prefix="IsogeoPySDK_")
+        with open(path.join(tmp_output, dl_stream[1]), 'wb') as fd:
+            for block in dl_stream[0].iter_content(1024):
+                fd.write(block)
 
     def test_dl_hosted_bad(self):
         """Test errors raised by download method"""
         with self.assertRaises(ValueError):
             self.isogeo.dl_hosted(self.bearer,
-                                  id_resource="trust_me_its_an_uuid",
                                   resource_link={})
         with self.assertRaises(TypeError):
             self.isogeo.dl_hosted(self.bearer,
-                                  id_resource="ff40128027344640a19cc60af0c5c1d1",
                                   resource_link="my_resource_link_is_a_nice_string")
         with self.assertRaises(ValueError):
             self.isogeo.dl_hosted(self.bearer,
-                                  id_resource="ff40128027344640a19cc60af0c5c1d1",
                                   resource_link={"type": "url", }
                                   )
 

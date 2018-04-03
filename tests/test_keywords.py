@@ -80,7 +80,7 @@ class TestKeywords(unittest.TestCase):
                              )
 
     def test_keywords_subresources_bad(self):
-        """Include sub_resrouces requires a list."""
+        """Include sub_resources requires a list."""
         with self.assertRaises(TypeError):
             self.isogeo.keywords(self.bearer,
                                  page_size=0,
@@ -88,8 +88,8 @@ class TestKeywords(unittest.TestCase):
                                  )
 
     # specific md
-    def test_search_specifc_mds_ok(self):
-        """Searches filtering on specific metadata."""
+    def test_keywords_specific_mds_ok(self):
+        """Keywords filtering on specific metadata."""
         # get random metadata within a small search
         search_10 = self.isogeo.search(self.bearer,
                                        page_size=10,
@@ -112,8 +112,8 @@ class TestKeywords(unittest.TestCase):
         self.assertIsInstance(search_ids_2, dict)
         self.assertIsInstance(search_ids_3, dict)
 
-    def test_search_specifc_mds_bad(self):
-        """Searches filtering on specific metadata."""
+    def test_keywords_specifc_mds_bad(self):
+        """Keywords filtering on specific metadata."""
         # get random metadata within a small search
         search_5 = self.isogeo.search(self.bearer,
                                       page_size=5,
@@ -121,12 +121,53 @@ class TestKeywords(unittest.TestCase):
         md = search_5.get("results")[randint(0, 4)].get("_id")
         # pass metadata UUID
         with self.assertRaises(TypeError):
-            self.isogeo.search(self.bearer,
-                               page_size=0,
-                               whole_share=0,
-                               specific_md=md)
+            self.isogeo.keywords(self.bearer,
+                                 page_size=0,
+                                 whole_share=0,
+                                 specific_md=md)
 
     # specific tag
+    def test_keywords_specifc_tag_ok(self):
+        """Keywords filtering on specific tags."""
+        # get tags
+        search_tags = self.isogeo.search(self.bearer,
+                                         page_size=0,
+                                         whole_share=0).get("tags")
+        # keep only Isogeo keywords
+        keywords = [tag for tag in search_tags
+                    if tag.startswith("keyword:isogeo")]
+        # get random keywords
+        kw_a, kw_b = keywords[randint(0, (len(keywords)/2)-1)],\
+                     keywords[randint(len(keywords)/2, len(keywords))]
+        kw_bad = "trust_me_i_m_a_real_keyword"
+        # print(kw_a, kw_b)
+        # get random metadata within a small search
+        search_ids_1 = self.isogeo.keywords(self.bearer,
+                                            specific_tag=[kw_a, ],
+                                            page_size=5)
+        search_ids_2 = self.isogeo.keywords(self.bearer,
+                                            specific_tag=[kw_a, kw_b],
+                                            page_size=5)
+        # print(search_ids_2)
+        search_ids_3 = self.isogeo.keywords(self.bearer,
+                                            specific_tag=[kw_a, kw_b, kw_bad],
+                                            page_size=5)
+        # print(search_ids_3)
+        # # test type
+        self.assertIsInstance(search_ids_1, dict)
+        self.assertIsInstance(search_ids_2, dict)
+        self.assertIsInstance(search_ids_3, dict)
+
+    def test_keywords_specifc_tag_bad(self):
+        """Errors filtering on specific tag."""
+        kw_bad = "trust_me_i_m_a_real_keyword"
+        # pass metadata UUID
+        with self.assertRaises(TypeError):
+            self.isogeo.keywords(self.bearer,
+                                 page_size=0,
+                                 whole_share=0,
+                                 specific_tag=kw_bad)
+
 
 # ##############################################################################
 # ##### Stand alone program ########
