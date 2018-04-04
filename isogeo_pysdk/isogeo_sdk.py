@@ -823,7 +823,8 @@ class Isogeo(object):
         # check if app properties have already been retrieved or not
         if not hasattr(self, "app_properties"):
             first_app = self.shares(token)[0].get("applications")[0]
-            app = {"admin_url": mng_base_url + first_app.get("_id"),
+            app = {"admin_url": "{}/applications/{}"
+                                .format(self.mng_url, first_app.get("_id")),
                    "creation_date": first_app.get("_created"),
                    "last_update": first_app.get("_modified"),
                    "name": first_app.get("name"),
@@ -834,6 +835,101 @@ class Isogeo(object):
             self.app_properties = app
         else:
             pass
+
+    def get_link_kinds(self, token, prot="https"):
+        """Get available links kinds and corresponding actions.
+
+        :param str token: API auth token
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # checking bearer validity
+        token = checker.check_bearer_validity(token, self.connect(self.app_id,
+                                                                  self.ct))
+
+        # search request
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": self.app_name}
+
+        req_url = "{}://v1.{}.isogeo.com/link-kinds".format(prot,
+                                                            self.api_url)
+
+        req = requests.get(req_url,
+                           headers=head,
+                           proxies=self.proxies,
+                           verify=self.ssl)
+
+        # checking response
+        checker.check_api_response(req)
+
+        # end of method
+        return req.json()
+
+    def get_directives(self, token, prot="https"):
+        """Get environment directives which represent INSPIRE limitations.
+
+        :param str token: API auth token
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # checking bearer validity
+        token = checker.check_bearer_validity(token, self.connect(self.app_id,
+                                                                  self.ct))
+
+        # search request
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": self.app_name}
+
+        req_url = "{}://v1.{}.isogeo.com/directives".format(prot,
+                                                            self.api_url)
+
+        req = requests.get(req_url,
+                           headers=head,
+                           proxies=self.proxies,
+                           verify=self.ssl)
+
+        # checking response
+        checker.check_api_response(req)
+
+        # end of method
+        return req.json()
+
+    def get_formats(self, token, format_code=None, prot="https"):
+        """Get formats.
+
+        :param str token: API auth token
+        :param str format_code: code of a specific format
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # checking bearer validity
+        token = checker.check_bearer_validity(token, self.connect(self.app_id,
+                                                                  self.ct))
+
+        # if specific format
+        if isinstance(format_code, string_types):
+            specific_format = "/{}".format(format_code)
+        else:
+            specific_format = ""
+
+        # search request
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": self.app_name}
+
+        req_url = "{}://v1.{}.isogeo.com/formats{}".format(prot,
+                                                           self.api_url,
+                                                           specific_format)
+
+        req = requests.get(req_url,
+                           headers=head,
+                           proxies=self.proxies,
+                           verify=self.ssl)
+
+        # checking response
+        checker.check_api_response(req)
+
+        # end of method
+        return req.json()
 
 
 # ##############################################################################

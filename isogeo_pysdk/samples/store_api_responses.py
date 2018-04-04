@@ -101,3 +101,21 @@ if __name__ == '__main__':
                   sort_keys=True,
                   indent=4,
                   )
+
+    # Link kinds
+    request = isogeo.get_link_kinds(token)
+    with open("out_api_link_kinds.json", "w") as json_basic:
+        json.dump(request,
+                  json_basic,
+                  sort_keys=True,
+                  indent=4,
+                  )
+
+    # Environment directives
+    request = isogeo.get_directives(token)
+    with open("out_api_environment_directives.json", "w") as json_basic:
+        json.dump(request,
+                  json_basic,
+                  sort_keys=True,
+                  indent=4,
+                  )

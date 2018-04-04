@@ -345,6 +345,32 @@ class TestSearch(unittest.TestCase):
         # redo using existing attribute
         self.isogeo.get_app_properties(self.bearer)
 
+    def test_get_link_kinds(self):
+        """Test link kinds response."""
+        links = self.isogeo.get_link_kinds(self.bearer)
+        self.assertEqual(len(links), 8)
+        self.assertEqual(len(links[0]), 3)
+
+    def test_get_directives(self):
+        """Test environment directives response."""
+        dirs = self.isogeo.get_directives(self.bearer)
+        self.assertEqual(len(dirs), 9)
+
+    def test_get_formats(self):
+        """Test formats and format details requests."""
+        # all datasets and services formats
+        formats = self.isogeo.get_formats(self.bearer)
+        self.assertEqual(len(formats), 32)
+        self.assertEqual(len(formats[0]), 7)
+        # a specific format
+        shape = self.isogeo.get_formats(self.bearer, format_code="shp")
+        self.assertEqual(len(shape), 7)
+        # if specific format is bad formatted, so show all formats
+        bad_specific_format = self.isogeo.get_formats(self.bearer,
+                                                      format_code=["shp", ])
+        self.assertEqual(len(bad_specific_format), 32)
+        self.assertEqual(bad_specific_format, formats)
+
 
 # ##############################################################################
 # ##### Stand alone program ########
