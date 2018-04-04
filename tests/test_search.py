@@ -380,7 +380,7 @@ class TestSearch(unittest.TestCase):
         # a specific srs
         wgs84 = self.isogeo.get_coordinate_systems(self.bearer,
                                                    srs_code="4326")
-        self.assertEqual(len(wgs84), 7)
+        self.assertEqual(len(wgs84), 3)
         # if specific srs is bad formatted, so show all srs
         bad_specific_srs = self.isogeo.get_coordinate_systems(self.bearer,
                                                               srs_code=["4326", ])
