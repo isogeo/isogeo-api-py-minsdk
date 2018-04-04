@@ -894,6 +894,44 @@ class Isogeo(object):
         # end of method
         return req.json()
 
+    def get_coordinate_systems(self, token, srs_code=None, prot="https"):
+        """Get available coordinate systems in Isogeo API.
+
+        :param str token: API auth token
+        :param str srs_code: code of a specific coordinate system
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # checking bearer validity
+        token = checker.check_bearer_validity(token, self.connect(self.app_id,
+                                                                  self.ct))
+
+        # if specific format
+        if isinstance(srs_code, string_types):
+            specific_srs = "/{}".format(srs_code)
+        else:
+            specific_srs = ""
+
+        # search request
+        head = {"Authorization": "Bearer " + token[0],
+                "user-agent": self.app_name}
+
+        req_url = "{}://v1.{}.isogeo.com/coordinate-systems{}"\
+                  .format(prot,
+                          self.api_url,
+                          specific_srs)
+
+        req = requests.get(req_url,
+                           headers=head,
+                           proxies=self.proxies,
+                           verify=self.ssl)
+
+        # checking response
+        checker.check_api_response(req)
+
+        # end of method
+        return req.json()
+
     def get_formats(self, token, format_code=None, prot="https"):
         """Get formats.
 

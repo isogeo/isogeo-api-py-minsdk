@@ -371,6 +371,22 @@ class TestSearch(unittest.TestCase):
         self.assertEqual(len(bad_specific_format), 32)
         self.assertEqual(bad_specific_format, formats)
 
+    def test_get_srs(self):
+        """Test coordinate-systmes requests."""
+        # all Isoego srs
+        srs = self.isogeo.get_coordinate_systems(self.bearer)
+        self.assertEqual(len(srs), 4301)
+        self.assertEqual(len(srs[0]), 3)
+        # a specific srs
+        wgs84 = self.isogeo.get_coordinate_systems(self.bearer,
+                                                   srs_code="4326")
+        self.assertEqual(len(wgs84), 7)
+        # if specific srs is bad formatted, so show all srs
+        bad_specific_srs = self.isogeo.get_coordinate_systems(self.bearer,
+                                                              srs_code=["4326", ])
+        self.assertEqual(len(bad_specific_srs), 4301)
+        self.assertEqual(bad_specific_srs, srs)
+
 
 # ##############################################################################
 # ##### Stand alone program ########
