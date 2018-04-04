@@ -111,7 +111,8 @@ class Isogeo(object):
             pass
 
         # platform to request
-        self.platform, self.base_url, self.ssl = utils.set_base_url(platform)
+        self.platform, self.api_url, self.app_url, self.csw_url,\
+            self.mng_url, self.oc_url, self.ssl = utils.set_base_url(platform)
 
         # setting language
         if lang.lower() not in ("fr", "en"):
@@ -184,7 +185,7 @@ class Isogeo(object):
 
         # passing request to get a 24h bearer
         # see: http://tools.ietf.org/html/rfc6750#section-2
-        id_url = "https://id.{}.isogeo.com/oauth/token".format(self.base_url)
+        id_url = "https://id.{}.isogeo.com/oauth/token".format(self.api_url)
         try:
             conn = requests.post(id_url,
                                  auth=(client_id, client_secret),
@@ -324,7 +325,7 @@ class Isogeo(object):
         head = {"Authorization": "Bearer " + token[0],
                 "user-agent": self.app_name}
         search_url = "{}://v1.{}.isogeo.com/resources/search".format(prot,
-                                                                     self.base_url)
+                                                                     self.api_url)
         try:
             search_req = requests.get(search_url,
                                       headers=head,
@@ -400,7 +401,7 @@ class Isogeo(object):
         head = {"Authorization": "Bearer " + token[0],
                 "user-agent": self.app_name}
         md_url = "{}://v1.{}.isogeo.com/resources/{}".format(prot,
-                                                             self.base_url,
+                                                             self.api_url,
                                                              id_resource)
         resource_req = requests.get(md_url,
                                     headers=head,
@@ -430,7 +431,7 @@ class Isogeo(object):
         head = {"Authorization": "Bearer " + token[0],
                 "user-agent": self.app_name}
         shares_url = "{}://v1.{}.isogeo.com/shares/".format(prot,
-                                                            self.base_url)
+                                                            self.api_url)
         shares_req = requests.get(shares_url,
                                   headers=head,
                                   proxies=self.proxies,
@@ -457,7 +458,7 @@ class Isogeo(object):
         head = {"Authorization": "Bearer " + token[0],
                 "user-agent": self.app_name}
         share_url = "{}://v1.{}.isogeo.com/shares/{}".format(prot,
-                                                             self.base_url,
+                                                             self.api_url,
                                                              share_id)
         share_req = requests.get(share_url,
                                  headers=head,
@@ -493,7 +494,7 @@ class Isogeo(object):
                 "user-agent": self.app_name}
         licenses_url = "{}://v1.{}.isogeo.com/groups/{}/licenses"\
                        .format(prot,
-                               self.base_url,
+                               self.api_url,
                                owner_id
                                )
         licenses_req = requests.get(licenses_url,
@@ -530,7 +531,7 @@ class Isogeo(object):
                 "user-agent": self.app_name}
         license_url = "{}://v1.{}.isogeo.com/licenses/{}"\
                       .format(prot,
-                              self.base_url,
+                              self.api_url,
                               license_id
                               )
         license_req = requests.get(license_url,
@@ -563,7 +564,7 @@ class Isogeo(object):
         head = {"Authorization": "Bearer " + token[0],
                 "user-agent": self.app_name}
         thez_url = "{}://v1.{}.isogeo.com/thesauri".format(prot,
-                                                           self.base_url)
+                                                           self.api_url)
         thez_req = requests.get(thez_url,
                                 headers=head,
                                 proxies=self.proxies,
@@ -594,7 +595,7 @@ class Isogeo(object):
         head = {"Authorization": "Bearer " + token[0],
                 "user-agent": self.app_name}
         thez_url = "{}://v1.{}.isogeo.com/thesauri/{}".format(prot,
-                                                              self.base_url,
+                                                              self.api_url,
                                                               thez_id)
         thez_req = requests.get(thez_url,
                                 headers=head,
@@ -657,7 +658,7 @@ class Isogeo(object):
                 "user-agent": self.app_name}
         keywords_url = "{}://v1.{}.isogeo.com/thesauri/{}/keywords/search"\
                        .format(prot,
-                               self.base_url,
+                               self.api_url,
                                thez_id)
 
         kwds_req = requests.get(keywords_url,
@@ -711,7 +712,7 @@ class Isogeo(object):
 
         hosted_url = "{}://v1.{}.isogeo.com/{}"\
                      .format(prot,
-                             self.base_url,
+                             self.api_url,
                              resource_link.get("url"))
 
         # send stream request
@@ -775,7 +776,7 @@ class Isogeo(object):
         head = {"Authorization": "Bearer " + token[0],
                 "user-agent": self.app_name}
         md_url = "{}://v1.{}.isogeo.com/resources/{}.xml".format(prot,
-                                                                 self.base_url,
+                                                                 self.api_url,
                                                                  id_resource)
         xml_req = requests.get(md_url,
                                headers=head,
@@ -833,21 +834,6 @@ class Isogeo(object):
             self.app_properties = app
         else:
             pass
-
-    # def get_csw_record_by_id(self, id_resource=str):
-    #     """
-    #         TO DOC
-    #     """
-    #     srv_link_xml = "http://services.api.isogeo.com/ows/s/"\
-    #                            "{1}/{2}?"\
-    #                            "service=CSW&version=2.0.2&request=GetRecordById"\
-    #                            "&id=urn:isogeo:metadata:uuid:{0}&"\
-    #                            "elementsetname=full&outputSchema="\
-    #                            "http://www.isotc211.org/2005/gmd"\
-    #                            .format(md_uuid_formatted,
-    #                                    csw_share_id,
-    #                                    csw_share_token)
-    #     pass
 
 
 # ##############################################################################

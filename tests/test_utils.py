@@ -58,7 +58,8 @@ class TestIsogeoUtils(unittest.TestCase):
         version_api_prod = self.utils.get_isogeo_version(component="api")
         version_api_naive_prod = self.utils.get_isogeo_version()
         # qa
-        platform, base_url, ssl = self.utils.set_base_url(platform="qa")
+        platform, api_url, app_url, csw_url, mng_url,\
+            oc_url, ssl = self.utils.set_base_url(platform="qa")
         version_api_qa = self.utils.get_isogeo_version(component="api")
         version_api_naive_qa = self.utils.get_isogeo_version()
         # check
@@ -74,7 +75,8 @@ class TestIsogeoUtils(unittest.TestCase):
         # prod
         version_app_prod = self.utils.get_isogeo_version(component="app")
         # qa
-        platform, base_url, ssl = self.utils.set_base_url(platform="qa")
+        platform, api_url, app_url, csw_url, mng_url,\
+            oc_url, ssl = self.utils.set_base_url(platform="qa")
         version_app_qa = self.utils.get_isogeo_version(component="app")
         # check
         self.assertIsInstance(version_app_prod, str)
@@ -85,7 +87,8 @@ class TestIsogeoUtils(unittest.TestCase):
         # prod
         version_db_prod = self.utils.get_isogeo_version(component="db")
         # qa
-        platform, base_url, ssl = self.utils.set_base_url(platform="qa")
+        platform, api_url, app_url, csw_url, mng_url,\
+            oc_url, ssl = self.utils.set_base_url(platform="qa")
         version_db_qa = self.utils.get_isogeo_version(component="db")
         # check
         self.assertIsInstance(version_db_prod, str)
@@ -100,20 +103,22 @@ class TestIsogeoUtils(unittest.TestCase):
     def test_set_base_url(self):
         """Set base URLs"""
         # by default platform = prod
-        platform, base_url, ssl = self.utils.set_base_url()
+        platform, api_url, app_url, csw_url, mng_url,\
+            oc_url, ssl = self.utils.set_base_url()
         self.assertIsInstance(platform, str)
-        self.assertIsInstance(base_url, str)
+        self.assertIsInstance(api_url, str)
         self.assertIsInstance(ssl, bool)
         self.assertEqual(platform, "prod")
-        self.assertEqual(base_url, self.utils.API_URLS.get("prod"))
+        self.assertEqual(api_url, self.utils.API_URLS.get("prod"))
         self.assertEqual(ssl, True)
         # qa
-        platform, base_url, ssl = self.utils.set_base_url(platform="qa")
+        platform, api_url, app_url, csw_url, mng_url,\
+            oc_url, ssl = self.utils.set_base_url(platform="qa")
         self.assertIsInstance(platform, str)
-        self.assertIsInstance(base_url, str)
+        self.assertIsInstance(api_url, str)
         self.assertIsInstance(ssl, bool)
         self.assertEqual(platform, "qa")
-        self.assertEqual(base_url, self.utils.API_URLS.get("qa"))
+        self.assertEqual(api_url, self.utils.API_URLS.get("qa"))
         self.assertEqual(ssl, False)
 
     def test_set_base_url_bad_parameter(self):
@@ -174,16 +179,38 @@ class TestIsogeoUtils(unittest.TestCase):
     def test_get_view_url_ok(self):
         """Test URL builder for OpenCatalog and PixupPortal links."""
         # OpenCatalog
-        oc_url = self.utils.get_view_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
-                                         webapp="oc",
+        oc_url = self.utils.get_view_url(webapp="oc",
+                                         md_id="0269803d50c446b09f5060ef7fe3e22b",
                                          share_id="1e07910d365449b59b6596a9b428ecd9",
-                                         oc_token="TokenOhDearToken")
+                                         share_token="TokenOhDearToken")
         self.assertEqual(oc_url, "https://open.isogeo.com/s/1e07910d365449b59b6596a9b428ecd9/TokenOhDearToken/r/0269803d50c446b09f5060ef7fe3e22b")
+
         # PixUp portal - demo.isogeo.net sample
-        pixup_url = self.utils.get_view_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
-                                            webapp="pixup_portal",
+        pixup_url = self.utils.get_view_url(webapp="pixup_portal",
+                                            md_id="0269803d50c446b09f5060ef7fe3e22b",
                                             portal_url="demo.isogeo.net")
         self.assertEqual(pixup_url, "http://demo.isogeo.net/?muid=0269803d50c446b09f5060ef7fe3e22b")
+
+        # CSW - GetCapapabilities
+        csw_getcap_url = self.utils.get_view_url(webapp="csw_getcap",
+                                                 share_id="1e07910d365449b59b6596a9b428ecd9",
+                                                 share_token="TokenOhDearToken")
+        self.assertEqual(csw_getcap_url,
+                         "https://services.api.isogeo.com/ows/s/1e07910d365449b59b6596a9b428ecd9/TokenOhDearToken?"
+                         "service=CSW&version=2.0.2&request=GetCapabilities")
+
+        # CSW - GetRecord
+        csw_getrec_url = self.utils.get_view_url(webapp="csw_getrec",
+                                                 md_uuid_urn=self.uuid_urnIsogeo,
+                                                 share_id="1e07910d365449b59b6596a9b428ecd9",
+                                                 share_token="TokenOhDearToken")
+        self.assertEqual(csw_getrec_url,
+                         "https://services.api.isogeo.com/ows/s/"
+                         "1e07910d365449b59b6596a9b428ecd9/TokenOhDearToken?service=CSW"
+                         "&version=2.0.2&request=GetRecordById"
+                         "&id=urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
+                         "&elementsetname=full&outputSchema=http://www.isotc211.org/2005/gmd")
+        print(csw_getrec_url)
 
     def test_get_view_url_bad(self):
         """Test URL builder for web app with bad parameters."""

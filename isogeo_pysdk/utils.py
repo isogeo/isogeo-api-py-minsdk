@@ -50,6 +50,10 @@ class IsogeoUtils(object):
                 "qa": "https://qa-isogeo-app.azurewebsites.net",
                 }
 
+    CSW_URLS = {"prod": "https://app.isogeo.com",
+                "qa": "http://services.api.qa.isogeo.com",
+                }
+
     MNG_URLS = {"prod": "https://manage.isogeo.com",
                 "qa": "https://qa-isogeo-manage.azurewebsites.net",
                 }
@@ -58,9 +62,23 @@ class IsogeoUtils(object):
                "qa": "https://qa-isogeo-open.azurewebsites.net",
                }
 
-    WEBAPPS = {"oc": {"args": ("md_id", "share_id", "oc_token"),
+    WEBAPPS = {"csw_getcap": {"args": ("share_id", "share_token"),
+                              "url": "https://services.api.isogeo.com/ows/s/"
+                                     "{share_id}/{share_token}?service=CSW"
+                                     "&version=2.0.2&request=GetCapabilities"
+                              },
+               "csw_getrec": {"args": ("md_uuid_urn",
+                                       "share_id",
+                                       "share_token"),
+                              "url": "https://services.api.isogeo.com/ows/s/"
+                                     "{share_id}/{share_token}?service=CSW"
+                                     "&version=2.0.2&request=GetRecordById"
+                                     "&id={md_uuid_urn}&elementsetname=full"
+                                     "&outputSchema=http://www.isotc211.org/2005/gmd"
+                              },
+               "oc": {"args": ("md_id", "share_id", "share_token"),
                       "url": "https://open.isogeo.com/s/{share_id}"
-                             "/{oc_token}/r/{md_id}"
+                             "/{share_token}/r/{md_id}"
                       },
                "pixup_portal": {"args": ("md_id", "portal_url", ),
                                 "url": "http://{portal_url}/?muid={md_id}"
@@ -73,9 +91,41 @@ class IsogeoUtils(object):
         :param dict proxies: dictionary of proxy settings as described in
          requests. See: http://docs.python-requests.org/en/master/user/advanced/#proxies
         """
-        self.platform, self.base_url, self.ssl = self.set_base_url()
+        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url,\
+            self.oc_url, self.ssl = self.set_base_url()
         self.proxies = proxies
         super(IsogeoUtils, self).__init__()
+
+    def set_base_url(self, platform="prod"):
+        """Set Isogeo base URLs according to platform.
+
+        :param str platform: platform to use. Available values:
+           * prod [DEFAULT]
+           * qa
+           * int
+
+        """
+        platform = platform.lower()
+        self.platform = platform
+        if platform == "prod":
+            ssl = True
+            logging.debug("Using production platform.")
+        elif platform == "qa":
+            ssl = False
+            logging.debug("Using Quality Assurance platform (reduced perfs).")
+        else:
+            logging.error("Platform must be one of: {}"
+                          .format(" | ".join(self.API_URLS.keys())))
+            raise ValueError(3, "Platform must be one of: {}"
+                                .format(" | ".join(self.API_URLS.keys())))
+        # method ending
+        return platform.lower(),\
+            self.API_URLS.get(platform),\
+            self.APP_URLS.get(platform),\
+            self.CSW_URLS.get(platform),\
+            self.MNG_URLS.get(platform),\
+            self.OC_URLS.get(platform),\
+            ssl
 
     def convert_uuid(self, in_uuid=str, mode=0):
         """Convert a metadata UUID to its URI equivalent. And conversely.
@@ -131,12 +181,12 @@ class IsogeoUtils(object):
         if component == "api":
             version_url = "{}://v1.{}.isogeo.com/about"\
                           .format(prot,
-                                  self.base_url
+                                  self.api_url
                                   )
         elif component == "db":
             version_url = "{}://v1.{}.isogeo.com/about/database"\
                           .format(prot,
-                                  self.base_url
+                                  self.api_url
                                   )
         elif component == "app" and self.platform == "prod":
             version_url = "https://app.isogeo.com/about"
@@ -157,33 +207,6 @@ class IsogeoUtils(object):
 
         # end of method
         return version_req.json().get("version")
-
-    def set_base_url(self, platform="prod"):
-        """Set API base URLs according to platform.
-
-        :param str platform: platform to use. Available values:
-           * prod [DEFAULT]
-           * qa
-           * int
-
-        """
-        platform = platform.lower()
-        self.platform = platform
-        if platform == "prod":
-            base_url = self.API_URLS.get(platform)
-            ssl = True
-            logging.debug("Using production platform.")
-        elif platform == "qa":
-            base_url = self.API_URLS.get(platform)
-            ssl = False
-            logging.debug("Using Quality Assurance platform (reduced perfs).")
-        else:
-            logging.error("Platform must be one of: {}"
-                          .format(" | ".join(self.API_URLS.keys())))
-            raise ValueError(3, "Platform must be one of: {}"
-                                .format(" | ".join(self.API_URLS.keys())))
-        # method ending
-        return platform.lower(), base_url, ssl
 
     # -- URLs builders -------------------------------------------------------
     def get_edit_url(self, md_id=str, md_type=str, owner_id=str, tab="identification"):
