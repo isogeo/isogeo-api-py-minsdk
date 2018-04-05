@@ -414,7 +414,7 @@ class IsogeoChecker(object):
         warnings.warn("subresource in URL is deprecated."
                       " Use _include mecanism instead.", DeprecationWarning)
         l_subresources = ("conditions", "contacts", "coordinate-system",
-                          "events", "feature-attributes",  "keywords",
+                          "events", "feature-attributes", "keywords",
                           "layers", "limitations", "links", "operations",
                           "specifications")
         if isinstance(subresource, string_types):
