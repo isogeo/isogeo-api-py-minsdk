@@ -281,6 +281,30 @@ class IsogeoUtils(object):
         self.WEBAPPS[webapp_name] = {"args": webapp_args,
                                      "url": webapp_url}
 
+    # -- SHARES MANAGEMENT ----------------------------------------------------
+    def share_extender(self, share):
+        """Extend share model with additional informations.
+
+        :param dict share: share returned by API
+        """
+        # add share administration URL
+        creator_id = share.get("_creator").get("_tag")[6:]
+        share["admin_url"] = "{}/groups/{}/admin/shares/{}"\
+                             .format(self.app_url,
+                                     creator_id,
+                                     share.get("_id"))
+        # check if OpenCatalog is activated
+        opencat_url = "{}/s/{}/{}"\
+                      .format(self.oc_url,
+                              share.get("_id"),
+                              share.get("urlToken"))
+        if requests.head(opencat_url):
+            share["oc_url"] = opencat_url
+        else:
+            pass
+
+        return share
+
     # -- API AUTH ------------------------------------------------------------
     # def credentials_loader(self, f_json, f_ini, e_vars):
     #     """Loads API credentials from a file or environment variables.

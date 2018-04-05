@@ -140,7 +140,6 @@ class TestKeywords(unittest.TestCase):
         kw_a, kw_b = keywords[randint(0, (len(keywords)/2)-1)],\
                      keywords[randint(len(keywords)/2, len(keywords))]
         kw_bad = "trust_me_i_m_a_real_keyword"
-        # print(kw_a, kw_b)
         # get random metadata within a small search
         search_ids_1 = self.isogeo.keywords(self.bearer,
                                             specific_tag=[kw_a, ],
@@ -148,11 +147,9 @@ class TestKeywords(unittest.TestCase):
         search_ids_2 = self.isogeo.keywords(self.bearer,
                                             specific_tag=[kw_a, kw_b],
                                             page_size=5)
-        # print(search_ids_2)
         search_ids_3 = self.isogeo.keywords(self.bearer,
                                             specific_tag=[kw_a, kw_b, kw_bad],
                                             page_size=5)
-        # print(search_ids_3)
         # # test type
         self.assertIsInstance(search_ids_1, dict)
         self.assertIsInstance(search_ids_2, dict)

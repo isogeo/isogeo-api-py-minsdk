@@ -450,16 +450,20 @@ class Isogeo(object):
         # end of method
         return shares_req.json()
 
-    def share(self, token, share_id, prot="https"):
+    def share(self, token, share_id, augment=False, prot="https"):
         """Get information about a specific share and its applications.
 
         :param str token: API auth token
         :param str share_id: share UUID
+        :param bool augment: option to improve API response by adding
+         some tags on the fly.
         :param str prot: https [DEFAULT] or http
          (use it only for dev and tracking needs).
         """
         # checking bearer validity
-        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
+        token = checker.check_bearer_validity(token,
+                                              self.connect(self.app_id,
+                                                           self.ct))
 
         # passing auth parameter
         head = {"Authorization": "Bearer " + token[0],
@@ -475,8 +479,15 @@ class Isogeo(object):
         # checking response
         checker.check_api_response(share_req)
 
+        # enhance share model
+        share = share_req.json()
+        if augment:
+            share = utils.share_extender(share)
+        else:
+            pass
+
         # end of method
-        return share_req.json()
+        return share
 
     # -- LICENCES ---------------------------------------------
     def licenses(self, token, owner_id, prot="https"):

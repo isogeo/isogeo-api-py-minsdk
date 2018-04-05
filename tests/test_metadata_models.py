@@ -522,7 +522,7 @@ class TestMetadataModels(unittest.TestCase):
         self.assertIsInstance(share_app.get("type"), str)
         self.assertIsInstance(share_app.get("url"), str)
 
-    def test_share(self):
+    def test_share_basic(self):
         """Check share route model response."""
         share = self.isogeo.share(self.bearer,
                                   share_id="1e07910d365449b59b6596a9b428ecd9")
@@ -646,6 +646,17 @@ class TestMetadataModels(unittest.TestCase):
         self.assertIsInstance(share_app.get("type"), str)
         self.assertIsInstance(share_app.get("url"), str)
 
+    def test_share_augmented(self):
+        """Check share route model response."""
+        share = self.isogeo.share(self.bearer,
+                                  share_id="1e07910d365449b59b6596a9b428ecd9",
+                                  augment=True)
+
+        self.assertIsInstance(share, dict)
+
+        # additional root keys
+        self.assertIn("admin_url", share)
+        self.assertIn("oc_url", share)
 
 # ##############################################################################
 # ##### Stand alone program ########
