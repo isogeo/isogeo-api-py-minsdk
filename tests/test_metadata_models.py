@@ -362,7 +362,7 @@ class TestMetadataModels(unittest.TestCase):
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
         search = self.isogeo.search(self.bearer, whole_share=0,
                                     specific_md=["3c649da21ed9405e8d508bfdbe831516",],
-                                    sub_resources=["contacts", ])
+                                    include=["contacts", ])
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)
 

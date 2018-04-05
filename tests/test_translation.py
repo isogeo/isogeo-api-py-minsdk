@@ -71,7 +71,7 @@ class TestIsogeoTranslator(unittest.TestCase):
         self.bearer = self.isogeo.connect()
         self.md_contacts = self.isogeo.resource(self.bearer,
                                                 "e5e5ab788aff4418a1cd4a38f842ccbe",
-                                                sub_resources=["contacts"],
+                                                include=["contacts"],
                                                 )
         self.li_contacts_roles = [i.get("role")
                                   for i in self.md_contacts.get("contacts")]

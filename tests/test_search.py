@@ -133,35 +133,35 @@ class TestSearch(unittest.TestCase):
                                whole_share=0,
                                specific_md=md)
 
-    # subresources
-    def test_search_subresources_ok(self):
-        """Searches including subresources."""
+    # includes
+    def test_search_includes_ok(self):
+        """Searches including includes."""
         self.isogeo.search(self.bearer,
                            page_size=0,
                            whole_share=0,
-                           sub_resources=["links", "contacts", ])
+                           include=["links", "contacts", ])
 
-    def test_search_subresources_all_ok(self):
-        """Searches including subresources."""
+    def test_search_includes_all_ok(self):
+        """Searches including includes."""
         self.isogeo.search(self.bearer,
                            page_size=0,
                            whole_share=0,
-                           sub_resources="all")
+                           include="all")
 
-    def test_search_subresources_empty(self):
-        """Search with empty sub_resources list."""
+    def test_search_includes_empty(self):
+        """Search with empty includes list."""
         self.isogeo.search(self.bearer,
                            page_size=0,
                            whole_share=0,
-                           sub_resources=[])
+                           include=[])
 
-    def test_search_subresources_bad(self):
+    def test_search_includes_bad(self):
         """Include sub_resrouces require a list."""
         with self.assertRaises(TypeError):
             self.isogeo.search(self.bearer,
                                page_size=0,
                                whole_share=0,
-                               sub_resources="links")
+                               include="links")
 
     # query
     def test_search_parameter_query_ok(self):

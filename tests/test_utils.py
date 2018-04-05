@@ -210,7 +210,6 @@ class TestIsogeoUtils(unittest.TestCase):
                          "&version=2.0.2&request=GetRecordById"
                          "&id=urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
                          "&elementsetname=full&outputSchema=http://www.isotc211.org/2005/gmd")
-        print(csw_getrec_url)
 
     def test_get_view_url_bad(self):
         """Test URL builder for web app with bad parameters."""

@@ -224,7 +224,7 @@ class Isogeo(object):
                offset=0,
                share=None,
                specific_md=[],
-               sub_resources=[],
+               include=[],
                whole_share=True,
                check=True,
                augment=False,
@@ -279,7 +279,7 @@ class Isogeo(object):
          from a specific results index
         :param str share: share UUID to filter on
         :param list specific_md: list of metadata UUIDs to filter on
-        :param list sub_resources: subresources that should be returned.
+        :param list include: subresources that should be returned.
          Must be a list of strings. Available values: *isogeo.SUBRESOURCES*
         :param str whole_share: option to return all results or only the
          page size. *True* by DEFAULT.
@@ -299,11 +299,11 @@ class Isogeo(object):
         specific_md = checker._check_filter_specific_md(specific_md)
 
         # sub resources specific parsing
-        sub_resources = checker._check_filter_sub_resources(sub_resources)
+        include = checker._check_filter_includes(include)
 
         # handling request parameters
         payload = {'_id': specific_md,
-                   '_include': sub_resources,
+                   '_include': include,
                    '_lang': self.lang,
                    '_limit': page_size,
                    '_offset': offset,
@@ -373,14 +373,13 @@ class Isogeo(object):
         # end of method
         return search_rez
 
-    def resource(self, token, id_resource, sub_resources=[], prot="https"):
+    def resource(self, token, id_resource, include=[], prot="https"):
         """Get complete or partial metadata about one specific resource.
 
         :param str token: API auth token
         :param str id_resource: metadata UUID to get
-        :param list sub_resources: subresources that should be returned.
-         Must be a list of strings.
-         To get available values: 'isogeo.SUBRESOURCES'
+        :param list include: subresources that should be included.
+         Must be a list of strings. Available values: 'isogeo.SUBRESOURCES'
         :param str prot: https [DEFAULT] or http
          (use it only for dev and tracking needs).
         """
@@ -390,11 +389,11 @@ class Isogeo(object):
                                                            self.ct))
 
         # sub resources specific parsing
-        sub_resources = checker._check_filter_sub_resources(sub_resources)
+        include = checker._check_filter_includes(include)
 
         # handling request parameters
         payload = {"id": id_resource,
-                   "_include": sub_resources
+                   "_include": include
                    }
 
         # resource search
@@ -619,7 +618,7 @@ class Isogeo(object):
                  page_size=20,
                  specific_md=[],
                  specific_tag=[],
-                 sub_resources=[],
+                 include=[],
                  prot="https"):
         """Search for keywords within a specific thesaurus.
 
@@ -636,14 +635,14 @@ class Isogeo(object):
         # specific resources specific parsing
         specific_md = checker._check_filter_specific_md(specific_md)
         # sub resources specific parsing
-        sub_resources = checker._check_filter_sub_resources(sub_resources,
-                                                            "keyword")
+        include = checker._check_filter_includes(include,
+                                                 "keyword")
         # specific tag specific parsing
         specific_tag = checker._check_filter_specific_tag(specific_tag)
 
         # handling request parameters
         payload = {'_id': specific_md,
-                   '_include': sub_resources,
+                   '_include': include,
                    '_limit': page_size,
                    '_offset': offset,
                    '_tag': specific_tag,
@@ -816,7 +815,6 @@ class Isogeo(object):
         :param str prot: https [DEFAULT] or http
          (use it only for dev and tracking needs).
         """
-        mng_base_url = "https://manage.isogeo.com/applications/"
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id,
                                                                   self.ct))
@@ -973,7 +971,6 @@ class Isogeo(object):
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
-
 if __name__ == '__main__':
     """ standalone execution """
     # ------------ Specific imports ----------------
@@ -1000,22 +997,26 @@ if __name__ == '__main__':
                     client_secret=share_token,
                     auth_mode="group",
                     lang="fr",
-                    platform="qa"
+                    # platform="qa"
                     )
 
     # getting a token
     token = isogeo.connect()
-    print(token)
+    # print(token)
 
     # let's search for metadatas!
-    search = isogeo.search(token,
-                           # sub_resources='all',
-                           # sub_resources=["conditions", "contacts"],
-                           # sub_resources=isogeo.SUBRESOURCES,
-                           query="keyword:isogeo:2015\
-                                  type:dataset",
-                           prot='https')
+    # search = isogeo.search(token,
+    #                        # sub_resources='all',
+    #                        # sub_resources=["conditions", "contacts"],
+    #                        # sub_resources=isogeo.SUBRESOURCES,
+    #                        query="keyword:isogeo:2015\
+    #                               type:dataset",
+    #                        prot='https')
 
     isogeo.get_app_properties(token)
     app = isogeo.app_properties
     # print(app, type(app))
+    srs = isogeo.get_coordinate_systems(token)
+    print(len(srs), len(srs[0]), srs[0])
+    srs_4326 = isogeo.get_coordinate_systems(token, srs_code="4326")
+    print(len(srs_4326), srs_4326)

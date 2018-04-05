@@ -267,37 +267,37 @@ class TestIsogeoChecker(unittest.TestCase):
             checker.check_edit_tab(tab="attributes", md_type="service")
 
     # requests parameters
-    def test_check_filter_sub_resources_ok(self):
+    def test_check_filter_includes_ok(self):
         """Check sub resources"""
         # metadata sub resources - empty
-        subresources = checker._check_filter_sub_resources(sub_resources=[],
-                                                           resource="metadata")
+        subresources = checker._check_filter_includes(includes=[],
+                                                      resource="metadata")
         self.assertIsInstance(subresources, string_types)
         # metadata sub resources - 1
-        subresources = checker._check_filter_sub_resources(sub_resources=["links", ],
-                                                           resource="metadata")
+        subresources = checker._check_filter_includes(includes=["links", ],
+                                                      resource="metadata")
         self.assertIsInstance(subresources, string_types)
         # metadata sub resources - >1
-        subresources = checker._check_filter_sub_resources(sub_resources=["contacts", "links"],
-                                                           resource="metadata")
+        subresources = checker._check_filter_includes(includes=["contacts", "links"],
+                                                      resource="metadata")
         self.assertIsInstance(subresources, string_types)
         # metadata sub resources - all
-        subresources = checker._check_filter_sub_resources(sub_resources="all",
-                                                           resource="metadata")
+        subresources = checker._check_filter_includes(includes="all",
+                                                      resource="metadata")
         self.assertIsInstance(subresources, string_types)
         # keyword sub resources
-        subresources = checker._check_filter_sub_resources(sub_resources="all",
-                                                           resource="keyword")
+        subresources = checker._check_filter_includes(includes="all",
+                                                      resource="keyword")
         self.assertIsInstance(subresources, string_types)
 
-    def test_check_filter_sub_resources_bad(self):
+    def test_check_filter_includes_bad(self):
         """Raise errors"""
         with self.assertRaises(ValueError):
-            checker._check_filter_sub_resources(sub_resources="all",
-                                                resource="Metadata")
+            checker._check_filter_includes(includes="all",
+                                           resource="Metadata")
         with self.assertRaises(TypeError):
-            checker._check_filter_sub_resources(sub_resources="layers",
-                                                resource="metadata")
+            checker._check_filter_includes(includes="layers",
+                                           resource="metadata")
 
     def test_check_filter_specific_md_ok(self):
         """Check specific md"""

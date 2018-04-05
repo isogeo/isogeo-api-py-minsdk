@@ -376,10 +376,10 @@ class IsogeoChecker(object):
             raise TypeError("'specific_tag' expects a list")
         return specific_tag
 
-    def _check_filter_sub_resources(self, sub_resources, resource="metadata"):
+    def _check_filter_includes(self, includes, resource="metadata"):
         """Check if specific_resources parameter is valid.
 
-        :param list sub_resources: sub resources to check
+        :param list includes: sub resources to check
         :param str resource: resource type to check sub resources.
          Must be one of: metadata | keyword.
         """
@@ -392,17 +392,17 @@ class IsogeoChecker(object):
             raise ValueError("Must be one of: metadata | keyword.")
 
         # sub resources manager
-        if isinstance(sub_resources, string_types)\
-           and sub_resources.lower() == "all":
-            sub_resources = ",".join(ref_subresources)
-        elif isinstance(sub_resources, list):
-            if len(sub_resources) > 0:
-                sub_resources = ",".join(sub_resources)
+        if isinstance(includes, string_types)\
+           and includes.lower() == "all":
+            includes = ",".join(ref_subresources)
+        elif isinstance(includes, list):
+            if len(includes) > 0:
+                includes = ",".join(includes)
             else:
-                sub_resources = ""
+                includes = ""
         else:
-            raise TypeError("'sub_resources' expect a list or a str='all'")
-        return sub_resources
+            raise TypeError("'includes' expect a list or a str='all'")
+        return includes
 
 
 # ##############################################################################

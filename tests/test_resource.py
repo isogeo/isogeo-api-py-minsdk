@@ -57,33 +57,33 @@ class TestResource(unittest.TestCase):
         pass
 
     # subresources
-    def test_resource_subresources_ok(self):
+    def test_resource_includes_ok(self):
         """Resource with a few sub resources."""
         self.isogeo.resource(self.bearer,
                              id_resource=self.md_rand.get("_id"),
-                             sub_resources=["links", "contacts", ],
+                             include=["links", "contacts", ],
                              )
 
-    def test_resource_subresources_all_ok(self):
+    def test_resource_includes_all_ok(self):
         """Resource with all sub resources."""
         self.isogeo.resource(self.bearer,
                              id_resource=self.md_rand.get("_id"),
-                             sub_resources="all",
+                             include="all",
                              )
 
-    def test_resource_subresources_empty(self):
+    def test_resource_includes_empty(self):
         """Resource with empty sub_resources list."""
         self.isogeo.resource(self.bearer,
                              id_resource=self.md_rand.get("_id"),
-                             sub_resources=[],
+                             include=[],
                              )
 
-    def test_resource_subresources_bad(self):
+    def test_resource_includes_bad(self):
         """Include sub_resrouces requires a list."""
         with self.assertRaises(TypeError):
             self.isogeo.resource(self.bearer,
                                  id_resource=self.md_rand.get("_id"),
-                                 sub_resources="contacts",
+                                 include="contacts",
                                  )
 
 

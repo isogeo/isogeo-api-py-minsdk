@@ -58,33 +58,33 @@ class TestKeywords(unittest.TestCase):
         pass
 
     # subresources
-    def test_keywords_subresources_ok(self):
+    def test_keywords_includes_ok(self):
         """Resource with a few sub resources."""
         self.isogeo.keywords(self.bearer,
                              page_size=0,
-                             sub_resources=["count", ],
+                             include=["count", ],
                              )
 
-    def test_keywords_subresources_all_ok(self):
+    def test_keywords_includes_all_ok(self):
         """Resource with all sub resources."""
         self.isogeo.keywords(self.bearer,
                              page_size=0,
-                             sub_resources="all",
+                             include="all",
                              )
 
-    def test_keywords_subresources_empty(self):
+    def test_keywords_includes_empty(self):
         """Resource with empty sub_resources list."""
         self.isogeo.keywords(self.bearer,
                              page_size=0,
-                             sub_resources=[],
+                             include=[],
                              )
 
-    def test_keywords_subresources_bad(self):
+    def test_keywords_includes_bad(self):
         """Include sub_resources requires a list."""
         with self.assertRaises(TypeError):
             self.isogeo.keywords(self.bearer,
                                  page_size=0,
-                                 sub_resources="count",
+                                 include="count",
                                  )
 
     # specific md

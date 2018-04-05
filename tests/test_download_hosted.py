@@ -53,7 +53,7 @@ class TestDownloadHosted(unittest.TestCase):
         """Download an hosted data from Isogeo metadata."""
         search = self.isogeo.search(self.bearer, whole_share=0,
                                     query="action:download type:dataset",
-                                    sub_resources=["links", ],
+                                    include=["links", ],
                                     page_size=100)
         # get an hosted link
         for md in search.get("results"):
