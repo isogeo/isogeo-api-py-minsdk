@@ -56,7 +56,7 @@ class TestResource(unittest.TestCase):
         """Executed after each test."""
         pass
 
-    # subresources
+    # includes
     def test_resource_includes_ok(self):
         """Resource with a few sub resources."""
         self.isogeo.resource(self.bearer,
@@ -85,6 +85,21 @@ class TestResource(unittest.TestCase):
                                  id_resource=self.md_rand.get("_id"),
                                  include="contacts",
                                  )
+
+    # subresource
+    def test_resource_subresource_ok(self):
+        """Resource with a few sub resources."""
+        self.isogeo.resource(self.bearer,
+                             id_resource=self.md_rand.get("_id"),
+                             subresource="links",
+                             )
+
+    def test_resource_subresource_empty(self):
+        """Resource with empty sub_resources list."""
+        self.isogeo.resource(self.bearer,
+                             id_resource=self.md_rand.get("_id"),
+                             subresource="tags",
+                             )
 
 
 # ##############################################################################

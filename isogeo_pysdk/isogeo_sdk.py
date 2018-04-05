@@ -373,7 +373,7 @@ class Isogeo(object):
         # end of method
         return search_rez
 
-    def resource(self, token, id_resource, include=[], prot="https"):
+    def resource(self, token, id_resource, subresource=None, include=[], prot="https"):
         """Get complete or partial metadata about one specific resource.
 
         :param str token: API auth token
@@ -388,8 +388,13 @@ class Isogeo(object):
                                               self.connect(self.app_id,
                                                            self.ct))
 
-        # sub resources specific parsing
-        include = checker._check_filter_includes(include)
+        # if subresource route
+        if isinstance(subresource, string_types):
+            subresource = "/{}".format(checker._check_subresource(subresource))
+        else:
+            subresource = ""
+            # _includes specific parsing
+            include = checker._check_filter_includes(include)
 
         # handling request parameters
         payload = {"id": id_resource,
@@ -399,9 +404,12 @@ class Isogeo(object):
         # resource search
         head = {"Authorization": "Bearer " + token[0],
                 "user-agent": self.app_name}
-        md_url = "{}://v1.{}.isogeo.com/resources/{}".format(prot,
-                                                             self.api_url,
-                                                             id_resource)
+        md_url = "{}://v1.{}.isogeo.com/resources/{}{}"\
+                 .format(prot,
+                         self.api_url,
+                         id_resource,
+                         subresource)
+        print(md_url)
         resource_req = requests.get(md_url,
                                     headers=head,
                                     params=payload,
@@ -674,8 +682,7 @@ class Isogeo(object):
 
     # -- DOWNLOADS -----------------------------------------------------------
 
-    def dl_hosted(self, token, resource_link,
-                  proxy_url=None, prot="https"):
+    def dl_hosted(self, token, resource_link, proxy_url=None, prot="https"):
         """Download hosted resource.
 
         :param str token: API auth token
@@ -1009,14 +1016,13 @@ if __name__ == '__main__':
     #                        # sub_resources='all',
     #                        # sub_resources=["conditions", "contacts"],
     #                        # sub_resources=isogeo.SUBRESOURCES,
-    #                        query="keyword:isogeo:2015\
-    #                               type:dataset",
+    #                        # query="keyword:isogeo:2015\
+    #                        #        type:dataset",
+    #                        page_size=0,
     #                        prot='https')
 
-    isogeo.get_app_properties(token)
-    app = isogeo.app_properties
-    # print(app, type(app))
-    srs = isogeo.get_coordinate_systems(token)
-    print(len(srs), len(srs[0]), srs[0])
-    srs_4326 = isogeo.get_coordinate_systems(token, srs_code="4326")
-    print(len(srs_4326), srs_4326)
+    md_id = "e5e5ab788aff4418a1cd4a38f842ccbe"
+    # contacts, events, limitations, conditions, coordinate-system, feature-attributes, links, specifications, layers, keywords, operations
+
+    md = isogeo.resource(token, md_id, subresource="tags")
+    print(md)

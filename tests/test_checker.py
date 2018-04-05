@@ -343,6 +343,25 @@ class TestIsogeoChecker(unittest.TestCase):
         with self.assertRaises(TypeError):
             checker._check_filter_specific_tag(specific_tag="oh_yeah_i_m_a_keyword")
 
+    def test_check_subresource_ok(self):
+        """Check sub resources"""
+        # metadata sub resources - empty
+        subresource = checker._check_subresource(subresource="conditions")
+        self.assertIsInstance(subresource, string_types)
+        # metadata sub resources - 1
+        subresource = checker._check_subresource(subresource="tags")
+        self.assertIsInstance(subresource, string_types)
+        # metadata sub resources - >1
+        subresource = checker._check_subresource(subresource="serviceLayers")
+        self.assertIsInstance(subresource, string_types)
+
+    def test_check_subresource_bad(self):
+        """Raise errors"""
+        with self.assertRaises(ValueError):
+            checker._check_subresource(subresource="_creator")
+        with self.assertRaises(TypeError):
+            checker._check_subresource(subresource=["layers", ])
+
 
 # #############################################################################
 # ######## Standalone ##############
