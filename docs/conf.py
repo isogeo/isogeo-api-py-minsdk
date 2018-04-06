@@ -20,11 +20,9 @@ sys.path.insert(0, os.path.abspath(r'..'))
 from isogeo_pysdk import (Isogeo, IsogeoChecker, IsogeoTranslator,
                           IsogeoUtils, __version__)
 
-# Sphinx theme
-import guzzle_sphinx_theme
-
 # -- Build environment -----------------------------------------------------
 on_rtd = os.environ.get('READTHEDOCS', None) == 'True'
+   
 
 # -- Project information -----------------------------------------------------
 
@@ -81,6 +79,7 @@ pygments_style = 'sphinx'
 if on_rtd:
     html_theme = 'default'
 else:
+    import guzzle_sphinx_theme
     html_theme = 'guzzle_sphinx_theme'
     html_theme_path = guzzle_sphinx_theme.html_theme_path()
 
