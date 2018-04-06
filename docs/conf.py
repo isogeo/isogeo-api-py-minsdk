@@ -43,7 +43,6 @@ release = __version__
 # ones.
 extensions = ['sphinx.ext.autodoc',
               'sphinx.ext.viewcode',
-              "guzzle_sphinx_theme"
               ]
 
 # Add any paths that contain templates here, relative to this directory.
@@ -82,28 +81,24 @@ else:
     import guzzle_sphinx_theme
     html_theme = 'guzzle_sphinx_theme'
     html_theme_path = guzzle_sphinx_theme.html_theme_path()
+    extensions.append("guzzle_sphinx_theme")
+    # Guzzle theme options
+    html_theme_options = {
+        "project_nav_name": project,
 
-# Theme options are theme-specific and customize the look and feel of a theme
-# further.  For a list of options available for each theme, see the
-# documentation.
-#
-# Guzzle theme options
-html_theme_options = {
-    "project_nav_name": project,
+        # Path to a touch icon
+        "touch_icon": "",
 
-    # Path to a touch icon
-    "touch_icon": "",
+        # Specify a base_url used to generate sitemap.xml links. If not
+        # specified, then no sitemap will be built.
+        "base_url": "http://isogeo-api-pysdk.readthedocs.io",
 
-    # Specify a base_url used to generate sitemap.xml links. If not
-    # specified, then no sitemap will be built.
-    "base_url": "http://isogeo-api-pysdk.readthedocs.io",
+        # Allow a separate homepage from the master_doc
+        # "homepage": "index",
 
-    # Allow a separate homepage from the master_doc
-    # "homepage": "index",
-
-    # Allow the project link to be overriden to a custom URL.
-    "projectlink": "https://github.com/Guts/isogeo-api-py-minsdk/",
-}
+        # Allow the project link to be overriden to a custom URL.
+        "projectlink": "https://github.com/Guts/isogeo-api-py-minsdk/",
+    }
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
