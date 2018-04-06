@@ -282,7 +282,7 @@ class IsogeoUtils(object):
                                      "url": webapp_url}
 
     # -- SHARES MANAGEMENT ----------------------------------------------------
-    def share_extender(self, share):
+    def share_extender(self, share, results_filtered):
         """Extend share model with additional informations.
 
         :param dict share: share returned by API
@@ -302,6 +302,8 @@ class IsogeoUtils(object):
             share["oc_url"] = opencat_url
         else:
             pass
+        # add metadata ids list
+        share["mds_ids"] = (i.get("_id") for i in results_filtered)
 
         return share
 

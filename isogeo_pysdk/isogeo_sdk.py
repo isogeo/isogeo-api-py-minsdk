@@ -482,7 +482,12 @@ class Isogeo(object):
         # enhance share model
         share = share_req.json()
         if augment:
-            share = utils.share_extender(share)
+            share = utils.share_extender(share,
+                                         self.search(token,
+                                                     whole_share=1,
+                                                     share=share_id)
+                                             .get("results")
+                                         )
         else:
             pass
 
@@ -603,7 +608,9 @@ class Isogeo(object):
          (use it only for dev and tracking needs).
         """
         # checking bearer validity
-        token = checker.check_bearer_validity(token, self.connect(self.app_id, self.ct))
+        token = checker.check_bearer_validity(token,
+                                              self.connect(self.app_id,
+                                                           self.ct))
 
         # handling request parameters
         payload = {'tid': thez_id,
@@ -1032,8 +1039,35 @@ if __name__ == '__main__':
     #                        page_size=0,
     #                        prot='https')
 
-    md_id = "e5e5ab788aff4418a1cd4a38f842ccbe"
-    # contacts, events, limitations, conditions, coordinate-system, feature-attributes, links, specifications, layers, keywords, operations
+    search = isogeo.search(token,
+                           page_size=0,
+                           whole_share=0,
+                           augment=1)
+    # share_id = "1e07910d365449b59b6596a9b428ecd9"
+    for shasha in isogeo.shares_id:
+        share = isogeo.share(token, shasha[6:], augment=1)
+        print(share.get("oc_url"))
+        if "fa1abb6cb4e0431b9f4daf0955b755cf" in share.get("mds_ids"):
+            print("AH")
+            continue
 
-    md = isogeo.resource(token, md_id, subresource="tags")
-    print(md)
+        # print(share.get("oc_url"),
+        #       share.get("mds_ids"),
+        #       dir(share.get("mds_ids")))
+    # search = isogeo.search(token,
+    #                        page_size=1,
+    #                        whole_share=0,
+    #                        query="type:dataset",
+    #                        augment=1)
+    # md = search.get("results")[0].get("_id")
+    # shares = isogeo.shares_id
+    # print(shares)
+    # for share in shares:
+    #     share_id = share[6:]
+    #     seurch = isogeo.search(token,
+    #                            whole_share=1,
+    #                            share=share_id).get("results")
+    #     share_mds = [i.get("_id") for i in seurch]
+    #     if md in share_mds:
+    #         print("youpi !")
+    #         break
