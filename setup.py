@@ -44,9 +44,10 @@ setup(
     license='GPL3',
     url="https://github.com/Guts/isogeo-api-py-minsdk",
     project_urls={
+        'Docs': "http://isogeo-api-pysdk.rtfd.io/",
         'Bug Reports': 'https://github.com/Guts/isogeo-api-py-minsdk/issues',
         'Source': 'https://github.com/Guts/isogeo-api-py-minsdk',
-        'Docs - Isogeo API': 'https://www.gitbook.com/book/isogeo/api/details',
+        'Isogeo API': 'https://www.gitbook.com/book/isogeo/api/details',
     },
     # dependencies
     install_requires=["requests>=2.9.1",
