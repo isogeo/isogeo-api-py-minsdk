@@ -24,8 +24,13 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-Modules
-++++++++
+Installation
+++++++++++++
+
+.. include:: installation.rst
+
+Package modules
++++++++++++++++
 
 .. toctree::
     _apidoc/modules
