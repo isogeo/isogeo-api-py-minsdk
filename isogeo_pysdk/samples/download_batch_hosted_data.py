@@ -62,7 +62,7 @@ if __name__ == '__main__':
                                          order_by="modified",
                                          whole_share=0,
                                          query="action:download",
-                                         sub_resources=["links"],
+                                         include=["links"],
                                          )
 
     # parse and download

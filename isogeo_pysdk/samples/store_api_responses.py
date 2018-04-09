@@ -58,7 +58,7 @@ if __name__ == '__main__':
                   )
 
     # complete search
-    request = isogeo.search(token, whole_share=1, sub_resources="all")
+    request = isogeo.search(token, whole_share=1, include="all")
     with open("out_api_search_complete.json", "w") as json_basic:
         json.dump(request,
                   json_basic,

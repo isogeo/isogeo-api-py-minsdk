@@ -65,7 +65,7 @@ if __name__ == '__main__':
                                          page_size=10,
                                          order_by="modified",
                                          whole_share=0,
-                                         sub_resources=["events"]
+                                         include=["events"]
                                          )
 
     print("Last 10 data updated \nTitle | datetime\n\t description")

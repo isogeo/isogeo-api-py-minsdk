@@ -73,7 +73,7 @@ if __name__ == '__main__':
     hatnumber = randrange(0, len(search.get("results")))
     my_resource = isogeo.resource(jeton,
                                   search.get("results")[hatnumber].get("_id"),
-                                  sub_resources=isogeo.SUBRESOURCES,
+                                  include=isogeo.SUBRESOURCES,
                                   prot="https"
                                   )
 

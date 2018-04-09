@@ -60,7 +60,7 @@ if __name__ == '__main__':
     # search
     search = isogeo.search(token,
                            query="type:vector-dataset",
-                           sub_resources=["feature-attributes"],
+                           include=["feature-attributes"],
                            page_size=100,
                            whole_share=0)
 
