@@ -25,3 +25,11 @@ script:
 # coverage reporting
 after_success:
 - codecov
+
+# deployment
+deploy:
+  provider: pypi
+  user: PYPI_USER
+  password: PYPI_PSWD
+  on:
+    tags: true
