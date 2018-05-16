@@ -28,7 +28,7 @@ For developers:
 
 .. code-block:: console
 
-    git clone git@github.com:Guts/isogeo-api-py-minsdk.git
+    git clone git@github.com:isogeo/isogeo-api-py-minsdk.git
     cd isogeo-api-py-minsdk
     python setup.py install
 
@@ -56,7 +56,7 @@ Quickstart
     print("Total count of metadatas shared: ", search.get("total"))  # total of available resources
     print("Count of resources got by request: {}\n".format(len(search.get("results"))))  # total of resources returned by search request
 
-Others samples are available in `the source repository <https://github.com/Guts/isogeo-api-py-minsdk/tree/master/isogeo_pysdk/samples>`_.
+Others samples are available in `the source repository <https://github.com/isogeo/isogeo-api-py-minsdk/tree/master/isogeo_pysdk/samples>`_.
 
 
 Isogeo API coverage
@@ -157,7 +157,7 @@ Miscellaneous & bonus
 Tests
 =====
 
-Tests are performed for each published commit by `Travis <https://travis-ci.org/Guts/isogeo-api-py-minsdk>`_
+Tests are performed for each published commit by `Travis <https://travis-ci.org/isogeo/isogeo-api-py-minsdk>`_
 
 To run tests:
 
@@ -189,12 +189,12 @@ To build docs:
    :target: https://badge.fury.io/py/isogeo-pysdk
    :alt: PyPI version
 
-.. |Build_Status| image:: https://travis-ci.org/Guts/isogeo-api-py-minsdk.svg?branch=master
-   :target: https://travis-ci.org/Guts/isogeo-api-py-minsdk
+.. |Build_Status| image:: https://travis-ci.org/isogeo/isogeo-api-py-minsdk.svg?branch=master
+   :target: https://travis-ci.org/isogeo/isogeo-api-py-minsdk
    :alt: Travis build status
 
-.. |coverage| image:: https://codecov.io/gh/Guts/isogeo-api-py-minsdk/branch/master/graph/badge.svg
-   :target: https://codecov.io/gh/Guts/isogeo-api-py-minsdk
+.. |coverage| image:: https://codecov.io/gh/isogeo/isogeo-api-py-minsdk/branch/master/graph/badge.svg
+   :target: https://codecov.io/gh/isogeo/isogeo-api-py-minsdk
    :alt: Codecov - Coverage status
 
 .. |compat_py27| image:: https://img.shields.io/badge/python-2.7-blue.svg

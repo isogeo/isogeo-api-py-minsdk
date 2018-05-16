@@ -4,7 +4,7 @@
 """
     Setup script to package Isogeo PySDK Python module
 
-    see: https://github.com/Guts/isogeo-api-py-minsdk/
+    see: https://github.com/isogeo/isogeo-api-py-minsdk/
 """
 
 # ############################################################################
@@ -42,11 +42,11 @@ setup(
     long_description_content_type='text/x-rst',
     keywords="GIS metadata INSPIRE Isogeo API REST geographical data ISO19139",
     license='GPL3',
-    url="https://github.com/Guts/isogeo-api-py-minsdk",
+    url="https://github.com/isogeo/isogeo-api-py-minsdk",
     project_urls={
         'Docs': "http://isogeo-api-pysdk.rtfd.io/",
-        'Bug Reports': 'https://github.com/Guts/isogeo-api-py-minsdk/issues',
-        'Source': 'https://github.com/Guts/isogeo-api-py-minsdk',
+        'Bug Reports': 'https://github.com/isogeo/isogeo-api-py-minsdk/issues',
+        'Source': 'https://github.com/isogeo/isogeo-api-py-minsdk',
         'Isogeo API': 'https://www.gitbook.com/book/isogeo/api/details',
     },
     # dependencies
