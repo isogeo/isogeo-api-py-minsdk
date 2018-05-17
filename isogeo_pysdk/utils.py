@@ -133,7 +133,7 @@ class IsogeoUtils(object):
         :param str in_uuid: UUID or URI to convert
         :param int mode: options:
           * 0 to HEX
-          * 1 to URN (RFC4122)\
+          * 1 to URN (RFC4122)
           * 2 to URN (Isogeo specific style)
 
         """
@@ -236,7 +236,7 @@ class IsogeoUtils(object):
         """Constructs the view URL of a metadata.
 
         :param str webapp: web app destination.
-        :param dict \**kwargs: web app specific parameters.
+        :param dict **kwargs: web app specific parameters.
          For example see WEBAPPS
         """
         # build wbeapp URL depending on choosen webapp
