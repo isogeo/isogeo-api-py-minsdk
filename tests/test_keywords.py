@@ -2,6 +2,14 @@
 #!/usr/bin/env python
 from __future__ import (absolute_import, print_function, unicode_literals)
 
+"""
+    Usage from the repo root folder:
+    
+    ```python
+    python -m unittest tests.test_keywords
+    ```
+"""
+
 # #############################################################################
 # ########## Libraries #############
 # ##################################
@@ -15,7 +23,6 @@ import unittest
 
 # module target
 from isogeo_pysdk import Isogeo, __version__ as pysdk_version
-
 
 # #############################################################################
 # ######## Globals #################
@@ -137,8 +144,7 @@ class TestKeywords(unittest.TestCase):
         keywords = [tag for tag in search_tags
                     if tag.startswith("keyword:isogeo")]
         # get random keywords
-        kw_a, kw_b = keywords[randint(0, (len(keywords)/2)-1)],\
-                     keywords[randint(len(keywords)/2, len(keywords))]
+        kw_a, kw_b = keywords[randint(0, int((len(keywords)/2))-1)], keywords[randint(int(len(keywords)/2), len(keywords))]
         kw_bad = "trust_me_i_m_a_real_keyword"
         # get random metadata within a small search
         search_ids_1 = self.isogeo.keywords(self.bearer,
