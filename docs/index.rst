@@ -14,8 +14,8 @@ Isogeo PySDK's documentation
 .. moduleauthor:: Julien M. (Isogeo)
 
 :Author: Julien M. (Isogeo)
-:Source code: https://github.com/Guts/isogeo-api-py-minsdk/
-:Issues: https://github.com/Guts/isogeo-api-py-minsdk/issues
+:Source code: https://github.com/Isogeo/isogeo-api-py-minsdk/
+:Issues: https://github.com/Isogeo/isogeo-api-py-minsdk/issues
 
 Indices and tables
 ==================

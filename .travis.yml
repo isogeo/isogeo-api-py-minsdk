@@ -10,7 +10,7 @@ cache: pip
 # dependencies
 install:
   - "pip install --upgrade -r tests/requirements_test.txt"
-  - "pip install git+https://github.com/Guts/isogeo-api-py-minsdk"
+  - "pip install git+https://github.com/Isogeo/isogeo-api-py-minsdk"
 
 # run tests
 script:

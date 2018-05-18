@@ -97,7 +97,7 @@ else:
         # "homepage": "index",
 
         # Allow the project link to be overriden to a custom URL.
-        "projectlink": "https://github.com/Guts/isogeo-api-py-minsdk/",
+        "projectlink": "https://github.com/Isogeo/isogeo-api-py-minsdk/",
     }
 
 # Add any paths that contain custom static files (such as style sheets) here,
