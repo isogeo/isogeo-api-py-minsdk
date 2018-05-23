@@ -408,7 +408,7 @@ class TestIsogeoUtils(unittest.TestCase):
 
     def test_credentials_loader_bad_file_path(self):
         """Raise error if credentials file is not reachable."""
-        with self.assertRaises(FileNotFoundError):
+        with self.assertRaises(IOError):
             self.utils.credentials_loader(in_credentials=r"imaginary_file.json")
 
     def test_credentials_loader_bad_file_extension(self):
