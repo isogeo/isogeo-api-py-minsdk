@@ -14,7 +14,10 @@ from __future__ import (absolute_import, unicode_literals)
 # ##################################
 
 # Standard library
+from configparser import SafeConfigParser
 import logging
+import json
+from os import path
 import uuid
 
 # 3rd party
@@ -308,27 +311,77 @@ class IsogeoUtils(object):
         return share
 
     # -- API AUTH ------------------------------------------------------------
-    # def credentials_loader(self, f_json, f_ini, e_vars):
-    #     """Loads API credentials from a file or environment variables.
+    def credentials_loader(self, in_credentials="client_secrets.json"):
+        """Loads API credentials from a file, JSON or INI.
 
-    #     :param str f_json: path to the credentials JSON file:
-    #     :param str f_ini: path to the credentials INI file
-    #     :param dict e_vars: dict of environment variables names
-    #     """
-    #     if f_ini:
-    #         with open('client_secrets.json', "r") as j:
-    #             api = json.loads(j.read()).get("installed")
-    #         return api
-    #     elif f_json:
-    #         with open('client_secrets.json', "r") as j:
-    #             api = json.loads(j.read()).get("installed")
-    #         return api
-    #     elif e_vars:
-    #         with open('client_secrets.json', "r") as j:
-    #             api = json.loads(j.read()).get("installed")
-    #         return api
-    #     else:
-    #         raise ValueError()
+        :param str in_credentials: path to the credentials file. By default,
+          look for a client_secrets.json file.
+        """
+        accepted_extensions = (".ini", ".json")
+        # checks
+        if not path.isfile(in_credentials):
+            raise FileNotFoundError("Credentials file doesn't exist: {}"
+                                    .format(in_credentials))
+        else:
+            in_credentials = path.normpath(in_credentials)
+        if path.splitext(in_credentials)[1] not in accepted_extensions:
+            raise ValueError("Extension of credentials file must be one of {}"
+                             .format(accepted_extensions))
+        else:
+            kind = path.splitext(in_credentials)[1]
+        # load, check and set
+        if kind == ".json":
+            with open(in_credentials, "r") as f:
+                in_auth = json.loads(f.read())
+            # check structure
+            heads = ("installed", "web")
+            if not set(in_auth).intersection(set(heads)):
+                raise ValueError("Input JSON structure is not as expected."
+                                 " First key must be one of: {}".format(heads))
+            # set
+            if "web" in in_auth:
+                # json structure for group application
+                auth_settings = in_auth.get("web")
+                out_auth = {
+                    "auth_mode": "group",
+                    "client_id": auth_settings.get("client_id"),
+                    "client_secret": auth_settings.get("client_secret"),
+                    "uri_auth": auth_settings.get("auth_uri"),
+                    "uri_token": auth_settings.get("token_uri"),
+                    "uri_redirect": None,
+                }
+            else:
+                # assuming in_auth == 'installed'
+                auth_settings = in_auth.get("installed")
+                out_auth = {
+                    "auth_mode": "user",
+                    "client_id": auth_settings.get("client_id"),
+                    "client_secret": auth_settings.get("client_secret"),
+                    "uri_auth": auth_settings.get("auth_uri"),
+                    "uri_token": auth_settings.get("token_uri"),
+                    "uri_redirect": auth_settings.get("redirect_uris"),
+                }
+        else:
+            # assuming file is an .ini
+            ini_parser = SafeConfigParser()
+            ini_parser.read(in_credentials)
+            # check structure
+            if 'auth' in ini_parser._sections:
+                in_auth = ini_parser['auth']
+            else:
+                raise ValueError("Input INI structure is not as expected."
+                                 " Section of credentials must be named: auth")
+            # set
+            out_auth = {
+                "auth_mode": in_auth.get("CLIENT_TYPE"),
+                "client_id": in_auth.get("CLIENT_ID"),
+                "client_secret": in_auth.get("CLIENT_SECRET"),
+                "uri_auth": in_auth.get("URI_AUTH"),
+                "uri_token": in_auth.get("URI_TOKEN"),
+                "uri_redirect": in_auth.get("URI_REDIRECT"),
+            }
+        # method ending
+        return out_auth
 
 
 # ##############################################################################
@@ -337,15 +390,3 @@ class IsogeoUtils(object):
 if __name__ == '__main__':
     """Standalone execution."""
     utils = IsogeoUtils()
-    # from HEX
-    print("hex to hex - " + utils.convert_uuid(in_uuid="0269803d50c446b09f5060ef7fe3e22b", mode=0))
-    print("hex to urn (RFC4122) - " + utils.convert_uuid(in_uuid="0269803d50c446b09f5060ef7fe3e22b", mode=1))
-    print("hex to urn (isogeo style) - " + utils.convert_uuid(in_uuid="0269803d50c446b09f5060ef7fe3e22b", mode=2))
-    # from URN (RFC4122)
-    print("\nurn (RFC4122) to hex - " + utils.convert_uuid(in_uuid="urn:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b", mode=0))
-    print("urn (RFC4122) to urn (RFC4122) - " + utils.convert_uuid(in_uuid="urn:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b", mode=1))
-    print("urn (RFC4122) to urn (Isogeo style) - " + utils.convert_uuid(in_uuid="urn:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b", mode=2))
-    # from URN (Isogeo style)
-    print("\nurn (Isogeo style) to hex - " + utils.convert_uuid(in_uuid="urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b", mode=0))
-    print("urn (Isogeo style) to urn (RFC4122) - " + utils.convert_uuid(in_uuid="urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b", mode=1))
-    print("urn (Isogeo style) to urn (Isogeo style) - " + utils.convert_uuid(in_uuid="urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b", mode=2))

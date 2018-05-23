@@ -46,3 +46,25 @@ Add shares tags to search response and as attributes
     # through attributes
     print(isogeo.shares_id)
 
+
+Load API credentials from a JSON or INI file
+--------------------------------------------
+
+.. code-block:: python
+
+    # load package
+    from isogeo_pysdk import Isogeo, IsogeoUtils as utils
+
+    api_credentials = utils.credentials_loader("client_secrets_group.json")
+    
+    # could also be:
+    # api_credentials = utils.credentials_loader("client_secrets_user.json")
+    # api_credentials = utils.credentials_loader("client_secrets.ini")
+
+    # authenticate your client application
+    isogeo = Isogeo(client_id=api_credentials.get("client_id"),
+                    client_secret=app_secret.get("client_secret")
+                    )
+
+    # get the token
+    token = isogeo.connect()
