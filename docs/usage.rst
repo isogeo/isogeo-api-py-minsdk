@@ -85,3 +85,84 @@ The module isogeo_pysdk.utils comes with a method to load automatically credenti
 
     # get the token
     token = isogeo.connect()
+
+
+URL Builder for web applications
+--------------------------------
+
+Isogeo metadata can be displyed in others web applications. Some webapps are built-in:
+    - OpenCatalog (oc)
+    - Data portal by PixUp (pixup_portal)
+    - CSW GetCapabilities (for a share)
+    - CSW GetRecords (for a metadata)
+
+It's also possible to register a custom web app (see below).
+
+---------------------------------------
+Get URL to online editor for a metadata
+---------------------------------------
+
+A metadata can only be edited by an authenticated Isogeo user (with editor level at least). A built-in method make it easy to contruct it:
+
+.. code-block:: python
+
+    from isogeo_pysdk import IsogeoUtils
+    utils = IsogeoUtils()
+    url = utils.get_edit_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
+                             md_type="vector-dataset",
+                             owner_id="32f7e95ec4e94ca3bc1afda960003882",
+                             tab="attributes")
+
+----------------------------------
+Get OpenCatalog URL for a metadata
+----------------------------------
+
+.. code-block:: python
+
+    from isogeo_pysdk import IsogeoUtils
+    utils = IsogeoUtils()
+    oc_url = utils.get_view_url(webapp="oc",
+                                md_id="0269803d50c446b09f5060ef7fe3e22b",
+                                share_id="1e07910d365449b59b6596a9b428ecd9",
+                                share_token="TokenOhDearToken")
+
+-----------------------------------
+Get CSW GetCapabilities for a share
+-----------------------------------
+
+.. code-block:: python
+
+    from isogeo_pysdk import IsogeoUtils
+    utils = IsogeoUtils()
+    csw_getcap_url = utils.get_view_url(webapp="csw_getcap",
+                                        share_id="1e07910d365449b59b6596a9b428ecd9",
+                                        share_token="TokenOhDearToken")
+
+--------------------------------
+Get CSW GetRecord for a metadata
+--------------------------------
+
+.. code-block:: python
+
+    from isogeo_pysdk import IsogeoUtils
+    utils = IsogeoUtils()
+    csw_getrec_url = utils.get_view_url(webapp="csw_getrec",
+                                        md_uuid_urn=self.uuid_urnIsogeo,
+                                        share_id="1e07910d365449b59b6596a9b428ecd9",
+                                        share_token="TokenOhDearToken")
+
+------------------------------------
+Register a custom webapp and get URL
+------------------------------------
+
+.. code-block:: python
+
+    from isogeo_pysdk import IsogeoUtils
+    utils = IsogeoUtils()
+    # register the web app
+    utils.register_webapp(webapp_name="PPIGE v3",
+                          webapp_args=["md_id", ],
+                          webapp_url="https://www.ppige-npdc.fr/portail/geocatalogue?uuid={md_id}")
+    # get url
+    custom_url = utils.get_view_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
+                                    webapp="PPIGE v3")
