@@ -14,9 +14,9 @@ py -3 -m venv env3_docs
 # dependencies
 "-- STEP -- Install and display dependencies within the virtualenv"
 python -m pip install -U pip
-pip install --upgrade setuptools wheel
+pip install -U setuptools wheel
 pip install MarkupSafe PyYAML --find-links=libs
-pip install -r ./requirements_docs.txt
+pip install -U -r ./requirements_docs.txt
 
 # remove previous builds
 "-- STEP -- Clean up previous build"

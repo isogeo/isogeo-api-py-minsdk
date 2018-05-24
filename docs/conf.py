@@ -174,33 +174,43 @@ texinfo_documents = [
 
 
 # -- Options for Sphinx API doc ----------------------------------------------
-if on_rtd:
-    # handling RTD not supporting apidoc
-    # see: https://github.com/rtfd/readthedocs.org/issues/1139
-    def run_apidoc(_):
-        from sphinx.apidoc import main as apidoc_main
+# if on_rtd:
+#     # handling RTD not supporting apidoc
+#     # see: https://github.com/rtfd/readthedocs.org/issues/1139
+#     def run_apidoc(_):
+#         from sphinx.apidoc import main as apidoc_main
 
-        cur_dir = os.path.abspath(os.path.dirname(__file__))
-        output_path = os.path.join(cur_dir, '_apidoc')
-        modules = os.path.join(cur_dir, os.path.normpath(r"../isogeo_pysdk"))
-        exclusions = [
-            '../isogeo_pysdk/samples',
-        ]
-        apidoc_main([None, '-e', '-f', '-M', '-o', output_path, modules] + exclusions)
+#         cur_dir = os.path.abspath(os.path.dirname(__file__))
+#         output_path = os.path.join(cur_dir, '_apidoc')
+#         modules = os.path.join(cur_dir, os.path.normpath(r"../isogeo_pysdk"))
+#         exclusions = [
+#             '../isogeo_pysdk/samples',
+#         ]
+#         apidoc_main([None, '-e', '-f', '-M', '-o', output_path, modules] + exclusions)
+# else:
+#     def run_apidoc(_):
+#         from sphinx.ext.apidoc import main
 
-    def setup(app):
-        app.connect('builder-inited', run_apidoc)
-else:
-    def run_apidoc(_):
-        from sphinx.ext.apidoc import main
+#         cur_dir = os.path.abspath(os.path.dirname(__file__))
+#         output_path = os.path.join(cur_dir, '_apidoc')
+#         modules = os.path.join(cur_dir, "..", os.path.sep, "isogeo_pysdk")
+#         exclusions = [
+#             '../isogeo_pysdk/samples',
+#         ]
+#         main(['-e', '-f', '-M', '-o', output_path, modules] + exclusions)
 
-        cur_dir = os.path.abspath(os.path.dirname(__file__))
-        output_path = os.path.join(cur_dir, '_apidoc')
-        modules = os.path.join(cur_dir, r"..\isogeo_pysdk")
-        exclusions = [
-            '../isogeo_pysdk/samples',
-        ]
-        main(['-e', '-f', '-M', '-o', output_path, modules] + exclusions)
+# run api doc
+def run_apidoc(_):
+    from sphinx.ext.apidoc import main
 
-    def setup(app):
-        app.connect('builder-inited', run_apidoc)
+    cur_dir = os.path.normpath(os.path.dirname(__file__))
+    output_path = os.path.join(cur_dir, '_apidoc')
+    modules = os.path.normpath(os.path.join(cur_dir, "../isogeo_pysdk"))
+    exclusions = [
+        '../isogeo_pysdk/samples',
+    ]
+    main(['-e', '-f', '-M', '-o', output_path, modules] + exclusions)
+
+# launch setup
+def setup(app):
+    app.connect('builder-inited', run_apidoc)
