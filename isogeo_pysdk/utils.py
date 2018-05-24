@@ -171,8 +171,7 @@ class IsogeoUtils(object):
             raise ValueError("'mode' must be  one of: 0 | 1 | 2")
 
     def get_isogeo_version(self, component="api", prot="https"):
-        """Get Isogeo components versions.
-        Authentication is no required.
+        """Get Isogeo components versions. Authentication not required.
 
         :param str component: options:
           * api [default]
@@ -218,6 +217,7 @@ class IsogeoUtils(object):
         :param str md_id: metadata/resource UUID
         :param str owner_id: owner UUID
         :param str tab: target tab in the web form
+
         """
         # checks inputs
         if not checker.check_is_uuid(md_id)\
@@ -238,9 +238,8 @@ class IsogeoUtils(object):
     def get_view_url(self, webapp="oc", **kwargs):
         """Constructs the view URL of a metadata.
 
-        :param str webapp: web app destination.
-        :param dict **kwargs: web app specific parameters.
-         For example see WEBAPPS
+        :param str webapp: web app destination
+        :param dict kwargs: web app specific parameters. For example see WEBAPPS
         """
         # build wbeapp URL depending on choosen webapp
         if webapp in self.WEBAPPS:

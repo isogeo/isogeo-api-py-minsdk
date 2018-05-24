@@ -7,7 +7,7 @@ Isogeo User oAuth2 example - Website with Flask
 
 Run this sample:
 
-1. Clone/download this [repository](https://github.com/Guts/isogeo-api-py-minsdk),
+1. Clone/download this [repository](https://github.com/Isogeo/isogeo-api-py-minsdk),
 2. Open a prompt (bash, powershell...),
 3. move inside this directory `cd isogeo_pysdk\samples\web_flask_example`
 4. Paste your `client_secrets.json` file inside `web_flask_example` directory. If you don't have, ask one to Isogeo!
