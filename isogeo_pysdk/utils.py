@@ -319,8 +319,8 @@ class IsogeoUtils(object):
         accepted_extensions = (".ini", ".json")
         # checks
         if not path.isfile(in_credentials):
-            raise FileNotFoundError("Credentials file doesn't exist: {}"
-                                    .format(in_credentials))
+            raise IOError("Credentials file doesn't exist: {}"
+                          .format(in_credentials))
         else:
             in_credentials = path.normpath(in_credentials)
         if path.splitext(in_credentials)[1] not in accepted_extensions:
