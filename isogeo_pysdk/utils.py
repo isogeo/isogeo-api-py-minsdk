@@ -26,16 +26,15 @@ from six import string_types
 
 # modules
 try:
-    from . import checker, translator
+    from . import checker
 except (ImportError, ValueError, SystemError):
-    import checker, translator
+    import checker
 
 # ##############################################################################
 # ########## Globals ###############
 # ##################################
 
 checker = checker.IsogeoChecker()
-tr = translator.IsogeoTranslator()
 
 # ##############################################################################
 # ########## Classes ###############
