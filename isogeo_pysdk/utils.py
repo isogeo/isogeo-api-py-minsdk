@@ -301,12 +301,15 @@ class IsogeoUtils(object):
                          "licenses": {},
                          "owners": {},
                          "providers": {},
+                         "shares": {},
                          "srs": {},
                          "types": {},
                          }
 
         # parsing tags and storing each one in a dict
+        i = 0
         for k, v in sorted(tags.items()):
+            i += 1
             if k.startswith("action"):
                 tags_as_dicts.get("actions")[v] = k
                 continue
@@ -314,7 +317,11 @@ class IsogeoUtils(object):
                 tags_as_dicts.get("catalogs")[v] = k
                 continue
             elif k.startswith("contact"):
-                tags_as_dicts.get("contacts")[v] = k
+                if v not in tags_as_dicts.get("contacts"):
+                    tags_as_dicts.get("contacts")[v] = k
+                else:
+                    logging.warning("Duplicated contact name: {}.".format(v))
+                    tags_as_dicts.get("contacts")[v] += "|" + k
                 continue
             elif k.startswith("coordinate-system"):
                 tags_as_dicts.get("srs")[v] = k
@@ -332,7 +339,11 @@ class IsogeoUtils(object):
                 tags_as_dicts.get("keywords")[v] = k
                 continue
             elif k.startswith("license"):
-                tags_as_dicts.get("licenses")[v] = k
+                if v not in tags_as_dicts.get("licenses"):
+                    tags_as_dicts.get("licenses")[v] = k
+                else:
+                    logging.warning("Duplicated contact name: {}.".format(v))
+                    tags_as_dicts.get("licenses")[v] += "|" + k
                 continue
             elif k.startswith("owner"):
                 tags_as_dicts.get("owners")[v] = k
@@ -341,7 +352,7 @@ class IsogeoUtils(object):
                 tags_as_dicts.get("providers")[v] = k
                 continue
             elif k.startswith("share"):
-                tags_as_dicts.get("srs")[v] = k
+                tags_as_dicts.get("shares")[v] = k
                 continue
             elif k.startswith("type"):
                 tags_as_dicts.get("types")[v] = k
@@ -350,6 +361,7 @@ class IsogeoUtils(object):
             else:
                 logging.warning("Tags have been ignored during parsing: {}"
                                 .format(k))
+        print(len(tags), i)
 
         # return the output
         return tags_as_dicts
@@ -463,5 +475,10 @@ if __name__ == '__main__':
     in_search = path.normpath(r"samples/out_api_search_basic.json")
     with open(in_search, "r") as f:
         search = json.loads(f.read())
-    h = utils.tags_to_dict(search.get("tags"))
-    print(h.get("contacts"))
+    tags = search.get("tags")
+    cts = [i for i in tags if i.startswith("contact")]
+    t = utils.tags_to_dict(tags)
+    print(len(cts))
+    print(len(t.get("contacts")))
+    print(t.get("contacts").keys(), sep="\n")
+    print(t.get("contacts").get("BRGM"))

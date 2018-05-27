@@ -332,9 +332,10 @@ class TestSearch(unittest.TestCase):
                                     whole_share=0, check=0,
                                     tags_as_dicts=0)
         tags_normal =  search.get("tags")
-        # atgs as dicts
+        # tags as dicts
         search = self.isogeo.search(self.bearer, page_size=0,
-                                    whole_share=0, tags_as_dicts=1)
+                                    whole_share=0, augment=1,
+                                    tags_as_dicts=1)
         tags_dicts = search.get("tags")
         self.assertIn("actions", tags_dicts)
         self.assertIn("catalogs", tags_dicts)
@@ -357,9 +358,46 @@ class TestSearch(unittest.TestCase):
                 self.assertIn(v, tags_dicts.get("actions"))
                 self.assertEqual(k, tags_dicts.get("actions").get(v))
                 continue
-            # elif k.startswith("catalog"):
-            #     tags_as_dicts.get("catalogs")[v] = k
-            #     continue
+            elif k.startswith("coordinate-system"):
+                self.assertIn(v, tags_dicts.get("srs"))
+                self.assertEqual(k, tags_dicts.get("srs").get(v))
+                continue
+            elif k.startswith("data-source"):
+                self.assertIn(v, tags_dicts.get("data-source"))
+                self.assertEqual(k, tags_dicts.get("data-source").get(v))
+                continue
+            elif k.startswith("format"):
+                self.assertIn(v, tags_dicts.get("formats"))
+                self.assertEqual(k, tags_dicts.get("formats").get(v))
+                continue
+            elif k.startswith("keyword:in"):
+                self.assertIn(v, tags_dicts.get("inspires"))
+                self.assertEqual(k, tags_dicts.get("inspires").get(v))
+                continue
+            elif k.startswith("keyword:is"):
+                self.assertIn(v, tags_dicts.get("keywords"))
+                self.assertEqual(k, tags_dicts.get("keywords").get(v))
+                continue
+            elif k.startswith("license"):
+                self.assertIn(v, tags_dicts.get("licenses"))
+                self.assertEqual(k, tags_dicts.get("licenses").get(v))
+                continue
+            elif k.startswith("owner"):
+                self.assertIn(v, tags_dicts.get("owners"))
+                self.assertEqual(k, tags_dicts.get("owners").get(v))
+                continue
+            elif k.startswith("provider"):
+                self.assertIn(v, tags_dicts.get("providers"))
+                self.assertEqual(k, tags_dicts.get("providers").get(v))
+                continue
+            elif k.startswith("share"):
+                self.assertIn(v, tags_dicts.get("shares"))
+                self.assertEqual(k, tags_dicts.get("shares").get(v))
+                continue
+            elif k.startswith("type"):
+                self.assertIn(v, tags_dicts.get("types"))
+                self.assertEqual(k, tags_dicts.get("types").get(v))
+                continue
             else:
                 pass
 
