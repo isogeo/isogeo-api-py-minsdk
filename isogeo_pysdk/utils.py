@@ -472,13 +472,3 @@ class IsogeoUtils(object):
 if __name__ == '__main__':
     """Standalone execution."""
     utils = IsogeoUtils()
-    in_search = path.normpath(r"samples/out_api_search_basic.json")
-    with open(in_search, "r") as f:
-        search = json.loads(f.read())
-    tags = search.get("tags")
-    cts = [i for i in tags if i.startswith("contact")]
-    t = utils.tags_to_dict(tags)
-    print(len(cts))
-    print(len(t.get("contacts")))
-    print(t.get("contacts").keys(), sep="\n")
-    print(t.get("contacts").get("BRGM"))
