@@ -325,6 +325,24 @@ class TestSearch(unittest.TestCase):
         search = self.isogeo.search(self.bearer, page_size=0,
                                     whole_share=0, augment=1)
 
+    def test_search_tags_dictionarized(self):
+        """Search tags stored into key/values structures."""
+        search = self.isogeo.search(self.bearer, page_size=0,
+                                    whole_share=0, tags_as_dicts=1)
+        tags = search.get("tags")
+        self.assertIn("actions", tags)
+        self.assertIn("catalogs", tags)
+        self.assertIn("contacts", tags)
+        self.assertIn("data-sources", tags)
+        self.assertIn("formats", tags)
+        self.assertIn("inspires", tags)
+        self.assertIn("keywords", tags)
+        self.assertIn("licenses", tags)
+        self.assertIn("owners", tags)
+        self.assertIn("providers", tags)
+        self.assertIn("srs", tags)
+        self.assertIn("types", tags), tags
+
     def test_app_properties(self):
         """Test if application properties are well added."""
         self.assertFalse(hasattr(self.isogeo, "app_properties"))

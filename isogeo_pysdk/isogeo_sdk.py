@@ -108,7 +108,7 @@ class Isogeo(object):
             raise ValueError("Mode value must be one of: "
                              .format(" | ".join(self.AUTH_MODES)))
         else:
-            pass
+            self.auth_mode = auth_mode
 
         # platform to request
         self.platform, self.api_url, self.app_url, self.csw_url,\
@@ -116,9 +116,9 @@ class Isogeo(object):
 
         # setting language
         if lang.lower() not in ("fr", "en"):
-            logging.info("Isogeo API is only available in English ('en', "
-                         "default) or French ('fr'). "
-                         "Language has been set on English.")
+            logging.warning("Isogeo API is only available in English ('en', "
+                            "default) or French ('fr'). "
+                            "Language has been set on English.")
             self.lang = "en"
         else:
             self.lang = lang.lower()
@@ -228,7 +228,8 @@ class Isogeo(object):
                whole_share=True,
                check=True,
                augment=False,
-               prot="https"):
+               tags_as_dicts=False,
+               prot="https") -> dict:
         """Search within the resources shared to the application.
 
         It's the main method to use.
@@ -283,10 +284,11 @@ class Isogeo(object):
          Must be a list of strings. Available values: *isogeo.SUBRESOURCES*
         :param str whole_share: option to return all results or only the
          page size. *True* by DEFAULT.
-        :param str check: option to check query parameters and avoid erros.
+        :param bool check: option to check query parameters and avoid erros.
          *True* by DEFAULT.
-        :param str augment: option to improve API response by adding
-         some tags on the fly.
+        :param bool augment: option to improve API response by adding
+         some tags on the fly (like shares_id)
+        :param bool tags_as_dicts: option to store tags as key/values by filter.
         :param str prot: https [DEFAULT] or http
          (use it only for dev and tracking needs).
         """
@@ -363,12 +365,16 @@ class Isogeo(object):
         else:
             pass
 
-        # augment option
+        # add shares to tags
         if augment:
             self.add_tags_shares(token, search_rez.get("tags"))
-            logging.debug("Results tags augmented")
         else:
-            logging.debug("No augmentation")
+            pass
+        # store tags in dicts
+        if tags_as_dicts:
+            search_rez.get("tags").clear()
+            search_rez.get("tags").update(utils.tags_to_dict(search_rez.get("tags")))
+        else:
             pass
         # end of method
         return search_rez
@@ -409,7 +415,6 @@ class Isogeo(object):
                          self.api_url,
                          id_resource,
                          subresource)
-        print(md_url)
         resource_req = requests.get(md_url,
                                     headers=head,
                                     params=payload,
@@ -814,11 +819,11 @@ class Isogeo(object):
 
     # -- UTILITIES -----------------------------------------------------------
 
-    def add_tags_shares(self, token, results_tags=dict()):
+    def add_tags_shares(self, token, tags=dict()):
         """Add shares list to the tags attributes in search results.
 
         :param str token: API auth token
-        :param dict results_tags: results dict from a request
+        :param dict tags: tags dictionary from a search request
         """
         # checking bearer validity
         token = checker.check_bearer_validity(token, self.connect(self.app_id,
@@ -831,7 +836,7 @@ class Isogeo(object):
         else:
             pass
         # update query tags
-        results_tags.update(self.shares_id)
+        tags.update(self.shares_id)
 
     def get_app_properties(self, token, prot="https"):
         """Get information about the application declared on Isogeo.
@@ -1051,6 +1056,7 @@ if __name__ == '__main__':
             print("AH")
             continue
 
+    print(search.get("tags").keys())
         # print(share.get("oc_url"),
         #       share.get("mds_ids"),
         #       dir(share.get("mds_ids")))

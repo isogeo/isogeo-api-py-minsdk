@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
 #!/usr/bin/env python
-from __future__ import (absolute_import, unicode_literals)
 # ----------------------------------------------------------------------------
 
 """
@@ -14,6 +13,7 @@ from __future__ import (absolute_import, unicode_literals)
 # ##################################
 
 # Standard library
+from __future__ import (absolute_import, unicode_literals)
 from configparser import SafeConfigParser
 import logging
 import json
@@ -26,15 +26,16 @@ from six import string_types
 
 # modules
 try:
-    from . import checker
+    from . import checker, translator
 except (ImportError, ValueError, SystemError):
-    import checker
+    import checker, translator
 
 # ##############################################################################
 # ########## Globals ###############
 # ##################################
 
 checker = checker.IsogeoChecker()
+tr = translator.IsogeoTranslator()
 
 # ##############################################################################
 # ########## Classes ###############
@@ -283,6 +284,77 @@ class IsogeoUtils(object):
         self.WEBAPPS[webapp_name] = {"args": webapp_args,
                                      "url": webapp_url}
 
+    # -- SEARCH  --------------------------------------------------------------
+    def tags_to_dict(self, tags=dict):
+        """Reverse search tags dictionary to values as keys.
+        Useful to populate filters combobex for example.
+
+        :param dict tags: tags dictionary from a search request
+        """
+        # tags dicts
+        tags_as_dicts = {"actions": {},
+                         "catalogs": {},
+                         "contacts": {},
+                         "data-sources": {},
+                         "formats": {},
+                         "inspires": {},
+                         "keywords": {},
+                         "licenses": {},
+                         "owners": {},
+                         "providers": {},
+                         "srs": {},
+                         "types": {},
+                         }
+
+        # parsing tags and storing each one in a dict
+        for k, v in sorted(tags.items()):
+            if k.startswith("action"):
+                tags_as_dicts.get("actions")[v] = k
+                continue
+            elif k.startswith("catalog"):
+                tags_as_dicts.get("catalogs")[v] = k
+                continue
+            elif k.startswith("contact"):
+                tags_as_dicts.get("contacts")[v] = k
+                continue
+            elif k.startswith("coordinate-system"):
+                tags_as_dicts.get("srs")[v] = k
+                continue
+            elif k.startswith("data-source"):
+                tags_as_dicts.get("data-sources")[v] = k
+                continue
+            elif k.startswith("format"):
+                tags_as_dicts.get("formats")[v] = k
+                continue
+            elif k.startswith("keyword:in"):
+                tags_as_dicts.get("inspires")[v] = k
+                continue
+            elif k.startswith("keyword:is"):
+                tags_as_dicts.get("keywords")[v] = k
+                continue
+            elif k.startswith("license"):
+                tags_as_dicts.get("licenses")[v] = k
+                continue
+            elif k.startswith("owner"):
+                tags_as_dicts.get("owners")[v] = k
+                continue
+            elif k.startswith("provider"):
+                tags_as_dicts.get("providers")[v] = k
+                continue
+            elif k.startswith("share"):
+                tags_as_dicts.get("srs")[v] = k
+                continue
+            elif k.startswith("type"):
+                tags_as_dicts.get("types")[v] = k
+                continue
+            # ignored tags
+            else:
+                logging.warning("Tags have been ignored during parsing: {}"
+                                .format(k))
+
+        # return the output
+        return tags_as_dicts
+
     # -- SHARES MANAGEMENT ----------------------------------------------------
     def share_extender(self, share, results_filtered):
         """Extend share model with additional informations.
@@ -389,3 +461,8 @@ class IsogeoUtils(object):
 if __name__ == '__main__':
     """Standalone execution."""
     utils = IsogeoUtils()
+    in_search = path.normpath(r"samples/out_api_search_basic.json")
+    with open(in_search, "r") as f:
+        search = json.loads(f.read())
+    h = utils.tags_to_dict(search.get("tags"))
+    print(h.get("contacts"))
