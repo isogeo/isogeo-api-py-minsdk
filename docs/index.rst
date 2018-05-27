@@ -36,6 +36,13 @@ Package modules
     _apidoc/modules
 
 
+API coverage and features
++++++++++++++++++++++++++
+
+.. toctree::
+    api_coverage_features
+
+
 Cookbook
 ++++++++
 
