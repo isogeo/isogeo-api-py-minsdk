@@ -21,7 +21,8 @@ Get application properties as attributes
     isogeo.get_app_properties(token)
 
 	# accessing properties
-	print(isogeo.app_properties)
+    print(isogeo.app_properties)
+
 
 Add shares tags to search response and as attributes
 ----------------------------------------------------

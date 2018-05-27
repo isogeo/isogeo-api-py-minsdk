@@ -47,11 +47,13 @@ dict_md_fields_fr = {
             "usage": "Usage"
             },
         "formatTypes": {
+            "dataset": "Jeux de données",
             "vectorDataset": "Vecteur",
             "vector-dataset": "Vecteur",
             "rasterDataset": "Raster",
             "raster-dataset": "Raster",
             "resource": "Ressources",
+            "series": "Ensemble de données",
             "service": "Service géographique"
             },
         "roles": {
@@ -133,6 +135,7 @@ dict_md_fields_en = {
             "usage": "Usage"
             },
         "formatTypes": {
+            "dataset": "Dataset",
             "vectorDataset": "Vector",
             "vector-dataset": "Vector",
             "rasterDataset": "Raster",
