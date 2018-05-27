@@ -372,8 +372,9 @@ class Isogeo(object):
             pass
         # store tags in dicts
         if tags_as_dicts:
+            new_tags = utils.tags_to_dict(tags=search_rez.get("tags"))
             search_rez.get("tags").clear()
-            search_rez.get("tags").update(utils.tags_to_dict(search_rez.get("tags")))
+            search_rez.get("tags").update(new_tags)
         else:
             pass
         # end of method

@@ -327,21 +327,41 @@ class TestSearch(unittest.TestCase):
 
     def test_search_tags_dictionarized(self):
         """Search tags stored into key/values structures."""
+        # normal
+        search = self.isogeo.search(self.bearer, page_size=0,
+                                    whole_share=0, check=0,
+                                    tags_as_dicts=0)
+        tags_normal =  search.get("tags")
+        # atgs as dicts
         search = self.isogeo.search(self.bearer, page_size=0,
                                     whole_share=0, tags_as_dicts=1)
-        tags = search.get("tags")
-        self.assertIn("actions", tags)
-        self.assertIn("catalogs", tags)
-        self.assertIn("contacts", tags)
-        self.assertIn("data-sources", tags)
-        self.assertIn("formats", tags)
-        self.assertIn("inspires", tags)
-        self.assertIn("keywords", tags)
-        self.assertIn("licenses", tags)
-        self.assertIn("owners", tags)
-        self.assertIn("providers", tags)
-        self.assertIn("srs", tags)
-        self.assertIn("types", tags), tags
+        tags_dicts = search.get("tags")
+        self.assertIn("actions", tags_dicts)
+        self.assertIn("catalogs", tags_dicts)
+        self.assertIn("contacts", tags_dicts)
+        self.assertIn("data-sources", tags_dicts)
+        self.assertIn("formats", tags_dicts)
+        self.assertIn("inspires", tags_dicts)
+        self.assertIn("keywords", tags_dicts)
+        self.assertIn("licenses", tags_dicts)
+        self.assertIn("owners", tags_dicts)
+        self.assertIn("providers", tags_dicts)
+        self.assertIn("srs", tags_dicts)
+        self.assertIn("types", tags_dicts)
+        # every key is a dict
+        for i in tags_dicts:
+            self.assertIsInstance(tags_dicts.get(i), dict)
+        # compare with normal tags
+        for k, v in sorted(tags_normal.items()):
+            if k.startswith("action"):
+                self.assertIn(v, tags_dicts.get("actions"))
+                self.assertEqual(k, tags_dicts.get("actions").get(v))
+                continue
+            # elif k.startswith("catalog"):
+            #     tags_as_dicts.get("catalogs")[v] = k
+            #     continue
+            else:
+                pass
 
     def test_app_properties(self):
         """Test if application properties are well added."""
