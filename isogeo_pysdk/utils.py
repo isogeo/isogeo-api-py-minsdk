@@ -102,10 +102,11 @@ class IsogeoUtils(object):
     def set_base_url(self, platform="prod"):
         """Set Isogeo base URLs according to platform.
 
-        :param str platform: platform to use. Available values:
-           * prod [DEFAULT]
-           * qa
-           * int
+        :param str platform: platform to use. Options:
+        
+          * prod [DEFAULT]
+          * qa
+          * int
 
         """
         platform = platform.lower()
@@ -134,7 +135,8 @@ class IsogeoUtils(object):
         """Convert a metadata UUID to its URI equivalent. And conversely.
 
         :param str in_uuid: UUID or URI to convert
-        :param int mode: options:
+        :param int mode: conversion direction. Options:
+
           * 0 to HEX
           * 1 to URN (RFC4122)
           * 2 to URN (Isogeo specific style)
@@ -173,7 +175,8 @@ class IsogeoUtils(object):
     def get_isogeo_version(self, component="api", prot="https"):
         """Get Isogeo components versions. Authentication not required.
 
-        :param str component: options:
+        :param str component: which platform component. Options:
+
           * api [default]
           * db
           * app
