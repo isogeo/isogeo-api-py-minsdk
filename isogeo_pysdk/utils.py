@@ -220,7 +220,6 @@ class IsogeoUtils(object):
         :param str md_id: metadata/resource UUID
         :param str owner_id: owner UUID
         :param str tab: target tab in the web form
-
         """
         # checks inputs
         if not checker.check_is_uuid(md_id)\
@@ -287,12 +286,46 @@ class IsogeoUtils(object):
                                      "url": webapp_url}
 
     # -- SEARCH  --------------------------------------------------------------
-    def tags_to_dict(self, tags=dict):
+    def tags_to_dict(self, tags=dict, duplicated="ignore"):
         """Reverse search tags dictionary to values as keys.
-        Useful to populate filters combobex for example.
+        Useful to populate filters comboboxes for example.
 
         :param dict tags: tags dictionary from a search request
+        :param str duplicated: what to do about duplicated tags label. Values:
+
+          * ignore [default] - last tag parsed survives
+          * merge - add duplicated in value as separated list (sep = '||')
+          * rename - if duplicated tag labels are part of different workgroup,
+            so the tag label is renamed with workgroup.
         """
+        # for rename option, get workgroups
+        if duplicated == "rename":
+            wgs = {k.split(":")[1]: v for k, v in tags.items() if k.startswith("owner")}
+            # wgs = list(filter(lambda x[1]: x[0].startswith("owner"), tags.items()))
+        elif duplicated == "ignore" or duplicated == "merge":
+            wgs = None
+        else:
+            raise ValueError("Duplicated value is not an accepted value."
+                             " Please refer to __doc__ method.")
+        # inner function
+        def _duplicate_mng(target_dict, duplicate, mode=duplicated, workgroups=wgs):
+            if mode == "merge":
+                target_dict[duplicate[0]] += "||" + duplicate[1]
+            elif mode == "rename":
+                # get workgroup uuid
+                if checker.check_is_uuid(k.split(":")[1]):
+                    k_uuid = k.split(":")[1]
+                else:
+                    k_uuid = k.split(":")[2]
+                # match with workgroups owners
+                if k_uuid in workgroups:
+                    repl = workgroups.get(k_uuid)
+                else:
+                    repl = k_uuid[:5]
+                target_dict["{} ({})".format(duplicate[0], repl)] = duplicate[1]
+            else:
+                pass
+            return
         # tags dicts
         tags_as_dicts = {"actions": {},
                          "catalogs": {},
@@ -310,27 +343,36 @@ class IsogeoUtils(object):
                          }
 
         # parsing tags and storing each one in a dict
-        i = 0
         for k, v in sorted(tags.items()):
-            i += 1
             if k.startswith("action"):
                 tags_as_dicts.get("actions")[v] = k
                 continue
             elif k.startswith("catalog"):
-                tags_as_dicts.get("catalogs")[v] = k
+                if v in tags_as_dicts.get("catalogs") and duplicated != "ignore":
+                    _duplicate_mng(tags_as_dicts.get("catalogs"), (v, k))
+                else:
+                    logging.info("Duplicated catalog name: {}. Last catalog is retained."
+                                 .format(v))
+                    tags_as_dicts.get("catalogs")[v] = k
                 continue
             elif k.startswith("contact"):
-                if v not in tags_as_dicts.get("contacts"):
-                    tags_as_dicts.get("contacts")[v] = k
+                if v in tags_as_dicts.get("contacts") and duplicated != "ignore":
+                    _duplicate_mng(tags_as_dicts.get("contacts"), (v, k))
                 else:
-                    logging.warning("Duplicated contact name: {}.".format(v))
-                    tags_as_dicts.get("contacts")[v] += "|" + k
+                    logging.info("Duplicated contact name: {}. Last contact is retained."
+                                 .format(v))
+                    tags_as_dicts.get("contacts")[v] = k
                 continue
             elif k.startswith("coordinate-system"):
                 tags_as_dicts.get("srs")[v] = k
                 continue
             elif k.startswith("data-source"):
-                tags_as_dicts.get("data-sources")[v] = k
+                if v in tags_as_dicts.get("data-sources") and duplicated != "ignore":
+                    _duplicate_mng(tags_as_dicts.get("data-sources"), (v, k))
+                else:
+                    logging.info("Duplicated data-source name: {}. Last data-source is retained."
+                                 .format(v))
+                    tags_as_dicts.get("data-sources")[v] = k
                 continue
             elif k.startswith("format"):
                 tags_as_dicts.get("formats")[v] = k
@@ -342,11 +384,12 @@ class IsogeoUtils(object):
                 tags_as_dicts.get("keywords")[v] = k
                 continue
             elif k.startswith("license"):
-                if v not in tags_as_dicts.get("licenses"):
-                    tags_as_dicts.get("licenses")[v] = k
+                if v in tags_as_dicts.get("licenses") and duplicated != "ignore":
+                    _duplicate_mng(tags_as_dicts.get("licenses"), (v, k))
                 else:
-                    logging.warning("Duplicated contact name: {}.".format(v))
-                    tags_as_dicts.get("licenses")[v] += "|" + k
+                    logging.info("Duplicated license name: {}. Last license is retained."
+                                 .format(v))
+                    tags_as_dicts.get("licenses")[v] = k
                 continue
             elif k.startswith("owner"):
                 tags_as_dicts.get("owners")[v] = k
@@ -362,9 +405,8 @@ class IsogeoUtils(object):
                 continue
             # ignored tags
             else:
-                logging.warning("Tags have been ignored during parsing: {}"
-                                .format(k))
-        print(len(tags), i)
+                logging.debug("A tag has been ignored during parsing: {}"
+                              .format(k))
 
         # return the output
         return tags_as_dicts

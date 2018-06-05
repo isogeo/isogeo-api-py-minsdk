@@ -15,6 +15,7 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # ##################################
 
 # Standard library
+import json
 import logging
 from os import environ, path
 from six import string_types as str
@@ -51,15 +52,19 @@ class TestIsogeoUtils(unittest.TestCase):
     def setUp(self):
         """ Fixtures prepared before each test."""
         self.utils = IsogeoUtils()
+        # uuid
         self.uuid_hex = "0269803d50c446b09f5060ef7fe3e22b"
         self.uuid_urn4122 = "urn:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
         self.uuid_urnIsogeo = "urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
+        # credentials
         self.credentials_group_json = path.normpath(r"tests/fixtures/client_secrets_group.json")
         self.credentials_user_json = path.normpath(r"tests/fixtures/client_secrets_user.json")
         self.credentials_user_bad_json = path.normpath(r"tests/fixtures/client_secrets_user_bad.json")
         self.credentials_ini = path.normpath(r"tests/fixtures/client_secrets.ini")
         self.credentials_ini_bad = path.normpath(r"tests/fixtures/client_secrets_bad.ini")
         self.credentials_group_txt = path.normpath(r"tests/fixtures/client_secrets_group.txt")
+        # API response samples
+        self.tags_sample = path.normpath(r"tests/fixtures/api_response_tests_tags.json")
 
     def tearDown(self):
         """Executed after each test."""
@@ -423,3 +428,20 @@ class TestIsogeoUtils(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.utils.credentials_loader(
                 in_credentials=self.credentials_ini_bad)
+
+    # -- Tags utils --------
+    def test_tags_dictionarization(self):
+        """Tags dictionazition bullet-proof."""
+        with open(self.tags_sample, "r") as f:
+            search = json.loads(f.read())
+        self.utils.tags_to_dict(search.get("tags"))
+        self.utils.tags_to_dict(search.get("tags"), duplicated="merge")
+        self.utils.tags_to_dict(search.get("tags"), duplicated="rename")
+
+    def test_tags_dictionarization_bad(self):
+        """Tags dictionazition bullet-proof."""
+        with open(self.tags_sample, "r") as f:
+            search = json.loads(f.read())
+        with self.assertRaises(ValueError):
+            self.utils.tags_to_dict(search.get("tags"),
+                                    duplicated="renam")
