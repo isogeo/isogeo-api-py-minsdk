@@ -37,11 +37,11 @@ setup(
     version=isogeo_pysdk.__version__,
     author="Isogeo",
     author_email="support@isogeo.com",
-    description="Abstraction class to use Isogeo REST API",
+    description="Python package to make it easy to use Isogeo REST API",
     long_description=long_description,
     long_description_content_type='text/x-rst',
     keywords="GIS metadata INSPIRE Isogeo API REST geographical data ISO19139",
-    license='GPL3',
+    license='LGPL3',
     url="https://github.com/isogeo/isogeo-api-py-minsdk",
     project_urls={
         'Docs': "http://isogeo-api-pysdk.rtfd.io/",
