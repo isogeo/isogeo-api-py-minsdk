@@ -13,7 +13,12 @@ python -m pip install -U pip
 pip install --upgrade setuptools wheel
 pip install --upgrade -r .\tests\requirements_test.txt
 
-"-- STEP -- Run unit tests"
+"-- STEP -- Python code style"
+pycodestyle isogeo_pysdk/isogeo_sdk.py --ignore="E265,E501" --statistics --show-source
+pycodestyle isogeo_pysdk/checker.py --ignore="E265,E501" --statistics --show-source
+pycodestyle isogeo_pysdk/utils.py --ignore="E265,E501" --statistics --show-source
+
+# "-- STEP -- Run unit tests"
 # python -m unittest discover
 
 "-- STEP -- Run coverage"

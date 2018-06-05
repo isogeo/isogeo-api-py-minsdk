@@ -103,11 +103,10 @@ class IsogeoUtils(object):
         """Set Isogeo base URLs according to platform.
 
         :param str platform: platform to use. Options:
-        
+
           * prod [DEFAULT]
           * qa
           * int
-
         """
         platform = platform.lower()
         self.platform = platform
@@ -307,6 +306,7 @@ class IsogeoUtils(object):
         else:
             raise ValueError("Duplicated value is not an accepted value."
                              " Please refer to __doc__ method.")
+
         # inner function
         def _duplicate_mng(target_dict, duplicate, mode=duplicated, workgroups=wgs):
             if mode == "merge":
