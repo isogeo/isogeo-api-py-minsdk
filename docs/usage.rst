@@ -81,7 +81,7 @@ The module isogeo_pysdk.utils comes with a method to load automatically credenti
 
     # authenticate your client application
     isogeo = Isogeo(client_id=api_credentials.get("client_id"),
-                    client_secret=app_secret.get("client_secret")
+                    client_secret=api_credentials.get("client_secret")
                     )
 
     # get the token
