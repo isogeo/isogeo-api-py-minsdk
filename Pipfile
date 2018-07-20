@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[dev-packages]
+"autopep8" = "*"
+codecov = "*"
+coverage = "*"
+requests = "==2.*"
+configparser = "*"
+future = "*"
+six = "*"
+pycodestyle = "*"
+python-dateutil = "*"
+
+[packages]
+requests = "==2.*"
+six = "*"
+configparser = "*"
+future = "*"
+
+[requires]
+python_version = "3.6"
