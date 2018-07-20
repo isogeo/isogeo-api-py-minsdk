@@ -363,12 +363,15 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertIn("client_id", creds_json_user)
         self.assertIn("client_secret", creds_json_user)
         self.assertIn("uri_auth", creds_json_user)
+        self.assertIn("uri_base", creds_json_user)
         self.assertIn("uri_token", creds_json_user)
         self.assertIn("uri_redirect", creds_json_user)
         # values
         self.assertEqual(creds_json_user.get("auth_mode"), "user")
         self.assertEqual(creds_json_user.get("uri_auth"),
                          "https://id.api.isogeo.com/oauth/authorize")
+        self.assertEqual(creds_json_user.get("uri_base"),
+                         "https://api.isogeo.com")
         self.assertEqual(creds_json_user.get("uri_token"),
                          "https://id.api.isogeo.com/oauth/token")
         self.assertIsInstance(creds_json_user.get("uri_redirect"), list)
@@ -382,6 +385,7 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertIn("client_id", creds_json_group)
         self.assertIn("client_secret", creds_json_group)
         self.assertIn("uri_auth", creds_json_group)
+        self.assertIn("uri_base", creds_json_group)
         self.assertIn("uri_token", creds_json_group)
         self.assertIn("uri_redirect", creds_json_group)
         # values
@@ -390,6 +394,8 @@ class TestIsogeoUtils(unittest.TestCase):
                          "https://id.api.isogeo.com/oauth/authorize")
         self.assertEqual(creds_json_group.get("uri_token"),
                          "https://id.api.isogeo.com/oauth/token")
+        self.assertEqual(creds_json_group.get("uri_base"),
+                         "https://api.isogeo.com")
         self.assertIsNone(creds_json_group.get("uri_redirect"))
 
     def test_credentials_loader_ini(self):
@@ -402,12 +408,15 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertIn("client_id", creds_ini)
         self.assertIn("client_secret", creds_ini)
         self.assertIn("uri_auth", creds_ini)
+        self.assertIn("uri_base", creds_ini)
         self.assertIn("uri_token", creds_ini)
         self.assertIn("uri_redirect", creds_ini)
         # values
         self.assertEqual(creds_ini.get("auth_mode"), "group")
         self.assertEqual(creds_ini.get("uri_auth"),
                          "https://id.api.isogeo.com/oauth/authorize")
+        self.assertEqual(creds_ini.get("uri_base"),
+                         "https://api.isogeo.com")
         self.assertEqual(creds_ini.get("uri_token"),
                          "https://id.api.isogeo.com/oauth/token")
 

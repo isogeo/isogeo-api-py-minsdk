@@ -20,6 +20,12 @@ import json
 from os import path
 import uuid
 
+# handling both Python branches
+try:
+    from urllib.parse import urlparse
+except ImportError:
+    from urlparse import urlparse
+
 # 3rd party
 import requests
 from six import string_types
@@ -284,6 +290,17 @@ class IsogeoUtils(object):
         self.WEBAPPS[webapp_name] = {"args": webapp_args,
                                      "url": webapp_url}
 
+    def get_url_base_from_url_token(self, url_api_token="https://id.api.isogeo.com/oauth/token"):
+        """Returns the Isogeo API root URL (which is not included into
+        credentials file) from the token URL (which is always included).
+
+        :param url_api_token str: url to Isogeo API ID token generator
+        """
+        in_parsed = urlparse(url_api_token)
+        api_url_base = in_parsed._replace(path="",
+                                          netloc=in_parsed.netloc.replace("id.", ""))
+        return api_url_base.geturl()
+
     # -- SEARCH  --------------------------------------------------------------
     def tags_to_dict(self, tags=dict, duplicated="ignore"):
         """Reverse search tags dictionary to values as keys.
@@ -475,6 +492,7 @@ class IsogeoUtils(object):
                     "client_secret": auth_settings.get("client_secret"),
                     "uri_auth": auth_settings.get("auth_uri"),
                     "uri_token": auth_settings.get("token_uri"),
+                    "uri_base": self.get_url_base_from_url_token(auth_settings.get("token_uri")),
                     "uri_redirect": None,
                 }
             else:
@@ -486,6 +504,7 @@ class IsogeoUtils(object):
                     "client_secret": auth_settings.get("client_secret"),
                     "uri_auth": auth_settings.get("auth_uri"),
                     "uri_token": auth_settings.get("token_uri"),
+                    "uri_base": self.get_url_base_from_url_token(auth_settings.get("token_uri")),
                     "uri_redirect": auth_settings.get("redirect_uris"),
                 }
         else:
@@ -494,24 +513,25 @@ class IsogeoUtils(object):
             ini_parser.read(in_credentials)
             # check structure
             if 'auth' in ini_parser._sections:
-                in_auth = ini_parser['auth']
+                auth_settings = ini_parser['auth']
             else:
                 raise ValueError("Input INI structure is not as expected."
                                  " Section of credentials must be named: auth")
             # set
             out_auth = {
-                "auth_mode": in_auth.get("CLIENT_TYPE"),
-                "client_id": in_auth.get("CLIENT_ID"),
-                "client_secret": in_auth.get("CLIENT_SECRET"),
-                "uri_auth": in_auth.get("URI_AUTH"),
-                "uri_token": in_auth.get("URI_TOKEN"),
-                "uri_redirect": in_auth.get("URI_REDIRECT"),
+                "auth_mode": auth_settings.get("CLIENT_TYPE"),
+                "client_id": auth_settings.get("CLIENT_ID"),
+                "client_secret": auth_settings.get("CLIENT_SECRET"),
+                "uri_auth": auth_settings.get("URI_AUTH"),
+                "uri_token": auth_settings.get("URI_TOKEN"),
+                "uri_base": self.get_url_base_from_url_token(auth_settings.get("URI_TOKEN")),
+                "uri_redirect": auth_settings.get("URI_REDIRECT"),
             }
         # method ending
         return out_auth
 
 
-# ##############################################################################
+# #############################################################################
 # ##### Stand alone program ########
 # ##################################
 if __name__ == '__main__':
