@@ -2,6 +2,14 @@
 #!/usr/bin/env python
 from __future__ import (absolute_import, print_function, unicode_literals)
 
+"""
+    Usage from the repo root folder:
+    
+    ```python
+    python -m unittest tests.test_export_XML19139
+    ```
+"""
+
 # #############################################################################
 # ########## Libraries #############
 # ##################################
@@ -58,6 +66,7 @@ class TestExportXML19139(unittest.TestCase):
                                     page_size=1)
         # get the metadata
         md_id = search.get("results")[0].get("_id")
+        md_type = search.get("results")[0].get("type")
 
         # download the XML version
         xml_stream = self.isogeo.xml19139(self.bearer,
@@ -72,7 +81,6 @@ class TestExportXML19139(unittest.TestCase):
         # read XML
         tree = ET.parse(tmp_output[1] + ".xml")
         root = tree.getroot()
-
         # check XML structure
         self.assertEqual(root.tag, "{http://www.isotc211.org/2005/gmd}MD_Metadata")
         self.assertEqual(root[0].tag, "{http://www.isotc211.org/2005/gmd}fileIdentifier")
@@ -83,11 +91,20 @@ class TestExportXML19139(unittest.TestCase):
         self.assertEqual(root[5].tag, "{http://www.isotc211.org/2005/gmd}dateStamp")
         self.assertEqual(root[6].tag, "{http://www.isotc211.org/2005/gmd}metadataStandardName")
         self.assertEqual(root[7].tag, "{http://www.isotc211.org/2005/gmd}metadataStandardVersion")
-        self.assertEqual(root[8].tag, "{http://www.isotc211.org/2005/gmd}spatialRepresentationInfo")
-        self.assertEqual(root[9].tag, "{http://www.isotc211.org/2005/gmd}referenceSystemInfo")
-        self.assertEqual(root[10].tag, "{http://www.isotc211.org/2005/gmd}identificationInfo")
-        self.assertEqual(root[11].tag, "{http://www.isotc211.org/2005/gmd}distributionInfo")
-        self.assertEqual(root[12].tag, "{http://www.isotc211.org/2005/gmd}dataQualityInfo")
+        if md_type == "vectorDataset":
+            self.assertEqual(root[8].tag, "{http://www.isotc211.org/2005/gmd}spatialRepresentationInfo")
+            self.assertEqual(root[9].tag, "{http://www.isotc211.org/2005/gmd}referenceSystemInfo")
+            self.assertEqual(root[10].tag, "{http://www.isotc211.org/2005/gmd}identificationInfo")
+            self.assertEqual(root[11].tag, "{http://www.isotc211.org/2005/gmd}distributionInfo")
+            self.assertEqual(root[12].tag, "{http://www.isotc211.org/2005/gmd}dataQualityInfo")
+        elif md_type == "rasterDataset":
+            self.assertEqual(root[8].tag, "{http://www.isotc211.org/2005/gmd}referenceSystemInfo")
+            self.assertEqual(root[9].tag, "{http://www.isotc211.org/2005/gmd}identificationInfo")
+            self.assertEqual(root[10].tag, "{http://www.isotc211.org/2005/gmd}distributionInfo")
+            self.assertEqual(root[11].tag, "{http://www.isotc211.org/2005/gmd}dataQualityInfo")
+        else:
+            raise Exception("Metadata type should vector or raster, not: {}"
+                            .format(md_type))
 
     def test_export_bad(self):
         """Test errors raised by export function"""
