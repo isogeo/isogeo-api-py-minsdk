@@ -2,6 +2,16 @@
 #!/usr/bin/env python
 from __future__ import (absolute_import, print_function, unicode_literals)
 
+"""
+    Usage from the repo root folder:
+    
+    ```python
+    python -m unittest tests.test_search
+    # for a specific test method
+    python -m unittest tests.test_search.TestSearch.test_search_tags_dictionarized
+    ```
+"""
+
 # #############################################################################
 # ########## Libraries #############
 # ##################################
@@ -98,7 +108,7 @@ class TestSearch(unittest.TestCase):
         self.assertEqual(len(search_whole.get("results")), search_whole.get("total"))
 
     # specific md
-    def test_search_specifc_mds_ok(self):
+    def test_search_specific_mds_ok(self):
         """Searches filtering on specific metadata."""
         # get random metadata within a small search
         search_10 = self.isogeo.search(self.bearer,
@@ -119,7 +129,7 @@ class TestSearch(unittest.TestCase):
         self.assertEqual(len(search_ids_2.get("results")), 2)
         self.assertEqual(len(search_ids_3.get("results")), 2)
 
-    def test_search_specifc_mds_bad(self):
+    def test_search_specific_mds_bad(self):
         """Searches filtering on specific metadata."""
         # get random metadata within a small search
         search_5 = self.isogeo.search(self.bearer,
@@ -380,14 +390,15 @@ class TestSearch(unittest.TestCase):
                 continue
             elif k.startswith("license"):
                 self.assertIn(v, tags_dicts.get("licenses"))
-                self.assertEqual(k, tags_dicts.get("licenses").get(v))
+                #self.assertEqual(k, tags_dicts.get("licenses").get(v))
                 continue
             elif k.startswith("owner"):
                 self.assertIn(v, tags_dicts.get("owners"))
                 self.assertEqual(k, tags_dicts.get("owners").get(v))
                 continue
             elif k.startswith("provider"):
-                self.assertIn(v, tags_dicts.get("providers"))
+                v = k.split(":")[1]  # handle specific case of tags which are only a bool value
+                self.assertIn(k.split(":")[1], tags_dicts.get("providers"))
                 self.assertEqual(k, tags_dicts.get("providers").get(v))
                 continue
             elif k.startswith("share"):

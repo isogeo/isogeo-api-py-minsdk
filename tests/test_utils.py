@@ -440,7 +440,7 @@ class TestIsogeoUtils(unittest.TestCase):
 
     # -- Tags utils --------
     def test_tags_dictionarization(self):
-        """Tags dictionazition bullet-proof."""
+        """Tags dictionarization bullet-proof."""
         with open(self.tags_sample, "r") as f:
             search = json.loads(f.read())
         self.utils.tags_to_dict(search.get("tags"))
@@ -448,7 +448,7 @@ class TestIsogeoUtils(unittest.TestCase):
         self.utils.tags_to_dict(search.get("tags"), duplicated="rename")
 
     def test_tags_dictionarization_bad(self):
-        """Tags dictionazition bullet-proof."""
+        """Tags dictionarization bullet-proof."""
         with open(self.tags_sample, "r") as f:
             search = json.loads(f.read())
         with self.assertRaises(ValueError):

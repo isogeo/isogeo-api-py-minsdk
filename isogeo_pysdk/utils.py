@@ -302,7 +302,7 @@ class IsogeoUtils(object):
         return api_url_base.geturl()
 
     # -- SEARCH  --------------------------------------------------------------
-    def tags_to_dict(self, tags=dict, duplicated="ignore"):
+    def tags_to_dict(self, tags=dict, duplicated="rename"):
         """Reverse search tags dictionary to values as keys.
         Useful to populate filters comboboxes for example.
 
@@ -412,7 +412,8 @@ class IsogeoUtils(object):
                 tags_as_dicts.get("owners")[v] = k
                 continue
             elif k.startswith("provider"):
-                tags_as_dicts.get("providers")[v] = k
+                # providers are particular bcause its value is always null.
+                tags_as_dicts.get("providers")[k.split(":")[1]] = k
                 continue
             elif k.startswith("share"):
                 tags_as_dicts.get("shares")[v] = k

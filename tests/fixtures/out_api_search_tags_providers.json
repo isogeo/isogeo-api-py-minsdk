@@ -1,0 +1,22 @@
+{
+    "envelope": null,
+    "limit": 0,
+    "offset": 0,
+    "query": {
+        "_tags": [],
+        "_terms": []
+    },
+    "results": [],
+    "tags": {
+        "action:download": "Download",
+        "action:other": "Other",
+        "action:view": "View",
+        "provider:auto": null,
+        "provider:manual": null,
+        "type:raster-dataset": "Dataset (raster)",
+        "type:resource": "Resource",
+        "type:service": "Service",
+        "type:vector-dataset": "Dataset (vector)"
+    },
+    "total": 626
+}
