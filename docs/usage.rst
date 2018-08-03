@@ -87,6 +87,15 @@ The module isogeo_pysdk.utils comes with a method to load automatically credenti
     # get the token
     token = isogeo.connect()
 
+Keys of returned dict:
+       
+    - auth_mode
+    - client_id
+    - client_secret
+    - uri_auth
+    - uri_base
+    - uri_redirect
+    - uri_token
 
 URL Builder for web applications
 --------------------------------
