@@ -329,7 +329,7 @@ class IsogeoChecker(object):
         if md_type not in FILTER_TYPES:
             raise ValueError("'{}' isn't a valid metadata type. "
                              "Available values: {}"
-                             .format(tab, " | ".join(FILTER_TYPES))
+                             .format(md_type, " | ".join(FILTER_TYPES))
                              )
         else:
             pass
