@@ -8,4 +8,6 @@
         "test*.py"
     ],
     "python.unitTest.unittestEnabled": true,
-}
+    "restructuredtext.confPath": "${workspaceRoot}/docs",
+    "python.jediEnabled": true
+}   
