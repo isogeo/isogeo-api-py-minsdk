@@ -48,6 +48,80 @@ Add shares tags to search response and as attributes
     print(isogeo.shares_id)
 
 
+Get OpenCatalog URL for a share
+-------------------------------
+
+OpenCatalog is an online metadata browser generated on Isogeo platform.
+As a third-party application, it can be set or not in a share.
+
+Here is how to check if it's set or not in a share.
+The share UUID is required: 2 methods are proposed to retrieve it.
+
+
+.. code-block:: python
+
+    from isogeo_pysdk import Isogeo
+
+    # authenticate your client application
+    isogeo = Isogeo(client_id=app_id,
+                    client_secret=app_secret)
+
+    # get the token
+    token = isogeo.connect()
+
+    ## -- METHOD 1 - by shares route ------------------------------------------
+    # get shares
+    shares = isogeo.shares(token)
+
+    # get first share id
+    share_id = shares[0].get("_id")
+
+    ## -- METHOD 2 - by augmented search --------------------------------------
+    # empty search
+    search = isogeo.search(token,
+                           page_size=0,     # get only tags, not results
+                           whole_share=0,   # do not retrieve the whole application scope
+                           augment=1    # -> this parameter is what we need
+                           )
+
+    # get share id from tags splitting dict key
+    share_id = list(isogeo.shares_id.keys())[0].split(":")[1]
+
+    ## -- ONCE SHARE ID RETRIEVED ---------------------------------------------
+
+    # make an augmented share request
+    share_augmented = isogeo.share(token, share_id, augment=1)
+
+    if "oc_url" in share_augmented:
+        print("OpenCatalog is set: {}"
+              .format(share_augmented.get("oc_url"))
+              )
+    else:
+        print("OpenCatalog is not set in this share")
+
+
+Check if a metadata is in a share
+---------------------------------
+
+With the augmented share, it's also possible to check if a metadata is present within.
+
+.. code-block:: python
+
+    # -- see above to get augmented share
+    # get a metadata
+    search = isogeo.search(token,
+                           page_size=1,     # get only one result
+                           whole_share=0    # do not retrieve the whole application scope
+                           )
+    md = search.get("results")[0]
+
+    # check
+    if md.get("_id") in share_augmented.get("mds_ids"):
+        print("Metadata is present in this share")
+    else:
+        print("No present").
+
+
 Load API credentials from a JSON or INI file
 --------------------------------------------
 
