@@ -156,6 +156,11 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertIn("https://app.isogeo.com", url)
         self.assertIn("groups", url)
         urlparse(url)
+        # again with type extracted from metadata model
+        url = self.utils.get_edit_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
+                                        md_type="vectorDataset",
+                                        owner_id="32f7e95ec4e94ca3bc1afda960003882",
+                                        tab="identification")
 
     def test_get_edit_url_bad_md_uuid(self):
         """Must raise an error if metadata/resource UUID check fails."""
