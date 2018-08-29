@@ -24,6 +24,17 @@ Get application properties as attributes
     print(isogeo.app_properties)
 
 
+    # structure of returned dict
+    app = {"admin_url": str,
+           "creation_date": str,
+           "last_update": str,
+           "name": str,
+           "type": str,
+           "kind": str,
+           "url": str
+           }
+
+
 Add shares tags to search response and as attributes
 ----------------------------------------------------
 
