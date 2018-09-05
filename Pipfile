@@ -13,6 +13,9 @@ future = "*"
 six = "*"
 pycodestyle = "*"
 python-dateutil = "*"
+twine = "*"
+pip = "*"
+wheel = "*"
 
 [packages]
 requests = "==2.*"
