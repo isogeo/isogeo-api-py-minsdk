@@ -73,6 +73,11 @@ To run tests:
     python setup.py install
     python -m unittest discover
 
+Or using the `included Powershell script <https://github.com/isogeo/isogeo-api-py-minsdk/blob/master/tool_test_coverage.ps1>`_:
+
+.. code-block:: powershell
+
+    .\tool_test_coverage.ps1
 
 Build
 =====
@@ -81,14 +86,13 @@ To package and upload:
 
 .. code-block:: powershell
 
-    .\build_upload.ps1
+    .\tool_build_upload.ps1
 
 To build docs:
 
 .. code-block:: powershell
 
-    cd .\docs\
-    .\build_docs.ps1
+    .\tool_docs_build.ps1
 
 
 .. |Version| image:: https://badge.fury.io/py/isogeo-pysdk.svg
