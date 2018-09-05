@@ -110,5 +110,11 @@
         "type:resource": "Resource",
         "type:service": "Service",
         "type:vector-dataset": "Dataset (vector)"
+    },
+    "query": {
+        "_tags": [
+            "keyword:isogeo:tests"
+        ],
+        "_terms": []
     }
 }
