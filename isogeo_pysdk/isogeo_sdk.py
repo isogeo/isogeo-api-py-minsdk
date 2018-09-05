@@ -377,7 +377,7 @@ class Isogeo(object):
 
         # store tags in dicts
         if tags_as_dicts:
-            new_tags = utils.tags_to_dict(tags=search_rez.get("tags"), 
+            new_tags = utils.tags_to_dict(tags=search_rez.get("tags"),
                                           prev_query=search_rez.get("query"))
             # clear
             search_rez.get("tags").clear()

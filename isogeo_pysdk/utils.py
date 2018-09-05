@@ -347,20 +347,20 @@ class IsogeoUtils(object):
 
         # -- SEARCH TAGS -------------
         # output dicts structure
-        tags_as_dicts =  {"actions": {},
-                          "catalogs": {},
-                          "contacts": {},
-                          "data-sources": {},
-                          "formats": {},
-                          "inspires": {},
-                          "keywords": {},
-                          "licenses": {},
-                          "owners": {},
-                          "providers": {},
-                          "shares": {},
-                          "srs": {},
-                          "types": {},
-                          }
+        tags_as_dicts = {"actions": {},
+                         "catalogs": {},
+                         "contacts": {},
+                         "data-sources": {},
+                         "formats": {},
+                         "inspires": {},
+                         "keywords": {},
+                         "licenses": {},
+                         "owners": {},
+                         "providers": {},
+                         "shares": {},
+                         "srs": {},
+                         "types": {},
+                         }
 
         # parsing tags and storing each one in a dict
         for k, v in sorted(tags.items()):
@@ -439,22 +439,22 @@ class IsogeoUtils(object):
         # output dict struture
         logging.debug(prev_query)
         query_as_dicts = {"_tags": {"actions": {},
-                                     "catalogs": {},
-                                     "contacts": {},
-                                     "data-sources": {},
-                                     "formats": {},
-                                     "inspires": {},
-                                     "keywords": {},
-                                     "licenses": {},
-                                     "owners": {},
-                                     "providers": {},
-                                     "shares": {},
-                                     "srs": {},
-                                     "types": {},
-                                     },
-                           "_shares": prev_query.get("_shares"),
-                           "_terms": prev_query.get("_terms"),
-                           }
+                                    "catalogs": {},
+                                    "contacts": {},
+                                    "data-sources": {},
+                                    "formats": {},
+                                    "inspires": {},
+                                    "keywords": {},
+                                    "licenses": {},
+                                    "owners": {},
+                                    "providers": {},
+                                    "shares": {},
+                                    "srs": {},
+                                    "types": {},
+                                    },
+                          "_shares": prev_query.get("_shares"),
+                          "_terms": prev_query.get("_terms"),
+                          }
 
         # parsing and matching tags
         query_tags = query_as_dicts.get("_tags")
