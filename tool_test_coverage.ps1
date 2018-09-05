@@ -18,9 +18,6 @@ pycodestyle isogeo_pysdk/isogeo_sdk.py --ignore="E265,E501" --statistics --show-
 pycodestyle isogeo_pysdk/checker.py --ignore="E265,E501" --statistics --show-source
 pycodestyle isogeo_pysdk/utils.py --ignore="E265,E501" --statistics --show-source
 
-# "-- STEP -- Run unit tests"
-# python -m unittest discover
-
 "-- STEP -- Run coverage"
 coverage run -m unittest discover -s tests/
 

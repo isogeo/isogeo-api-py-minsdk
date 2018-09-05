@@ -7,6 +7,7 @@
 #############################################################################
 
 # make a virtualenv to perform packaging
+Set-Location -Path "./docs"
 "-- STEP -- Creating temp virtualenv to perform dependencies packaging"
 py -3 -m venv env3_docs
 ./env3_docs/Scripts/activate
@@ -29,5 +30,6 @@ sphinx-apidoc -e -f -M -o .\_apidoc\ ..\isogeo_pysdk\ ..\isogeo_pysdk\samples\
 
 "-- STEP -- Get out the virtualenv"
 deactivate
-# rm -r env3_docs
 Invoke-Item _build/html/index.html
+# rm -r env3_docs
+Set-Location -Path ".."
