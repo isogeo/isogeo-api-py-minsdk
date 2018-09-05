@@ -448,9 +448,14 @@ class TestIsogeoUtils(unittest.TestCase):
         """Tags dictionarization bullet-proof."""
         with open(self.tags_sample, "r") as f:
             search = json.loads(f.read())
-        self.utils.tags_to_dict(search.get("tags"))
-        self.utils.tags_to_dict(search.get("tags"), duplicated="merge")
-        self.utils.tags_to_dict(search.get("tags"), duplicated="rename")
+        self.utils.tags_to_dict(tags=search.get("tags"),
+                                prev_query=search.get("query"))
+        self.utils.tags_to_dict(tags=search.get("tags"),
+                                prev_query=search.get("query"),
+                                duplicated="merge")
+        self.utils.tags_to_dict(tags=search.get("tags"),
+                                prev_query=search.get("query"),
+                                duplicated="rename")
 
     def test_tags_dictionarization_bad(self):
         """Tags dictionarization bullet-proof."""
