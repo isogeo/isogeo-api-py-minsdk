@@ -2,6 +2,7 @@
 Usage
 ========
 
+.. RST cheatsheet: https://github.com/ralsina/rst-cheatsheet/blob/master/rst-cheatsheet.rst
 
 Get application properties as attributes
 ----------------------------------------
@@ -261,3 +262,46 @@ Register a custom webapp and get URL
     # get url
     custom_url = utils.get_view_url(md_id="0269803d50c446b09f5060ef7fe3e22b",
                                     webapp="PPIGE v3")
+
+
+-----
+
+Download metadata as XML ISO 19139
+----------------------------------
+
+In Isogeo, every metadata resource can be downloaded in its XML version (ISO 19139 compliant). The Python SDK package inclue a shortcut method:
+
+.. code-block:: python
+
+    from isogeo_pysdk import Isogeo
+
+    # authenticate your client application
+    isogeo = Isogeo(client_id=app_id,
+                    client_secret=app_secret)
+
+    # get the token
+    token = isogeo.connect()
+
+    # search metadata
+    search_to_be_exported = isogeo.search(token,
+                                          page_size=10,
+                                          query="type:dataset",
+                                          whole_share=0
+                                          )
+
+    # loop on results and export
+    for md in search_to_be_exported.get("results"):
+        title = md.get('title')
+        xml_stream = isogeo.xml19139(token,
+                                     md.get("_id")
+                                     )
+
+        with open("{}.xml".format(title), 'wb') as fd:
+            for block in xml_stream.iter_content(1024):
+                fd.write(block)
+
+
+Others examples:
+
+- `Batch export into XML within Isogeo to Office application <https://github.com/isogeo/isogeo-2-office/blob/master/modules/threads.py#L253-L330>`_.
+- `Batch export into XML in the package sample <https://github.com/isogeo/isogeo-api-py-minsdk/blob/master/isogeo_pysdk/samples/export_batch_xml19139.py>`_.
