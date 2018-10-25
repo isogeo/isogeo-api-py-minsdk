@@ -66,5 +66,5 @@ jobs:
   - task: DownloadBuildArtifacts@0
     displayName: 'Download Build Artifacts'
     inputs:
-      artifactName: Python package
+      artifactName: IsogeoPySDK
       downloadPath: $(System.DefaultWorkingDirectory)/dist/
