@@ -29,13 +29,17 @@ jobs:
   - script: python -m pip install -U pip && pip install -U -r requirements.txt
     displayName: 'Install dependencies'
 
+  - script: echo This is a script that could use $varTest
+    env:
+      varTest: $(TEST)
+
   - script: |
       pip install -U -r tests/requirements_test.txt
       coverage run -m unittest discover -s tests/
     env:
-      ISOGEO_API_DEV_ID: $( ISOGEO_API_DEV_ID )
-      ISOGEO_API_DEV_SECRET: $( ISOGEO_API_DEV_SECRET )
-    displayName: 'pytest'
+      ISOGEO_API_DEV_ID: $(ISOGEO_API_DEV_ID)
+      ISOGEO_API_DEV_SECRET: $(ISOGEO_API_DEV_SECRET)
+    displayName: 'Tests'
 
   - task: PublishTestResults@2
     inputs:
