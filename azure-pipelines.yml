@@ -3,10 +3,6 @@
 # Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
-variables:
-  ISOGEO_API_DEV_ID: $( ISOGEO_API_DEV_ID )
-  ISOGEO_API_DEV_SECRET: $( ISOGEO_API_DEV_SECRET )
-
 jobs:
 
 - job: 'Test'
@@ -36,6 +32,9 @@ jobs:
   - script: |
       pip install -U -r tests/requirements_test.txt
       coverage run -m unittest discover -s tests/
+    env:
+      ISOGEO_API_DEV_ID: $( ISOGEO_API_DEV_ID )
+      ISOGEO_API_DEV_SECRET: $( ISOGEO_API_DEV_SECRET )
     displayName: 'pytest'
 
   - task: PublishTestResults@2
