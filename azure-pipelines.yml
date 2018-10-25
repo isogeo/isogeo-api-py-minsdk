@@ -62,9 +62,3 @@ jobs:
 
   - script: python setup.py bdist_wheel
     displayName: 'Build wheel'
-
-  - task: DownloadBuildArtifacts@0
-    displayName: 'Download Build Artifacts'
-    inputs:
-      artifactName: IsogeoPySDK
-      downloadPath: /dist/
