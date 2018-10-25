@@ -67,4 +67,4 @@ jobs:
     displayName: 'Download Build Artifacts'
     inputs:
       artifactName: IsogeoPySDK
-      downloadPath: $(System.DefaultWorkingDirectory)/dist/
+      downloadPath: /dist/
