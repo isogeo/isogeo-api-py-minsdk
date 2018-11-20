@@ -16,7 +16,7 @@ setuptools
 wheel
 
 # required
-requests==2.*
+requests>=2.20.0
 six
 
 # Python 2 backwards compatibility
