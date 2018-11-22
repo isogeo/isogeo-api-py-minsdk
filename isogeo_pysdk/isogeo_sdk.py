@@ -790,7 +790,7 @@ class Isogeo(object):
             filename = re.findall("filename=(.+)", content_disposition)[0]
         else:
             filename = resource_link.get("title")
-        
+
         # remove special characters
         if encode_clean:
             filename = utils.encoded_words_to_text(filename)

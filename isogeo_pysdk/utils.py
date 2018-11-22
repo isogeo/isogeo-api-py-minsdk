@@ -188,7 +188,7 @@ class IsogeoUtils(object):
         character set and returns the result.
 
         See:
-        
+
         - https://github.com/isogeo/isogeo-api-py-minsdk/issues/32
         - https://dmorgan.info/posts/encoded-word-syntax/
 
@@ -202,7 +202,7 @@ class IsogeoUtils(object):
         # pull out
         try:
             charset, encoding, encoded_text = re.match(encoded_word_regex,
-                                                   in_encoded_words).groups()
+                                                       in_encoded_words).groups()
         except AttributeError:
             logging.debug("Input text was not encoded into base64 or quori")
             return in_encoded_words
