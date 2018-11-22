@@ -2,6 +2,14 @@
 #!/usr/bin/env python
 from __future__ import (absolute_import, print_function, unicode_literals)
 
+"""
+    Usage from the repo root folder:
+    
+    ```python
+    python -m unittest tests.test_download_hosted
+    ```
+"""
+
 # #############################################################################
 # ########## Libraries #############
 # ##################################

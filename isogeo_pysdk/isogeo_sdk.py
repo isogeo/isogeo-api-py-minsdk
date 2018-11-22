@@ -716,15 +716,30 @@ class Isogeo(object):
 
     # -- DOWNLOADS -----------------------------------------------------------
 
-    def dl_hosted(self, token, resource_link, proxy_url=None, prot="https"):
+    def dl_hosted(self, token, resource_link, encode_clean=1, proxy_url=None, prot="https"):
         """Download hosted resource.
 
         :param str token: API auth token
         :param dict resource_link: link dictionary
-                :param str token: API auth token
+        :param bool encode_clean: option to ensure a clean filename and avoid OS errors
         :param str proxy_url: proxy to use to download
         :param str prot: https [DEFAULT] or http
          (use it only for dev and tracking needs).
+
+        Example of resource_link dict:
+
+        .. code-block:: json
+
+            {
+            "_id": "g8h9i0j11k12l13m14n15o16p17Q18rS",
+            "type": "hosted",
+            "title": "label_of_hosted_file.zip",
+            "url": "/resources/1a2b3c4d5e6f7g8h9i0j11k12l13m14n/links/g8h9i0j11k12l13m14n15o16p17Q18rS.bin",
+            "kind": "data",
+            "actions": ["download", ],
+            "size": "2253029",
+            }
+
         """
         # check resource link parameter type
         if not isinstance(resource_link, dict):
@@ -775,6 +790,11 @@ class Isogeo(object):
             filename = re.findall("filename=(.+)", content_disposition)[0]
         else:
             filename = resource_link.get("title")
+        
+        # remove special characters
+        if encode_clean:
+            filename = utils.encoded_words_to_text(filename)
+            filename = re.sub(r"[^\w\-_\. ]", "", filename)
 
         # well-formed size
         in_size = resource_link.get("size")

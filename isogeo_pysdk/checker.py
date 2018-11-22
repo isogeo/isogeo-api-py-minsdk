@@ -117,7 +117,7 @@ class IsogeoChecker(object):
     def __init__(self):
         super(IsogeoChecker, self).__init__()
 
-    def check_internet_connection(self, remote_server="www.isogeo.com"):
+    def check_internet_connection(self, remote_server="api.isogeo.com"):
         """Test if an internet connection is operational.
         Src: http://stackoverflow.com/a/20913928/2556577.
 
