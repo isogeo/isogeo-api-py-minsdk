@@ -8,6 +8,11 @@
         "test*.py"
     ],
     "python.unitTest.unittestEnabled": true,
-    "restructuredtext.confPath": "${workspaceRoot}/docs",
-    "python.jediEnabled": true
+    "python.jediEnabled": true,
+    "restructuredtext.confPath": "${workspaceFolder}\\docs",
+    "jake.autoDetect": "off",
+    "gulp.autoDetect": "off",
+    "python.autoComplete.addBrackets": true,
+    "python.dataScience.enabled": false,
+    "python.linting.flake8Enabled": true
 }   

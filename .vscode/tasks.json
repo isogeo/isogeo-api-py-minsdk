@@ -25,7 +25,8 @@
             "label": "Build package documentation",
             "type": "shell",
             "command": "./tool_docs_build.ps1",
-            "group": "build"
-        },
+            "group": "build",
+            "problemMatcher": []
+        }
     ]
 }
