@@ -305,3 +305,44 @@ Others examples:
 
 - `Batch export into XML within Isogeo to Office application <https://github.com/isogeo/isogeo-2-office/blob/master/modules/threads.py#L253-L330>`_.
 - `Batch export into XML in the package sample <https://github.com/isogeo/isogeo-api-py-minsdk/blob/master/isogeo_pysdk/samples/export_batch_xml19139.py>`_.
+
+
+Download hosted data from Isogeo cloud
+--------------------------------------
+
+Administrators and editors can link raw data and docs (.zip, .pdf...) to metadata to allow final users to access the data. To do that, it's possible to upload data to Isogeo cloud (Azure blob storage).Through the API, it's possible to download these data:
+
+.. code-block:: python
+
+    from isogeo_pysdk import Isogeo
+
+    # authenticate your client application
+    isogeo = Isogeo(client_id=app_id,
+                    client_secret=app_secret)
+
+    # get the token
+    token = isogeo.connect()
+
+    # search with _include = links and action = download
+    latest_data_modified = isogeo.search(token,
+                                         page_size=10,
+                                         order_by="modified",
+                                         whole_share=0,
+                                         query="action:download",
+                                         include=["links"],
+                                         )
+
+    # parse links and download hosted data recursively
+    for md in latest_data_modified.get("results"):
+        for link in filter(lambda x: x.get("type") == "hosted", md.get("links")):
+            dl_stream = isogeo.dl_hosted(token,
+                                         resource_link=link)
+            filename = re.sub(r'[\\/*?:"<>|]', "", dl_stream[1])
+            with open(filename, 'wb') as fd:
+                for block in dl_stream[0].iter_content(1024):
+                    fd.write(block)
+
+Example:
+
+- `Batch export hosted data in the package sample <https://github.com/isogeo/isogeo-api-py-minsdk/blob/master/isogeo_pysdk/samples/download_batch_hosted_data.py>`_.
+

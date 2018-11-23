@@ -3,12 +3,10 @@
 from __future__ import (absolute_import, print_function, unicode_literals)
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Batch export to XML ISO19139
-# Purpose:      Exports each of 10 last updated metadata into an XML ISO19139
+# Purpose:      Exports hosted data of 10 last updated metadata into an XML ISO19139
 # Author:       Julien Moura (@geojulien)
 #
-# Python:       2.7.x
-# Created:      14/11/2016
-# Updated:      21/04/2017
+# Python:       3.6.x
 # ------------------------------------------------------------------------------
 
 # ##############################################################################
@@ -18,6 +16,7 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 # Standard library
 import configparser     # to manage options.ini
 from os import path
+import re
 
 # Isogeo
 from isogeo_pysdk import Isogeo
@@ -56,7 +55,6 @@ if __name__ == '__main__':
     token = isogeo.connect()
 
     # ------------ REAL START ------------------------------------------------
-
     latest_data_modified = isogeo.search(token,
                                          page_size=10,
                                          order_by="modified",
@@ -67,11 +65,9 @@ if __name__ == '__main__':
 
     # parse and download
     for md in latest_data_modified.get("results"):
-        for link in md.get("links"):
+        for link in filter(lambda x: x.get("type") == "hosted", md.get("links")):
             dl_stream = isogeo.dl_hosted(token,
-                                         id_resource=md.get("_id"),
                                          resource_link=link)
-
             with open(dl_stream[1], 'wb') as fd:
                 for block in dl_stream[0].iter_content(1024):
                     fd.write(block)
