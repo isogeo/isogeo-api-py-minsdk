@@ -16,6 +16,8 @@ python-dateutil = "*"
 twine = "*"
 pip = "*"
 wheel = "*"
+mailchimp3 = "*"
+flake8 = "*"
 
 [packages]
 requests = "==2.*"
