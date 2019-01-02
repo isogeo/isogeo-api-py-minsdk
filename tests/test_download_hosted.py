@@ -68,6 +68,7 @@ class TestDownloadHosted(unittest.TestCase):
             for link in md.get("links"):
                 if link.get("type") == "hosted":
                     target_link = link
+                    break
                 else:
                     continue
 

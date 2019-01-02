@@ -2,6 +2,14 @@
 #!/usr/bin/env python
 from __future__ import (absolute_import, print_function, unicode_literals)
 
+"""
+    Usage from the repo root folder:
+    
+    ```python
+    python -m unittest tests.test_metadata_models
+    ```
+"""
+
 # #############################################################################
 # ########## Libraries #############
 # ##################################
@@ -657,6 +665,7 @@ class TestMetadataModels(unittest.TestCase):
         # additional root keys
         self.assertIn("admin_url", share)
         self.assertIn("oc_url", share)
+
 
 # ##############################################################################
 # ##### Stand alone program ########

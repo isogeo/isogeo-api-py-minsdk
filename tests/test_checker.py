@@ -362,6 +362,26 @@ class TestIsogeoChecker(unittest.TestCase):
         with self.assertRaises(TypeError):
             checker._check_subresource(subresource=["layers", ])
 
+    # metadata type switcher
+    def test_md_type_switcher_ok(self):
+        """Test metadata type converter with right values"""
+        # vector type switcher
+        self.assertEqual(checker._convert_md_type(
+            ("vector-dataset")), "vectorDataset")
+        self.assertEqual(checker._convert_md_type(
+            ("vectorDataset")), "vector-dataset")
+
+        # raster type switcher
+        self.assertEqual(checker._convert_md_type(
+            ("rasterDataset")), "raster-dataset")
+        self.assertEqual(checker._convert_md_type(
+            ("raster-dataset")), "rasterDataset")
+
+    def test_md_type_switcher_bad(self):
+        """Test metadata type converter with bad values"""
+        with self.assertRaises(ValueError):
+            checker._convert_md_type("i_am_a_bad_type")
+
 
 # #############################################################################
 # ######## Standalone ##############

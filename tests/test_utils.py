@@ -464,3 +464,13 @@ class TestIsogeoUtils(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.utils.tags_to_dict(search.get("tags"),
                                     duplicated="renam")
+
+    # encoding -- see #32
+    def test_decoding_rfc2047(self):
+        """Test decoding func for filenames: """
+        b = '=?UTF-8?B?VGhpcyBpcyBhIGhvcnNleTog8J+Qjg==?='
+        self.utils.encoded_words_to_text(b)
+        q = '=?UTF-8?Q?This is a horsey: =F0=9F=90=8E?='
+        self.sutils.encoded_words_to_text(q)
+        d = q = '"=?UTF-8?Q?This is a horsey: =F0=9F=90=8E?="'
+        self.sutils.encoded_words_to_text(d)
