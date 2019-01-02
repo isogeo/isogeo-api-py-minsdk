@@ -471,6 +471,6 @@ class TestIsogeoUtils(unittest.TestCase):
         b = '=?UTF-8?B?VGhpcyBpcyBhIGhvcnNleTog8J+Qjg==?='
         self.utils.encoded_words_to_text(b)
         q = '=?UTF-8?Q?This is a horsey: =F0=9F=90=8E?='
-        self.sutils.encoded_words_to_text(q)
+        self.utils.encoded_words_to_text(q)
         d = q = '"=?UTF-8?Q?This is a horsey: =F0=9F=90=8E?="'
-        self.sutils.encoded_words_to_text(d)
+        self.utils.encoded_words_to_text(d)
