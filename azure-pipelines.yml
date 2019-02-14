@@ -33,19 +33,22 @@ jobs:
       pip install -U -r tests/requirements_test.txt
     displayName: 'Install dependencies'
 
-  - script: coverage run -m unittest discover -s tests/
+  - script: |
+      coverage run -m unittest discover -s tests/
+      coverage xml
     env:
       ISOGEO_API_DEV_ID: $(ISOGEO_API_DEV_ID)
       ISOGEO_API_DEV_SECRET: $(ISOGEO_API_DEV_SECRET)
       ISOGEO_MAILCHIMP_API_PROD_KEY: $(ISOGEO_MAILCHIMP_API_PROD_KEY)
       ISOGEO_MAILCHIMP_API_QA_KEY: $(ISOGEO_MAILCHIMP_API_QA_KEY)
-    displayName: 'Tests'
+    displayName: 'Tests and coverage'
 
-  - task: PublishTestResults@2
+  - task: PublishCodeCoverageResults@1
+    displayName: "Publish coverage results"
     inputs:
-      testResultsFiles: '**/test-results.xml'
-      testRunTitle: 'Python $(python.version)'
-    condition: succeededOrFailed()
+      codeCoverageTool: Cobertura
+      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+      reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
 
 - job: 'Build'
   dependsOn: 'Test'
