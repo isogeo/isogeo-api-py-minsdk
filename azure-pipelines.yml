@@ -72,6 +72,7 @@ jobs:
   - script: |
       python -m pip install -U pip
       pip install -U -r requirements.txt
+      pip install -U twine
     displayName: 'Install dependencies'
 
   - script: python setup.py egg_info
@@ -83,10 +84,5 @@ jobs:
   - script: python setup.py bdist_wheel
     displayName: 'Build wheel'
 
-  - task: PublishBuildArtifacts@1
-    displayName: 'Publish Artifact: wheel package'
-    inputs:
-      PathtoPublish: '$(System.DefaultWorkingDirectory)/**/*.whl'
-      ArtifactName: "WheelPackage"
-
-
+  - script: twine upload dist/* -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
+    displayName: "Upload to PyPi"
