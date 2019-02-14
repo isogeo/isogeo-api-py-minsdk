@@ -35,6 +35,7 @@ jobs:
 
   - script: |
       pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
+      coverage xml
     env:
       ISOGEO_API_DEV_ID: $(ISOGEO_API_DEV_ID)
       ISOGEO_API_DEV_SECRET: $(ISOGEO_API_DEV_SECRET)
