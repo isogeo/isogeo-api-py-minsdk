@@ -18,7 +18,7 @@ jobs:
         python.version: '3.6'
       Python37:
         python.version: '3.7'
-    maxParallel: 4
+    maxParallel: 2
 
   steps:
   - task: UsePythonVersion@0
@@ -27,11 +27,18 @@ jobs:
       architecture: 'x64'
 
   - script: |
+      python -m pip install -U pip
+      pip install -U -r ./requirements.txt
       pip install -U -r tests/requirements_test.txt
+    displayName: 'Install dependencies'
+
+  - script: |
       coverage run -m unittest discover -s tests/
     env:
       ISOGEO_API_DEV_ID: $(ISOGEO_API_DEV_ID)
       ISOGEO_API_DEV_SECRET: $(ISOGEO_API_DEV_SECRET)
+      ISOGEO_MAILCHIMP_API_PROD_KEY: $(ISOGEO_MAILCHIMP_API_PROD_KEY)
+      ISOGEO_MAILCHIMP_API_QA_KEY: $(ISOGEO_MAILCHIMP_API_QA_KEY)
     displayName: 'Tests'
 
   - task: PublishTestResults@2
