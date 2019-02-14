@@ -72,3 +72,11 @@ jobs:
 
   - script: python setup.py bdist_wheel
     displayName: 'Build wheel'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: wheel package'
+    inputs:
+      PathtoPublish: '$(Build.ArtifactStagingDirectory)\dist\*.whl'
+      ArtifactName: "WheelPackage"
+
+
