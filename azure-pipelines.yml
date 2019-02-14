@@ -85,7 +85,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact: wheel package'
     inputs:
-      PathtoPublish: '$(Build.ArtifactStagingDirectory)\dist\*.whl'
+      PathtoPublish: '$(System.DefaultWorkingDirectory)/**/*.whl'
       ArtifactName: "WheelPackage"
 
 
