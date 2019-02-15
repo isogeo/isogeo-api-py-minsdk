@@ -1,4 +1,4 @@
-|Version| |Build_Status| |coverage| |rtdocs| |compat_py27| |compat_py34| |compat_py35| |compat_py36|
+|Version| |Travis_Build_Status| |AzureDevOps_Build_Status| |coverage| |rtdocs| |compat_py27| |compat_py34| |compat_py35| |compat_py36|
 
 Isogeo API Python SDK
 =====================
@@ -99,9 +99,13 @@ To build docs:
    :target: https://badge.fury.io/py/isogeo-pysdk
    :alt: PyPI version
 
-.. |Build_Status| image:: https://travis-ci.org/isogeo/isogeo-api-py-minsdk.svg?branch=master
+.. |Travis_Build_Status| image:: https://travis-ci.org/isogeo/isogeo-api-py-minsdk.svg?branch=master
    :target: https://travis-ci.org/isogeo/isogeo-api-py-minsdk
    :alt: Travis build status
+
+.. |AzureDevOps_Build_Status| image:: https://dev.azure.com/isogeo/Python%20SDK/_apis/build/status/isogeo.isogeo-api-py-minsdk?branchName=master
+   :target: https://dev.azure.com/isogeo/Python%20SDK/_build/latest?definitionId=3&branchName=master
+   :alt: Azure DevOps build status
 
 .. |coverage| image:: https://codecov.io/gh/isogeo/isogeo-api-py-minsdk/branch/master/graph/badge.svg
    :target: https://codecov.io/gh/isogeo/isogeo-api-py-minsdk
