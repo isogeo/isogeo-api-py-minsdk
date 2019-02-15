@@ -61,7 +61,7 @@ jobs:
 - job: 'Build'
   dependsOn: 'Test'
   pool:
-    vmImage: 'Ubuntu 16.04'
+    vmImage: "vs2017-win2016"
 
   steps:
   - task: UsePythonVersion@0
@@ -85,5 +85,5 @@ jobs:
   - script: python setup.py bdist_wheel
     displayName: 'Build wheel'
 
-  - script: twine upload dist/* -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
-    displayName: "Upload to PyPi"
+  # - script: twine upload dist/* -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
+  #   displayName: "Upload to PyPi"
