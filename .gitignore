@@ -73,6 +73,9 @@ isogeo_secret.ini
 client_secrets*.json
 secret.ini
 
+# samples
+isogeo_pysdk/samples/*.json
+
 # virtual environments
 *venv*
 virtenv*/
