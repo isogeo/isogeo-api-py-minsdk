@@ -14,5 +14,7 @@
     "gulp.autoDetect": "off",
     "python.autoComplete.addBrackets": true,
     "python.dataScience.enabled": false,
-    "python.linting.flake8Enabled": true
+    "python.linting.flake8Enabled": true,
+    "travis.username": "isogeo",
+    "travis.repository": "isogeo-api-py-minsdk"
 }   
