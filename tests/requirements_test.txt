@@ -14,7 +14,7 @@
 autopep8
 codecov
 coverage
-requests==2.20.*
+requests==2.21.*
 configparser; python_version < '3.0'
 future
 six
