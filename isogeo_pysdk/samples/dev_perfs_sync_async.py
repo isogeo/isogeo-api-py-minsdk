@@ -36,8 +36,6 @@ token = isogeo.connect()
 # ##################################
 def _meta_get_resource_sync(md_uuid):
     """Just a meta func to get execution time"""
-    global isogeo, token
-
     isogeo.resource(token, md_uuid)
 
     elapsed = default_timer() - START_TIME
@@ -62,8 +60,13 @@ async def get_data_asynchronous():
 
             for md_uuid in md_ids
         ]
+
+        # store responses
+        out_list = []
         for response in await asyncio.gather(*tasks):
-            pass
+            out_list.append(response)
+
+        return out_list
 
 # #############################################################################
 # ##### Stand alone program ########
@@ -97,7 +100,7 @@ if __name__ == "__main__":
     print("SYNCHRONOUS - TOTAL ELAPSED TIME: " + time_completed_at)
 
     # ASYNC
-    print("\nGet 100 complete metadata - ASYNCHRONOUS MODE")
+    print("\nGet {} complete metadata - ASYNCHRONOUS MODE".format(how_much_mds))
     START_TIME = default_timer()
     print("{0:<30} {1:>20}".format("File", "Completed at"))
     loop = asyncio.get_event_loop()
@@ -106,4 +109,5 @@ if __name__ == "__main__":
 
     elapsed = default_timer() - START_TIME
     time_completed_at = "{:5.2f}s".format(elapsed)
+    print(len(future.result()) + " metadatas retrieved.")
     print("ASYNCHRONOUS - TOTAL ELAPSED TIME: " + time_completed_at)
