@@ -74,7 +74,9 @@ client_secrets*.json
 secret.ini
 
 # samples
+isogeo_pysdk/samples/_output/*
 isogeo_pysdk/samples/*.json
+isogeo_pysdk/samples/*.xml
 
 # virtual environments
 *venv*
