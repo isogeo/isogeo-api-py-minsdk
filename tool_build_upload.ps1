@@ -17,7 +17,6 @@ py -3 -m venv env3_packaging
 python -m pip install -U pip
 pip install --upgrade -r ./requirements.txt
 pip install --upgrade twine
-pip list
 
 # remove previous builds
 "-- STEP -- Clean up the previous builds"
