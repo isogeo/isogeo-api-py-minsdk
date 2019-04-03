@@ -1,8 +1,10 @@
 {
     "recommendations": [
       "davidanson.vscode-markdownlint",
+      "eriklynd.json-tools",
       "lextudio.restructuredtext",
-      "ms-python.python"
+      "ms-python.python",
+      "felixrieseberg.vsc-travis-ci-status"
     ]
   }
   
