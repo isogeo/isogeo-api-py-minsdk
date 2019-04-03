@@ -71,6 +71,7 @@ target/
 isogeo_params.ini
 isogeo_secret.ini
 client_secrets*.json
+!tests/fixtures/client_secrets*.json
 secret.ini
 
 # samples

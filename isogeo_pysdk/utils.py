@@ -626,6 +626,8 @@ class IsogeoUtils(object):
                     "auth_mode": "group",
                     "client_id": auth_settings.get("client_id"),
                     "client_secret": auth_settings.get("client_secret"),
+                    # if not specified, must be a former file then set classic scope
+                    "scopes": auth_settings.get("scopes", ["resources:read"]),
                     "uri_auth": auth_settings.get("auth_uri"),
                     "uri_token": auth_settings.get("token_uri"),
                     "uri_base": self.get_url_base_from_url_token(auth_settings.get("token_uri")),
@@ -638,10 +640,12 @@ class IsogeoUtils(object):
                     "auth_mode": "user",
                     "client_id": auth_settings.get("client_id"),
                     "client_secret": auth_settings.get("client_secret"),
+                    # if not specified, must be a former file then set classic scope
+                    "scopes": auth_settings.get("scopes", ["resources:read"]),
                     "uri_auth": auth_settings.get("auth_uri"),
                     "uri_token": auth_settings.get("token_uri"),
                     "uri_base": self.get_url_base_from_url_token(auth_settings.get("token_uri")),
-                    "uri_redirect": auth_settings.get("redirect_uris"),
+                    "uri_redirect": auth_settings.get("redirect_uris", None),
                 }
         else:
             # assuming file is an .ini

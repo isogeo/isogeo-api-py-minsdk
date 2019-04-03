@@ -57,8 +57,14 @@ class TestIsogeoUtils(unittest.TestCase):
         self.uuid_urn4122 = "urn:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
         self.uuid_urnIsogeo = "urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
         # credentials
-        self.credentials_group_json = path.normpath(r"tests/fixtures/client_secrets_group.json")
-        self.credentials_user_json = path.normpath(r"tests/fixtures/client_secrets_user.json")
+        self.credentials_group_json = [
+            path.normpath(r"tests/fixtures/client_secrets_group_old.json"),  # without scopes
+            path.normpath(r"tests/fixtures/client_secrets_group_new.json")   # with scopes
+        ]
+        self.credentials_user_json = [
+            path.normpath(r"tests/fixtures/client_secrets_user_old.json"),  # without scopes
+            path.normpath(r"tests/fixtures/client_secrets_user_new.json")   # with scopes
+        ]
         self.credentials_user_bad_json = path.normpath(r"tests/fixtures/client_secrets_user_bad.json")
         self.credentials_ini = path.normpath(r"tests/fixtures/client_secrets.ini")
         self.credentials_ini_bad = path.normpath(r"tests/fixtures/client_secrets_bad.ini")
@@ -361,12 +367,14 @@ class TestIsogeoUtils(unittest.TestCase):
     # -- Credentials loader -------------------------------------
     def test_credentials_loader_json_user(self):
         """Test credentials loader for an user application from a JSON file"""
-        creds_json_user = self.utils.credentials_loader(self.credentials_user_json)
+        for in_creds_json_user in self.credentials_user_json:
+            creds_json_user = self.utils.credentials_loader(in_creds_json_user)
         # structure
         self.assertIsInstance(creds_json_user, dict)
         self.assertIn("auth_mode", creds_json_user)
         self.assertIn("client_id", creds_json_user)
         self.assertIn("client_secret", creds_json_user)
+        self.assertIn("scopes", creds_json_user)
         self.assertIn("uri_auth", creds_json_user)
         self.assertIn("uri_base", creds_json_user)
         self.assertIn("uri_token", creds_json_user)
@@ -383,25 +391,27 @@ class TestIsogeoUtils(unittest.TestCase):
 
     def test_credentials_loader_json_group(self):
         """Test credentials loader for an group application from a JSON file"""
-        creds_json_group = self.utils.credentials_loader(self.credentials_group_json)
-        # structure
-        self.assertIsInstance(creds_json_group, dict)
-        self.assertIn("auth_mode", creds_json_group)
-        self.assertIn("client_id", creds_json_group)
-        self.assertIn("client_secret", creds_json_group)
-        self.assertIn("uri_auth", creds_json_group)
-        self.assertIn("uri_base", creds_json_group)
-        self.assertIn("uri_token", creds_json_group)
-        self.assertIn("uri_redirect", creds_json_group)
-        # values
-        self.assertEqual(creds_json_group.get("auth_mode"), "group")
-        self.assertEqual(creds_json_group.get("uri_auth"),
-                         "https://id.api.isogeo.com/oauth/authorize")
-        self.assertEqual(creds_json_group.get("uri_token"),
-                         "https://id.api.isogeo.com/oauth/token")
-        self.assertEqual(creds_json_group.get("uri_base"),
-                         "https://api.isogeo.com")
-        self.assertIsNone(creds_json_group.get("uri_redirect"))
+        for in_creds_json_group in self.credentials_group_json:
+            creds_json_group = self.utils.credentials_loader(in_creds_json_group)
+            # structure
+            self.assertIsInstance(creds_json_group, dict)
+            self.assertIn("auth_mode", creds_json_group)
+            self.assertIn("client_id", creds_json_group)
+            self.assertIn("client_secret", creds_json_group)
+            self.assertIn("scopes", creds_json_group)
+            self.assertIn("uri_auth", creds_json_group)
+            self.assertIn("uri_base", creds_json_group)
+            self.assertIn("uri_token", creds_json_group)
+            self.assertIn("uri_redirect", creds_json_group)
+            # values
+            self.assertEqual(creds_json_group.get("auth_mode"), "group")
+            self.assertEqual(creds_json_group.get("uri_auth"),
+                             "https://id.api.isogeo.com/oauth/authorize")
+            self.assertEqual(creds_json_group.get("uri_token"),
+                             "https://id.api.isogeo.com/oauth/token")
+            self.assertEqual(creds_json_group.get("uri_base"),
+                             "https://api.isogeo.com")
+            self.assertIsNone(creds_json_group.get("uri_redirect"))
 
     def test_credentials_loader_ini(self):
         """Test credentials loader for an group application from an INI file"""
