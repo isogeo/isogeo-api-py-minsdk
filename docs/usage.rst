@@ -157,8 +157,12 @@ The module isogeo_pysdk.utils comes with a method to load automatically credenti
 .. code-block:: python
 
     # load package
-    from isogeo_pysdk import Isogeo, IsogeoUtils as utils
+    from isogeo_pysdk import Isogeo, IsogeoUtils
 
+    # instanciate IsogeoUtils as utils
+    utils = IsogeoUtils()
+
+    # load from file
     api_credentials = utils.credentials_loader("client_secrets_group.json")
 
     # could also be:
@@ -178,6 +182,7 @@ Keys of returned dict:
     - auth_mode
     - client_id
     - client_secret
+    - scopes
     - uri_auth
     - uri_base
     - uri_redirect
