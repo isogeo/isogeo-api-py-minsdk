@@ -17,7 +17,6 @@
 # Standard library
 from collections import Counter
 import logging
-from six import string_types
 import socket
 from uuid import UUID
 import warnings
@@ -282,7 +281,7 @@ class IsogeoChecker(object):
         :param str uuid_str: UUID string to check
         """
         # check uuid type
-        if not isinstance(uuid_str, string_types):
+        if not isinstance(uuid_str, str):
             raise TypeError("'uuid_str' expected a str value.")
         else:
             pass
@@ -309,11 +308,11 @@ class IsogeoChecker(object):
         :param str md_type: metadata type. Must be one one of FILTER_TYPES
         """
         # check parameters types
-        if not isinstance(tab, string_types):
+        if not isinstance(tab, str):
             raise TypeError("'tab' expected a str value.")
         else:
             pass
-        if not isinstance(md_type, string_types):
+        if not isinstance(md_type, str):
             raise TypeError("'md_type' expected a str value.")
         else:
             pass
@@ -395,7 +394,7 @@ class IsogeoChecker(object):
             raise ValueError("Must be one of: metadata | keyword.")
 
         # sub resources manager
-        if isinstance(includes, string_types) and includes.lower() == "all":
+        if isinstance(includes, str) and includes.lower() == "all":
             includes = ",".join(ref_subresources)
         elif isinstance(includes, list):
             if len(includes) > 0:
@@ -428,7 +427,7 @@ class IsogeoChecker(object):
             "operations",
             "specifications",
         )
-        if isinstance(subresource, string_types):
+        if isinstance(subresource, str):
             if subresource in l_subresources:
                 subresource = subresource
             elif subresource == "tags":

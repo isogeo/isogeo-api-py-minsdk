@@ -17,7 +17,6 @@ wheel
 
 # required
 requests>=2.21.0
-six
 
 # proxy
 # pypac==0.2.*

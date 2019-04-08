@@ -15,7 +15,6 @@ autopep8
 codecov
 coverage
 requests==2.21.*
-six
 pycodestyle
 python-dateutil
 pytest

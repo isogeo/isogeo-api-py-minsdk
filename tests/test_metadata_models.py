@@ -15,7 +15,6 @@
 
 # Standard library
 from datetime import datetime
-from six import string_types as str
 from os import environ
 import logging
 from sys import exit

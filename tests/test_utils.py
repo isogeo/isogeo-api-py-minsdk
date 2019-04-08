@@ -17,10 +17,9 @@
 import json
 import logging
 from os import environ, path
-from six import string_types as str
 from sys import exit
 import unittest
-from six.moves.urllib.parse import urlparse
+from urllib.parse import urlparse
 
 # module target
 from isogeo_pysdk import IsogeoUtils, __version__ as pysdk_version

@@ -13,7 +13,6 @@ import unittest
 
 # Isogeo
 from isogeo_pysdk import Isogeo, IsogeoChecker, __version__ as pysdk_version
-from six import string_types
 
 # #############################################################################
 # ######## Globals #################
@@ -59,7 +58,7 @@ class TestIsogeoChecker(unittest.TestCase):
             len(checker.check_bearer_validity(bearer, isogeo.connect())), 2
         )
         self.assertIsInstance(
-            checker.check_bearer_validity(bearer, isogeo.connect())[0], string_types
+            checker.check_bearer_validity(bearer, isogeo.connect())[0], str
         )
         self.assertIsInstance(
             checker.check_bearer_validity(bearer, isogeo.connect())[1], int
@@ -77,7 +76,7 @@ class TestIsogeoChecker(unittest.TestCase):
             len(checker.check_bearer_validity(bearer, isogeo.connect())), 2
         )
         self.assertIsInstance(
-            checker.check_bearer_validity(bearer, isogeo.connect())[0], string_types
+            checker.check_bearer_validity(bearer, isogeo.connect())[0], str
         )
         self.assertIsInstance(
             checker.check_bearer_validity(bearer, isogeo.connect())[1], int
@@ -248,27 +247,27 @@ class TestIsogeoChecker(unittest.TestCase):
         """Check sub resources"""
         # metadata sub resources - empty
         subresources = checker._check_filter_includes(includes=[], resource="metadata")
-        self.assertIsInstance(subresources, string_types)
+        self.assertIsInstance(subresources, str)
         # metadata sub resources - 1
         subresources = checker._check_filter_includes(
             includes=["links"], resource="metadata"
         )
-        self.assertIsInstance(subresources, string_types)
+        self.assertIsInstance(subresources, str)
         # metadata sub resources - >1
         subresources = checker._check_filter_includes(
             includes=["contacts", "links"], resource="metadata"
         )
-        self.assertIsInstance(subresources, string_types)
+        self.assertIsInstance(subresources, str)
         # metadata sub resources - all
         subresources = checker._check_filter_includes(
             includes="all", resource="metadata"
         )
-        self.assertIsInstance(subresources, string_types)
+        self.assertIsInstance(subresources, str)
         # keyword sub resources
         subresources = checker._check_filter_includes(
             includes="all", resource="keyword"
         )
-        self.assertIsInstance(subresources, string_types)
+        self.assertIsInstance(subresources, str)
 
     def test_check_filter_includes_bad(self):
         """Raise errors"""
@@ -283,20 +282,20 @@ class TestIsogeoChecker(unittest.TestCase):
         uuid_sample_2 = "0269803d50c446b09f5060ef7fe3e22a"
         # metadata sub resources - empty
         check = checker._check_filter_specific_md(specific_md=[])
-        self.assertIsInstance(check, string_types)
+        self.assertIsInstance(check, str)
         # metadata sub resources - 1
         check = checker._check_filter_specific_md(specific_md=[uuid_sample_1])
-        self.assertIsInstance(check, string_types)
+        self.assertIsInstance(check, str)
         # metadata sub resources - >1
         check = checker._check_filter_specific_md(
             specific_md=[uuid_sample_1, uuid_sample_2]
         )
-        self.assertIsInstance(check, string_types)
+        self.assertIsInstance(check, str)
         # metadata sub resources - with bad uuid
         check = checker._check_filter_specific_md(
             specific_md=[uuid_sample_1, "uuid_sample_2"]
         )
-        self.assertIsInstance(check, string_types)
+        self.assertIsInstance(check, str)
 
     def test_check_filter_specific_md_bad(self):
         """Raise errors"""
@@ -309,20 +308,20 @@ class TestIsogeoChecker(unittest.TestCase):
         kw_sample_2 = "keyword:isogeo:2014"
         # metadata sub resources - empty
         check = checker._check_filter_specific_tag(specific_tag=[])
-        self.assertIsInstance(check, string_types)
+        self.assertIsInstance(check, str)
         # metadata sub resources - 1
         check = checker._check_filter_specific_tag(specific_tag=[kw_sample_1])
-        self.assertIsInstance(check, string_types)
+        self.assertIsInstance(check, str)
         # metadata sub resources - >1
         check = checker._check_filter_specific_tag(
             specific_tag=[kw_sample_1, kw_sample_2]
         )
-        self.assertIsInstance(check, string_types)
+        self.assertIsInstance(check, str)
         # metadata sub resources - with bad uuid
         check = checker._check_filter_specific_tag(
             specific_tag=[kw_sample_1, "kw_sample_2"]
         )
-        self.assertIsInstance(check, string_types)
+        self.assertIsInstance(check, str)
 
     def test_check_filter_specific_tag_bad(self):
         """Raise errors"""
@@ -333,13 +332,13 @@ class TestIsogeoChecker(unittest.TestCase):
         """Check sub resources"""
         # metadata sub resources - empty
         subresource = checker._check_subresource(subresource="conditions")
-        self.assertIsInstance(subresource, string_types)
+        self.assertIsInstance(subresource, str)
         # metadata sub resources - 1
         subresource = checker._check_subresource(subresource="tags")
-        self.assertIsInstance(subresource, string_types)
+        self.assertIsInstance(subresource, str)
         # metadata sub resources - >1
         subresource = checker._check_subresource(subresource="serviceLayers")
-        self.assertIsInstance(subresource, string_types)
+        self.assertIsInstance(subresource, str)
 
     def test_check_subresource_bad(self):
         """Raise errors"""

@@ -4,11 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-"autopep8" = "*"
 codecov = "*"
-coverage = "*"
-requests = "==2.20.*"
-six = "*"
 pycodestyle = "*"
 python-dateutil = "*"
 twine = "*"
@@ -17,12 +13,10 @@ pytest= "*"
 pytest-cov="*"
 wheel = "*"
 mailchimp3 = "*"
-flake8 = "*"
-black = "*"
+black = "==19.3b0"
 
 [packages]
 requests = "==2.*"
-six = "*"
 
 [requires]
 python_version = "3.6"

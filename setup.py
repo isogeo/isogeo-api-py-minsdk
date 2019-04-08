@@ -44,29 +44,25 @@ setup(
     license='LGPL3',
     url="https://github.com/isogeo/isogeo-api-py-minsdk",
     project_urls={
-        'Docs': "http://isogeo-api-pysdk.rtfd.io/",
-        'Bug Reports': 'https://github.com/isogeo/isogeo-api-py-minsdk/issues',
-        'Source': 'https://github.com/isogeo/isogeo-api-py-minsdk',
-        'Isogeo API': 'https://www.gitbook.com/book/isogeo/api/details',
+        'Docs': "https://isogeo-api-pysdk.readthedocs.io/",
+        'Bug Reports': 'https://github.com/isogeo/isogeo-api-py-minsdk/issues/',
+        'Source': 'https://github.com/isogeo/isogeo-api-py-minsdk/',
+        'Isogeo API': 'help.isogeo.com/api/',
     },
     # dependencies
     install_requires=["requests>=2.9.1",
-                      "future",
-                      "six"
                       ],
     extras_require={
         "dev": ["configparser"],
         "test": ["coverage", "pycodestyle", "python-dateutil"],
     },
-    python_requires='>=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4',
+    python_requires='>=3.5, <4',
     # packaging
     packages=find_packages(exclude=['contrib', 'docs', 'tests']),
     include_package_data=True,
     classifiers=[
         "Intended Audience :: Developers",
         "Intended Audience :: Information Technology",
-        "Programming Language :: Python :: 2",
-        "Programming Language :: Python :: 2.7",
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
