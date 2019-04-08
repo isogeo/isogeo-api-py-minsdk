@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
-#!/usr/bin/env python
-from __future__ import (absolute_import, print_function, unicode_literals)
+#! python3
 
 # #############################################################################
 # ########## Libraries #############
@@ -21,8 +20,8 @@ from six import string_types
 # ##################################
 
 # API access
-app_id = environ.get('ISOGEO_API_DEV_ID')
-app_token = environ.get('ISOGEO_API_DEV_SECRET')
+app_id = environ.get("ISOGEO_API_DEV_ID")
+app_token = environ.get("ISOGEO_API_DEV_SECRET")
 
 checker = IsogeoChecker()
 
@@ -33,10 +32,11 @@ checker = IsogeoChecker()
 
 class TestAuthentication(unittest.TestCase):
     """Test authentication process."""
+
     if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")
         exit()
-    logging.debug('Isogeo PySDK version: {0}'.format(pysdk_version))
+    logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
     # standard methods
     def setUp(self):
@@ -51,65 +51,64 @@ class TestAuthentication(unittest.TestCase):
     def test_bad_secret_length(self):
         """API secret must be 64 length."""
         with self.assertRaises(ValueError):
-            isogeo = Isogeo(client_id="python-minimalist-sdk-dev-93test2017id64charsda805062youpi",
-                            client_secret="secretwithalengthlessthan64chars_thatshouldntbeacceptedbyisogeo",
-                            )
+            isogeo = Isogeo(
+                client_id="python-minimalist-sdk-dev-93test2017id64charsda805062youpi",
+                client_secret="secretwithalengthlessthan64chars_thatshouldntbeacceptedbyisogeo",
+            )
             del isogeo
 
     def test_bad_id_secret(self):
         """Bad API ID and secret."""
-        isogeo = Isogeo(client_id=app_id[:-2],
-                        client_secret=app_token)
+        isogeo = Isogeo(client_id=app_id[:-2], client_secret=app_token)
         with self.assertRaises(ValueError):
             isogeo.connect()
 
     def test_other_language(self):
         """Try to get other language."""
-        isogeo = Isogeo(client_id=app_id,
-                        client_secret=app_token,
-                        lang="ES")
+        isogeo = Isogeo(client_id=app_id, client_secret=app_token, lang="ES")
         # if other language passed the English is applied
         self.assertEqual(isogeo.lang, "en")
 
     def test_bad_platform(self):
         """Bad platform value."""
         with self.assertRaises(ValueError):
-            isogeo = Isogeo(client_id=app_id,
-                            client_secret=app_token,
-                            platform="skynet"
-                            )
+            isogeo = Isogeo(
+                client_id=app_id, client_secret=app_token, platform="skynet"
+            )
             del isogeo
 
     def test_bad_auth_mode(self):
         """Bad auth mode value."""
         with self.assertRaises(ValueError):
-            isogeo = Isogeo(client_id=app_id,
-                            client_secret=app_token,
-                            auth_mode="fingerprint"
-                            )
+            isogeo = Isogeo(
+                client_id=app_id, client_secret=app_token, auth_mode="fingerprint"
+            )
             del isogeo
 
     # Proxy management
     def test_proxy(self):
         """Simulate proxy settings assignment."""
-        Isogeo(client_id=app_id,
-               client_secret=app_token,
-               proxy={"http": "http://proxy.localhost:8888",
-                      "https": "http://proxy.localhost:8888",
-                      })
+        Isogeo(
+            client_id=app_id,
+            client_secret=app_token,
+            proxy={
+                "http": "http://proxy.localhost:8888",
+                "https": "http://proxy.localhost:8888",
+            },
+        )
 
     def test_bad_proxy(self):
         """Bad proxy settings."""
         with self.assertRaises(TypeError):
-            Isogeo(client_id=app_id,
-                   client_secret=app_token,
-                   proxy="this_is_my_string_proxy",
-                   )
+            Isogeo(
+                client_id=app_id,
+                client_secret=app_token,
+                proxy="this_is_my_string_proxy",
+            )
 
     def test_successed_auth_prod(self):
         """When a search works, check the response structure."""
-        isogeo = Isogeo(client_id=app_id,
-                        client_secret=app_token)
+        isogeo = Isogeo(client_id=app_id, client_secret=app_token)
         bearer = isogeo.connect()
         self.assertIsInstance(bearer, tuple)
         self.assertEqual(len(bearer), 2)
@@ -118,18 +117,16 @@ class TestAuthentication(unittest.TestCase):
 
     def test_successed_auth_qa(self):
         """Try to connect to QA platform."""
-        isogeo = Isogeo(client_id=app_id,
-                        client_secret=app_token,
-                        platform="qa"
-                        )
+        isogeo = Isogeo(client_id=app_id, client_secret=app_token, platform="qa")
         bearer = isogeo.connect()
         self.assertIsInstance(bearer, tuple)
         self.assertEqual(len(bearer), 2)
         self.assertIsInstance(bearer[0], string_types)
         self.assertIsInstance(bearer[1], int)
 
+
 # #############################################################################
 # ######## Standalone ##############
 # ##################################
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()
