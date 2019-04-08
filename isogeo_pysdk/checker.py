@@ -105,7 +105,7 @@ class IsogeoChecker(object):
     def __init__(self):
         super(IsogeoChecker, self).__init__()
 
-    def check_internet_connection(self, remote_server="api.isogeo.com"):
+    def check_internet_connection(self, remote_server: str = "api.isogeo.com") -> bool:
         """Test if an internet connection is operational.
         Src: http://stackoverflow.com/a/20913928/2556577.
 
@@ -123,7 +123,7 @@ class IsogeoChecker(object):
             logging.error(e)
             return False
 
-    def check_bearer_validity(self, token, connect_mtd):
+    def check_bearer_validity(self, token, connect_mtd) -> dict:
         """Check API Bearer token validity.
 
         Isogeo ID delivers authentication bearers which are valid during
@@ -167,7 +167,7 @@ class IsogeoChecker(object):
             )
             return False, response.status_code
 
-    def check_request_parameters(self, parameters=dict):
+    def check_request_parameters(self, parameters: dict = dict):
         """Check parameters passed to avoid errors and help debug.
 
         :param dict response: search request parameters
@@ -275,7 +275,7 @@ class IsogeoChecker(object):
                 " Must be one of: {}.".format(in_rel, " | ".join(GEORELATIONS))
             )
 
-    def check_is_uuid(self, uuid_str):
+    def check_is_uuid(self, uuid_str: str):
         """Check if it's an Isogeo UUID handling specific form.
 
         :param str uuid_str: UUID string to check
@@ -300,7 +300,7 @@ class IsogeoChecker(object):
             )
             return False
 
-    def check_edit_tab(self, tab, md_type):
+    def check_edit_tab(self, tab: str, md_type: str):
         """Check if asked tab is part of Isogeo web form and reliable
         with metadata type.
 
@@ -344,7 +344,7 @@ class IsogeoChecker(object):
             return True
 
     # -- FILTERS -------------------------------------------------------------
-    def _check_filter_specific_md(self, specific_md):
+    def _check_filter_specific_md(self, specific_md: list):
         """Check if specific_md parameter is valid.
 
         :param list specific_md: list of specific metadata UUID to check
@@ -364,7 +364,7 @@ class IsogeoChecker(object):
             raise TypeError("'specific_md' expects a list")
         return specific_md
 
-    def _check_filter_specific_tag(self, specific_tag):
+    def _check_filter_specific_tag(self, specific_tag: list):
         """Check if specific_tag parameter is valid.
 
         :param list specific_tag: list of specific tag to check
@@ -378,7 +378,7 @@ class IsogeoChecker(object):
             raise TypeError("'specific_tag' expects a list")
         return specific_tag
 
-    def _check_filter_includes(self, includes, resource="metadata"):
+    def _check_filter_includes(self, includes: list, resource: str = "metadata"):
         """Check if specific_resources parameter is valid.
 
         :param list includes: sub resources to check
@@ -405,7 +405,7 @@ class IsogeoChecker(object):
             raise TypeError("'includes' expect a list or a str='all'")
         return includes
 
-    def _check_subresource(self, subresource):
+    def _check_subresource(self, subresource: str):
         """Check if specific_resources parameter is valid.
 
         :param str resource: subresource to check.
@@ -454,7 +454,7 @@ class IsogeoChecker(object):
             raise TypeError("'subresource' expects a str")
         return subresource
 
-    def _convert_md_type(self, type_to_convert):
+    def _convert_md_type(self, type_to_convert: str):
         """Metadata types are not consistent in Isogeo API. A vector dataset is
          defined as vector-dataset in query filter but as vectorDataset in
          resource (metadata) details.

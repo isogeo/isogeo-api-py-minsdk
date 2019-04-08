@@ -19,9 +19,8 @@
 # Standard library
 import locale
 import logging
-from math import ceil
 import re
-from six import string_types
+from math import ceil
 from sys import platform as opersys
 
 # 3rd party library
@@ -445,7 +444,7 @@ class Isogeo(object):
         )
 
         # if subresource route
-        if isinstance(subresource, string_types):
+        if isinstance(subresource, str):
             subresource = "/{}".format(checker._check_subresource(subresource))
         else:
             subresource = ""
@@ -991,7 +990,7 @@ class Isogeo(object):
         )
 
         # if specific format
-        if isinstance(srs_code, string_types):
+        if isinstance(srs_code, str):
             specific_srs = "/{}".format(srs_code)
         else:
             specific_srs = ""
@@ -1025,7 +1024,7 @@ class Isogeo(object):
         )
 
         # if specific format
-        if isinstance(format_code, string_types):
+        if isinstance(format_code, str):
             specific_format = "/{}".format(format_code)
         else:
             specific_format = ""

@@ -14,23 +14,18 @@
 
 # Standard library
 import base64
-from configparser import SafeConfigParser
-import logging
 import json
-from os import path
-import re
+import logging
 import quopri
+import re
 import uuid
-
-# handling both Python branches
-try:
-    from urllib.parse import urlparse
-except ImportError:
-    from urlparse import urlparse
+from configparser import SafeConfigParser
+from os import path
+from pathlib import Path
+from urllib.parse import urlparse
 
 # 3rd party
 import requests
-from six import string_types
 
 # modules
 try:
@@ -101,7 +96,7 @@ class IsogeoUtils(object):
         },
     }
 
-    def __init__(self, proxies=dict()):
+    def __init__(self, proxies: dict = dict()):
         """Instanciate IsogeoUtils module.
 
         :param dict proxies: dictionary of proxy settings as described in
@@ -113,7 +108,7 @@ class IsogeoUtils(object):
         self.proxies = proxies
         super(IsogeoUtils, self).__init__()
 
-    def set_base_url(self, platform="prod"):
+    def set_base_url(self, platform: str = "prod"):
         """Set Isogeo base URLs according to platform.
 
         :param str platform: platform to use. Options:
@@ -149,7 +144,7 @@ class IsogeoUtils(object):
             ssl,
         )
 
-    def convert_uuid(self, in_uuid=str, mode=0):
+    def convert_uuid(self, in_uuid: str = str, mode: bool = 0):
         """Convert a metadata UUID to its URI equivalent. And conversely.
 
         :param str in_uuid: UUID or URI to convert
@@ -161,7 +156,7 @@ class IsogeoUtils(object):
 
         """
         # parameters check
-        if not isinstance(in_uuid, string_types):
+        if not isinstance(in_uuid, str):
             raise TypeError("'in_uuid' expected a str value.")
         else:
             pass
@@ -190,7 +185,7 @@ class IsogeoUtils(object):
         else:
             raise ValueError("'mode' must be  one of: 0 | 1 | 2")
 
-    def encoded_words_to_text(self, in_encoded_words):
+    def encoded_words_to_text(self, in_encoded_words: str):
         """Pull out the character set, encoding, and encoded text from the input
         encoded words. Next, it decodes the encoded words into a byte string,
         using either the quopri module or base64 module as determined by the
@@ -225,7 +220,7 @@ class IsogeoUtils(object):
             byte_string = quopri.decodestring(encoded_text)
         return byte_string.decode(charset)
 
-    def get_isogeo_version(self, component="api", prot="https"):
+    def get_isogeo_version(self, component: str = "api", prot: str = "https"):
         """Get Isogeo components versions. Authentication not required.
 
         :param str component: which platform component. Options:
@@ -261,7 +256,7 @@ class IsogeoUtils(object):
         return version_req.json().get("version")
 
     # -- URLs builders -------------------------------------------------------
-    def get_edit_url(self, md_id=str, md_type=str, owner_id=str, tab="identification"):
+    def get_edit_url(self, md_id: str = None, md_type: str = None, owner_id: str = None, tab: str = "identification"):
         """Constructs the edition URL of a metadata.
 
         :param str md_id: metadata/resource UUID
@@ -283,7 +278,7 @@ class IsogeoUtils(object):
             "/{}".format(self.APP_URLS.get(self.platform), owner_id, md_id, tab)
         )
 
-    def get_view_url(self, webapp="oc", **kwargs):
+    def get_view_url(self, webapp: str = "oc", **kwargs):
         """Constructs the view URL of a metadata.
 
         :param str webapp: web app destination
@@ -311,7 +306,7 @@ class IsogeoUtils(object):
                 " Try to register it.".format(self.WEBAPPS.keys(), webapp)
             )
 
-    def register_webapp(self, webapp_name, webapp_args, webapp_url):
+    def register_webapp(self, webapp_name: str, webapp_args: list, webapp_url: str):
         """Register a new WEBAPP to use with the view URL builder.
 
         :param str webapp_name: name of the web app to register
@@ -334,7 +329,7 @@ class IsogeoUtils(object):
         self.WEBAPPS[webapp_name] = {"args": webapp_args, "url": webapp_url}
 
     def get_url_base_from_url_token(
-        self, url_api_token="https://id.api.isogeo.com/oauth/token"
+        self, url_api_token: str = "https://id.api.isogeo.com/oauth/token"
     ):
         """Returns the Isogeo API root URL (which is not included into
         credentials file) from the token URL (which is always included).
@@ -348,7 +343,7 @@ class IsogeoUtils(object):
         return api_url_base.geturl()
 
     # -- SEARCH  --------------------------------------------------------------
-    def tags_to_dict(self, tags=dict, prev_query=dict, duplicated="rename"):
+    def tags_to_dict(self, tags=dict, prev_query=dict, duplicated: str = "rename"):
         """Reverse search tags dictionary to values as keys.
         Useful to populate filters comboboxes for example.
 
@@ -604,10 +599,11 @@ class IsogeoUtils(object):
         return tags_as_dicts, query_as_dicts
 
     # -- SHARES MANAGEMENT ----------------------------------------------------
-    def share_extender(self, share, results_filtered):
+    def share_extender(self, share: dict, results_filtered: dict):
         """Extend share model with additional informations.
 
         :param dict share: share returned by API
+        :param dict results_filtered: filtered search result
         """
         # add share administration URL
         creator_id = share.get("_creator").get("_tag")[6:]
@@ -628,7 +624,7 @@ class IsogeoUtils(object):
         return share
 
     # -- API AUTH ------------------------------------------------------------
-    def credentials_loader(self, in_credentials="client_secrets.json"):
+    def credentials_loader(self, in_credentials: str = "client_secrets.json") -> dict:
         """Loads API credentials from a file, JSON or INI.
 
         :param str in_credentials: path to the credentials file. By default,

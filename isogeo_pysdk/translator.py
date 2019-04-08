@@ -77,7 +77,7 @@ dict_md_fields_fr = {
         "W": "semaine(s)",
         "D": "jour(s)",
         "H": "heure(s)",
-        "M": "minute(s)",
+        "m": "minute(s)",
         "S": "seconde(s)",
     },
     "events": {
@@ -158,7 +158,7 @@ dict_md_fields_en = {
         "W": "week(s)",
         "D": "day(s)",
         "H": "hour(s)",
-        "M": "minute(s)",
+        "m": "minute(s)",
         "S": "second(s)",
     },
     "events": {"update": "Update", "creation": "Creation", "published": "Publication"},
@@ -194,7 +194,7 @@ class IsogeoTranslator(object):
 
         super(IsogeoTranslator, self).__init__()
 
-    def tr(self, subdomain: str, string_to_translate: str = ""):
+    def tr(self, subdomain: str, string_to_translate: str = "") -> str:
         """Returns translation of string passed.
 
         :param str subdomain: subpart of strings dictionary.
