@@ -8,14 +8,17 @@
 from os import path
 
 # Isogeo
-from isogeo_pysdk import (Isogeo,
-                          IsogeoUtils as utils,
-                          IsogeoTranslator,
-                          __version__ as pysdk_version)
+from isogeo_pysdk import (
+    Isogeo,
+    IsogeoUtils as utils,
+    IsogeoTranslator,
+    __version__ as pysdk_version,
+)
 
 # UI
 from ttkwidgets.autocomplete import AutocompleteCombobox, AutocompleteEntry
 from ttkwidgets.frames import Balloon
+
 try:
     import Tkinter as tk
     import ttk
@@ -78,9 +81,11 @@ RRRWENHwRQEBADs="""
 
 # Load Isogeo credentials
 api_credentials = utils.credentials_loader("client_secrets.json")
-isogeo = Isogeo(client_id=api_credentials.get("client_id"),
-                client_secret=api_credentials.get("client_secret"),
-                lang=language)
+isogeo = Isogeo(
+    client_id=api_credentials.get("client_id"),
+    client_secret=api_credentials.get("client_secret"),
+    lang=language,
+)
 token = isogeo.connect()
 
 # Get basic information
@@ -90,11 +95,7 @@ app_props = isogeo.app_properties
 print(app_props)
 
 # Get tags to populate filters
-search = isogeo.search(token,
-                       page_size=0,
-                       whole_share=0,
-                       augment=1,
-                       tags_as_dicts=1)
+search = isogeo.search(token, page_size=0, whole_share=0, augment=1, tags_as_dicts=1)
 tags = search.get("tags")
 
 # In case of a need of translation
@@ -103,8 +104,7 @@ tr = IsogeoTranslator(language)
 # instanciate main window
 window = tk.Tk()
 window.resizable(width=True, height=True)
-window.title("Isogeo Python SD v{} - Sample desktop search form"
-             .format(pysdk_version))
+window.title("Isogeo Python SD v{} - Sample desktop search form".format(pysdk_version))
 
 # styling
 style = ttk.Style()
@@ -112,16 +112,35 @@ style = ttk.Style()
 s1 = tk.PhotoImage("search1", data=data, format="gif -index 0")
 s2 = tk.PhotoImage("search2", data=data, format="gif -index 1")
 
-style.element_create("Search.field", "image", "search1",
-                     ("focus", "search2"), border=[22, 7, 14], sticky="ew")
+style.element_create(
+    "Search.field",
+    "image",
+    "search1",
+    ("focus", "search2"),
+    border=[22, 7, 14],
+    sticky="ew",
+)
 
-style.layout("Search.entry", [
-    ("Search.field", {"sticky": "nswe", "border": 1, "children":
-                      [("Entry.padding", {"sticky": "nswe", "children":
-                                          [("Entry.textarea", {
-                                            "sticky": "nswe"})]
-                                          })]
-                      })]
+style.layout(
+    "Search.entry",
+    [
+        (
+            "Search.field",
+            {
+                "sticky": "nswe",
+                "border": 1,
+                "children": [
+                    (
+                        "Entry.padding",
+                        {
+                            "sticky": "nswe",
+                            "children": [("Entry.textarea", {"sticky": "nswe"})],
+                        },
+                    )
+                ],
+            },
+        )
+    ],
 )
 
 style.configure("Search.entry")
@@ -142,36 +161,33 @@ lbl_srs = ttk.Label(window, text="Source spatial reference system")
 lbl_types = ttk.Label(window, text="Type")
 
 # add form widgets
-ent_search = AutocompleteEntry(window, style="Search.entry", width=20, completevalues=["bonjour", "bienvenue"])
+ent_search = AutocompleteEntry(
+    window, style="Search.entry", width=20, completevalues=["bonjour", "bienvenue"]
+)
 
-cb_fltr_actions = AutocompleteCombobox(window,
-                                       completevalues=list(tags.get("actions")))
-cb_fltr_contacts = AutocompleteCombobox(window,
-                                        completevalues=list(tags.get("contacts")))
-cb_fltr_formats = AutocompleteCombobox(window,
-                                       completevalues=list(tags.get("formats")))
-cb_fltr_inspires = AutocompleteCombobox(window,
-                                        completevalues=list(tags.get("inspires")))
-cb_fltr_keywords = AutocompleteCombobox(window,
-                                        completevalues=list(tags.get("keywords")))
-cb_fltr_licenses = AutocompleteCombobox(window,
-                                        completevalues=list(tags.get("licenses")))
-cb_fltr_owners = AutocompleteCombobox(window,
-                                      completevalues=list(tags.get("owners")))
-cb_fltr_shares = AutocompleteCombobox(window,
-                                      completevalues=list(tags.get("shares")))
-cb_fltr_srs = AutocompleteCombobox(window,
-                                   completevalues=list(tags.get("srs")))
-cb_fltr_types = AutocompleteCombobox(window,
-                                     completevalues=list(tags.get("types")))
+cb_fltr_actions = AutocompleteCombobox(window, completevalues=list(tags.get("actions")))
+cb_fltr_contacts = AutocompleteCombobox(
+    window, completevalues=list(tags.get("contacts"))
+)
+cb_fltr_formats = AutocompleteCombobox(window, completevalues=list(tags.get("formats")))
+cb_fltr_inspires = AutocompleteCombobox(
+    window, completevalues=list(tags.get("inspires"))
+)
+cb_fltr_keywords = AutocompleteCombobox(
+    window, completevalues=list(tags.get("keywords"))
+)
+cb_fltr_licenses = AutocompleteCombobox(
+    window, completevalues=list(tags.get("licenses"))
+)
+cb_fltr_owners = AutocompleteCombobox(window, completevalues=list(tags.get("owners")))
+cb_fltr_shares = AutocompleteCombobox(window, completevalues=list(tags.get("shares")))
+cb_fltr_srs = AutocompleteCombobox(window, completevalues=list(tags.get("srs")))
+cb_fltr_types = AutocompleteCombobox(window, completevalues=list(tags.get("types")))
 
 button = tk.Button(window, text="Close", command=window.destroy)
 
 # widgets griding
-d_pad = {"padx": 5,
-         "pady": 5,
-         "sticky": "NSEW"
-         }
+d_pad = {"padx": 5, "pady": 5, "sticky": "NSEW"}
 ent_search.grid(row=1, columnspan=2, **d_pad)
 
 lbl_actions.grid(row=2, column=0, **d_pad)

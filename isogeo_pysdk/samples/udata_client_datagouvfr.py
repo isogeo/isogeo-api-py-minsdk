@@ -1,15 +1,12 @@
 # -*- coding: UTF-8 -*-
 #!/usr/bin/env python
-from __future__ import (absolute_import, print_function, unicode_literals)
 # -----------------------------------------------------------------------------
 # Name:         UData Python Client
 # Purpose:      Abstraction class to manipulate data.gouv.fr API
 #
 # Author:       Julien Moura (@geojulien)
 #
-# Python:       2.7.x
-# Created:      22/04/2017
-# Updated:      10/06/2017
+# Python:       3.6+
 # -----------------------------------------------------------------------------
 
 # #############################################################################
@@ -41,6 +38,7 @@ class DataGouvFr(object):
 
     Full doc at (French): https://www.data.gouv.fr/fr/apidoc/
     """
+
     base_url = "https://www.data.gouv.fr/api/1/"
 
     def __init__(self, api_key=environ.get("DATAGOUV_API_KEY", None)):
@@ -58,48 +56,56 @@ class DataGouvFr(object):
     def org_datasets(self, org_id="isogeo", page_size=25, x_fields=None):
         """"""
         # handling request parameters
-        payload = {'org': org_id,
-                   'size': page_size,
-                   'X-Fields': x_fields,
-                   }
+        payload = {"org": org_id, "size": page_size, "X-Fields": x_fields}
 
         # search request
         # head = {"X-API-KEY": self.api_key}
-        search_url = "{}organizations/{}/datasets/"\
-                     .format(self.base_url,
-                             org_id,
-                             # page_size
-                             )
+        search_url = "{}organizations/{}/datasets/".format(
+            self.base_url,
+            org_id,
+            # page_size
+        )
 
-        search_req = requests.get(search_url,
-                                  # headers=head,
-                                  params=payload
-                                  )
+        search_req = requests.get(
+            search_url,
+            # headers=head,
+            params=payload,
+        )
 
         # serializing result into dict and storing resources in variables
         logger.debug(search_req.url)
         return search_req.json()
 
-    def search_datasets(self, license=None, format=None, query=None, featured=None, owner=None, organization=None, badge=None, reuses=None, page_size=20, x_fields=None):
+    def search_datasets(
+        self,
+        license=None,
+        format=None,
+        query=None,
+        featured=None,
+        owner=None,
+        organization=None,
+        badge=None,
+        reuses=None,
+        page_size=20,
+        x_fields=None,
+    ):
         """Search datasets within uData portal."""
         # handling request parameters
-        payload = {'badge': badge,
-                   'size': page_size,
-                   'X-Fields': x_fields,
-                   }
+        payload = {"badge": badge, "size": page_size, "X-Fields": x_fields}
 
         # search request
         # head = {"X-API-KEY": self.api_key}
-        search_url = "{}/datasets"\
-                     .format(self.base_url,
-                             # org_id,
-                             # page_size
-                             )
+        search_url = "{}/datasets".format(
+            self.base_url,
+            # org_id,
+            # page_size
+        )
 
-        search_req = requests.get(search_url,
-                                  # headers=head,
-                                  params=payload
-                                  )
+        search_req = requests.get(
+            search_url,
+            # headers=head,
+            params=payload,
+        )
 
         # serializing result into dict and storing resources in variables
         logger.debug(search_req.url)
@@ -112,11 +118,15 @@ class DataGouvFr(object):
         # badges
         self._DST_BADGES = requests.get(self.base_url + "datasets/badges/").json()
         # licences
-        self._DST_LICENSES = {l.get("id"): l.get("title")
-                          for l in requests.get(self.base_url + "datasets/licenses").json()}
+        self._DST_LICENSES = {
+            l.get("id"): l.get("title")
+            for l in requests.get(self.base_url + "datasets/licenses").json()
+        }
         # frequencies
-        self._DST_FREQUENCIES = {f.get("id"): f.get("label")
-                             for f in requests.get(self.base_url + "datasets/frequencies").json()}
+        self._DST_FREQUENCIES = {
+            f.get("id"): f.get("label")
+            for f in requests.get(self.base_url + "datasets/frequencies").json()
+        }
         # ORGANIZATIONS --
         # badges
         self._ORG_BADGES = requests.get(self.base_url + "organizations/badges/").json()
@@ -128,16 +138,31 @@ class DataGouvFr(object):
         #                      for f in requests.get(self.base_url + "datasets/frequencies").json()}
         # SPATIAL --
         # granularities
-        self._GRANULARITIES = {g.get("id"): g.get("name")
-                               for g in requests.get(self.base_url + "spatial/granularities").json()}
+        self._GRANULARITIES = {
+            g.get("id"): g.get("name")
+            for g in requests.get(self.base_url + "spatial/granularities").json()
+        }
         # levels
-        self._LEVELS = {g.get("id"): g.get("name")
-                        for g in requests.get(self.base_url + "spatial/levels").json()}
+        self._LEVELS = {
+            g.get("id"): g.get("name")
+            for g in requests.get(self.base_url + "spatial/levels").json()
+        }
         # MISC --
         # facets
-        self._FACETS = ("all", "badge", "featured", "format", "geozone",
-                        "granularity", "license", "owner", "organization",
-                        "reuses", "tag", "temporal_coverage")
+        self._FACETS = (
+            "all",
+            "badge",
+            "featured",
+            "format",
+            "geozone",
+            "granularity",
+            "license",
+            "owner",
+            "organization",
+            "reuses",
+            "tag",
+            "temporal_coverage",
+        )
         # reuses
         self._REUSES = ("none", "few", "quite", "many")
 
@@ -145,13 +170,14 @@ class DataGouvFr(object):
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
-if __name__ == '__main__':
+if __name__ == "__main__":
     """ standalone execution """
     # some organizations to play with
-    orgas = {"ign": "534fff80a3a7292c64a77e41",
-             "insee": "534fff81a3a7292c64a77e5c",
-             "isogeo": "54a13044c751df096c04805a",
-             }
+    orgas = {
+        "ign": "534fff80a3a7292c64a77e41",
+        "insee": "534fff81a3a7292c64a77e5c",
+        "isogeo": "54a13044c751df096c04805a",
+    }
     # start playing
     api_key = environ.get("DATAGOUV_API_KEY")
     app = DataGouvFr()

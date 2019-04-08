@@ -35,35 +35,30 @@ out_dir.mkdir(exist_ok=True)
 # ######### Main program ###########
 # ##################################
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """Standalone execution"""
     chrono_start = default_timer()  # chrono
 
     # Authentication #########
-    app_id = environ.get('ISOGEO_API_DEV_ID')
-    app_token = environ.get('ISOGEO_API_DEV_SECRET')
+    app_id = environ.get("ISOGEO_API_DEV_ID")
+    app_token = environ.get("ISOGEO_API_DEV_SECRET")
 
     # start Isogeo
-    isogeo = Isogeo(client_id=app_id,
-                    client_secret=app_token
-                    )
+    isogeo = Isogeo(client_id=app_id, client_secret=app_token)
 
     # getting a token
     token = isogeo.connect()
 
     # Process #########
-    latest_data_modified = isogeo.search(token,
-                                         page_size=10,
-                                         order_by="modified",
-                                         whole_share=0
-                                         )
+    latest_data_modified = isogeo.search(
+        token, page_size=10, order_by="modified", whole_share=0
+    )
 
     for md in latest_data_modified.get("results"):
-        title = md.get('title')
-        xml_stream = isogeo.xml19139(token,
-                                     md.get("_id"))
+        title = md.get("title")
+        xml_stream = isogeo.xml19139(token, md.get("_id"))
 
-        with open(out_dir / "{}.xml".format(title), 'wb') as fd:
+        with open(out_dir / "{}.xml".format(title), "wb") as fd:
             for block in xml_stream.iter_content(1024):
                 fd.write(block)
 

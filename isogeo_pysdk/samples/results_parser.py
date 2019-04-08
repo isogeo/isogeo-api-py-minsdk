@@ -47,31 +47,31 @@ def search_tags_as_filters(tags):
     for tag in sorted(tags.keys()):
         i += 1
         # actions
-        if tag.startswith('action'):
+        if tag.startswith("action"):
             actions[tags.get(tag, tag)] = tag
             continue
         # compliance INSPIRE
-        elif tag.startswith('conformity'):
+        elif tag.startswith("conformity"):
             compliance = 1
             continue
         # contacts
-        elif tag.startswith('contact'):
+        elif tag.startswith("contact"):
             contacts[tags.get(tag)] = tag
             continue
         # formats
-        elif tag.startswith('format'):
+        elif tag.startswith("format"):
             formats[tags.get(tag)] = tag
             continue
         # INSPIRE themes
-        elif tag.startswith('keyword:inspire'):
+        elif tag.startswith("keyword:inspire"):
             inspire[tags.get(tag)] = tag
             continue
         # keywords
-        elif tag.startswith('keyword:isogeo'):
+        elif tag.startswith("keyword:isogeo"):
             keywords[tags.get(tag)] = tag
             continue
         # licenses
-        elif tag.startswith('license'):
+        elif tag.startswith("license"):
             licenses[tags.get(tag)] = tag
             continue
         # owners
@@ -79,11 +79,11 @@ def search_tags_as_filters(tags):
             owners[tags.get(tag)] = tag
             continue
         # SRS
-        elif tag.startswith('coordinate-system'):
+        elif tag.startswith("coordinate-system"):
             srs[tags.get(tag)] = tag
             continue
         # types
-        elif tag.startswith('type'):
+        elif tag.startswith("type"):
             md_types[tags.get(tag)] = tag
             if tag in ("type:vector-dataset", "type:raster-dataset"):
                 type_dataset += 1
@@ -123,18 +123,19 @@ def search_tags_as_filters(tags):
     #                            len(unused)
     #                            ))
     # storing dicts
-    tags_parsed = {"actions": actions,
-                   "compliance": compliance,
-                   "contacts": contacts,
-                   "formats": formats,
-                   "inspire": inspire,
-                   "keywords": keywords,
-                   "licenses": licenses,
-                   "owners": owners,
-                   "srs": srs,
-                   "types": md_types,
-                   "unused": unused
-                   }
+    tags_parsed = {
+        "actions": actions,
+        "compliance": compliance,
+        "contacts": contacts,
+        "formats": formats,
+        "inspire": inspire,
+        "keywords": keywords,
+        "licenses": licenses,
+        "owners": owners,
+        "srs": srs,
+        "types": md_types,
+        "unused": unused,
+    }
 
     # method ending
     return tags_parsed
@@ -144,12 +145,11 @@ def search_tags_as_filters(tags):
 # ######### Main program ###########
 # ##################################
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     """Standalone execution"""
     # check file presence
     if not path.isfile("out_api_search_empty.json"):
-        print("Input file not found."
-              "You should first execute store_api_responses.py")
+        print("Input file not found." "You should first execute store_api_responses.py")
         sys.exit()
     else:
         pass

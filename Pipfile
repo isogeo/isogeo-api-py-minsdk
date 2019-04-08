@@ -18,6 +18,7 @@ pytest-cov="*"
 wheel = "*"
 mailchimp3 = "*"
 flake8 = "*"
+black = "*"
 
 [packages]
 requests = "==2.*"

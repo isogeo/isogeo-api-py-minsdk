@@ -16,7 +16,10 @@ py -3 -m venv .venv_packaging
 "-- STEP -- Install and display dependencies within the virtualenv"
 python -m pip install -U pip
 pip install --upgrade -r ./requirements.txt
-pip install --upgrade twine
+pip install --upgrade black twine
+
+# apply black linter
+python -m black --target-version=py36 .\isogeo_pysdk
 
 # remove previous builds
 "-- STEP -- Clean up the previous builds"

@@ -5,6 +5,7 @@
 
 jobs:
 
+# UNIT TESTS
 - job: 'Test'
   pool:
     vmImage: 'Ubuntu 16.04'
@@ -56,8 +57,30 @@ jobs:
       summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
       reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
 
-- job: 'Build'
+# LINT AND FORMATTING CODE
+- job: 'Lint'
   dependsOn: 'Test'
+  pool:
+    vmImage: "vs2017-win2016"
+
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.6'
+      architecture: 'x64'
+      addToPath: true
+
+  - script: |
+      python -m pip install -U pip
+      pip install -U black
+    displayName: 'Install black dependencies'
+
+  - script: python -m black --target-version=py36 .\isogeo_pysdk
+    displayName: 'Apply black code formatting'
+
+# BUILD
+- job: 'Build'
+  dependsOn: 'Lint'
   pool:
     vmImage: "vs2017-win2016"
 
