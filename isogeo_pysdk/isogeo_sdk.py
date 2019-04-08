@@ -80,13 +80,13 @@ class Isogeo(object):
 
     def __init__(
         self,
-        client_id,
-        client_secret,
-        proxy=None,
-        auth_mode="group",
-        platform="prod",
-        lang="en",
-        app_name="isogeo-pysdk/{}".format(version),
+        client_id: str,
+        client_secret: str,
+        proxy: dict = None,
+        auth_mode: str = "group",
+        platform: str = "prod",
+        lang: str = "en",
+        app_name: str = "isogeo-pysdk/{}".format(version),
     ):
         """Isogeo API class initialization."""
         super(Isogeo, self).__init__()
@@ -174,7 +174,7 @@ class Isogeo(object):
         logging.debug("Isogeo DB version: {}".format(utils.get_isogeo_version("db")))
 
     # -- API CONNECTION ------------------------------------------------------
-    def connect(self, client_id=None, client_secret=None, auth_mode="group"):
+    def connect(self, client_id: str = None, client_secret: str = None) -> dict:
         """Authenticate application and get token bearer.
 
         Isogeo API uses oAuth 2.0 protocol (http://tools.ietf.org/html/rfc6749)
@@ -230,7 +230,7 @@ class Isogeo(object):
 
     # -- PROPERTIES -----------------------------------------------------------
     @property
-    def header(self):
+    def header(self) -> dict:
         if self.auth_mode == "group":
             return {
                 "Authorization": "Bearer {}".format(self.token.get("access_token")),
@@ -242,23 +242,23 @@ class Isogeo(object):
     def search(
         self,
         token,
-        query="",
+        query: str = "",
         bbox=None,
         poly=None,
         georel=None,
-        order_by="_created",
-        order_dir="desc",
-        page_size=100,
-        offset=0,
-        share=None,
-        specific_md=[],
-        include=[],
-        whole_share=True,
-        check=True,
-        augment=False,
-        tags_as_dicts=False,
-        prot="https",
-    ):
+        order_by: str = "_created",
+        order_dir: str = "desc",
+        page_size: int = 100,
+        offset: int = 0,
+        share: str = None,
+        specific_md: list = [],
+        include: list = [],
+        whole_share: bool = True,
+        check: bool = True,
+        augment: bool = False,
+        tags_as_dicts: bool = False,
+        prot: str = "https",
+    ) -> dict:
         """Search within the resources shared to the application.
 
         It's the main method to use.
@@ -423,7 +423,14 @@ class Isogeo(object):
         # end of method
         return search_rez
 
-    def resource(self, token, id_resource, subresource=None, include=[], prot="https"):
+    def resource(
+        self,
+        token,
+        id_resource: str,
+        subresource=None,
+        include: list = [],
+        prot: str = "https",
+    ) -> dict:
         """Get complete or partial metadata about one specific resource.
 
         :param str token: API auth token
@@ -464,7 +471,7 @@ class Isogeo(object):
 
     # -- SHARES and APPLICATIONS ---------------------------------------------
 
-    def shares(self, token, prot="https"):
+    def shares(self, token, prot: str = "https") -> dict:
         """Get information about shares which feed the application.
 
         :param str token: API auth token
@@ -489,7 +496,7 @@ class Isogeo(object):
         # end of method
         return shares_req.json()
 
-    def share(self, token, share_id, augment=False, prot="https"):
+    def share(self, token, share_id: str, augment: bool = False, prot: str = "https") -> dict:
         """Get information about a specific share and its applications.
 
         :param str token: API auth token
@@ -529,7 +536,7 @@ class Isogeo(object):
         return share
 
     # -- LICENCES ---------------------------------------------
-    def licenses(self, token, owner_id, prot="https"):
+    def licenses(self, token, owner_id: str, prot: str = "https") -> dict:
         """Get information about licenses owned by a specific workgroup.
 
         :param str token: API auth token
@@ -566,7 +573,7 @@ class Isogeo(object):
         # end of method
         return licenses_req.json()
 
-    def license(self, token, license_id, prot="https"):
+    def license(self, token, license_id: str, prot: str = "https") -> dict:
         """Get details about a specific license.
 
         :param str token: API auth token
@@ -603,7 +610,7 @@ class Isogeo(object):
 
     # -- KEYWORDS -----------------------------------------------------------
 
-    def thesauri(self, token, prot="https"):
+    def thesauri(self, token, prot: str = "https") -> dict:
         """Get list of available thesauri.
 
         :param str token: API auth token
@@ -629,8 +636,11 @@ class Isogeo(object):
         return thez_req.json()
 
     def thesaurus(
-        self, token, thez_id="1616597fbc4348c8b11ef9d59cf594c8", prot="https"
-    ):
+        self,
+        token,
+        thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
+        prot: str = "https",
+    ) -> dict:
         """Get a thesaurus.
 
         :param str token: API auth token
@@ -668,17 +678,17 @@ class Isogeo(object):
     def keywords(
         self,
         token,
-        thez_id="1616597fbc4348c8b11ef9d59cf594c8",
-        query="",
-        offset=0,
-        order_by="text",
-        order_dir="desc",
-        page_size=20,
-        specific_md=[],
-        specific_tag=[],
-        include=[],
-        prot="https",
-    ):
+        thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
+        query: str = "",
+        offset: int = 0,
+        order_by: str = "text",
+        order_dir: str = "desc",
+        page_size: int = 20,
+        specific_md: list = [],
+        specific_tag: list = [],
+        include: list = [],
+        prot: str = "https",
+    ) -> dict:
         """Search for keywords within a specific thesaurus.
 
         :param str token: API auth token
@@ -734,8 +744,13 @@ class Isogeo(object):
     # -- DOWNLOADS -----------------------------------------------------------
 
     def dl_hosted(
-        self, token, resource_link, encode_clean=1, proxy_url=None, prot="https"
-    ):
+        self,
+        token,
+        resource_link: dict,
+        encode_clean: bool = 1,
+        proxy_url=None,
+        prot: str = "https",
+    ) -> tuple:
         """Download hosted resource.
 
         :param str token: API auth token
@@ -830,7 +845,7 @@ class Isogeo(object):
         # end of method
         return (hosted_req, filename, out_size)
 
-    def xml19139(self, token, id_resource, proxy_url=None, prot="https"):
+    def xml19139(self, token, id_resource: str, proxy_url=None, prot: str = "https"):
         """Get resource exported into XML ISO 19139.
 
         :param str token: API auth token
@@ -871,7 +886,7 @@ class Isogeo(object):
 
     # -- UTILITIES -----------------------------------------------------------
 
-    def add_tags_shares(self, token, tags=dict()):
+    def add_tags_shares(self, token, tags: dict = dict()):
         """Add shares list to the tags attributes in search results.
 
         :param str token: API auth token
@@ -892,7 +907,7 @@ class Isogeo(object):
         # update query tags
         tags.update(self.shares_id)
 
-    def get_app_properties(self, token, prot="https"):
+    def get_app_properties(self, token, prot: str = "https"):
         """Get information about the application declared on Isogeo.
 
         :param str token: API auth token
@@ -921,7 +936,7 @@ class Isogeo(object):
         else:
             pass
 
-    def get_link_kinds(self, token, prot="https"):
+    def get_link_kinds(self, token, prot: str = "https") -> dict:
         """Get available links kinds and corresponding actions.
 
         :param str token: API auth token
@@ -946,7 +961,7 @@ class Isogeo(object):
         # end of method
         return req.json()
 
-    def get_directives(self, token, prot="https"):
+    def get_directives(self, token, prot: str = "https") -> dict:
         """Get environment directives which represent INSPIRE limitations.
 
         :param str token: API auth token
@@ -971,7 +986,7 @@ class Isogeo(object):
         # end of method
         return req.json()
 
-    def get_coordinate_systems(self, token, srs_code=None, prot="https"):
+    def get_coordinate_systems(self, token, srs_code: str = None, prot: str = "https") -> dict:
         """Get available coordinate systems in Isogeo API.
 
         :param str token: API auth token
@@ -1005,7 +1020,7 @@ class Isogeo(object):
         # end of method
         return req.json()
 
-    def get_formats(self, token, format_code=None, prot="https"):
+    def get_formats(self, token, format_code: str = None, prot: str = "https") -> dict:
         """Get formats.
 
         :param str token: API auth token
