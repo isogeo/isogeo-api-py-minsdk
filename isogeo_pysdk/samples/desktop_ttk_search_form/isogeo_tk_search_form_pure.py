@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#! python3
 
 # ############################################################################
 # ########## Libraries #############
@@ -10,7 +11,7 @@ from os import path
 # Isogeo
 from isogeo_pysdk import (
     Isogeo,
-    IsogeoUtils as utils,
+    IsogeoUtils,
     IsogeoTranslator,
     __version__ as pysdk_version,
 )
@@ -32,6 +33,7 @@ except ImportError:
 # ##################################
 
 language = "EN"
+utils = IsogeoUtils()
 
 # UI quick and dirty styling
 data = """

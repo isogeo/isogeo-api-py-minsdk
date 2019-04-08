@@ -14,7 +14,7 @@ Run this sample:
 
 ### With your installed Python
 
-1. Create a virtualenv (PowerShell: `py -3 -m  venv env`)
+1. Create a virtualenv (PowerShell: `py -3 -m  venv env`), then activate it
 
 2. Install prerequisites:
 

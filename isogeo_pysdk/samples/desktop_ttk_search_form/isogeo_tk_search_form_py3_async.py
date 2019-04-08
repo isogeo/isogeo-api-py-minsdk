@@ -5,23 +5,19 @@
 # ########## Libraries #############
 # ##################################
 
+# async
+import asyncio
+
 # basics
 import logging
+import threading
 from os import path
 from time import sleep
 from webbrowser import open_new_tab
 
-# async
-import asyncio
-import threading
-
 # Isogeo
-from isogeo_pysdk import (
-    Isogeo,
-    IsogeoUtils as utils,
-    IsogeoTranslator,
-    __version__ as pysdk_version,
-)
+from isogeo_pysdk import Isogeo, IsogeoTranslator, IsogeoUtils
+from isogeo_pysdk import __version__ as pysdk_version
 
 # UI
 from ttkwidgets.autocomplete import AutocompleteCombobox, AutocompleteEntry
@@ -40,6 +36,8 @@ except ImportError:
 # ##################################
 
 language = "EN"
+
+utils = IsogeoUtils()
 
 # UI quick and dirty styling
 data = """
