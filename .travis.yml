@@ -21,17 +21,11 @@ cache: pip
 # dependencies
 install:
   - "pip install --upgrade -r tests/requirements_test.txt"
-  - "pip install git+https://github.com/Isogeo/isogeo-api-py-minsdk"
 
 # run tests
 script:
-  #- python -m unittest discover
   # coverage
   - coverage run -m unittest discover -s tests/
-  # PEP 8
-  - pycodestyle isogeo_pysdk/isogeo_sdk.py --ignore="E265,E501" --statistics --show-source
-  - pycodestyle isogeo_pysdk/checker.py --ignore="E265,E501" --statistics --show-source
-  - pycodestyle isogeo_pysdk/utils.py --ignore="E265,E501" --statistics --show-source
 
 # coverage reporting
 after_success:

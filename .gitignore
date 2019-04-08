@@ -86,6 +86,9 @@ virtualenv/
 *.pypirc
 *env*
 
+# tests
+junit/*
+
 # PTVS
 *.ptvs
 *.vs
