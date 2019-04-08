@@ -17,5 +17,7 @@
     "python.linting.flake8Enabled": true,
     "travis.username": "isogeo",
     "travis.repository": "isogeo-api-py-minsdk",
-    "python.linting.pylintEnabled": true
+    "python.linting.pylintEnabled": true,
+    "python.formatting.provider": "black",
+    "editor.wordWrapColumn": 88
 }   
