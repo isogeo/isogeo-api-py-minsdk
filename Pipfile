@@ -8,8 +8,6 @@ name = "pypi"
 codecov = "*"
 coverage = "*"
 requests = "==2.20.*"
-configparser = "*"
-future = "*"
 six = "*"
 pycodestyle = "*"
 python-dateutil = "*"
@@ -24,8 +22,6 @@ flake8 = "*"
 [packages]
 requests = "==2.*"
 six = "*"
-configparser = "*"
-future = "*"
 
 [requires]
 python_version = "3.6"
