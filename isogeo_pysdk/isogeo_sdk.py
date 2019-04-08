@@ -354,12 +354,11 @@ class Isogeo(object):
             pass
 
         # search request
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
         search_url = "{}://v1.{}.isogeo.com/resources/search".format(prot, self.api_url)
         try:
             search_req = requests.get(
                 search_url,
-                headers=head,
+                headers=self.header,
                 params=payload,
                 proxies=self.proxies,
                 verify=self.ssl,
@@ -386,7 +385,7 @@ class Isogeo(object):
                 payload["_offset"] = idx * 100
                 search_req = requests.get(
                     search_url,
-                    headers=head,
+                    headers=self.header,
                     params=payload,
                     proxies=self.proxies,
                     verify=self.ssl,
@@ -455,14 +454,16 @@ class Isogeo(object):
 
         # handling request parameters
         payload = {"id": id_resource, "_include": include}
-        print(self.header)
         # resource search
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
         md_url = "{}://v1.{}.isogeo.com/resources/{}{}".format(
             prot, self.api_url, id_resource, subresource
         )
         resource_req = requests.get(
-            md_url, headers=head, params=payload, proxies=self.proxies, verify=self.ssl
+            md_url,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
         )
         checker.check_api_response(resource_req)
 
@@ -484,10 +485,9 @@ class Isogeo(object):
         )
 
         # passing auth parameter
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
         shares_url = "{}://v1.{}.isogeo.com/shares/".format(prot, self.api_url)
         shares_req = requests.get(
-            shares_url, headers=head, proxies=self.proxies, verify=self.ssl
+            shares_url, headers=self.header, proxies=self.proxies, verify=self.ssl
         )
 
         # checking response
@@ -512,12 +512,11 @@ class Isogeo(object):
         )
 
         # passing auth parameter
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
         share_url = "{}://v1.{}.isogeo.com/shares/{}".format(
             prot, self.api_url, share_id
         )
         share_req = requests.get(
-            share_url, headers=head, proxies=self.proxies, verify=self.ssl
+            share_url, headers=self.header, proxies=self.proxies, verify=self.ssl
         )
 
         # checking response
@@ -553,13 +552,12 @@ class Isogeo(object):
         payload = {"gid": owner_id}
 
         # search request
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
         licenses_url = "{}://v1.{}.isogeo.com/groups/{}/licenses".format(
             prot, self.api_url, owner_id
         )
         licenses_req = requests.get(
             licenses_url,
-            headers=head,
+            headers=self.header,
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
@@ -590,13 +588,12 @@ class Isogeo(object):
         payload = {"lid": license_id}
 
         # search request
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
         license_url = "{}://v1.{}.isogeo.com/licenses/{}".format(
             prot, self.api_url, license_id
         )
         license_req = requests.get(
             license_url,
-            headers=head,
+            headers=self.header,
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
@@ -623,10 +620,9 @@ class Isogeo(object):
         )
 
         # passing auth parameter
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
         thez_url = "{}://v1.{}.isogeo.com/thesauri".format(prot, self.api_url)
         thez_req = requests.get(
-            thez_url, headers=head, proxies=self.proxies, verify=self.ssl
+            thez_url, headers=self.header, proxies=self.proxies, verify=self.ssl
         )
 
         # checking response
@@ -657,13 +653,12 @@ class Isogeo(object):
         payload = {"tid": thez_id}
 
         # passing auth parameter
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
         thez_url = "{}://v1.{}.isogeo.com/thesauri/{}".format(
             prot, self.api_url, thez_id
         )
         thez_req = requests.get(
             thez_url,
-            headers=head,
+            headers=self.header,
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
@@ -722,14 +717,13 @@ class Isogeo(object):
         }
 
         # search request
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
         keywords_url = "{}://v1.{}.isogeo.com/thesauri/{}/keywords/search".format(
             prot, self.api_url, thez_id
         )
 
         kwds_req = requests.get(
             keywords_url,
-            headers=head,
+            headers=self.header,
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
@@ -799,8 +793,6 @@ class Isogeo(object):
         payload = {"proxyUrl": proxy_url}
 
         # prepare URL request
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
-
         hosted_url = "{}://v1.{}.isogeo.com/{}".format(
             prot, self.api_url, resource_link.get("url")
         )
@@ -808,7 +800,7 @@ class Isogeo(object):
         # send stream request
         hosted_req = requests.get(
             hosted_url,
-            headers=head,
+            headers=self.header,
             stream=True,
             params=payload,
             proxies=self.proxies,
@@ -868,13 +860,12 @@ class Isogeo(object):
         payload = {"proxyUrl": proxy_url, "id": id_resource}
 
         # resource search
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
         md_url = "{}://v1.{}.isogeo.com/resources/{}.xml".format(
             prot, self.api_url, id_resource
         )
         xml_req = requests.get(
             md_url,
-            headers=head,
+            headers=self.header,
             stream=True,
             params=payload,
             proxies=self.proxies,
@@ -949,11 +940,11 @@ class Isogeo(object):
         )
 
         # search request
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
-
         req_url = "{}://v1.{}.isogeo.com/link-kinds".format(prot, self.api_url)
 
-        req = requests.get(req_url, headers=head, proxies=self.proxies, verify=self.ssl)
+        req = requests.get(
+            req_url, headers=self.header, proxies=self.proxies, verify=self.ssl
+        )
 
         # checking response
         checker.check_api_response(req)
@@ -974,11 +965,11 @@ class Isogeo(object):
         )
 
         # search request
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
-
         req_url = "{}://v1.{}.isogeo.com/directives".format(prot, self.api_url)
 
-        req = requests.get(req_url, headers=head, proxies=self.proxies, verify=self.ssl)
+        req = requests.get(
+            req_url, headers=self.header, proxies=self.proxies, verify=self.ssl
+        )
 
         # checking response
         checker.check_api_response(req)
@@ -1006,13 +997,13 @@ class Isogeo(object):
             specific_srs = ""
 
         # search request
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
-
         req_url = "{}://v1.{}.isogeo.com/coordinate-systems{}".format(
             prot, self.api_url, specific_srs
         )
 
-        req = requests.get(req_url, headers=head, proxies=self.proxies, verify=self.ssl)
+        req = requests.get(
+            req_url, headers=self.header, proxies=self.proxies, verify=self.ssl
+        )
 
         # checking response
         checker.check_api_response(req)
@@ -1040,13 +1031,13 @@ class Isogeo(object):
             specific_format = ""
 
         # search request
-        head = {"Authorization": "Bearer " + token[0], "user-agent": self.app_name}
-
         req_url = "{}://v1.{}.isogeo.com/formats{}".format(
             prot, self.api_url, specific_format
         )
 
-        req = requests.get(req_url, headers=head, proxies=self.proxies, verify=self.ssl)
+        req = requests.get(
+            req_url, headers=self.header, proxies=self.proxies, verify=self.ssl
+        )
 
         # checking response
         checker.check_api_response(req)
