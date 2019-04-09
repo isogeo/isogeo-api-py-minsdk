@@ -50,7 +50,7 @@ setup(
         'Isogeo API': 'help.isogeo.com/api/',
     },
     # dependencies
-    install_requires=["requests>=2.9.1",
+    install_requires=["requests>=2.20.0",
                       ],
     extras_require={
         "dev": ["configparser"],
