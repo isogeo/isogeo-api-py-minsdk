@@ -86,6 +86,7 @@
         "keyword:isogeo:inondations": "inondations",
         "keyword:isogeo:insee": "insee",
         "keyword:isogeo:inspire": "inspire",
+        "keyword:isogeo:tests": "tests",
         "keyword:isogeo:zone": "zone",
         "keyword:isogeo:zone-activite-economique": "zone activite economique",
         "keyword:isogeo:zones": "zones",
@@ -113,7 +114,11 @@
     },
     "query": {
         "_tags": [
-            "keyword:isogeo:tests"
+            "action:view",
+            "format:shp",
+            "keyword:inspire-theme:landuse",
+            "keyword:isogeo:tests",
+            "type:vector-dataset"
         ],
         "_terms": []
     }

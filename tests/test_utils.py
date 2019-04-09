@@ -5,7 +5,10 @@
     Usage from the repo root folder:
     
     ```python
+    # for whole test
     python -m unittest tests.test_utils
+    # for specific
+    python -m unittest tests.test_utils.TestIsogeoUtils.
     ```
 """
 
@@ -38,7 +41,7 @@ app_token = environ.get("ISOGEO_API_DEV_SECRET")
 
 
 class TestIsogeoUtils(unittest.TestCase):
-    """Test search to Isogeo API."""
+    """Test utils for Isogeo API."""
 
     if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")
@@ -51,41 +54,6 @@ class TestIsogeoUtils(unittest.TestCase):
     def setUp(self):
         """ Fixtures prepared before each test."""
         self.utils = IsogeoUtils()
-        # uuid
-        self.uuid_hex = "0269803d50c446b09f5060ef7fe3e22b"
-        self.uuid_urn4122 = "urn:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
-        self.uuid_urnIsogeo = (
-            "urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
-        )
-        # credentials
-        self.credentials_group_json = [
-            path.normpath(
-                r"tests/fixtures/client_secrets_group_old.json"
-            ),  # without scopes
-            path.normpath(
-                r"tests/fixtures/client_secrets_group_new.json"
-            ),  # with scopes
-        ]
-        self.credentials_user_json = [
-            path.normpath(
-                r"tests/fixtures/client_secrets_user_old.json"
-            ),  # without scopes
-            path.normpath(
-                r"tests/fixtures/client_secrets_user_new.json"
-            ),  # with scopes
-        ]
-        self.credentials_user_bad_json = path.normpath(
-            r"tests/fixtures/client_secrets_user_bad.json"
-        )
-        self.credentials_ini = path.normpath(r"tests/fixtures/client_secrets.ini")
-        self.credentials_ini_bad = path.normpath(
-            r"tests/fixtures/client_secrets_bad.ini"
-        )
-        self.credentials_group_txt = path.normpath(
-            r"tests/fixtures/client_secrets_group.txt"
-        )
-        # API response samples
-        self.tags_sample = path.normpath(r"tests/fixtures/api_response_tests_tags.json")
 
     def tearDown(self):
         """Executed after each test."""
@@ -279,7 +247,7 @@ class TestIsogeoUtils(unittest.TestCase):
         # CSW - GetRecord
         csw_getrec_url = self.utils.get_view_url(
             webapp="csw_getrec",
-            md_uuid_urn=self.uuid_urnIsogeo,
+            md_uuid_urn="urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b",
             share_id="1e07910d365449b59b6596a9b428ecd9",
             share_token="TokenOhDearToken",
         )
@@ -334,199 +302,6 @@ class TestIsogeoUtils(unittest.TestCase):
                 webapp_args=["md_id"],
                 webapp_url="https://www.ppige-npdc.fr/portail/geocatalogue?uuid=",
             )
-
-    # -- UUID converter - from HEX -------------------------------------------
-    def test_hex_to_hex(self):
-        """Test UUID converter from HEX to HEX"""
-        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_hex, mode=0)
-        self.assertIsInstance(uuid_out, str)
-        self.assertEqual(uuid_out, self.uuid_hex)
-        self.assertNotIn(":", uuid_out)
-
-    def test_hex_to_urn4122(self):
-        """Test UUID converter from HEX to URN (RFC4122)"""
-        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_hex, mode=1)
-        self.assertIsInstance(uuid_out, str)
-        self.assertEqual(uuid_out, self.uuid_urn4122)
-        self.assertNotIn("isogeo:metadata", uuid_out)
-
-    def test_hex_to_urnIsogeo(self):
-        """Test UUID converter from HEX to URN (Isogeo style)"""
-        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_hex, mode=2)
-        self.assertIsInstance(uuid_out, str)
-        self.assertEqual(uuid_out, self.uuid_urnIsogeo)
-        self.assertIn("isogeo:metadata", uuid_out)
-
-    # UUID converter - from URN (RFC4122)
-    def test_urn4122_to_hex(self):
-        """Test UUID converter from URN (RFC4122) to HEX"""
-        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urn4122, mode=0)
-        self.assertIsInstance(uuid_out, str)
-        self.assertEqual(uuid_out, self.uuid_hex)
-        self.assertNotIn(":", uuid_out)
-
-    def test_urn4122_to_urn4122(self):
-        """Test UUID converter from URN (RFC4122) to URN (RFC4122)"""
-        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urn4122, mode=1)
-        self.assertIsInstance(uuid_out, str)
-        self.assertEqual(uuid_out, self.uuid_urn4122)
-        self.assertNotIn("isogeo:metadata", uuid_out)
-
-    def test_urn4122_to_urnIsogeo(self):
-        """Test UUID converter from URN (RFC4122) to URN (Isogeo style)"""
-        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urn4122, mode=2)
-        self.assertIsInstance(uuid_out, str)
-        self.assertEqual(uuid_out, self.uuid_urnIsogeo)
-        self.assertIn("isogeo:metadata", uuid_out)
-
-    # UUID converter - from URN (Isogeo style)
-    def test_urnIsogeo_to_hex(self):
-        """Test UUID converter from URN (Isogeo style) to HEX"""
-        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urnIsogeo, mode=0)
-        self.assertIsInstance(uuid_out, str)
-        self.assertEqual(uuid_out, self.uuid_hex)
-        self.assertNotIn(":", uuid_out)
-
-    def test_urnIsogeo_to_urn4122(self):
-        """Test UUID converter from URN (Isogeo style) to URN (RFC4122)"""
-        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urnIsogeo, mode=1)
-        self.assertIsInstance(uuid_out, str)
-        self.assertEqual(uuid_out, self.uuid_urn4122)
-        self.assertNotIn("isogeo:metadata", uuid_out)
-
-    def test_urnIsogeo_to_urnIsogeo(self):
-        """Test UUID converter from URN (Isogeo style) to URN (Isogeo style)"""
-        uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urnIsogeo, mode=2)
-        self.assertIsInstance(uuid_out, str)
-        self.assertEqual(uuid_out, self.uuid_urnIsogeo)
-        self.assertIn("isogeo:metadata", uuid_out)
-
-    # UUID converter - bad boys
-    def test_uuid_converter_bad_value(self):
-        """Raise error if one parameter value is bad."""
-        with self.assertRaises(ValueError):
-            self.utils.convert_uuid(in_uuid="oh_my_bad_i_m_not_a_correct_uuid")
-        with self.assertRaises(ValueError):
-            self.utils.convert_uuid(in_uuid=self.uuid_urnIsogeo, mode=4)
-
-    def test_uuid_converter_bad_type(self):
-        """Raise error if one parameter type is bad."""
-        with self.assertRaises(TypeError):
-            self.utils.convert_uuid(in_uuid=2)
-        with self.assertRaises(TypeError):
-            self.utils.convert_uuid(in_uuid=self.uuid_urnIsogeo, mode="ups_not_an_int")
-
-    # -- Credentials loader -------------------------------------
-    def test_credentials_loader_json_user(self):
-        """Test credentials loader for an user application from a JSON file"""
-        for in_creds_json_user in self.credentials_user_json:
-            creds_json_user = self.utils.credentials_loader(in_creds_json_user)
-        # structure
-        self.assertIsInstance(creds_json_user, dict)
-        self.assertIn("auth_mode", creds_json_user)
-        self.assertIn("client_id", creds_json_user)
-        self.assertIn("client_secret", creds_json_user)
-        self.assertIn("scopes", creds_json_user)
-        self.assertIn("uri_auth", creds_json_user)
-        self.assertIn("uri_base", creds_json_user)
-        self.assertIn("uri_token", creds_json_user)
-        self.assertIn("uri_redirect", creds_json_user)
-        # values
-        self.assertEqual(creds_json_user.get("auth_mode"), "user")
-        self.assertEqual(
-            creds_json_user.get("uri_auth"), "https://id.api.isogeo.com/oauth/authorize"
-        )
-        self.assertEqual(creds_json_user.get("uri_base"), "https://api.isogeo.com")
-        self.assertEqual(
-            creds_json_user.get("uri_token"), "https://id.api.isogeo.com/oauth/token"
-        )
-        self.assertIsInstance(creds_json_user.get("uri_redirect"), list)
-
-    def test_credentials_loader_json_group(self):
-        """Test credentials loader for an group application from a JSON file"""
-        for in_creds_json_group in self.credentials_group_json:
-            creds_json_group = self.utils.credentials_loader(in_creds_json_group)
-            # structure
-            self.assertIsInstance(creds_json_group, dict)
-            self.assertIn("auth_mode", creds_json_group)
-            self.assertIn("client_id", creds_json_group)
-            self.assertIn("client_secret", creds_json_group)
-            self.assertIn("scopes", creds_json_group)
-            self.assertIn("uri_auth", creds_json_group)
-            self.assertIn("uri_base", creds_json_group)
-            self.assertIn("uri_token", creds_json_group)
-            self.assertIn("uri_redirect", creds_json_group)
-            # values
-            self.assertEqual(creds_json_group.get("auth_mode"), "group")
-            self.assertEqual(
-                creds_json_group.get("uri_auth"),
-                "https://id.api.isogeo.com/oauth/authorize",
-            )
-            self.assertEqual(
-                creds_json_group.get("uri_token"),
-                "https://id.api.isogeo.com/oauth/token",
-            )
-            self.assertEqual(creds_json_group.get("uri_base"), "https://api.isogeo.com")
-            self.assertIsNone(creds_json_group.get("uri_redirect"))
-
-    def test_credentials_loader_ini(self):
-        """Test credentials loader for an group application from an INI file"""
-        creds_ini = self.utils.credentials_loader(self.credentials_ini)
-        # structure
-        self.assertIsInstance(creds_ini, dict)
-        self.assertIn("auth_mode", creds_ini)
-        self.assertIn("client_id", creds_ini)
-        self.assertIn("client_secret", creds_ini)
-        self.assertIn("uri_auth", creds_ini)
-        self.assertIn("uri_base", creds_ini)
-        self.assertIn("uri_token", creds_ini)
-        self.assertIn("uri_redirect", creds_ini)
-        # values
-        self.assertEqual(creds_ini.get("auth_mode"), "group")
-        self.assertEqual(
-            creds_ini.get("uri_auth"), "https://id.api.isogeo.com/oauth/authorize"
-        )
-        self.assertEqual(creds_ini.get("uri_base"), "https://api.isogeo.com")
-        self.assertEqual(
-            creds_ini.get("uri_token"), "https://id.api.isogeo.com/oauth/token"
-        )
-
-    def test_credentials_loader_bad_file_path(self):
-        """Raise error if credentials file is not reachable."""
-        with self.assertRaises(IOError):
-            self.utils.credentials_loader(in_credentials=r"imaginary_file.json")
-
-    def test_credentials_loader_bad_file_extension(self):
-        """Raise error if extension is not one of accepted ones."""
-        with self.assertRaises(ValueError):
-            self.utils.credentials_loader(in_credentials=self.credentials_group_txt)
-
-    def test_credentials_loader_bad_file_structure(self):
-        """Raise error if file structure is not good."""
-        with self.assertRaises(ValueError):
-            self.utils.credentials_loader(in_credentials=self.credentials_user_bad_json)
-        with self.assertRaises(ValueError):
-            self.utils.credentials_loader(in_credentials=self.credentials_ini_bad)
-
-    # -- Tags utils --------
-    def test_tags_dictionarization(self):
-        """Tags dictionarization bullet-proof."""
-        with open(self.tags_sample, "r") as f:
-            search = json.loads(f.read())
-        self.utils.tags_to_dict(tags=search.get("tags"), prev_query=search.get("query"))
-        self.utils.tags_to_dict(
-            tags=search.get("tags"), prev_query=search.get("query"), duplicated="merge"
-        )
-        self.utils.tags_to_dict(
-            tags=search.get("tags"), prev_query=search.get("query"), duplicated="rename"
-        )
-
-    def test_tags_dictionarization_bad(self):
-        """Tags dictionarization bullet-proof."""
-        with open(self.tags_sample, "r") as f:
-            search = json.loads(f.read())
-        with self.assertRaises(ValueError):
-            self.utils.tags_to_dict(search.get("tags"), duplicated="renam")
 
     # encoding -- see #32
     def test_decoding_rfc2047(self):
