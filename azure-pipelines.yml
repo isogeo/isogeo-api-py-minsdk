@@ -33,9 +33,7 @@ jobs:
     displayName: 'Install dependencies'
 
   - script: |
-      pytest tests --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html
-      coverage run -m unittest discover -s tests/
-      coverage xml
+      pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html --cov-append .\tests
     env:
       ISOGEO_API_DEV_ID: $(ISOGEO_API_DEV_ID)
       ISOGEO_API_DEV_SECRET: $(ISOGEO_API_DEV_SECRET)
