@@ -5,8 +5,8 @@
 #################################################################
 
 "-- STEP -- Creating virtualenv"
-py -3 -m venv env3_tests
-./env3_tests/Scripts/activate
+py -3 -m venv .venv_tests
+./.venv_tests/Scripts/activate
 
 "-- STEP -- Install and display dependencies within the virtualenv"
 python -m pip install -U pip

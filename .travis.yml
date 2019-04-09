@@ -6,8 +6,6 @@ git:
 
 # https://docs.travis-ci.com/user/languages/python/#specifying-python-versions
 python:
-  - "2.7"
-  - "3.4"
   - "3.5"
   - "3.6"
 

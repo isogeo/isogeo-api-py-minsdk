@@ -19,13 +19,11 @@ from isogeo_pysdk import Isogeo
 # ##################################
 
 # API access
-app_id = environ.get('ISOGEO_API_DEV_ID')
-app_token = environ.get('ISOGEO_API_DEV_SECRET')
+app_id = environ.get("ISOGEO_API_DEV_ID")
+app_token = environ.get("ISOGEO_API_DEV_SECRET")
 
 # start Isogeo
-isogeo = Isogeo(client_id=app_id,
-                client_secret=app_token
-                )
+isogeo = Isogeo(client_id=app_id, client_secret=app_token)
 
 # getting a token
 token = isogeo.connect()
@@ -55,9 +53,8 @@ async def get_data_asynchronous():
                 executor,
                 _meta_get_resource_sync,
                 # Allows us to pass in multiple arguments to `fetch`
-                *(md_uuid,)
+                *(md_uuid,),
             )
-
             for md_uuid in md_ids
         ]
 
@@ -68,6 +65,7 @@ async def get_data_asynchronous():
 
         return out_list
 
+
 # #############################################################################
 # ##### Stand alone program ########
 # ##################################
@@ -77,11 +75,10 @@ if __name__ == "__main__":
     # get the metadata ids
     md_ids = [
         md.get("_id")
-        for md in isogeo.search(
-            token,
-            page_size=how_much_mds, 
-            whole_share=0).get("results")
-            ]
+        for md in isogeo.search(token, page_size=how_much_mds, whole_share=0).get(
+            "results"
+        )
+    ]
 
     # SYNC
     print("Get {} complete metadata - SYNCHRONOUS MODE".format(how_much_mds))

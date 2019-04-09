@@ -17,11 +17,6 @@ wheel
 
 # required
 requests>=2.21.0
-six
-
-# Python 2 backwards compatibility
-configparser; python_version < '3.0'
-future; python_version < '3.0'
 
 # proxy
 # pypac==0.2.*

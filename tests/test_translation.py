@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
-#!/usr/bin/env python
-from __future__ import (absolute_import, print_function, unicode_literals)
+#! python3
 
 # #############################################################################
 # ########## Libraries #############
@@ -21,32 +20,36 @@ from isogeo_pysdk import Isogeo, IsogeoTranslator, __version__ as pysdk_version
 # ##################################
 
 # API access
-app_id = environ.get('ISOGEO_API_DEV_ID')
-app_token = environ.get('ISOGEO_API_DEV_SECRET')
+app_id = environ.get("ISOGEO_API_DEV_ID")
+app_token = environ.get("ISOGEO_API_DEV_SECRET")
 
-li_contacts_fr = ("Auteur",
-                  "Point de contact",
-                  "Administrateur",
-                  "Distributeur",
-                  "Créateur",
-                  "Propriétaire",
-                  "Analyste principal",
-                  "Responsable du traitement",
-                  "Éditeur (publication)",
-                  "Fournisseur",
-                  "Utilisateur")
+li_contacts_fr = (
+    "Auteur",
+    "Point de contact",
+    "Administrateur",
+    "Distributeur",
+    "Créateur",
+    "Propriétaire",
+    "Analyste principal",
+    "Responsable du traitement",
+    "Éditeur (publication)",
+    "Fournisseur",
+    "Utilisateur",
+)
 
-li_contacts_en = ("Author",
-                  "Point of contact",
-                  "Custodian",
-                  "Distributor",
-                  "Originator",
-                  "Owner",
-                  "Principal investigator",
-                  "Processor",
-                  "Publisher",
-                  "Resource provider",
-                  "User")
+li_contacts_en = (
+    "Author",
+    "Point of contact",
+    "Custodian",
+    "Distributor",
+    "Originator",
+    "Owner",
+    "Principal investigator",
+    "Processor",
+    "Publisher",
+    "Resource provider",
+    "User",
+)
 
 # #############################################################################
 # ########## Classes ###############
@@ -55,26 +58,25 @@ li_contacts_en = ("Author",
 
 class TestIsogeoTranslator(unittest.TestCase):
     """Test translation of specific words wihtin Isogeo API."""
+
     if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")
         exit()
     else:
         pass
-    logging.debug('Isogeo PySDK version: {0}'.format(pysdk_version))
+    logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
     # standard methods
     def setUp(self):
         """Executed before each test."""
-        self.isogeo = Isogeo(client_id=app_id,
-                             client_secret=app_token,
-                             lang="FR")
+        self.isogeo = Isogeo(client_id=app_id, client_secret=app_token, lang="FR")
         self.bearer = self.isogeo.connect()
-        self.md_contacts = self.isogeo.resource(self.bearer,
-                                                "e5e5ab788aff4418a1cd4a38f842ccbe",
-                                                include=["contacts"],
-                                                )
-        self.li_contacts_roles = [i.get("role")
-                                  for i in self.md_contacts.get("contacts")]
+        self.md_contacts = self.isogeo.resource(
+            self.bearer, "e5e5ab788aff4418a1cd4a38f842ccbe", include=["contacts"]
+        )
+        self.li_contacts_roles = [
+            i.get("role") for i in self.md_contacts.get("contacts")
+        ]
 
     def tearDown(self):
         """Executed after each test."""
@@ -106,5 +108,5 @@ class TestIsogeoTranslator(unittest.TestCase):
 # #############################################################################
 # ######## Standalone ##############
 # ##################################
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

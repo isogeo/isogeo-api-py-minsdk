@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
-#!/usr/bin/env python
-from __future__ import (absolute_import, print_function, unicode_literals)
+#! python3
 
 """
     Usage from the repo root folder:
@@ -30,8 +29,8 @@ from isogeo_pysdk import Isogeo
 # ##################################
 
 # API access
-app_id = environ.get('ISOGEO_API_DEV_ID')
-app_token = environ.get('ISOGEO_API_DEV_SECRET')
+app_id = environ.get("ISOGEO_API_DEV_ID")
+app_token = environ.get("ISOGEO_API_DEV_SECRET")
 
 # #############################################################################
 # ########## Classes ###############
@@ -40,6 +39,7 @@ app_token = environ.get('ISOGEO_API_DEV_SECRET')
 
 class TestDownloadHosted(unittest.TestCase):
     """Test download hosted data through Isogeo API."""
+
     if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")
         exit()
@@ -49,8 +49,7 @@ class TestDownloadHosted(unittest.TestCase):
     # standard methods
     def setUp(self):
         """Executed before each test."""
-        self.isogeo = Isogeo(client_id=app_id,
-                             client_secret=app_token)
+        self.isogeo = Isogeo(client_id=app_id, client_secret=app_token)
         self.bearer = self.isogeo.connect()
 
     def tearDown(self):
@@ -59,10 +58,13 @@ class TestDownloadHosted(unittest.TestCase):
 
     def test_dl_hosted(self):
         """Download an hosted data from Isogeo metadata."""
-        search = self.isogeo.search(self.bearer, whole_share=0,
-                                    query="action:download type:dataset",
-                                    include=["links", ],
-                                    page_size=100)
+        search = self.isogeo.search(
+            self.bearer,
+            whole_share=0,
+            query="action:download type:dataset",
+            include=["links"],
+            page_size=100,
+        )
         # get an hosted link
         for md in search.get("results"):
             for link in md.get("links"):
@@ -83,31 +85,28 @@ class TestDownloadHosted(unittest.TestCase):
         #  "actions": ["download", ],
         #  "size": "2253029",
         # }
-        dl_stream = self.isogeo.dl_hosted(self.bearer,
-                                          resource_link=target_link)
+        dl_stream = self.isogeo.dl_hosted(self.bearer, resource_link=target_link)
 
         # create tempfile and fill with downloaded XML
         tmp_output = mkdtemp(prefix="IsogeoPySDK_")
-        with open(path.join(tmp_output, dl_stream[1]), 'wb') as fd:
+        with open(path.join(tmp_output, dl_stream[1]), "wb") as fd:
             for block in dl_stream[0].iter_content(1024):
                 fd.write(block)
 
     def test_dl_hosted_bad(self):
         """Test errors raised by download method"""
         with self.assertRaises(ValueError):
-            self.isogeo.dl_hosted(self.bearer,
-                                  resource_link={})
+            self.isogeo.dl_hosted(self.bearer, resource_link={})
         with self.assertRaises(TypeError):
-            self.isogeo.dl_hosted(self.bearer,
-                                  resource_link="my_resource_link_is_a_nice_string")
+            self.isogeo.dl_hosted(
+                self.bearer, resource_link="my_resource_link_is_a_nice_string"
+            )
         with self.assertRaises(ValueError):
-            self.isogeo.dl_hosted(self.bearer,
-                                  resource_link={"type": "url", }
-                                  )
+            self.isogeo.dl_hosted(self.bearer, resource_link={"type": "url"})
 
 
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
-#!/usr/bin/env python
-from __future__ import (absolute_import, print_function, unicode_literals)
+#! python3
 
 """
     Usage from the repo root folder:
@@ -31,8 +30,8 @@ from isogeo_pysdk import Isogeo
 # ##################################
 
 # API access
-app_id = environ.get('ISOGEO_API_DEV_ID')
-app_token = environ.get('ISOGEO_API_DEV_SECRET')
+app_id = environ.get("ISOGEO_API_DEV_ID")
+app_token = environ.get("ISOGEO_API_DEV_SECRET")
 
 # #############################################################################
 # ########## Classes ###############
@@ -41,6 +40,7 @@ app_token = environ.get('ISOGEO_API_DEV_SECRET')
 
 class TestExportXML19139(unittest.TestCase):
     """Test search to Isogeo API."""
+
     if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")
         exit()
@@ -50,8 +50,7 @@ class TestExportXML19139(unittest.TestCase):
     # standard methods
     def setUp(self):
         """Executed before each test."""
-        self.isogeo = Isogeo(client_id=app_id,
-                             client_secret=app_token)
+        self.isogeo = Isogeo(client_id=app_id, client_secret=app_token)
         self.bearer = self.isogeo.connect()
 
     def tearDown(self):
@@ -61,16 +60,15 @@ class TestExportXML19139(unittest.TestCase):
     # metadata models
     def test_export_XML19139(self):
         """Download a metadata in XML 19139."""
-        search = self.isogeo.search(self.bearer, whole_share=0,
-                                    query="type:dataset",
-                                    page_size=1)
+        search = self.isogeo.search(
+            self.bearer, whole_share=0, query="type:dataset", page_size=1
+        )
         # get the metadata
         md_id = search.get("results")[0].get("_id")
         md_type = search.get("results")[0].get("type")
 
         # download the XML version
-        xml_stream = self.isogeo.xml19139(self.bearer,
-                                          md_id)
+        xml_stream = self.isogeo.xml19139(self.bearer, md_id)
 
         # create tempfile and fill with downloaded XML
         tmp_output = mkstemp(prefix="IsogeoPySDK_" + md_id[:5])
@@ -109,12 +107,11 @@ class TestExportXML19139(unittest.TestCase):
     def test_export_bad(self):
         """Test errors raised by export function"""
         with self.assertRaises(ValueError):
-            self.isogeo.xml19139(self.bearer,
-                                 "trust_me_its_an_uuid")
+            self.isogeo.xml19139(self.bearer, "trust_me_its_an_uuid")
 
 
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

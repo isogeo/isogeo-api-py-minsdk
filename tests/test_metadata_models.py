@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
-#!/usr/bin/env python
-from __future__ import (absolute_import, print_function, unicode_literals)
+#! python3
 
 """
     Usage from the repo root folder:
@@ -16,7 +15,6 @@ from __future__ import (absolute_import, print_function, unicode_literals)
 
 # Standard library
 from datetime import datetime
-from six import string_types as str
 from os import environ
 import logging
 from sys import exit
@@ -34,15 +32,11 @@ from isogeo_pysdk import Isogeo
 # ##################################
 
 # API access
-app_id = environ.get('ISOGEO_API_DEV_ID')
-app_token = environ.get('ISOGEO_API_DEV_SECRET')
+app_id = environ.get("ISOGEO_API_DEV_ID")
+app_token = environ.get("ISOGEO_API_DEV_SECRET")
 
 # MODELS KEY/VALUES
-WG_KEYWORDS_CASING = ("capitalized",
-                      "lowercase",
-                      "mixedCase",
-                      "uppercase",
-                      )
+WG_KEYWORDS_CASING = ("capitalized", "lowercase", "mixedCase", "uppercase")
 
 # #############################################################################
 # ########## Classes ###############
@@ -51,6 +45,7 @@ WG_KEYWORDS_CASING = ("capitalized",
 
 class TestMetadataModels(unittest.TestCase):
     """Test search to Isogeo API."""
+
     if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")
         exit()
@@ -60,8 +55,7 @@ class TestMetadataModels(unittest.TestCase):
     # standard methods
     def setUp(self):
         """Executed before each test."""
-        self.isogeo = Isogeo(client_id=app_id,
-                             client_secret=app_token)
+        self.isogeo = Isogeo(client_id=app_id, client_secret=app_token)
         self.bearer = self.isogeo.connect()
 
     def tearDown(self):
@@ -72,8 +66,9 @@ class TestMetadataModels(unittest.TestCase):
     def test_search_result_vector_min(self):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
-        search = self.isogeo.search(self.bearer, whole_share=0,
-                                    specific_md=["c4b7ad9732454beca1ab3ec1958ffa50",])
+        search = self.isogeo.search(
+            self.bearer, whole_share=0, specific_md=["c4b7ad9732454beca1ab3ec1958ffa50"]
+        )
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)
 
@@ -131,8 +126,9 @@ class TestMetadataModels(unittest.TestCase):
     def test_search_result_raster_min(self):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
-        search = self.isogeo.search(self.bearer, whole_share=0,
-                                    specific_md=["3663e29d3c2a433384ee308b4d632a04",])
+        search = self.isogeo.search(
+            self.bearer, whole_share=0, specific_md=["3663e29d3c2a433384ee308b4d632a04"]
+        )
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)
 
@@ -190,8 +186,9 @@ class TestMetadataModels(unittest.TestCase):
     def test_search_result_resource_min(self):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
-        search = self.isogeo.search(self.bearer, whole_share=0,
-                                    specific_md=["d3df351cb9a64a35b6bde4a383c9bddc",])
+        search = self.isogeo.search(
+            self.bearer, whole_share=0, specific_md=["d3df351cb9a64a35b6bde4a383c9bddc"]
+        )
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)
 
@@ -248,8 +245,9 @@ class TestMetadataModels(unittest.TestCase):
     def test_search_result_series_min(self):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
-        search = self.isogeo.search(self.bearer, whole_share=0,
-                                    specific_md=["af522449ae5041cf9f058c9e8822f45f",])
+        search = self.isogeo.search(
+            self.bearer, whole_share=0, specific_md=["af522449ae5041cf9f058c9e8822f45f"]
+        )
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)
 
@@ -308,8 +306,9 @@ class TestMetadataModels(unittest.TestCase):
     def test_search_result_service_min(self):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
-        search = self.isogeo.search(self.bearer, whole_share=0,
-                                    specific_md=["a7653d11752c4a6c890a9f9d1603eceb",])
+        search = self.isogeo.search(
+            self.bearer, whole_share=0, specific_md=["a7653d11752c4a6c890a9f9d1603eceb"]
+        )
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)
 
@@ -368,9 +367,12 @@ class TestMetadataModels(unittest.TestCase):
     def test_search_result_inspire_compliance(self):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
-        search = self.isogeo.search(self.bearer, whole_share=0,
-                                    specific_md=["3c649da21ed9405e8d508bfdbe831516",],
-                                    include=["contacts", ])
+        search = self.isogeo.search(
+            self.bearer,
+            whole_share=0,
+            specific_md=["3c649da21ed9405e8d508bfdbe831516"],
+            include=["contacts"],
+        )
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)
 
@@ -532,8 +534,9 @@ class TestMetadataModels(unittest.TestCase):
 
     def test_share_basic(self):
         """Check share route model response."""
-        share = self.isogeo.share(self.bearer,
-                                  share_id="1e07910d365449b59b6596a9b428ecd9")
+        share = self.isogeo.share(
+            self.bearer, share_id="1e07910d365449b59b6596a9b428ecd9"
+        )
 
         self.assertIsInstance(share, dict)
 
@@ -656,9 +659,9 @@ class TestMetadataModels(unittest.TestCase):
 
     def test_share_augmented(self):
         """Check share route model response."""
-        share = self.isogeo.share(self.bearer,
-                                  share_id="1e07910d365449b59b6596a9b428ecd9",
-                                  augment=True)
+        share = self.isogeo.share(
+            self.bearer, share_id="1e07910d365449b59b6596a9b428ecd9", augment=True
+        )
 
         self.assertIsInstance(share, dict)
 
@@ -670,5 +673,5 @@ class TestMetadataModels(unittest.TestCase):
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

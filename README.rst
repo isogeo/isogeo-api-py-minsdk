@@ -111,14 +111,6 @@ To build docs:
    :target: https://codecov.io/gh/isogeo/isogeo-api-py-minsdk
    :alt: Codecov - Coverage status
 
-.. |compat_py27| image:: https://img.shields.io/badge/python-2.7-blue.svg
-   :target: https://badge.fury.io/py/isogeo-pysdk
-   :alt: Python 2.7.x compatiblity
-
-.. |compat_py34| image:: https://img.shields.io/badge/python-3.4-blue.svg
-   :target: https://badge.fury.io/py/isogeo-pysdk
-   :alt: Python 3.4.x compatiblity
-
 .. |compat_py35| image:: https://img.shields.io/badge/python-3.5-blue.svg
    :target: https://badge.fury.io/py/isogeo-pysdk
    :alt: Python 3.5.x compatiblity
@@ -126,6 +118,10 @@ To build docs:
 .. |compat_py36| image:: https://img.shields.io/badge/python-3.6-blue.svg
    :target: https://badge.fury.io/py/isogeo-pysdk
    :alt: Python 3.6.x compatiblity
+
+.. |compat_py37| image:: https://img.shields.io/badge/python-3.7-blue.svg
+   :target: https://badge.fury.io/py/isogeo-pysdk
+   :alt: Python 3.7.x compatiblity
 
 .. |rtdocs| image:: https://readthedocs.org/projects/isogeo-api-pysdk/badge/?version=latest
    :target: http://isogeo-api-pysdk.readthedocs.io/en/latest/?badge=latest

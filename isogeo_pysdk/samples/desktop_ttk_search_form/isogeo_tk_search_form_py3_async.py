@@ -5,25 +5,24 @@
 # ########## Libraries #############
 # ##################################
 
+# async
+import asyncio
+
 # basics
 import logging
+import threading
 from os import path
 from time import sleep
 from webbrowser import open_new_tab
 
-# async
-import asyncio
-import threading
-
 # Isogeo
-from isogeo_pysdk import (Isogeo,
-                          IsogeoUtils as utils,
-                          IsogeoTranslator,
-                          __version__ as pysdk_version)
+from isogeo_pysdk import Isogeo, IsogeoTranslator, IsogeoUtils
+from isogeo_pysdk import __version__ as pysdk_version
 
 # UI
 from ttkwidgets.autocomplete import AutocompleteCombobox, AutocompleteEntry
 from ttkwidgets.frames import Balloon
+
 try:
     import Tkinter as tk
     import ttk
@@ -37,6 +36,8 @@ except ImportError:
 # ##################################
 
 language = "EN"
+
+utils = IsogeoUtils()
 
 # UI quick and dirty styling
 data = """
@@ -84,15 +85,17 @@ RRRWENHwRQEBADs="""
 # ############ Main ################
 # ##################################
 
+
 class IsogeoSearchForm(ttk.Frame):
     def __init__(self, master=None, async_loop=None):
         tk.Frame.__init__(self, master)
         self.async_loop = async_loop
 
         # basics
-        #master.resizable(width=True, height=True)
-        master.title("Isogeo Python SD v{} - Sample desktop search form"
-                     .format(pysdk_version))
+        # master.resizable(width=True, height=True)
+        master.title(
+            "Isogeo Python SD v{} - Sample desktop search form".format(pysdk_version)
+        )
         master.focus_force()
         self.grid(sticky="NSWE")
         self.grid_propagate(1)
@@ -100,28 +103,44 @@ class IsogeoSearchForm(ttk.Frame):
         # styling
         self.style = ttk.Style(self)
 
-        self.s1 = tk.PhotoImage(master=self,
-                                name="search1",
-                                data=data,
-                                format="gif -index 0")
-        self.s2 = tk.PhotoImage(master=self,
-                                name="search2",
-                                data=data,
-                                format="gif -index 1")
+        self.s1 = tk.PhotoImage(
+            master=self, name="search1", data=data, format="gif -index 0"
+        )
+        self.s2 = tk.PhotoImage(
+            master=self, name="search2", data=data, format="gif -index 1"
+        )
 
-        self.style.element_create("Search.field", "image", "search1",
-                                  ("focus", "search2"), border=[22, 7, 14],
-                                  sticky="ew")
+        self.style.element_create(
+            "Search.field",
+            "image",
+            "search1",
+            ("focus", "search2"),
+            border=[22, 7, 14],
+            sticky="ew",
+        )
 
-        self.style.layout("Search.entry", [
-            ("Search.field", {"sticky": "nswe", "border": 1,
-                              "children":
-                                    [("Entry.padding", {"sticky": "nswe",
-                                                        "children":
-                                                        [("Entry.textarea", {
-                                                    "sticky": "nswe"})]
-                                                })]
-                            })]
+        self.style.layout(
+            "Search.entry",
+            [
+                (
+                    "Search.field",
+                    {
+                        "sticky": "nswe",
+                        "border": 1,
+                        "children": [
+                            (
+                                "Entry.padding",
+                                {
+                                    "sticky": "nswe",
+                                    "children": [
+                                        ("Entry.textarea", {"sticky": "nswe"})
+                                    ],
+                                },
+                            )
+                        ],
+                    },
+                )
+            ],
         )
         self.style.configure("Search.entry")
 
@@ -139,11 +158,13 @@ class IsogeoSearchForm(ttk.Frame):
         # add widgets
         lbl_app_name = tk.Label(fr_global, textvariable=self.app_name)
         lbl_app_total = ttk.Label(fr_global, textvariable=self.app_total)
-        btn_app_url = ttk.Button(fr_global, text="APP Website",
-                                 command=lambda: self.worker_allocator(async_loop=self.async_loop,
-                                                                       to_do="open_web",
-                                                                       **{"url": self.app_url})
-                                )
+        btn_app_url = ttk.Button(
+            fr_global,
+            text="APP Website",
+            command=lambda: self.worker_allocator(
+                async_loop=self.async_loop, to_do="open_web", **{"url": self.app_url}
+            ),
+        )
 
         lbl_actions = ttk.Label(fr_search, text="Linked action")
         lbl_contacts = ttk.Label(fr_search, text="Contact")
@@ -157,10 +178,9 @@ class IsogeoSearchForm(ttk.Frame):
         lbl_types = ttk.Label(fr_search, text="Type")
 
         # add form widgets
-        self.ent_search = AutocompleteEntry(fr_search,
-                                            style="Search.entry",
-                                            width=20,
-                                            completevalues=list())
+        self.ent_search = AutocompleteEntry(
+            fr_search, style="Search.entry", width=20, completevalues=list()
+        )
 
         self.cb_actions = AutocompleteCombobox(fr_search)
         self.cb_contacts = AutocompleteCombobox(fr_search)
@@ -175,32 +195,27 @@ class IsogeoSearchForm(ttk.Frame):
 
         lbl_results = ttk.Label(fr_search, textvariable=self.app_results)
 
-
-        btn_reset = ttk.Button(master,
-                               text="Reset",
-                               command=lambda: self.worker_allocator(async_loop=self.async_loop,
-                                                                     to_do="form_clear",
-                                                                     **{"clear": 1})
-                               )
-        btn_close = ttk.Button(master,
-                               text="Close",
-                               command=master.destroy)
+        btn_reset = ttk.Button(
+            master,
+            text="Reset",
+            command=lambda: self.worker_allocator(
+                async_loop=self.async_loop, to_do="form_clear", **{"clear": 1}
+            ),
+        )
+        btn_close = ttk.Button(master, text="Close", command=master.destroy)
 
         # after UI build
-        self.worker_allocator(async_loop=self.async_loop,
-                              to_do="form_clear",
-                              **{"clear": 1})
+        self.worker_allocator(
+            async_loop=self.async_loop, to_do="form_clear", **{"clear": 1}
+        )
 
         # -- WIDGETS PLACEMENT ------------------------------------------------
-        d_pad = {"padx": 5,
-                 "pady": 5,
-                 "sticky": "NSEW"
-                 }
+        d_pad = {"padx": 5, "pady": 5, "sticky": "NSEW"}
 
         lbl_app_name.grid(row=0, column=0, **d_pad)
         btn_app_url.grid(row=1, column=0, **d_pad)
         lbl_app_total.grid(row=2, column=0, **d_pad)
-        
+
         self.ent_search.grid(row=1, columnspan=3, **d_pad)
 
         self.cb_actions.grid(row=3, column=0, **d_pad)
@@ -226,7 +241,7 @@ class IsogeoSearchForm(ttk.Frame):
         lbl_types.grid(row=8, column=1, **d_pad)
 
         lbl_results.grid(row=22, column=0, columnspan=2, **d_pad)
-        
+
         fr_global.grid(row=0, columnspan=1, **d_pad)
         fr_search.grid(row=1, columnspan=1, **d_pad)
 
@@ -247,16 +262,16 @@ class IsogeoSearchForm(ttk.Frame):
 
     # -- TASKS HUB ------------------------------------------------------------
     def cbs_manager(self, event):
-        self.worker_allocator(async_loop=self.async_loop,
-                              to_do="form_update",
-                              **{"clear": 0})
+        self.worker_allocator(
+            async_loop=self.async_loop, to_do="form_update", **{"clear": 0}
+        )
 
     def worker_allocator(self, async_loop, to_do, **kwargs):
         """ Handler starting the asyncio part. """
         d = kwargs
-        threading.Thread(target=self._asyncio_thread,
-                         args=(async_loop, to_do, d)
-                         ).start()
+        threading.Thread(
+            target=self._asyncio_thread, args=(async_loop, to_do, d)
+        ).start()
 
     def _asyncio_thread(self, async_loop, to_do, kwargus):
         if to_do == "form_clear":
@@ -264,15 +279,13 @@ class IsogeoSearchForm(ttk.Frame):
         elif to_do == "form_update":
             async_loop.run_until_complete(self.fill_form(clear=0))
         elif to_do == "open_web":
-            async_loop.run_until_complete(
-                self.open_url(kwargus.get("url").get()))
+            async_loop.run_until_complete(self.open_url(kwargus.get("url").get()))
         else:
             pass
 
     # -- ASYNC METHODS --------------------------------------------------------
     async def open_url(self, url):
         open_new_tab(url)
-
 
     async def fill_form(self, clear=0):
         if not hasattr(self, "isogeo"):
@@ -284,7 +297,7 @@ class IsogeoSearchForm(ttk.Frame):
         # search
         if clear:
             # clear
-            self.ent_search.delete(0, 'end')
+            self.ent_search.delete(0, "end")
             self.cb_actions.set("")
             self.cb_contacts.set("")
             self.cb_formats.set("")
@@ -296,11 +309,9 @@ class IsogeoSearchForm(ttk.Frame):
             self.cb_srs.set("")
             self.cb_types.set("")
             # new search
-            search = self.isogeo.search(self.token,
-                                        page_size=0,
-                                        whole_share=0,
-                                        augment=1,
-                                        tags_as_dicts=1)
+            search = self.isogeo.search(
+                self.token, page_size=0, whole_share=0, augment=1, tags_as_dicts=1
+            )
             app_total = results_total = search.get("total")
             self.app_total.set("Total: {} metadata".format(app_total))
         else:
@@ -315,19 +326,20 @@ class IsogeoSearchForm(ttk.Frame):
             query += self.tags.get("shares").get(self.cb_shares.get(), "") + " "
             query += self.tags.get("srs").get(self.cb_srs.get(), "") + " "
             query += self.tags.get("types").get(self.cb_types.get(), "") + " "
-            search = self.isogeo.search(self.token,
-                                        page_size=0,
-                                        whole_share=0,
-                                        augment=1,
-                                        tags_as_dicts=1,
-                                        query=query)
+            search = self.isogeo.search(
+                self.token,
+                page_size=0,
+                whole_share=0,
+                augment=1,
+                tags_as_dicts=1,
+                query=query,
+            )
             results_total = search.get("total")
             logging.debug(search.get("query"))
         self.tags = search.get("tags")
 
         # set values
-        self.app_results.set("Results count: {} metadata"
-                             .format(results_total))
+        self.app_results.set("Results count: {} metadata".format(results_total))
         self.ent_search.set_completion_list(list(self.tags.get("keywords").values()))
         self.cb_actions.set_completion_list(list(self.tags.get("actions")))
         self.cb_contacts.set_completion_list(list(self.tags.get("contacts")))
@@ -342,21 +354,24 @@ class IsogeoSearchForm(ttk.Frame):
 
     def _init_isogeo(self):
         api_credentials = utils.credentials_loader("client_secrets.json")
-        self.isogeo = Isogeo(client_id=api_credentials.get("client_id"),
-                             client_secret=api_credentials.get("client_secret"))
+        self.isogeo = Isogeo(
+            client_id=api_credentials.get("client_id"),
+            client_secret=api_credentials.get("client_secret"),
+        )
         self.token = self.isogeo.connect()
         # app properties
         self.isogeo.get_app_properties(self.token)
         self.app_props = self.isogeo.app_properties
-        self.app_name.set("Authenticated application: {}"
-                          .format(self.app_props.get("name")))
+        self.app_name.set(
+            "Authenticated application: {}".format(self.app_props.get("name"))
+        )
         self.app_url.set(self.app_props.get("url", "https://www.isogeo.com"))
 
 
 # ###############################################################################
 # ###### Stand alone program ########
 # ###################################
-if __name__ == '__main__':
+if __name__ == "__main__":
     """Standalone execution"""
     async_loop = asyncio.get_event_loop()
     root = tk.Tk()

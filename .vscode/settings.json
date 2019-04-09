@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "${workspaceFolder}\\env3_tests\\Scripts\\python.exe",
+    "python.pythonPath": ".venv_tests\\Scripts\\python.exe",
     "python.unitTest.unittestArgs": [
         "-v",
         "-s",
@@ -8,7 +8,7 @@
         "test*.py"
     ],
     "python.unitTest.unittestEnabled": true,
-    "python.jediEnabled": true,
+    "python.jediEnabled": false,
     "restructuredtext.confPath": "${workspaceFolder}\\docs",
     "jake.autoDetect": "off",
     "gulp.autoDetect": "off",
@@ -16,5 +16,8 @@
     "python.dataScience.enabled": false,
     "python.linting.flake8Enabled": true,
     "travis.username": "isogeo",
-    "travis.repository": "isogeo-api-py-minsdk"
+    "travis.repository": "isogeo-api-py-minsdk",
+    "python.linting.pylintEnabled": true,
+    "python.formatting.provider": "black",
+    "editor.wordWrapColumn": 88
 }   
