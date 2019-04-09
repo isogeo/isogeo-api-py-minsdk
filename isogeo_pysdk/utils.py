@@ -256,7 +256,13 @@ class IsogeoUtils(object):
         return version_req.json().get("version")
 
     # -- URLs builders -------------------------------------------------------
-    def get_edit_url(self, md_id: str = None, md_type: str = None, owner_id: str = None, tab: str = "identification"):
+    def get_edit_url(
+        self,
+        md_id: str = None,
+        md_type: str = None,
+        owner_id: str = None,
+        tab: str = "identification",
+    ):
         """Constructs the edition URL of a metadata.
 
         :param str md_id: metadata/resource UUID
@@ -348,12 +354,12 @@ class IsogeoUtils(object):
         Useful to populate filters comboboxes for example.
 
         :param dict tags: tags dictionary from a search request
-        :param dict prev_query: query parameters returned after a search request
+        :param dict prev_query: query parameters returned after a search request. Typically `search.get("query")`.
         :param str duplicated: what to do about duplicated tags label. Values:
 
-          * ignore [default] - last tag parsed survives
+          * ignore - last tag parsed survives
           * merge - add duplicated in value as separated list (sep = '||')
-          * rename - if duplicated tag labels are part of different workgroup,
+          * rename [default] - if duplicated tag labels are part of different workgroup,
             so the tag label is renamed with workgroup.
         """
         # for rename option, get workgroups
@@ -369,7 +375,9 @@ class IsogeoUtils(object):
             )
 
         # inner function
-        def _duplicate_mng(target_dict, duplicate, mode=duplicated, workgroups=wgs):
+        def _duplicate_mng(
+            target_dict: dict, duplicate, mode: str = duplicated, workgroups: dict = wgs
+        ):
             if mode == "merge":
                 target_dict[duplicate[0]] += "||" + duplicate[1]
             elif mode == "rename":
@@ -415,7 +423,7 @@ class IsogeoUtils(object):
                 if v in tags_as_dicts.get("catalogs") and duplicated != "ignore":
                     _duplicate_mng(tags_as_dicts.get("catalogs"), (v, k))
                 else:
-                    logging.info(
+                    logging.debug(
                         "Duplicated catalog name: {}. Last catalog is retained.".format(
                             v
                         )
@@ -426,7 +434,7 @@ class IsogeoUtils(object):
                 if v in tags_as_dicts.get("contacts") and duplicated != "ignore":
                     _duplicate_mng(tags_as_dicts.get("contacts"), (v, k))
                 else:
-                    logging.info(
+                    logging.debug(
                         "Duplicated contact name: {}. Last contact is retained.".format(
                             v
                         )
@@ -440,7 +448,7 @@ class IsogeoUtils(object):
                 if v in tags_as_dicts.get("data-sources") and duplicated != "ignore":
                     _duplicate_mng(tags_as_dicts.get("data-sources"), (v, k))
                 else:
-                    logging.info(
+                    logging.debug(
                         "Duplicated data-source name: {}. Last data-source is retained.".format(
                             v
                         )
@@ -460,7 +468,7 @@ class IsogeoUtils(object):
                 if v in tags_as_dicts.get("licenses") and duplicated != "ignore":
                     _duplicate_mng(tags_as_dicts.get("licenses"), (v, k))
                 else:
-                    logging.info(
+                    logging.debug(
                         "Duplicated license name: {}. Last license is retained.".format(
                             v
                         )
@@ -524,7 +532,7 @@ class IsogeoUtils(object):
                 if v in query_tags.get("catalogs") and duplicated != "ignore":
                     _duplicate_mng(query_tags.get("catalogs"), (v, k))
                 else:
-                    logging.info(
+                    logging.debug(
                         "Duplicated catalog name: {}. Last catalog is retained.".format(
                             v
                         )
@@ -535,7 +543,7 @@ class IsogeoUtils(object):
                 if v in query_tags.get("contacts") and duplicated != "ignore":
                     _duplicate_mng(query_tags.get("contacts"), (v, k))
                 else:
-                    logging.info(
+                    logging.debug(
                         "Duplicated contact name: {}. Last contact is retained.".format(
                             v
                         )
@@ -549,7 +557,7 @@ class IsogeoUtils(object):
                 if v in query_tags.get("data-sources") and duplicated != "ignore":
                     _duplicate_mng(query_tags.get("data-sources"), (v, k))
                 else:
-                    logging.info(
+                    logging.debug(
                         "Duplicated data-source name: {}. Last data-source is retained.".format(
                             v
                         )
@@ -569,7 +577,7 @@ class IsogeoUtils(object):
                 if v in query_tags.get("licenses") and duplicated != "ignore":
                     _duplicate_mng(query_tags.get("licenses"), (v, k))
                 else:
-                    logging.info(
+                    logging.debug(
                         "Duplicated license name: {}. Last license is retained.".format(
                             v
                         )

@@ -495,7 +495,9 @@ class Isogeo(object):
         # end of method
         return shares_req.json()
 
-    def share(self, token, share_id: str, augment: bool = False, prot: str = "https") -> dict:
+    def share(
+        self, token, share_id: str, augment: bool = False, prot: str = "https"
+    ) -> dict:
         """Get information about a specific share and its applications.
 
         :param str token: API auth token
@@ -976,7 +978,9 @@ class Isogeo(object):
         # end of method
         return req.json()
 
-    def get_coordinate_systems(self, token, srs_code: str = None, prot: str = "https") -> dict:
+    def get_coordinate_systems(
+        self, token, srs_code: str = None, prot: str = "https"
+    ) -> dict:
         """Get available coordinate systems in Isogeo API.
 
         :param str token: API auth token
