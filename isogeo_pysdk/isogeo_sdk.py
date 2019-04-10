@@ -29,9 +29,11 @@ import requests
 # modules
 try:
     from . import checker
+    from .tags import TagsHelpers
     from . import utils
 except (ImportError, ValueError, SystemError):
     import checker
+    from tags import TagsHelpers
     import utils
 
 # ##############################################################################
@@ -40,13 +42,14 @@ except (ImportError, ValueError, SystemError):
 
 checker = checker.IsogeoChecker()
 utils = utils.IsogeoUtils()
+tags_helpers = TagsHelpers()
 version = "2.21.0"
 
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 
-__all__ = ["Isogeo", "IsogeoChecker", "IsogeoTranslator", "IsogeoUtils"]
+__all__ = ["Isogeo", "IsogeoChecker", "IsogeoTranslator", "TagsHelpers", "IsogeoUtils"]
 
 
 class Isogeo(object):
@@ -407,8 +410,9 @@ class Isogeo(object):
 
         # store tags in dicts
         if tags_as_dicts:
-            new_tags = utils.tags_to_dict(
-                tags=search_rez.get("tags"), prev_query=search_rez.get("query")
+            new_tags = tags_helpers.tags_to_dict(
+                tags=search_rez.get("tags"),
+                prev_query=search_rez.get("query")
             )
             # clear
             search_rez.get("tags").clear()

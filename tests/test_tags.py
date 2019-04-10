@@ -6,9 +6,9 @@
     
     ```python
     # for whole test
-    python -m unittest tests.test_utils
-    # for specific
-    python -m unittest tests.test_utils.TestIsogeoUtils.
+    python -m unittest tests.test_tags
+    # example for a specific method
+    python -m unittest tests.test_tags.TestTagsHelpers.test_tags_dictionarization_search_rename
     ```
 """
 
@@ -25,7 +25,7 @@ import unittest
 from urllib.parse import urlparse
 
 # module target
-from isogeo_pysdk import IsogeoUtils, __version__ as pysdk_version
+from isogeo_pysdk import TagsHelpers, __version__ as pysdk_version
 
 # #############################################################################
 # ######## Globals #################
@@ -40,7 +40,7 @@ app_token = environ.get("ISOGEO_API_DEV_SECRET")
 # ##################################
 
 
-class TestIsogeoUtilsTags(unittest.TestCase):
+class TestTagsHelpers(unittest.TestCase):
     """Test utils for tags in Isogeo API requests."""
 
     if not app_id or not app_token:
@@ -53,7 +53,7 @@ class TestIsogeoUtilsTags(unittest.TestCase):
     # standard methods
     def setUp(self):
         """ Fixtures prepared before each test."""
-        self.utils = IsogeoUtils()
+        self.tagshlpr = TagsHelpers()
 
         # API response samples
         self.tags_sample = path.normpath(r"tests/fixtures/api_response_tests_tags.json")
@@ -69,7 +69,7 @@ class TestIsogeoUtilsTags(unittest.TestCase):
         with open(self.tags_sample, "r") as f:
             search = json.loads(f.read())
         # dictionarize tags
-        t = self.utils.tags_to_dict(
+        t = self.tagshlpr.tags_to_dict(
             tags=search.get("tags"),
             prev_query=search.get("query"),
             # duplicated="rename"   # default option
@@ -101,6 +101,7 @@ class TestIsogeoUtilsTags(unittest.TestCase):
             {"auto": "provider:auto", "manual": "provider:manual"},
         )
 
+        print(t[0].get("contacts"))
         # check contacts
         self.assertEqual(len(t[0].get("contacts")), 14)
         self.assertDictEqual(
@@ -129,8 +130,10 @@ class TestIsogeoUtilsTags(unittest.TestCase):
         with open(self.tags_sample, "r") as f:
             search = json.loads(f.read())
         # dictionarize tags
-        t = self.utils.tags_to_dict(
-            tags=search.get("tags"), prev_query=search.get("query"), duplicated="ignore"
+        t = self.tagshlpr.tags_to_dict(
+            tags=search.get("tags"),
+            prev_query=search.get("query"),
+            duplicated="ignore"
         )
 
         # check catalogs
@@ -166,7 +169,7 @@ class TestIsogeoUtilsTags(unittest.TestCase):
         with open(self.tags_sample, "r") as f:
             search = json.loads(f.read())
         # dictionarize tags
-        t = self.utils.tags_to_dict(
+        t = self.tagshlpr.tags_to_dict(
             tags=search.get("tags"), prev_query=search.get("query"), duplicated="merge"
         )
 
@@ -203,4 +206,4 @@ class TestIsogeoUtilsTags(unittest.TestCase):
         with open(self.tags_sample, "r") as f:
             search = json.loads(f.read())
         with self.assertRaises(ValueError):
-            self.utils.tags_to_dict(search.get("tags"), duplicated="renam")
+            self.tagshlpr.tags_to_dict(search.get("tags"), duplicated="renam")
