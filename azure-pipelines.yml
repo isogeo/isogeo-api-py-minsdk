@@ -37,8 +37,6 @@ jobs:
     env:
       ISOGEO_API_DEV_ID: $(ISOGEO_API_DEV_ID)
       ISOGEO_API_DEV_SECRET: $(ISOGEO_API_DEV_SECRET)
-      ISOGEO_MAILCHIMP_API_PROD_KEY: $(ISOGEO_MAILCHIMP_API_PROD_KEY)
-      ISOGEO_MAILCHIMP_API_QA_KEY: $(ISOGEO_MAILCHIMP_API_QA_KEY)
     displayName: 'Tests and coverage'
 
   - task: PublishTestResults@2
