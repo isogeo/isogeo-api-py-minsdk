@@ -12,23 +12,20 @@
 # ##################################
 
 # standard library
-from codecs import open
-from os import path
-from setuptools import setup, find_packages
+import pathlib
+
+from setuptools import find_packages, setup
 
 # package (to get version)
 import isogeo_pysdk
 
 # SETUP ######################################################################
 
-here = path.abspath(path.dirname(__file__))
+# The directory containing this file
+HERE = pathlib.Path(__file__).parent
 
-# Get the long description from the README file
-# intentionally *not* adding an encoding option to open, See:
-#   https://github.com/pypa/virtualenv/issues/201#issuecomment-3145690
-# with open(path.join(here, 'README.rst'), encoding='utf-8') as f:
-with open(path.join(here, 'README.rst')) as f:
-    long_description = f.read()
+# The text of the README file
+README = (HERE / "README.md").read_text()
 
 # setup metadata
 setup(
@@ -38,8 +35,8 @@ setup(
     author="Isogeo",
     author_email="support@isogeo.com",
     description="Python package to make it easy to use Isogeo REST API",
-    long_description=long_description,
-    long_description_content_type='text/x-rst',
+    long_description=README,
+    long_description_content_type='text/markdown',
     keywords="GIS metadata INSPIRE Isogeo API REST geographical data ISO19139",
     license='LGPL3',
     url="https://github.com/isogeo/isogeo-api-py-minsdk",
@@ -53,12 +50,13 @@ setup(
     install_requires=["requests>=2.20.0",
                       ],
     extras_require={
+        "api-write": ["requests_oauthlib"],
         "dev": ["configparser"],
         "test": ["coverage", "pycodestyle", "python-dateutil"],
     },
     python_requires='>=3.5, <4',
     # packaging
-    packages=find_packages(exclude=['contrib', 'docs', 'tests']),
+    packages=find_packages(exclude=['contrib', 'docs', "*.tests", "*.tests.*", "tests.*", "tests"]),
     include_package_data=True,
     classifiers=[
         "Intended Audience :: Developers",
