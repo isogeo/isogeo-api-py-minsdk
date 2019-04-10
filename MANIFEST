@@ -2,4 +2,4 @@
 include LICENSE
 
 # Include the README
-include *.rst
+include *.md
