@@ -1,23 +1,28 @@
 {
+    "editor.rulers": [88],
+    "editor.wordWrapColumn": 88,
+    "python.autoComplete.addBrackets": true,
+    "python.dataScience.enabled": false,
+    "python.envFile": "${workspaceFolder}/dev.env",
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": ["--target-version=py36"],
+    "python.jediEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.linting.pylintEnabled": true,
     "python.pythonPath": ".venv_tests\\Scripts\\python.exe",
     "python.unitTest.unittestArgs": [
         "-v",
         "-s",
         "./tests",
         "-p",
-        "test*.py"
+        "test_*.py"
     ],
-    "python.unitTest.unittestEnabled": true,
-    "python.jediEnabled": false,
+    "python.unitTest.unittestEnabled": false,
     "restructuredtext.confPath": "${workspaceFolder}\\docs",
-    "jake.autoDetect": "off",
-    "gulp.autoDetect": "off",
-    "python.autoComplete.addBrackets": true,
-    "python.dataScience.enabled": false,
-    "python.linting.flake8Enabled": true,
     "travis.username": "isogeo",
     "travis.repository": "isogeo-api-py-minsdk",
-    "python.linting.pylintEnabled": true,
-    "python.formatting.provider": "black",
-    "editor.wordWrapColumn": 88
+    "travis.statusPollingInterval": 300,
+    "python.unitTest.pyTestArgs": [],
+    "python.unitTest.nosetestsEnabled": false,
+    "python.unitTest.pyTestEnabled": true
 }   

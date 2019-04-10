@@ -5,11 +5,11 @@
 # Name:         Isogeo
 # Purpose:      Python minimalist SDK to use Isogeo API
 #
-# Author:       Julien Moura (@geojulien)
+# Author:       Julien Moura @Isogeo
 #
-# Python:       2.7.x
+# Python:       3.5+
 # Created:      22/12/2015
-# Updated:      10/01/2016
+# Updated:      10/04/2019
 # -----------------------------------------------------------------------------
 
 # #############################################################################
@@ -40,7 +40,7 @@ except (ImportError, ValueError, SystemError):
 
 checker = checker.IsogeoChecker()
 utils = utils.IsogeoUtils()
-version = "2.20.5"
+version = "2.21.0"
 
 # #############################################################################
 # ########## Classes ###############
