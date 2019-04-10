@@ -4,16 +4,19 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
+black = "==19.3b0"
 codecov = "*"
-pycodestyle = "*"
-python-dateutil = "*"
-twine = "*"
+flake8 = "*"
 pip = "*"
+pycodestyle = "*"
 pytest= "*"
 pytest-cov="*"
+python-dateutil = "*"
+python-dotenv = "*"
+requests-oauthlib = "*"
+setuptools = "*"
+twine = "*"
 wheel = "*"
-mailchimp3 = "*"
-black = "==19.3b0"
 
 [packages]
 requests = ">=2.20.0"
