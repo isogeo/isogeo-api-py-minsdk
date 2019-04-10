@@ -22,6 +22,3 @@ pytest-cov
 
 # then it's possible to install from the repo:
 # https://github.com/Isogeo/isogeo-api-py-minsdk/archive/master.zip
-
-# testing connection to the MailChimp API
-mailchimp3

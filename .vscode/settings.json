@@ -8,8 +8,15 @@
     "python.formatting.blackArgs": ["--target-version=py36"],
     "python.jediEnabled": false,
     "python.linting.flake8Enabled": true,
+    "python.linting.flake8Args": [
+        "--ignore=E24,E501,W504",
+        "--verbose"
+    ],
     "python.linting.pylintEnabled": true,
     "python.pythonPath": ".venv_tests\\Scripts\\python.exe",
+    "python.unitTest.pyTestArgs": [],
+    "python.unitTest.nosetestsEnabled": false,
+    "python.unitTest.pyTestEnabled": true,
     "python.unitTest.unittestArgs": [
         "-v",
         "-s",
@@ -22,7 +29,4 @@
     "travis.username": "isogeo",
     "travis.repository": "isogeo-api-py-minsdk",
     "travis.statusPollingInterval": 300,
-    "python.unitTest.pyTestArgs": [],
-    "python.unitTest.nosetestsEnabled": false,
-    "python.unitTest.pyTestEnabled": true
 }   
