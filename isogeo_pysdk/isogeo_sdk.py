@@ -1037,7 +1037,7 @@ if __name__ == "__main__":
     logger = logging.getLogger()
     logger.setLevel(logging.DEBUG)
 
-    # ------------ Settings from ini file ----------------
+    # ------------Authentication credentials ----------------
     client_id = environ.get("ISOGEO_API_DEV_ID")
     client_secret = environ.get("ISOGEO_API_DEV_SECRET")
 
@@ -1059,31 +1059,37 @@ if __name__ == "__main__":
 
     # getting a token
     isogeo.connect()
-    s = isogeo.search(page_size=1, whole_share=0)
-    # print(s)
+    # s = isogeo.search(page_size=1, whole_share=0)
+    # # print(s)
 
-    r = isogeo.resource(id_resource="2313f3f7e0f540c3ad2850d7c9c4c04d")
-    # print(r)
+    # r = isogeo.resource(id_resource="2313f3f7e0f540c3ad2850d7c9c4c04d")
+    # # print(r)
 
-    t = isogeo.thesauri()
-    # print(t)
-    tz = isogeo.thesaurus(thez_id=t[0].get("_id"))
-    # print(tz)
+    # t = isogeo.thesauri()
+    # # print(t)
+    # tz = isogeo.thesaurus(thez_id=t[0].get("_id"))
+    # # print(tz)
 
-    k = isogeo.keywords(page_size=1)
-    # print(k)
+    # memo : par défaut order_dir = asc
+    k = isogeo.keywords(thez_id="1616597fbc4348c8b11ef9d59cf594c8",
+                        order_by="count.isogeo",
+                        order_dir="desc",
+                        page_size=10,
+                        include="all"
+                        )
+    print(k)
 
     # lics = isogeo.licenses(owner_id="32f7e95ec4e94ca3bc1afda960003882")
     # print(lics)
 
-    fmts = isogeo.get_formats()
-    # print(fmts)
+    # fmts = isogeo.get_formats()
+    # # print(fmts)
 
-    srs = isogeo.get_coordinate_systems()
-    # print(srs)
+    # srs = isogeo.get_coordinate_systems()
+    # # print(srs)
 
-    dirs = isogeo.get_directives()
-    print(dirs)
+    # dirs = isogeo.get_directives()
+    # print(dirs)
 
-    lks = isogeo.get_link_kinds()
-    print(lks)
+    # lks = isogeo.get_link_kinds()
+    # print(lks)
