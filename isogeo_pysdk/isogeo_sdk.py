@@ -255,9 +255,9 @@ class Isogeo(object):
         :param decorated_func token: original function to execute after check
         """
 
-        def wrapper(self):
+        def wrapper(self, *args, **kwargs):
             # compare token expiration date and ask for a new one if it's expired
-            if datetime.now() < token.get("expires_at"):
+            if datetime.now() < self.token.get("expires_at"):
                 self.connect()
                 logging.debug("Token was about to expire, so has been renewed.")
             else:
@@ -265,7 +265,7 @@ class Isogeo(object):
                 pass
 
             # let continue running the original function
-            decorated_func(self)
+            return decorated_func(self, *args, **kwargs)
 
         return wrapper
 
@@ -452,8 +452,8 @@ class Isogeo(object):
     @_check_bearer_validity
     def resource(
         self,
-        token,
-        id_resource: str,
+        token: dict = None,
+        id_resource: str = None,
         subresource=None,
         include: list = [],
         prot: str = "https",
@@ -642,7 +642,7 @@ class Isogeo(object):
     @_check_bearer_validity
     def thesaurus(
         self,
-        token,
+        token: dict = None,
         thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
         prot: str = "https",
     ) -> dict:
@@ -677,7 +677,7 @@ class Isogeo(object):
     @_check_bearer_validity
     def keywords(
         self,
-        token,
+        token: dict = None,
         thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
         query: str = "",
         offset: int = 0,
@@ -1052,4 +1052,17 @@ if __name__ == "__main__":
     )
 
     # getting a token
-    isogeo.search()
+    isogeo.connect()
+    s = isogeo.search(page_size=1, whole_share=0)
+    # print(s)
+
+    r = isogeo.resource(id_resource="2313f3f7e0f540c3ad2850d7c9c4c04d")
+    # print(r)
+
+    t = isogeo.thesauri()
+    print(t)
+    tz = isogeo.thesaurus(thez_id=t[0].get("_id"))
+    print(tz)
+
+    k = isogeo.keywords(page_size=1)
+    print(k)
