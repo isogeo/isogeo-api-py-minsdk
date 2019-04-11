@@ -556,7 +556,9 @@ class Isogeo(object):
 
     # -- LICENCES ---------------------------------------------
     @_check_bearer_validity
-    def licenses(self, owner_id: str, token: dict = None, prot: str = "https") -> dict:
+    def licenses(
+        self, token: dict = None, owner_id: str = None, prot: str = "https"
+    ) -> dict:
         """Get information about licenses owned by a specific workgroup.
 
         :param str token: API auth token
@@ -739,10 +741,10 @@ class Isogeo(object):
     @_check_bearer_validity
     def dl_hosted(
         self,
-        token,
-        resource_link: dict,
+        token: dict = None,
+        resource_link: dict = None,
         encode_clean: bool = 1,
-        proxy_url=None,
+        proxy_url: str = None,
         prot: str = "https",
     ) -> tuple:
         """Download hosted resource.
@@ -834,7 +836,11 @@ class Isogeo(object):
 
     @_check_bearer_validity
     def xml19139(
-        self, id_resource: str, token: dict = None, proxy_url=None, prot: str = "https"
+        self,
+        token: dict = None,
+        id_resource: str = None,
+        proxy_url=None,
+        prot: str = "https",
     ):
         """Get resource exported into XML ISO 19139.
 
@@ -1060,9 +1066,24 @@ if __name__ == "__main__":
     # print(r)
 
     t = isogeo.thesauri()
-    print(t)
+    # print(t)
     tz = isogeo.thesaurus(thez_id=t[0].get("_id"))
-    print(tz)
+    # print(tz)
 
     k = isogeo.keywords(page_size=1)
-    print(k)
+    # print(k)
+
+    # lics = isogeo.licenses(owner_id="32f7e95ec4e94ca3bc1afda960003882")
+    # print(lics)
+
+    fmts = isogeo.get_formats()
+    # print(fmts)
+
+    srs = isogeo.get_coordinate_systems()
+    # print(srs)
+
+    dirs = isogeo.get_directives()
+    print(dirs)
+
+    lks = isogeo.get_link_kinds()
+    print(lks)

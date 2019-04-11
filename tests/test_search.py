@@ -53,7 +53,7 @@ class TestSearch(unittest.TestCase):
     def setUp(self):
         """Executed before each test."""
         self.isogeo = Isogeo(client_id=app_id, client_secret=app_secret)
-        self.bearer = self.isogeo.connect()
+        self.isogeo.connect()
 
     def tearDown(self):
         """Executed after each test."""

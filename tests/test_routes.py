@@ -97,9 +97,7 @@ class TestRoutes(unittest.TestCase):
         self.assertIn(401, licenses)
 
         # a specific license
-        license = self.isogeo.license(
-            license_id="f6e0c665905a4feab1e9c1d6359a225f"
-        )
+        license = self.isogeo.license(license_id="f6e0c665905a4feab1e9c1d6359a225f")
         self.assertIsInstance(license, dict)
         self.assertIn("_id", license)
         self.assertIn("_tag", license)

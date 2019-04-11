@@ -50,7 +50,7 @@ class TestDownloadHosted(unittest.TestCase):
     def setUp(self):
         """Executed before each test."""
         self.isogeo = Isogeo(client_id=app_id, client_secret=app_token)
-        self.bearer = self.isogeo.connect()
+        self.isogeo.connect()
 
     def tearDown(self):
         """Executed after each test."""
@@ -59,7 +59,6 @@ class TestDownloadHosted(unittest.TestCase):
     def test_dl_hosted(self):
         """Download an hosted data from Isogeo metadata."""
         search = self.isogeo.search(
-            self.bearer,
             whole_share=0,
             query="action:download type:dataset",
             include=["links"],
@@ -85,7 +84,7 @@ class TestDownloadHosted(unittest.TestCase):
         #  "actions": ["download", ],
         #  "size": "2253029",
         # }
-        dl_stream = self.isogeo.dl_hosted(self.bearer, resource_link=target_link)
+        dl_stream = self.isogeo.dl_hosted(resource_link=target_link)
 
         # create tempfile and fill with downloaded XML
         tmp_output = mkdtemp(prefix="IsogeoPySDK_")
@@ -96,13 +95,11 @@ class TestDownloadHosted(unittest.TestCase):
     def test_dl_hosted_bad(self):
         """Test errors raised by download method"""
         with self.assertRaises(ValueError):
-            self.isogeo.dl_hosted(self.bearer, resource_link={})
+            self.isogeo.dl_hosted(resource_link={})
         with self.assertRaises(TypeError):
-            self.isogeo.dl_hosted(
-                self.bearer, resource_link="my_resource_link_is_a_nice_string"
-            )
+            self.isogeo.dl_hosted(resource_link="my_resource_link_is_a_nice_string")
         with self.assertRaises(ValueError):
-            self.isogeo.dl_hosted(self.bearer, resource_link={"type": "url"})
+            self.isogeo.dl_hosted(resource_link={"type": "url"})
 
 
 # ##############################################################################

@@ -1,6 +1,17 @@
 # -*- coding: UTF-8 -*-
 #! python3
 
+"""
+    Usage from the repo root folder:
+
+    ```python
+    # for whole test
+    python -m unittest tests.test_share
+    # for specific
+    python -m unittest tests.test_share.TestShares.test_share_augmented
+    ```
+"""
+
 # #############################################################################
 # ########## Libraries #############
 # ##################################
@@ -8,7 +19,6 @@
 # Standard library
 from os import environ
 import logging
-from random import randint
 from sys import exit
 import unittest
 
@@ -43,7 +53,7 @@ class TestShares(unittest.TestCase):
     def setUp(self):
         """Executed before each test."""
         self.isogeo = Isogeo(client_id=app_id, client_secret=app_secret)
-        self.bearer = self.isogeo.connect()
+        self.isogeo.connect()
 
     def tearDown(self):
         """Executed after each test."""
@@ -52,21 +62,21 @@ class TestShares(unittest.TestCase):
     # basic search and results
     def test_shares(self):
         """Basic shares request"""
-        self.isogeo.shares(self.bearer)
+        self.isogeo.shares()
 
     def test_share(self):
         """Basic share details request"""
-        shares = self.isogeo.shares(self.bearer)
-        self.isogeo.share(self.bearer, share_id=shares[0].get("_id"))
+        shares = self.isogeo.shares()
+        self.isogeo.share(share_id=shares[0].get("_id"))
 
     def test_share_augmented(self):
         """Augmented share."""
-        shares = self.isogeo.shares(self.bearer)
-        self.isogeo.share(self.bearer, share_id=shares[0].get("_id"), augment=1)
+        shares = self.isogeo.shares()
+        self.isogeo.share(share_id=shares[0].get("_id"), augment=1)
 
     def test_share_ids(self):
         """Search with augment option should add shares_id."""
-        self.isogeo.search(self.bearer, page_size=0, whole_share=0, augment=1)
+        self.isogeo.search(page_size=0, whole_share=0, augment=1)
 
 
 # ##############################################################################

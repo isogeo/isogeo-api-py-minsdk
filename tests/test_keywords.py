@@ -50,7 +50,7 @@ class TestKeywords(unittest.TestCase):
     def setUp(self):
         """Executed before each test."""
         self.isogeo = Isogeo(client_id=app_id, client_secret=app_secret)
-        self.bearer = self.isogeo.connect()
+        self.isogeo.connect()
 
         # a random metadata
         search = self.isogeo.search(self.bearer, whole_share=0, check=0)

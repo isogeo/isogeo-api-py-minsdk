@@ -1,6 +1,18 @@
 # -*- coding: UTF-8 -*-
 #! python3
 
+
+"""
+    Usage from the repo root folder:
+
+    ```python
+    # for whole test
+    python -m unittest tests.test_translation
+    # for specific
+    python -m unittest tests.test_translation.TestIsogeoTranslator.test_translation_fr
+    ```
+"""
+
 # #############################################################################
 # ########## Libraries #############
 # ##################################
@@ -70,9 +82,9 @@ class TestIsogeoTranslator(unittest.TestCase):
     def setUp(self):
         """Executed before each test."""
         self.isogeo = Isogeo(client_id=app_id, client_secret=app_token, lang="FR")
-        self.bearer = self.isogeo.connect()
+        self.isogeo.connect()
         self.md_contacts = self.isogeo.resource(
-            self.bearer, "e5e5ab788aff4418a1cd4a38f842ccbe", include=["contacts"]
+            id_resource="e5e5ab788aff4418a1cd4a38f842ccbe", include=["contacts"]
         )
         self.li_contacts_roles = [
             i.get("role") for i in self.md_contacts.get("contacts")
