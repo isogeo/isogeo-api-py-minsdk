@@ -14,18 +14,17 @@
 # ##################################
 
 # Standard library
+import logging
+import unittest
 from datetime import datetime
 from os import environ
-import logging
 from sys import exit
-import unittest
 
 # 3rd party
 from dateutil.parser import parse as dtparse
 
 # module target
 from isogeo_pysdk import Isogeo
-
 
 # #############################################################################
 # ######## Globals #################
@@ -56,7 +55,7 @@ class TestMetadataModels(unittest.TestCase):
     def setUp(self):
         """Executed before each test."""
         self.isogeo = Isogeo(client_id=app_id, client_secret=app_token)
-        self.bearer = self.isogeo.connect()
+        self.isogeo.connect()
 
     def tearDown(self):
         """Executed after each test."""
@@ -67,7 +66,7 @@ class TestMetadataModels(unittest.TestCase):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
         search = self.isogeo.search(
-            self.bearer, whole_share=0, specific_md=["c4b7ad9732454beca1ab3ec1958ffa50"]
+            whole_share=0, specific_md=["c4b7ad9732454beca1ab3ec1958ffa50"]
         )
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)
@@ -127,7 +126,7 @@ class TestMetadataModels(unittest.TestCase):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
         search = self.isogeo.search(
-            self.bearer, whole_share=0, specific_md=["3663e29d3c2a433384ee308b4d632a04"]
+            whole_share=0, specific_md=["3663e29d3c2a433384ee308b4d632a04"]
         )
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)
@@ -187,7 +186,7 @@ class TestMetadataModels(unittest.TestCase):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
         search = self.isogeo.search(
-            self.bearer, whole_share=0, specific_md=["d3df351cb9a64a35b6bde4a383c9bddc"]
+            whole_share=0, specific_md=["d3df351cb9a64a35b6bde4a383c9bddc"]
         )
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)
@@ -246,7 +245,7 @@ class TestMetadataModels(unittest.TestCase):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
         search = self.isogeo.search(
-            self.bearer, whole_share=0, specific_md=["af522449ae5041cf9f058c9e8822f45f"]
+            whole_share=0, specific_md=["af522449ae5041cf9f058c9e8822f45f"]
         )
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)
@@ -307,7 +306,7 @@ class TestMetadataModels(unittest.TestCase):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
         search = self.isogeo.search(
-            self.bearer, whole_share=0, specific_md=["a7653d11752c4a6c890a9f9d1603eceb"]
+            whole_share=0, specific_md=["a7653d11752c4a6c890a9f9d1603eceb"]
         )
         md = search.get("results")[0]
         self.assertIsInstance(md, dict)
@@ -368,7 +367,6 @@ class TestMetadataModels(unittest.TestCase):
         """Search with sub-resources included."""
         # from a specific md. Can be viewed here: https://goo.gl/RDWDWJ
         search = self.isogeo.search(
-            self.bearer,
             whole_share=0,
             specific_md=["3c649da21ed9405e8d508bfdbe831516"],
             include=["contacts"],
@@ -410,7 +408,7 @@ class TestMetadataModels(unittest.TestCase):
     # share models
     def test_shares(self):
         """Check shares route model response."""
-        shares = self.isogeo.shares(self.bearer)
+        shares = self.isogeo.shares()
         self.assertIsInstance(shares, list)
         share = shares[0]
         self.assertIsInstance(share, dict)
@@ -534,9 +532,7 @@ class TestMetadataModels(unittest.TestCase):
 
     def test_share_basic(self):
         """Check share route model response."""
-        share = self.isogeo.share(
-            self.bearer, share_id="1e07910d365449b59b6596a9b428ecd9"
-        )
+        share = self.isogeo.share(share_id="1e07910d365449b59b6596a9b428ecd9")
 
         self.assertIsInstance(share, dict)
 
@@ -660,7 +656,7 @@ class TestMetadataModels(unittest.TestCase):
     def test_share_augmented(self):
         """Check share route model response."""
         share = self.isogeo.share(
-            self.bearer, share_id="1e07910d365449b59b6596a9b428ecd9", augment=True
+            share_id="1e07910d365449b59b6596a9b428ecd9", augment=True
         )
 
         self.assertIsInstance(share, dict)

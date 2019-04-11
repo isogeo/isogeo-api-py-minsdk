@@ -3,7 +3,7 @@
 
 """
     Usage from the repo root folder:
-    
+
     ```python
     python -m unittest tests.test_export_XML19139
     ```
@@ -51,7 +51,7 @@ class TestExportXML19139(unittest.TestCase):
     def setUp(self):
         """Executed before each test."""
         self.isogeo = Isogeo(client_id=app_id, client_secret=app_token)
-        self.bearer = self.isogeo.connect()
+        self.isogeo.connect()
 
     def tearDown(self):
         """Executed after each test."""
@@ -60,15 +60,13 @@ class TestExportXML19139(unittest.TestCase):
     # metadata models
     def test_export_XML19139(self):
         """Download a metadata in XML 19139."""
-        search = self.isogeo.search(
-            self.bearer, whole_share=0, query="type:dataset", page_size=1
-        )
+        search = self.isogeo.search(whole_share=0, query="type:dataset", page_size=1)
         # get the metadata
         md_id = search.get("results")[0].get("_id")
         md_type = search.get("results")[0].get("type")
 
         # download the XML version
-        xml_stream = self.isogeo.xml19139(self.bearer, md_id)
+        xml_stream = self.isogeo.xml19139(id_resource=md_id)
 
         # create tempfile and fill with downloaded XML
         tmp_output = mkstemp(prefix="IsogeoPySDK_" + md_id[:5])
@@ -107,7 +105,7 @@ class TestExportXML19139(unittest.TestCase):
     def test_export_bad(self):
         """Test errors raised by export function"""
         with self.assertRaises(ValueError):
-            self.isogeo.xml19139(self.bearer, "trust_me_its_an_uuid")
+            self.isogeo.xml19139(id_resource="trust_me_its_an_uuid")
 
 
 # ##############################################################################

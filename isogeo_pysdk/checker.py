@@ -15,11 +15,12 @@
 # ##################################
 
 # Standard library
-from collections import Counter
 import logging
 import socket
-from uuid import UUID
 import warnings
+from collections import Counter
+from datetime import datetime
+from uuid import UUID
 
 # ##############################################################################
 # ########## Globals ###############
@@ -123,7 +124,7 @@ class IsogeoChecker(object):
             logging.error(e)
             return False
 
-    def check_bearer_validity(self, token, connect_mtd) -> dict:
+    def check_bearer_validity(self, token: dict, connect_mtd) -> dict:
         """Check API Bearer token validity.
 
         Isogeo ID delivers authentication bearers which are valid during
@@ -138,7 +139,11 @@ class IsogeoChecker(object):
         :param isogeo_pysdk.connect connect_mtd: method herited
          from Isogeo PySDK to get new bearer
         """
-        if token[1] < 60:
+        warnings.warn(
+            "Method is now executed as a decorator wihtin the main SDK class. Will be removed in future versions.",
+            DeprecationWarning,
+        )
+        if datetime.now() < token.get("expires_at"):
             token = connect_mtd
             logging.debug("Token was about to expire, so has been renewed.")
         else:

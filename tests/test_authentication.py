@@ -120,19 +120,15 @@ class TestAuthentication(unittest.TestCase):
         """When a search works, check the response structure."""
         isogeo = Isogeo(client_id=app_id, client_secret=app_token)
         bearer = isogeo.connect()
-        self.assertIsInstance(bearer, tuple)
-        self.assertEqual(len(bearer), 2)
-        self.assertIsInstance(bearer[0], str)
-        self.assertIsInstance(bearer[1], int)
+        self.assertIsInstance(bearer, dict)
+        self.assertEqual(len(bearer), 4)
 
     def test_successed_auth_qa(self):
         """Try to connect to QA platform."""
         isogeo = Isogeo(client_id=app_id, client_secret=app_token, platform="qa")
         bearer = isogeo.connect()
-        self.assertIsInstance(bearer, tuple)
-        self.assertEqual(len(bearer), 2)
-        self.assertIsInstance(bearer[0], str)
-        self.assertIsInstance(bearer[1], int)
+        self.assertIsInstance(bearer, dict)
+        self.assertEqual(len(bearer), 4)
 
 
 # #############################################################################

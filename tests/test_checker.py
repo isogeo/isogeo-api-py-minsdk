@@ -1,18 +1,31 @@
 # -*- coding: UTF-8 -*-
 #! python3
 
+"""
+    Usage from the repo root folder:
+
+    ```python
+    # for whole test
+    python -m unittest tests.test_checker
+    # for specific
+    python -m unittest tests.test_checker.TestIsogeoChecker.test_checker_uuid_valid
+    ```
+"""
+
 # #############################################################################
 # ########## Libraries #############
 # ##################################
 
 # Standard library
-from os import environ
 import logging
-from sys import exit
 import unittest
+from datetime import datetime
+from os import environ
+from sys import exit
 
 # Isogeo
-from isogeo_pysdk import Isogeo, IsogeoChecker, __version__ as pysdk_version
+from isogeo_pysdk import Isogeo, IsogeoChecker
+from isogeo_pysdk import __version__ as pysdk_version
 
 # #############################################################################
 # ######## Globals #################
@@ -50,36 +63,26 @@ class TestIsogeoChecker(unittest.TestCase):
     def test_checker_validity_bearer_valid(self):
         """When a search works, check the response structure."""
         isogeo = Isogeo(client_id=app_id, client_secret=app_token)
-        bearer = isogeo.connect()
+        isogeo.connect()
+        # check structure
         self.assertIsInstance(
-            checker.check_bearer_validity(bearer, isogeo.connect()), tuple
+            checker.check_bearer_validity(isogeo.token, isogeo.connect()), dict
         )
         self.assertEqual(
-            len(checker.check_bearer_validity(bearer, isogeo.connect())), 2
-        )
-        self.assertIsInstance(
-            checker.check_bearer_validity(bearer, isogeo.connect())[0], str
-        )
-        self.assertIsInstance(
-            checker.check_bearer_validity(bearer, isogeo.connect())[1], int
+            len(checker.check_bearer_validity(isogeo.token, isogeo.connect())), 4
         )
 
     def test_checker_validity_bearer_expired(self):
         """When a search works, check the response structure."""
         isogeo = Isogeo(client_id=app_id, client_secret=app_token)
-        bearer = isogeo.connect()
-        bearer = (bearer[0], 50)
+        isogeo.connect()
+        # force the token expires_at value
+        isogeo.token["expires_at"] = datetime.now()
         self.assertIsInstance(
-            checker.check_bearer_validity(bearer, isogeo.connect()), tuple
+            checker.check_bearer_validity(isogeo.token, isogeo.connect()), dict
         )
         self.assertEqual(
-            len(checker.check_bearer_validity(bearer, isogeo.connect())), 2
-        )
-        self.assertIsInstance(
-            checker.check_bearer_validity(bearer, isogeo.connect())[0], str
-        )
-        self.assertIsInstance(
-            checker.check_bearer_validity(bearer, isogeo.connect())[1], int
+            len(checker.check_bearer_validity(isogeo.token, isogeo.connect())), 4
         )
 
     # UUID
