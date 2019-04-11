@@ -17,6 +17,7 @@ coverage
 requests==2.21.*
 pycodestyle
 python-dateutil
+python-dotenv
 pytest
 pytest-cov
 
