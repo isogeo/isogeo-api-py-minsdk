@@ -139,6 +139,10 @@ class IsogeoChecker(object):
         :param isogeo_pysdk.connect connect_mtd: method herited
          from Isogeo PySDK to get new bearer
         """
+        warnings.warn(
+            "Method is now executed as a decorator wihtin the main SDK class. Will be removed in future versions.",
+            DeprecationWarning,
+        )
         if datetime.now() < token.get("expires_at"):
             token = connect_mtd
             logging.debug("Token was about to expire, so has been renewed.")

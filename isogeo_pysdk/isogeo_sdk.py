@@ -254,6 +254,7 @@ class Isogeo(object):
 
         :param decorated_func token: original function to execute after check
         """
+
         def wrapper(self):
             # compare token expiration date and ask for a new one if it's expired
             if datetime.now() < token.get("expires_at"):
@@ -265,6 +266,7 @@ class Isogeo(object):
 
             # let continue running the original function
             decorated_func(self)
+
         return wrapper
 
     # -- API PATHS ------------------------------------------------------------
@@ -514,7 +516,11 @@ class Isogeo(object):
 
     @_check_bearer_validity
     def share(
-        self, share_id: str, token: dict = None, augment: bool = False, prot: str = "https"
+        self,
+        share_id: str,
+        token: dict = None,
+        augment: bool = False,
+        prot: str = "https",
     ) -> dict:
         """Get information about a specific share and its applications.
 
@@ -827,7 +833,9 @@ class Isogeo(object):
         return (hosted_req, filename, out_size)
 
     @_check_bearer_validity
-    def xml19139(self, id_resource: str, token: dict = None, proxy_url=None, prot: str = "https"):
+    def xml19139(
+        self, id_resource: str, token: dict = None, proxy_url=None, prot: str = "https"
+    ):
         """Get resource exported into XML ISO 19139.
 
         :param str token: API auth token
@@ -979,7 +987,9 @@ class Isogeo(object):
         return req.json()
 
     @_check_bearer_validity
-    def get_formats(self, token: dict = None, format_code: str = None, prot: str = "https") -> dict:
+    def get_formats(
+        self, token: dict = None, format_code: str = None, prot: str = "https"
+    ) -> dict:
         """Get formats.
 
         :param str token: API auth token
