@@ -1019,7 +1019,6 @@ if __name__ == "__main__":
 
     # ------------ Log & debug ----------------
     logger = logging.getLogger()
-    logging.captureWarnings(True)
     logger.setLevel(logging.DEBUG)
 
     # ------------ Settings from ini file ----------------

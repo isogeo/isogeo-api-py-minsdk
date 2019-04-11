@@ -19,7 +19,7 @@ import logging
 import quopri
 import re
 import uuid
-from configparser import SafeConfigParser
+from configparser import ConfigParser
 from os import path
 from pathlib import Path
 from urllib.parse import urlparse
@@ -698,7 +698,7 @@ class IsogeoUtils(object):
                 }
         else:
             # assuming file is an .ini
-            ini_parser = SafeConfigParser()
+            ini_parser = ConfigParser()
             ini_parser.read(in_credentials)
             # check structure
             if "auth" in ini_parser._sections:
