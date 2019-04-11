@@ -91,7 +91,7 @@ _SUBRESOURCES_MD = (
     "tags",
 )
 
-_SUBRESOURCES_KW = ("count",)
+_SUBRESOURCES_KW = ("_abilities", "count", "thesaurus")
 
 # ##############################################################################
 # ########## Classes ###############
