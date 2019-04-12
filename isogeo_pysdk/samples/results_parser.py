@@ -1,12 +1,12 @@
 # -*- coding: UTF-8 -*-
-#!/usr/bin/env python
-# from __future__ import (absolute_import, print_function, unicode_literals)
+#! python3
+
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Offline parser
 # Purpose:      Exports each of 10 last updated metadata into an XML ISO19139
 # Author:       Julien Moura (@geojulien)
 #
-# Python:       2.7.x
+# Python:       3.6+
 # Created:      02/11/2017
 # ------------------------------------------------------------------------------
 
