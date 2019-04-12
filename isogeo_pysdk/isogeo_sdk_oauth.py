@@ -29,6 +29,7 @@ from requests_oauthlib import OAuth2Session
 
 # modules
 try:
+    from isogeo_sdk import version
     from . import checker
     from . import utils
 except (ImportError, ValueError, SystemError):
@@ -48,6 +49,16 @@ utils = utils.IsogeoUtils()
 
 
 class IsogeoSession(OAuth2Session):
+
+    # -- ATTRIBUTES -----------------------------------------------------------
+    AUTH_MODES = {"group", "user_private", "user_public"}
+
+    _THESAURI_DICT = {
+        "isogeo": "1616597fbc4348c8b11ef9d59cf594c8",
+        "inspire-theme": "926c676c380046d7af99bcae343ac813",
+        "iso19115-topic": "926f969ee2bb470a84066625f68b96bb",
+    }
+
     def __init__(
         self,
         client_id=None,
@@ -61,13 +72,55 @@ class IsogeoSession(OAuth2Session):
         token_updater=None,
         # custom
         client_secret=None,
+        proxy: dict = None,
+        auth_mode: str = "user_private",
         platform: str = "prod",
         lang: str = "en",
+        app_name: str = "isogeo-pysdk-writer/{}".format(version),
         # additional
         **kwargs,
     ):
 
         self.client_secret = client_secret
+        self.app_name = app_name
+
+        # checking internet connection
+        if not checker.check_internet_connection():
+            raise EnvironmentError("Internet connection issue.")
+        else:
+            pass
+
+        # testing parameters
+        if len(client_secret) != 64:
+            logging.error("App secret length issue: it should be 64 chars.")
+            raise ValueError(1, "Secret isn't good: it must be 64 chars.")
+        else:
+            pass
+
+        # auth mode
+        if auth_mode not in self.AUTH_MODES:
+            logging.error("Auth mode value is not good: {}".format(auth_mode))
+            raise ValueError(
+                "Mode value must be one of: ".format(" | ".join(self.AUTH_MODES))
+            )
+        else:
+            self.auth_mode = auth_mode
+
+        # platform to request
+        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
+            platform
+        )
+
+        # setting language
+        if lang.lower() not in ("fr", "en"):
+            logging.warning(
+                "Isogeo API is only available in English ('en', "
+                "default) or French ('fr'). "
+                "Language has been set on English."
+            )
+            self.lang = "en"
+        else:
+            self.lang = lang.lower()
 
         return super().__init__(
             client_id=client_id,
@@ -91,6 +144,200 @@ class IsogeoSession(OAuth2Session):
             client_id=self.client_id,
             client_secret=self.client_secret,
         )
+
+    # -- PROPERTIES -----------------------------------------------------------
+    @property
+    def header(self) -> dict:
+        if self.auth_mode == "group":
+            return {
+                "Authorization": "Bearer {}".format(self.token.get("access_token")),
+                "user-agent": self.app_name,
+            }
+        elif self.auth_mode == "user_private":
+            return {
+                "user-agent": self.app_name,
+            }
+        else:
+            pass
+
+
+    # -- KEYWORDS -----------------------------------------------------------
+
+    def thesauri(self, token: dict = None, prot: str = "https") -> dict:
+        """Get list of available thesauri.
+
+        :param str token: API auth token
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # passing auth parameter
+        thez_url = "{}://v1.{}.isogeo.com/thesauri".format(prot, self.api_url)
+        thez_req = self.get(
+            thez_url, headers=self.header, proxies=self.proxies, verify=self.ssl
+        )
+
+        # checking response
+        checker.check_api_response(thez_req)
+
+        # end of method
+        return thez_req.json()
+
+    def thesaurus(
+        self,
+        token: dict = None,
+        thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
+        prot: str = "https",
+    ) -> dict:
+        """Get a thesaurus.
+
+        :param str token: API auth token
+        :param str thez_id: thesaurus UUID
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # handling request parameters
+        payload = {"tid": thez_id}
+
+        # passing auth parameter
+        thez_url = "{}://v1.{}.isogeo.com/thesauri/{}".format(
+            prot, self.api_url, thez_id
+        )
+        thez_req = self.get(
+            thez_url,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+        )
+
+        # checking response
+        checker.check_api_response(thez_req)
+
+        # end of method
+        return thez_req.json()
+
+    def keywords(
+        self,
+        token: dict = None,
+        thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
+        query: str = "",
+        offset: int = 0,
+        order_by: str = "text",  # available values : count.group, count.isogeo, text
+        order_dir: str = "desc",
+        page_size: int = 20,
+        specific_md: list = [],
+        specific_tag: list = [],
+        include: list = [],
+        prot: str = "https",
+    ) -> dict:
+        """Search for keywords within a specific thesaurus.
+
+        :param str token: API auth token
+        :param str thez_id: thesaurus UUID
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # specific resources specific parsing
+        specific_md = checker._check_filter_specific_md(specific_md)
+        # sub resources specific parsing
+        include = checker._check_filter_includes(include, "keyword")
+        # specific tag specific parsing
+        specific_tag = checker._check_filter_specific_tag(specific_tag)
+
+        # handling request parameters
+        payload = {
+            "_id": specific_md,
+            "_include": include,
+            "_limit": page_size,
+            "_offset": offset,
+            "_tag": specific_tag,
+            "tid": thez_id,
+            "ob": order_by,
+            "od": order_dir,
+            "q": query,
+        }
+
+        # search request
+        keywords_url = "{}://v1.{}.isogeo.com/thesauri/{}/keywords/search".format(
+            prot, self.api_url, thez_id
+        )
+
+        kwds_req = self.get(
+            keywords_url,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+        )
+
+        # checking response
+        checker.check_api_response(kwds_req)
+
+        # end of method
+        return kwds_req.json()
+
+    # -- LICENCES ---------------------------------------------
+    def licenses(
+        self, token: dict = None, owner_id: str = None, prot: str = "https"
+    ) -> dict:
+        """Get information about licenses owned by a specific workgroup.
+
+        :param str token: API auth token
+        :param str owner_id: workgroup UUID
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # handling request parameters
+        payload = {"gid": owner_id}
+
+        # search request
+        licenses_url = "{}://v1.{}.isogeo.com/groups/{}/licenses".format(
+            prot, self.api_url, owner_id
+        )
+        licenses_req = self.get(
+            licenses_url,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(licenses_req)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return licenses_req.json()
+
+    def license(self, license_id: str, token: dict = None, prot: str = "https") -> dict:
+        """Get details about a specific license.
+
+        :param str token: API auth token
+        :param str license_id: license UUID
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # handling request parameters
+        payload = {"lid": license_id}
+
+        # search request
+        license_url = "{}://v1.{}.isogeo.com/licenses/{}".format(
+            prot, self.api_url, license_id
+        )
+        license_req = self.get(
+            license_url,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+        )
+
+        # checking response
+        checker.check_api_response(license_req)
+
+        # end of method
+        return license_req.json()
 
 
 # ##############################################################################
@@ -124,4 +371,16 @@ if __name__ == "__main__":
     # getting a token
     token = isogeo.connect(username=environ.get("ISOGEO_USER_NAME"),
                            password=environ.get("ISOGEO_USER_PASSWORD"))
-    print(token)
+
+    # licenses
+    lics = isogeo.licenses(owner_id="32f7e95ec4e94ca3bc1afda960003882")
+    print(lics)
+
+    # memo : par défaut order_dir = asc
+    k = isogeo.keywords(thez_id="1616597fbc4348c8b11ef9d59cf594c8",
+                        order_by="count.isogeo",
+                        order_dir="desc",
+                        page_size=10,
+                        include="all"
+                        )
+    print(k)
