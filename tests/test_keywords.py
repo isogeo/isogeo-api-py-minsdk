@@ -14,14 +14,15 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
+import unittest
+from os import environ
 from random import randint
 from sys import exit
-import unittest
 
 # module target
-from isogeo_pysdk import Isogeo, __version__ as pysdk_version
+from isogeo_pysdk import Isogeo
+from isogeo_pysdk import __version__ as pysdk_version
 
 # #############################################################################
 # ######## Globals #################
