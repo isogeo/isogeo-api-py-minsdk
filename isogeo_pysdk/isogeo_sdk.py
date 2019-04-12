@@ -21,6 +21,7 @@ import locale
 import logging
 import re
 from datetime import datetime, timedelta
+from functools import wraps
 from math import ceil
 from sys import platform as opersys
 
@@ -176,7 +177,7 @@ class Isogeo(object):
     def connect(self, client_id: str = None, client_secret: str = None) -> dict:
         """Authenticate application and get token bearer.
 
-        Isogeo API uses oAuth 2.0 protocol (http://tools.ietf.org/html/rfc6749)
+        Isogeo API uses oAuth 2.0 protocol (https://tools.ietf.org/html/rfc6749)
         see: https://goo.gl/V3iB9R#heading=h.ataz6wo4mxc5
 
         :param str client_id: application oAuth2 identifier
@@ -254,7 +255,7 @@ class Isogeo(object):
 
         :param decorated_func token: original function to execute after check
         """
-
+        @wraps(decorated_func)
         def wrapper(self, *args, **kwargs):
             # compare token expiration date and ask for a new one if it's expired
             if datetime.now() < self.token.get("expires_at"):
@@ -695,6 +696,14 @@ class Isogeo(object):
 
         :param str token: API auth token
         :param str thez_id: thesaurus UUID
+        :param str query: search terms
+        :param int offset: pagination start
+        :param str order_by: sort criteria. Available values :
+        
+            - count.group,
+            - count.isogeo,
+            - text
+
         :param str prot: https [DEFAULT] or http
          (use it only for dev and tracking needs).
         """
