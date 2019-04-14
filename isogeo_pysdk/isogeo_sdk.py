@@ -104,13 +104,13 @@ class Isogeo(Session):
         # testing parameters
         if len(client_secret) != 64:
             logging.error("App secret length issue: it should be 64 chars.")
-            raise ValueError(1, "Secret isn't good: it must be 64 chars.")
+            raise ValueError(1, "Bad secret value: it must be 64 chars.")
         else:
             pass
 
         # auth mode
         if auth_mode not in self.AUTH_MODES:
-            logging.error("Auth mode value is not good: {}".format(auth_mode))
+            logging.error("Not accepted auth mode: {}".format(auth_mode))
             raise ValueError(
                 "Mode value must be one of: ".format(" | ".join(self.AUTH_MODES))
             )
@@ -178,7 +178,7 @@ class Isogeo(Session):
         """Authenticate application and get token bearer.
 
         Isogeo API uses oAuth 2.0 protocol (https://tools.ietf.org/html/rfc6749)
-        see: https://goo.gl/V3iB9R#heading=h.ataz6wo4mxc5
+        see: http://help.isogeo.com/api/fr/authentication/groupsapps.html
 
         :param str client_id: application oAuth2 identifier
         :param str client_secret: application oAuth2 secret
@@ -404,7 +404,7 @@ class Isogeo(Session):
         resources_count = search_rez.get("total")  # total of metadatas shared
 
         # handling Isogeo API pagination
-        # see: https://goo.gl/V3iB9R#heading=h.bg6le8mcd07z
+        # see: http://help.isogeo.com/api/fr/methods/pagination.html
         if resources_count > page_size and whole_share:
             # if API returned more than one page of results, let's get the rest!
             metadatas = []  # a recipient list
