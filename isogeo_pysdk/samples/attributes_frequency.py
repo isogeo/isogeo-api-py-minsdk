@@ -38,19 +38,17 @@ if __name__ == "__main__":
     client_secret = environ.get("ISOGEO_API_DEV_SECRET")
 
     # instanciating the class
-    isogeo = Isogeo(client_id=client_id,
-                    client_secret=client_secret,
-                    lang="fr")
+    isogeo = Isogeo(client_id=client_id, client_secret=client_secret, lang="fr")
     isogeo.connect()
 
     # ------------ REAL START ------------------------------------------------
 
     # search
     search = isogeo.search(
-        query="type:vector-dataset",     # filter only on vectors
+        query="type:vector-dataset",  # filter only on vectors
         include=["feature-attributes"],  # ask for including feature attributes
-        page_size=100,                   # max metadata to download
-        whole_share=0,                   # download only the first results page
+        page_size=100,  # max metadata to download
+        whole_share=0,  # download only the first results page
     )
 
     if type(search) != dict:

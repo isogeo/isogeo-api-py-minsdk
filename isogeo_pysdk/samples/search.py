@@ -52,9 +52,7 @@ if __name__ == "__main__":
     # get one random resource
     hatnumber = randrange(0, len(search.get("results")))
     my_resource = isogeo.resource(
-        search.get("results")[hatnumber].get("_id"),
-        include="all",
-        prot="https",
+        search.get("results")[hatnumber].get("_id"), include="all", prot="https"
     )
 
     print(sorted(my_resource.keys()))

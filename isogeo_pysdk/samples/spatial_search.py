@@ -33,6 +33,7 @@ if __name__ == "__main__":
     """Standalone execution"""
     # ------------ Specific imports ----------------
     from os import environ
+
     # specific imports
     import geojson
     from geomet import wkt

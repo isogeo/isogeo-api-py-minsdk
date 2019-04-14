@@ -41,9 +41,7 @@ if __name__ == "__main__":
     client_secret = environ.get("ISOGEO_API_DEV_SECRET")
 
     # instanciating the class
-    isogeo = Isogeo(client_id=client_id,
-                    client_secret=client_secret,
-                    lang="fr")
+    isogeo = Isogeo(client_id=client_id, client_secret=client_secret, lang="fr")
 
     isogeo.connect()
 

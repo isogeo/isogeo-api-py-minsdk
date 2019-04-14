@@ -48,8 +48,6 @@ if __name__ == "__main__":
         evt_description = md.get("events")[0].get("description")
         print(
             str("___________________\n\n{} | {} \n\t {}").format(
-                title,
-                md.get("modified")[:10],
-                evt_description.encode("utf8"),
+                title, md.get("modified")[:10], evt_description.encode("utf8")
             )
         )
