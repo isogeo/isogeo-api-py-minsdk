@@ -247,9 +247,12 @@ Get CSW GetRecord for a metadata
 
     from isogeo_pysdk import IsogeoUtils
     utils = IsogeoUtils()
+
+    uuid_md_source = "82e73458e29a4edbaf8bfce9e16fa78b"
+
     csw_getrec_url = utils.get_view_url(webapp="csw_getrec",
-                                        md_uuid_urn=self.uuid_urnIsogeo,
-                                        share_id="1e07910d365449b59b6596a9b428ecd9",
+                                        md_uuid_urn=utils.convert_uuid(uuid_md_source, 2),
+                                        share_id="ShareUniqueIdentifier",
                                         share_token="TokenOhDearToken")
 
 ------------------------------------
