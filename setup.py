@@ -1,5 +1,5 @@
-#!/usr/bin/env python
 # -*- coding: utf-8 -*-
+#!/usr/bin/env python3
 
 """
     Setup script to package Isogeo PySDK Python module
@@ -36,27 +36,28 @@ setup(
     author_email="support@isogeo.com",
     description="Python package to make it easy to use Isogeo REST API",
     long_description=README,
-    long_description_content_type='text/markdown',
+    long_description_content_type="text/markdown",
     keywords="GIS metadata INSPIRE Isogeo API REST geographical data ISO19139",
-    license='LGPL3',
+    license="LGPL3",
     url="https://github.com/isogeo/isogeo-api-py-minsdk",
     project_urls={
-        'Docs': "https://isogeo-api-pysdk.readthedocs.io/",
-        'Bug Reports': 'https://github.com/isogeo/isogeo-api-py-minsdk/issues/',
-        'Source': 'https://github.com/isogeo/isogeo-api-py-minsdk/',
-        'Isogeo API': 'help.isogeo.com/api/',
+        "Docs": "https://isogeo-api-pysdk.readthedocs.io/",
+        "Bug Reports": "https://github.com/isogeo/isogeo-api-py-minsdk/issues/",
+        "Source": "https://github.com/isogeo/isogeo-api-py-minsdk/",
+        "Isogeo API": "http://help.isogeo.com/api/"
     },
     # dependencies
-    install_requires=["requests>=2.20.0",
-                      ],
+    install_requires=["requests>=2.20.0"],
     extras_require={
         "api-write": ["requests_oauthlib"],
         "dev": ["configparser"],
         "test": ["coverage", "pycodestyle", "python-dateutil"],
     },
-    python_requires='>=3.5, <4',
+    python_requires=">=3.5, <4",
     # packaging
-    packages=find_packages(exclude=['contrib', 'docs', "*.tests", "*.tests.*", "tests.*", "tests"]),
+    packages=find_packages(
+        exclude=["contrib", "docs", "*.tests", "*.tests.*", "tests.*", "tests"]
+    ),
     include_package_data=True,
     classifiers=[
         "Intended Audience :: Developers",

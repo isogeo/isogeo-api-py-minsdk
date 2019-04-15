@@ -90,12 +90,8 @@ class TestKeywords(unittest.TestCase):
         )
         md_bad = "trust_me_this_is_a_good_uuid"
         # get random metadata within a small search
-        search_ids_1 = self.isogeo.keywords(
-            specific_md=[md_a], page_size=1
-        )
-        search_ids_2 = self.isogeo.keywords(
-            specific_md=[md_a, md_b], page_size=1
-        )
+        search_ids_1 = self.isogeo.keywords(specific_md=[md_a], page_size=1)
+        search_ids_2 = self.isogeo.keywords(specific_md=[md_a, md_b], page_size=1)
         search_ids_3 = self.isogeo.keywords(
             specific_md=[md_a, md_b, md_bad], page_size=1
         )
@@ -111,17 +107,13 @@ class TestKeywords(unittest.TestCase):
         md = search_5.get("results")[randint(0, 4)].get("_id")
         # pass metadata UUID
         with self.assertRaises(TypeError):
-            self.isogeo.keywords(
-                page_size=0, whole_share=0, specific_md=md
-            )
+            self.isogeo.keywords(page_size=0, whole_share=0, specific_md=md)
 
     # specific tag
     def test_keywords_specifc_tag_ok(self):
         """Keywords filtering on specific tags."""
         # get tags
-        search_tags = self.isogeo.search(page_size=0, whole_share=0).get(
-            "tags"
-        )
+        search_tags = self.isogeo.search(page_size=0, whole_share=0).get("tags")
         # keep only Isogeo keywords
         keywords = [tag for tag in search_tags if tag.startswith("keyword:isogeo")]
         # get random keywords
@@ -131,12 +123,8 @@ class TestKeywords(unittest.TestCase):
         )
         kw_bad = "trust_me_i_m_a_real_keyword"
         # get random metadata within a small search
-        search_ids_1 = self.isogeo.keywords(
-            specific_tag=[kw_a], page_size=5
-        )
-        search_ids_2 = self.isogeo.keywords(
-            specific_tag=[kw_a, kw_b], page_size=5
-        )
+        search_ids_1 = self.isogeo.keywords(specific_tag=[kw_a], page_size=5)
+        search_ids_2 = self.isogeo.keywords(specific_tag=[kw_a, kw_b], page_size=5)
         search_ids_3 = self.isogeo.keywords(
             specific_tag=[kw_a, kw_b, kw_bad], page_size=5
         )
@@ -150,9 +138,7 @@ class TestKeywords(unittest.TestCase):
         kw_bad = "trust_me_i_m_a_real_keyword"
         # pass metadata UUID
         with self.assertRaises(TypeError):
-            self.isogeo.keywords(
-                page_size=0, whole_share=0, specific_tag=kw_bad
-            )
+            self.isogeo.keywords(page_size=0, whole_share=0, specific_tag=kw_bad)
 
 
 # ##############################################################################

@@ -210,9 +210,7 @@ class Isogeo(Session):
                 verify=self.ssl,
             )
         except ConnectionError as e:
-            raise ConnectionError(
-                "Connection to Isogeo ID" "failed: {}".format(e)
-            )
+            raise ConnectionError("Connection to Isogeo ID" "failed: {}".format(e))
 
         # just a fast check
         check_params = checker.check_api_response(conn)
@@ -277,9 +275,9 @@ class Isogeo(Session):
         self,
         token: dict = None,
         query: str = "",
-        bbox=None,
-        poly=None,
-        georel=None,
+        bbox: list = None,
+        poly: str = None,
+        georel: str = None,
         order_by: str = "_created",
         order_dir: str = "desc",
         page_size: int = 100,
@@ -297,13 +295,13 @@ class Isogeo(Session):
 
         It's the main method to use.
 
-        :param str token: API auth token
+        :param str token: API auth token - DEPRECATED: token is now automatically included
         :param str query: search terms and semantic filters. Equivalent of
          **q** parameter in Isogeo API. It could be a simple
          string like *oil* or a tag like *keyword:isogeo:formations*
          or *keyword:inspire-theme:landcover*. The *AND* operator
          is applied when various tags are passed.
-        :param str bbox: Bounding box to limit the search.
+        :param list bbox: Bounding box to limit the search.
          Must be a 4 list of coordinates in WGS84 (EPSG 4326).
          Could be associated with *georel*.
         :param str poly: Geographic criteria for the search, in WKT format.
@@ -324,7 +322,7 @@ class Isogeo(Session):
 
          Available values:
 
-          * '_created': metadata creation date [DEFAULT if not relevance]
+          * '_created': metadata creation date [DEFAULT if relevance is null]
           * '_modified': metadata last update
           * 'title': metadata title
           * 'created': data creation date (possibly None)
@@ -337,15 +335,15 @@ class Isogeo(Session):
           * 'desc': descending
           * 'asc': ascending
 
-        :param str page_size: limits the number of results.
+        :param int page_size: limits the number of results.
          Useful to paginate results display. Default value: 100.
-        :param str offset: offset to start page size
+        :param int offset: offset to start page size
          from a specific results index
         :param str share: share UUID to filter on
         :param list specific_md: list of metadata UUIDs to filter on
         :param list include: subresources that should be returned.
          Must be a list of strings. Available values: *isogeo.SUBRESOURCES*
-        :param str whole_share: option to return all results or only the
+        :param bool whole_share: option to return all results or only the
          page size. *True* by DEFAULT.
         :param bool check: option to check query parameters and avoid erros.
          *True* by DEFAULT.
@@ -1070,25 +1068,26 @@ if __name__ == "__main__":
     # getting a token
     isogeo.connect()
 
-    s = isogeo.search(page_size=1, whole_share=0)
+    s = isogeo.search()
+    print(len(s.get("results")))
     # print(s)
 
-    r = isogeo.resource(id_resource="2313f3f7e0f540c3ad2850d7c9c4c04d")
+    # r = isogeo.resource(id_resource="2313f3f7e0f540c3ad2850d7c9c4c04d")
     # print(r)
 
-    t = isogeo.thesauri()
+    # t = isogeo.thesauri()
     # print(t)
-    tz = isogeo.thesaurus(thez_id=t[0].get("_id"))
+    # tz = isogeo.thesaurus(thez_id=t[0].get("_id"))
     # print(tz)
 
     # memo : par défaut order_dir = asc
-    k = isogeo.keywords(
-        thez_id="1616597fbc4348c8b11ef9d59cf594c8",
-        order_by="count.isogeo",
-        order_dir="desc",
-        page_size=10,
-        include="all",
-    )
+    # k = isogeo.keywords(
+    #     thez_id="1616597fbc4348c8b11ef9d59cf594c8",
+    #     order_by="count.isogeo",
+    #     order_dir="desc",
+    #     page_size=10,
+    #     include="all",
+    # )
     # print(k)
 
     # lics = isogeo.licenses(owner_id="32f7e95ec4e94ca3bc1afda960003882")

@@ -359,7 +359,7 @@ class IsogeoUtils(object):
             count_pages = 1
         else:
             if (total % page_size) == 0:
-                count_pages = (total / page_size)
+                count_pages = total / page_size
             else:
                 count_pages = (total / page_size) + 1
         # method ending
