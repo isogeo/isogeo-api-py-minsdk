@@ -57,7 +57,7 @@ class IsogeoUtils(object):
     }
 
     CSW_URLS = {
-        "prod": "https://app.isogeo.com",
+        "prod": "https://services.api.isogeo.com/",
         "qa": "http://services.api.qa.isogeo.com",
     }
 
