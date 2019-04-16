@@ -182,7 +182,6 @@ class IsogeoSession(OAuth2Session):
         else:
             pass
 
-
     # -- KEYWORDS -----------------------------------------------------------
 
     def thesauri(self, token: dict = None, prot: str = "https") -> dict:
@@ -360,6 +359,47 @@ class IsogeoSession(OAuth2Session):
 
         # end of method
         return license_req.json()
+
+    def create(
+        self, workgroup_id: str, resource_type: str, title: str, abstract: str, series: bool = 0
+    ) -> dict:
+        """Create a metadata from Isogeo database.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param str resource_type: type of metadata to create. Must be one of...
+        :param str title: title of metadata to create
+        :param bool series: set if metadata is a series or not
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        data = {"title": title, "abstract": abstract, "type": resource_type, "series": series}
+
+        url_md_create = "{}://v1.{}.isogeo.com/groups/{}/resources/".format(
+            self.prot, self.api_url, workgroup_id
+        )
+
+        new_md = self.post(
+            url_md_create, data=data, proxies=self.proxies, verify=self.ssl
+        )
+
+        return new_md.json()
+
+    def md_delete(self, resource_id: str) -> dict:
+        """Delete a metadata from Isogeo database.
+
+        :param str resource_id: identifier of the resource to delete
+        """
+        url_md_del = "{}://{}.isogeo.com/resources/{}".format(
+            self.prot, self.api_url, resource_id
+        )
+
+        md_deletion = self.delete(url_md_del)
+
+        return md_deletion
 
 
 # ##############################################################################
