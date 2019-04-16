@@ -81,8 +81,9 @@ class IsogeoSession(OAuth2Session):
         **kwargs,
     ):
 
-        self.client_secret = client_secret
         self.app_name = app_name
+        self.client_secret = client_secret
+        self.prot = "https"
 
         # checking internet connection
         if not checker.check_internet_connection():
@@ -122,6 +123,29 @@ class IsogeoSession(OAuth2Session):
         else:
             self.lang = lang.lower()
 
+        # handling proxy parameters
+        # see: http://docs.python-requests.org/en/latest/user/advanced/#proxies
+        if proxy and isinstance(proxy, dict) and "http" in proxy:
+            logging.debug("Proxy enabled")
+            self.proxies = proxy
+        elif proxy and not isinstance(proxy, dict):
+            raise TypeError(
+                "Proxy syntax error. Must be a dict:"
+                "{ 'protocol': "
+                "'http://user:password@proxy_url:port' }."
+                " e.g.: "
+                "{'http': 'http://martin:1234@10.1.68.1:5678',"
+                "'https': 'http://martin:p4ssW0rde@10.1.68.1:5678'}"
+            )
+        else:
+            self.proxies = {}
+            logging.debug("No proxy set. Use default configuration.")
+            pass
+
+        # get API version
+        logging.debug("Isogeo API version: {}".format(utils.get_isogeo_version()))
+        logging.debug("Isogeo DB version: {}".format(utils.get_isogeo_version("db")))
+
         return super().__init__(
             client_id=client_id,
             client=client,
@@ -154,9 +178,7 @@ class IsogeoSession(OAuth2Session):
                 "user-agent": self.app_name,
             }
         elif self.auth_mode == "user_private":
-            return {
-                "user-agent": self.app_name,
-            }
+            return {"user-agent": self.app_name}
         else:
             pass
 
