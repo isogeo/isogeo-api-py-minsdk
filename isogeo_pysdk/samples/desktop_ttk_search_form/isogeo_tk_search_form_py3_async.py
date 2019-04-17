@@ -12,24 +12,21 @@ import asyncio
 import logging
 import threading
 from os import path
-from time import sleep
 from webbrowser import open_new_tab
 
 # Isogeo
 from isogeo_pysdk import Isogeo, IsogeoTranslator, IsogeoUtils
 from isogeo_pysdk import __version__ as pysdk_version
 
-# UI
+# UI ##
+# Standard library
+import tkinter as tk
+from tkinter import ttk, BOTH, LEFT, IntVar, StringVar
+
+# 3rd party
 from ttkwidgets.autocomplete import AutocompleteCombobox, AutocompleteEntry
 from ttkwidgets.frames import Balloon
 
-try:
-    import Tkinter as tk
-    import ttk
-    from Tkinter import BOTH, LEFT, IntVar, StringVar
-except ImportError:
-    import tkinter as tk
-    from tkinter import ttk, BOTH, LEFT, IntVar, StringVar
 
 # ############################################################################
 # ########### Globals ##############

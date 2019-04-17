@@ -39,8 +39,7 @@ python setup.py bdist_wheel
 
 # upload
 "-- STEP -- Upload it to pypi"
-# twine upload dist/* --repository pypitest --config-file .\.pypirc
-# twine upload dist/* --config-file .\.pypirc
+twine upload dist/* --config-file .\.pypirc
 
 # remove virtualenv
 "-- STEP -- Get out the virtualenv then remove it"

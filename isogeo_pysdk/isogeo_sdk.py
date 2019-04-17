@@ -21,11 +21,12 @@ import locale
 import logging
 import re
 from datetime import datetime, timedelta
+from functools import wraps
 from math import ceil
 from sys import platform as opersys
 
 # 3rd party library
-import requests
+from requests import ConnectionError, Session
 
 # modules
 try:
@@ -50,7 +51,7 @@ version = "2.21.0"
 __all__ = ["Isogeo", "IsogeoChecker", "IsogeoTranslator", "IsogeoUtils"]
 
 
-class Isogeo(object):
+class Isogeo(Session):
     """Abstraction class for Isogeo REST API.
 
     Online resources:
@@ -103,13 +104,13 @@ class Isogeo(object):
         # testing parameters
         if len(client_secret) != 64:
             logging.error("App secret length issue: it should be 64 chars.")
-            raise ValueError(1, "Secret isn't good: it must be 64 chars.")
+            raise ValueError(1, "Bad secret value: it must be 64 chars.")
         else:
             pass
 
         # auth mode
         if auth_mode not in self.AUTH_MODES:
-            logging.error("Auth mode value is not good: {}".format(auth_mode))
+            logging.error("Not accepted auth mode: {}".format(auth_mode))
             raise ValueError(
                 "Mode value must be one of: ".format(" | ".join(self.AUTH_MODES))
             )
@@ -176,8 +177,8 @@ class Isogeo(object):
     def connect(self, client_id: str = None, client_secret: str = None) -> dict:
         """Authenticate application and get token bearer.
 
-        Isogeo API uses oAuth 2.0 protocol (http://tools.ietf.org/html/rfc6749)
-        see: https://goo.gl/V3iB9R#heading=h.ataz6wo4mxc5
+        Isogeo API uses oAuth 2.0 protocol (https://tools.ietf.org/html/rfc6749)
+        see: http://help.isogeo.com/api/fr/authentication/groupsapps.html
 
         :param str client_id: application oAuth2 identifier
         :param str client_secret: application oAuth2 secret
@@ -200,7 +201,7 @@ class Isogeo(object):
         # see: http://tools.ietf.org/html/rfc6750#section-2
         id_url = "https://id.{}.isogeo.com/oauth/token".format(self.api_url)
         try:
-            conn = requests.post(
+            conn = self.post(
                 id_url,
                 auth=(client_id, client_secret),
                 headers=head,
@@ -208,10 +209,8 @@ class Isogeo(object):
                 proxies=self.proxies,
                 verify=self.ssl,
             )
-        except requests.exceptions.ConnectionError as e:
-            raise requests.exceptions.ConnectionError(
-                "Connection to Isogeo ID" "failed: {}".format(e)
-            )
+        except ConnectionError as e:
+            raise ConnectionError("Connection to Isogeo ID" "failed: {}".format(e))
 
         # just a fast check
         check_params = checker.check_api_response(conn)
@@ -255,6 +254,7 @@ class Isogeo(object):
         :param decorated_func token: original function to execute after check
         """
 
+        @wraps(decorated_func)
         def wrapper(self, *args, **kwargs):
             # compare token expiration date and ask for a new one if it's expired
             if datetime.now() < self.token.get("expires_at"):
@@ -275,9 +275,9 @@ class Isogeo(object):
         self,
         token: dict = None,
         query: str = "",
-        bbox=None,
-        poly=None,
-        georel=None,
+        bbox: list = None,
+        poly: str = None,
+        georel: str = None,
         order_by: str = "_created",
         order_dir: str = "desc",
         page_size: int = 100,
@@ -295,13 +295,13 @@ class Isogeo(object):
 
         It's the main method to use.
 
-        :param str token: API auth token
+        :param str token: API auth token - DEPRECATED: token is now automatically included
         :param str query: search terms and semantic filters. Equivalent of
          **q** parameter in Isogeo API. It could be a simple
          string like *oil* or a tag like *keyword:isogeo:formations*
          or *keyword:inspire-theme:landcover*. The *AND* operator
          is applied when various tags are passed.
-        :param str bbox: Bounding box to limit the search.
+        :param list bbox: Bounding box to limit the search.
          Must be a 4 list of coordinates in WGS84 (EPSG 4326).
          Could be associated with *georel*.
         :param str poly: Geographic criteria for the search, in WKT format.
@@ -322,7 +322,7 @@ class Isogeo(object):
 
          Available values:
 
-          * '_created': metadata creation date [DEFAULT if not relevance]
+          * '_created': metadata creation date [DEFAULT if relevance is null]
           * '_modified': metadata last update
           * 'title': metadata title
           * 'created': data creation date (possibly None)
@@ -335,15 +335,15 @@ class Isogeo(object):
           * 'desc': descending
           * 'asc': ascending
 
-        :param str page_size: limits the number of results.
+        :param int page_size: limits the number of results.
          Useful to paginate results display. Default value: 100.
-        :param str offset: offset to start page size
+        :param int offset: offset to start page size
          from a specific results index
         :param str share: share UUID to filter on
         :param list specific_md: list of metadata UUIDs to filter on
         :param list include: subresources that should be returned.
          Must be a list of strings. Available values: *isogeo.SUBRESOURCES*
-        :param str whole_share: option to return all results or only the
+        :param bool whole_share: option to return all results or only the
          page size. *True* by DEFAULT.
         :param bool check: option to check query parameters and avoid erros.
          *True* by DEFAULT.
@@ -383,7 +383,7 @@ class Isogeo(object):
         # search request
         search_url = "{}://v1.{}.isogeo.com/resources/search".format(prot, self.api_url)
         try:
-            search_req = requests.get(
+            search_req = self.get(
                 search_url,
                 headers=self.header,
                 params=payload,
@@ -402,7 +402,7 @@ class Isogeo(object):
         resources_count = search_rez.get("total")  # total of metadatas shared
 
         # handling Isogeo API pagination
-        # see: https://goo.gl/V3iB9R#heading=h.bg6le8mcd07z
+        # see: http://help.isogeo.com/api/fr/methods/pagination.html
         if resources_count > page_size and whole_share:
             # if API returned more than one page of results, let's get the rest!
             metadatas = []  # a recipient list
@@ -410,7 +410,7 @@ class Isogeo(object):
             # let's parse pages
             for idx in range(0, int(ceil(resources_count / 100)) + 1):
                 payload["_offset"] = idx * 100
-                search_req = requests.get(
+                search_req = self.get(
                     search_url,
                     headers=self.header,
                     params=payload,
@@ -481,7 +481,7 @@ class Isogeo(object):
         md_url = "{}://v1.{}.isogeo.com/resources/{}{}".format(
             prot, self.api_url, id_resource, subresource
         )
-        resource_req = requests.get(
+        resource_req = self.get(
             md_url,
             headers=self.header,
             params=payload,
@@ -504,7 +504,7 @@ class Isogeo(object):
         """
         # passing auth parameter
         shares_url = "{}://v1.{}.isogeo.com/shares/".format(prot, self.api_url)
-        shares_req = requests.get(
+        shares_req = self.get(
             shares_url, headers=self.header, proxies=self.proxies, verify=self.ssl
         )
 
@@ -535,7 +535,7 @@ class Isogeo(object):
         share_url = "{}://v1.{}.isogeo.com/shares/{}".format(
             prot, self.api_url, share_id
         )
-        share_req = requests.get(
+        share_req = self.get(
             share_url, headers=self.header, proxies=self.proxies, verify=self.ssl
         )
 
@@ -573,7 +573,7 @@ class Isogeo(object):
         licenses_url = "{}://v1.{}.isogeo.com/groups/{}/licenses".format(
             prot, self.api_url, owner_id
         )
-        licenses_req = requests.get(
+        licenses_req = self.get(
             licenses_url,
             headers=self.header,
             params=payload,
@@ -605,7 +605,7 @@ class Isogeo(object):
         license_url = "{}://v1.{}.isogeo.com/licenses/{}".format(
             prot, self.api_url, license_id
         )
-        license_req = requests.get(
+        license_req = self.get(
             license_url,
             headers=self.header,
             params=payload,
@@ -631,7 +631,7 @@ class Isogeo(object):
         """
         # passing auth parameter
         thez_url = "{}://v1.{}.isogeo.com/thesauri".format(prot, self.api_url)
-        thez_req = requests.get(
+        thez_req = self.get(
             thez_url, headers=self.header, proxies=self.proxies, verify=self.ssl
         )
 
@@ -662,7 +662,7 @@ class Isogeo(object):
         thez_url = "{}://v1.{}.isogeo.com/thesauri/{}".format(
             prot, self.api_url, thez_id
         )
-        thez_req = requests.get(
+        thez_req = self.get(
             thez_url,
             headers=self.header,
             params=payload,
@@ -695,6 +695,14 @@ class Isogeo(object):
 
         :param str token: API auth token
         :param str thez_id: thesaurus UUID
+        :param str query: search terms
+        :param int offset: pagination start
+        :param str order_by: sort criteria. Available values :
+        
+            - count.group,
+            - count.isogeo,
+            - text
+
         :param str prot: https [DEFAULT] or http
          (use it only for dev and tracking needs).
         """
@@ -723,7 +731,7 @@ class Isogeo(object):
             prot, self.api_url, thez_id
         )
 
-        kwds_req = requests.get(
+        kwds_req = self.get(
             keywords_url,
             headers=self.header,
             params=payload,
@@ -795,7 +803,7 @@ class Isogeo(object):
         )
 
         # send stream request
-        hosted_req = requests.get(
+        hosted_req = self.get(
             hosted_url,
             headers=self.header,
             stream=True,
@@ -806,7 +814,7 @@ class Isogeo(object):
         # quick check
         req_check = checker.check_api_response(hosted_req)
         if not req_check:
-            raise requests.exceptions.ConnectionError(req_check[1])
+            raise ConnectionError(req_check[1])
         else:
             pass
 
@@ -863,7 +871,7 @@ class Isogeo(object):
         md_url = "{}://v1.{}.isogeo.com/resources/{}.xml".format(
             prot, self.api_url, id_resource
         )
-        xml_req = requests.get(
+        xml_req = self.get(
             md_url,
             headers=self.header,
             stream=True,
@@ -929,7 +937,7 @@ class Isogeo(object):
         # search request
         req_url = "{}://v1.{}.isogeo.com/link-kinds".format(prot, self.api_url)
 
-        req = requests.get(
+        req = self.get(
             req_url, headers=self.header, proxies=self.proxies, verify=self.ssl
         )
 
@@ -950,7 +958,7 @@ class Isogeo(object):
         # search request
         req_url = "{}://v1.{}.isogeo.com/directives".format(prot, self.api_url)
 
-        req = requests.get(
+        req = self.get(
             req_url, headers=self.header, proxies=self.proxies, verify=self.ssl
         )
 
@@ -982,7 +990,7 @@ class Isogeo(object):
             prot, self.api_url, specific_srs
         )
 
-        req = requests.get(
+        req = self.get(
             req_url, headers=self.header, proxies=self.proxies, verify=self.ssl
         )
 
@@ -1014,7 +1022,7 @@ class Isogeo(object):
             prot, self.api_url, specific_format
         )
 
-        req = requests.get(
+        req = self.get(
             req_url, headers=self.header, proxies=self.proxies, verify=self.ssl
         )
 
@@ -1059,25 +1067,28 @@ if __name__ == "__main__":
 
     # getting a token
     isogeo.connect()
-    # s = isogeo.search(page_size=1, whole_share=0)
-    # # print(s)
+
+    s = isogeo.search()
+    print(len(s.get("results")))
+    # print(s)
 
     # r = isogeo.resource(id_resource="2313f3f7e0f540c3ad2850d7c9c4c04d")
-    # # print(r)
+    # print(r)
 
     # t = isogeo.thesauri()
-    # # print(t)
+    # print(t)
     # tz = isogeo.thesaurus(thez_id=t[0].get("_id"))
-    # # print(tz)
+    # print(tz)
 
     # memo : par défaut order_dir = asc
-    k = isogeo.keywords(thez_id="1616597fbc4348c8b11ef9d59cf594c8",
-                        order_by="count.isogeo",
-                        order_dir="desc",
-                        page_size=10,
-                        include="all"
-                        )
-    print(k)
+    # k = isogeo.keywords(
+    #     thez_id="1616597fbc4348c8b11ef9d59cf594c8",
+    #     order_by="count.isogeo",
+    #     order_dir="desc",
+    #     page_size=10,
+    #     include="all",
+    # )
+    # print(k)
 
     # lics = isogeo.licenses(owner_id="32f7e95ec4e94ca3bc1afda960003882")
     # print(lics)

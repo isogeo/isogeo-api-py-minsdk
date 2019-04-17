@@ -30,41 +30,25 @@ from isogeo_pysdk import Isogeo
 
 if __name__ == "__main__":
     """Standalone execution"""
-    # storing application parameters into an ini file
-    settings_file = r"../isogeo_params.ini"
+    # ------------ Specific imports ----------------
+    from os import environ
 
-    # testing ini file
-    if not path.isfile(path.realpath(settings_file)):
-        raise IOError(
-            "ERROR: to execute this script as standalone,"
-            " you need to store your Isogeo application "
-            "settings in a isogeo_params.ini file."
-            " You can use the template to set your own."
-        )
-    else:
-        pass
-
-    # reading ini file
-    config = configparser.SafeConfigParser()
-    config.read(settings_file)
-
-    share_id = config.get("auth", "app_id")
-    share_token = config.get("auth", "app_secret")
+    # ------------Authentication credentials ----------------
+    client_id = environ.get("ISOGEO_API_DEV_ID")
+    client_secret = environ.get("ISOGEO_API_DEV_SECRET")
 
     # instanciating the class
-    isogeo = Isogeo(client_id=share_id, client_secret=share_token, lang="fr")
-
-    token = isogeo.connect()
+    isogeo = Isogeo(client_id=client_id, client_secret=client_secret, lang="fr")
+    isogeo.connect()
 
     # ------------ REAL START ------------------------------------------------
 
     # search
     search = isogeo.search(
-        token,
-        query="type:vector-dataset",
-        include=["feature-attributes"],
-        page_size=100,
-        whole_share=0,
+        query="type:vector-dataset",  # filter only on vectors
+        include=["feature-attributes"],  # ask for including feature attributes
+        page_size=100,  # max metadata to download
+        whole_share=0,  # download only the first results page
     )
 
     if type(search) != dict:

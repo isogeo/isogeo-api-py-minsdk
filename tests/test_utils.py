@@ -312,3 +312,13 @@ class TestIsogeoUtils(unittest.TestCase):
         self.utils.encoded_words_to_text(q)
         d = q = '"=?UTF-8?Q?This is a horsey: =F0=9F=90=8E?="'
         self.utils.encoded_words_to_text(d)
+
+    # pages counter
+    def test_pages_counter(self):
+        """Test search results pages counter to help pagination"""
+        p_default = self.utils.pages_counter(total=50)
+        self.assertEqual(p_default, 1)
+        p_default = self.utils.pages_counter(total=50, page_size=10)
+        self.assertEqual(p_default, 5)
+        p_default = self.utils.pages_counter(total=156, page_size=22)
+        self.assertEqual(p_default, 8)

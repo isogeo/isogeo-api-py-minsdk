@@ -34,7 +34,7 @@ token = isogeo.connect()
 # ##################################
 def _meta_get_resource_sync(md_uuid):
     """Just a meta func to get execution time"""
-    isogeo.resource(token, md_uuid)
+    isogeo.resource(id_resource=md_uuid)
 
     elapsed = default_timer() - START_TIME
     time_completed_at = "{:5.2f}s".format(elapsed)
@@ -75,9 +75,7 @@ if __name__ == "__main__":
     # get the metadata ids
     md_ids = [
         md.get("_id")
-        for md in isogeo.search(token, page_size=how_much_mds, whole_share=0).get(
-            "results"
-        )
+        for md in isogeo.search(page_size=how_much_mds, whole_share=0).get("results")
     ]
 
     # SYNC
@@ -87,7 +85,7 @@ if __name__ == "__main__":
     # SYNCHRONOUS
     total_start_time = default_timer()
     for md_uuid in md_ids:
-        isogeo.resource(token, md_uuid)
+        isogeo.resource(id_resource=md_uuid)
         elapsed = default_timer() - total_start_time
         time_completed_at = "{:5.2f}s".format(elapsed)
         print("{0:<30} {1:>20}".format(md_uuid, time_completed_at))
@@ -106,5 +104,5 @@ if __name__ == "__main__":
 
     elapsed = default_timer() - START_TIME
     time_completed_at = "{:5.2f}s".format(elapsed)
-    print(len(future.result()) + " metadatas retrieved.")
+    print("{} metadatas retrieved.".format(len(future.result())))
     print("ASYNCHRONOUS - TOTAL ELAPSED TIME: " + time_completed_at)

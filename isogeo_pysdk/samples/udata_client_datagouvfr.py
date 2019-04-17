@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#!/usr/bin/env python
+#! python3
 # -----------------------------------------------------------------------------
 # Name:         UData Python Client
 # Purpose:      Abstraction class to manipulate data.gouv.fr API

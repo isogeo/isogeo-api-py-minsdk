@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
-#!/usr/bin/env python
-from __future__ import absolute_import, print_function, unicode_literals
+#! python3
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Geographic search
@@ -8,7 +7,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 #               the Isogeo API Python minimalist SDK.
 # Author:       Julien Moura (@geojulien)
 #
-# Python:       2.7.x
+# Python:       3.6+
 # Created:      14/04/2016
 # Updated:      18/05/2016
 # ------------------------------------------------------------------------------
@@ -18,10 +17,9 @@ from __future__ import absolute_import, print_function, unicode_literals
 # ##################################
 
 # Standard library
-import configparser  # to manage options.ini
 import json
 from os import path
-from six.moves.urllib.parse import quote
+from urllib.parse import quote
 
 # Isogeo
 from isogeo_pysdk import Isogeo
@@ -33,38 +31,21 @@ from isogeo_pysdk import Isogeo
 
 if __name__ == "__main__":
     """Standalone execution"""
+    # ------------ Specific imports ----------------
+    from os import environ
+
     # specific imports
     import geojson
     from geomet import wkt
 
-    # storing application parameters into an ini file
-    settings_file = r"../isogeo_params.ini"
-
-    # testing ini file
-    if not path.isfile(path.realpath(settings_file)):
-        print(
-            "ERROR: to execute this script as standalone,"
-            " you need to store your Isogeo application settings in a "
-            "isogeo_params.ini file. You can use the template to set your own."
-        )
-        import sys
-
-        sys.exit()
-    else:
-        pass
-
-    # reading ini file
-    config = configparser.SafeConfigParser()
-    config.read(settings_file)
-
-    share_id = config.get("auth", "app_id")
-    share_token = config.get("auth", "app_secret")
+    # ------------Authentication credentials ----------------
+    client_id = environ.get("ISOGEO_API_DEV_ID")
+    client_secret = environ.get("ISOGEO_API_DEV_SECRET")
 
     # ------------ Real start ----------------
     # instanciating the class
-    isogeo = Isogeo(client_id=share_id, client_secret=share_token)
-
-    token = isogeo.connect()
+    isogeo = Isogeo(client_id=client_id, client_secret=client_secret, lang="fr")
+    isogeo.connect()
 
     # ------------ REAL START ----------------------------
 
@@ -81,7 +62,7 @@ if __name__ == "__main__":
     print(validation)
 
     # search & compare
-    basic_search = isogeo.search(token, page_size=0, whole_share=0)
+    basic_search = isogeo.search(page_size=0, whole_share=0)
 
     print("Comparing count of results returned: ")
     print("\t- without any filter = ", basic_search.get("total"))
@@ -101,7 +82,7 @@ if __name__ == "__main__":
 
         # search & display results - with bounding box
         filtered_search_bbox = isogeo.search(
-            token, page_size=0, whole_share=0, bbox=bbox, georel=geo_relation
+            page_size=0, whole_share=0, bbox=bbox, georel=geo_relation
         )
         print(
             str("\t- {} (BOX) = {}\t{}").format(
@@ -112,7 +93,7 @@ if __name__ == "__main__":
         )
         # search & display results - with convex hull
         filtered_search_geo = isogeo.search(
-            token, page_size=0, whole_share=0, poly=poly, georel=geo_relation
+            page_size=0, whole_share=0, poly=poly, georel=geo_relation
         )
         print(
             str("\t- {} (GEO) = {}\t{}").format(

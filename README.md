@@ -38,10 +38,10 @@ isogeo = Isogeo(client_id=app_id,
                 client_secret=app_secret)
 
 # get the token
-token = isogeo.connect()
+isogeo.connect()
 
 # search within catalogs shared to the application
-search = isogeo.search(token)
+search = isogeo.search()
 
 # print some statements
 print("Search __dict__ keys: ", search.keys())  # search response basic structure

@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
-#!/usr/bin/env python
-from __future__ import absolute_import, print_function, unicode_literals
+#! python3
 
 # -----------------------------------------------------------------------------
 # Name:         Isogeo
@@ -9,7 +8,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 #
 # Author:       Julien Moura (@geojulien)
 #
-# Python:       2.7.x
+# Python:       3.6+
 # Created:      01/09/2016
 # Updated:      01/09/2016
 # -----------------------------------------------------------------------------
@@ -20,8 +19,6 @@ from __future__ import absolute_import, print_function, unicode_literals
 
 # Standard library
 from collections import OrderedDict  # ordered dictionary
-import configParser  # to manage options.ini
-from os import path
 
 # Isogeo
 from isogeo_pysdk import Isogeo
@@ -32,40 +29,20 @@ from isogeo_pysdk import Isogeo
 
 if __name__ == "__main__":
     """Standalone execution"""
-    # storing application parameters into an ini file
-    settings_file = r"../isogeo_params.ini"
+    # ------------ Specific imports ----------------
+    from os import environ
 
-    # testing ini file
-    if not path.isfile(path.realpath(settings_file)):
-        print(
-            "ERROR: to execute this script as standalone,"
-            " you need to store your Isogeo application "
-            "settings in a isogeo_params.ini file. "
-            "You can use the template to set your own."
-        )
-        import sys
-
-        sys.exit()
-    else:
-        pass
-
-    # reading ini file
-    config = configParser.SafeConfigParser()
-    config.read(settings_file)
-
-    share_id = config.get("auth", "app_id")
-    share_token = config.get("auth", "app_secret")
+    # ------------Authentication credentials ----------------
+    client_id = environ.get("ISOGEO_API_DEV_ID")
+    client_secret = environ.get("ISOGEO_API_DEV_SECRET")
 
     # ------------ Real start ----------------
     # instanciating the class
-    isogeo = Isogeo(client_id=share_id, client_secret=share_token)
-
-    # getting a token
-    jeton = isogeo.connect()
+    isogeo = Isogeo(client_id=client_id, client_secret=client_secret, lang="fr")
+    isogeo.connect()
 
     # let's search for metadatas!
     search = isogeo.search(
-        jeton,
         query="owner:b81e0b3bc3124deeadbf59ad05c71a2a",
         page_size=10,
         whole_share=0,
