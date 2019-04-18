@@ -15,6 +15,9 @@
 setuptools
 wheel
 
+# package requirements
+requests_oauthlib
+
 # required
 Sphinx
 
