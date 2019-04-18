@@ -244,20 +244,37 @@ class TestIsogeoUtils(unittest.TestCase):
             "service=CSW&version=2.0.2&request=GetCapabilities",
         )
 
-        # CSW - GetRecord
-        csw_getrec_url = self.utils.get_view_url(
+        # CSW - GetRecordById
+        csw_getrecordbyid_url = self.utils.get_view_url(
             webapp="csw_getrec",
             md_uuid_urn="urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b",
             share_id="1e07910d365449b59b6596a9b428ecd9",
             share_token="TokenOhDearToken",
         )
         self.assertEqual(
-            csw_getrec_url,
+            csw_getrecordbyid_url,
             "https://services.api.isogeo.com/ows/s/"
             "1e07910d365449b59b6596a9b428ecd9/TokenOhDearToken?service=CSW"
             "&version=2.0.2&request=GetRecordById"
             "&id=urn:isogeo:metadata:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
             "&elementsetname=full&outputSchema=http://www.isotc211.org/2005/gmd",
+        )
+
+        # CSW - GetRecords #44
+        csw_getrecords_url = self.utils.get_view_url(
+            webapp="csw_getrecords",
+            share_id="1e07910d365449b59b6596a9b428ecd9",
+            share_token="TokenOhDearToken"
+        )
+        self.assertEqual(
+            csw_getrecords_url,
+            "https://services.api.isogeo.com/ows/s/"
+            "1e07910d365449b59b6596a9b428ecd9/TokenOhDearToken?service=CSW"
+            "&version=2.0.2&request=GetRecords&ResultType=results"
+            "&ElementSetName=brief&maxRecords=20&OutputFormat=application/xml"
+            "&OutputSchema=http://www.opengis.net/cat/csw/2.0.2"
+            "&namespace=xmlns(csw=http://www.opengis.net/cat/csw/2.0.2)"
+            "&TypeNames=csw:Record&startPosition=1"
         )
 
     def test_get_view_url_bad(self):
