@@ -207,6 +207,15 @@ class TestIsogeoUtils(unittest.TestCase):
                 tab="what_a_tab_name",
             )
 
+    # -- URLs Builders - request ------------------------------------- 
+    def test_get_request_base_url(self):
+        """Test URL request builder."""
+        resource_url = self.utils.get_request_base_url("resource")
+        self.assertEqual(
+            resource_url,
+            "https://api.isogeo.com/resource/",
+        )
+
     # -- URLs Builders - view on web app -------------------------------------
     def test_get_view_url_ok(self):
         """Test URL builder for OpenCatalog and PixupPortal links."""
