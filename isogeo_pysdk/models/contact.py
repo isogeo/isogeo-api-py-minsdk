@@ -2,8 +2,7 @@
 #! python3
 
 """
-    Isogeo API v1
-    Model of Contact entity
+    Isogeo API v1 - Model of Contact entity
 
     See: http://help.isogeo.com/api/tech/#definition-contact
 """
@@ -14,7 +13,6 @@
 
 # standard library
 import pprint
-import six
 
 
 # #############################################################################
@@ -33,9 +31,8 @@ class Contact(object):
                             and the value is json key in definition.
     """
     attr_types = {
-        "created": "datetime",
-        "id": "str",
-        "modified": "datetime",
+        "_created": "datetime",
+        "_id": "str",
         "address_line1": "str",
         "address_line2": "str",
         "address_line3": "str",
@@ -45,6 +42,7 @@ class Contact(object):
         "email": "str",
         "fax": "str",
         "hash": "str",
+        "modified": "datetime",
         "name": "str",
         "organization": "str",
         "phone": "str",
@@ -101,7 +99,6 @@ class Contact(object):
         """Contact model"""
 
         self._created = None
-        self._id = None
         self._modified = None
         self._address_line1 = None
         self._address_line2 = None
@@ -111,6 +108,7 @@ class Contact(object):
         self._country_code = None
         self._email = None
         self._fax = None
+        self._id = None
         self._hash = None
         self._name = None
         self._organization = None
@@ -121,8 +119,8 @@ class Contact(object):
 
         if created is not None:
             self.created = created
-        if id is not None:
-            self.id = id
+        if _id is not None:
+            self._id = _id
         if modified is not None:
             self.modified = modified
         if addressLine1 is not None:
@@ -156,10 +154,10 @@ class Contact(object):
 
     @property
     def created(self):
-        """Gets the created of this Contact.  # E501
+        """Gets the created of this Contact.
 
 
-        :return: The created of this Contact.  # E501
+        :return: The created of this Contact.
         :rtype: datetime
         """
         return self._created
@@ -169,39 +167,39 @@ class Contact(object):
         """Sets the created of this Contact.
 
 
-        :param created: The created of this Contact.  # E501
+        :param created: The created of this Contact.
         :type: datetime
         """
 
         self._created = created
 
     @property
-    def id(self):
-        """Gets the id of this Contact.  # E501
+    def _id(self):
+        """Gets the _id of this Contact.
 
 
-        :return: The id of this Contact.  # E501
+        :return: The _id of this Contact.
         :rtype: str
         """
         return self._id
 
-    @id.setter
-    def id(self, id):
-        """Sets the id of this Contact.
+    @_id.setter
+    def _id(self, _id):
+        """Sets the _id of this Contact.
 
 
-        :param id: The id of this Contact.  # E501
+        :param _id: The _id of this Contact.
         :type: str
         """
 
-        self._id = id
+        self._id = _id
 
     @property
     def modified(self):
-        """Gets the modified of this Contact.  # E501
+        """Gets the modified of this Contact.
 
 
-        :return: The modified of this Contact.  # E501
+        :return: The modified of this Contact.
         :rtype: datetime
         """
         return self._modified
@@ -211,7 +209,7 @@ class Contact(object):
         """Sets the modified of this Contact.
 
 
-        :param modified: The modified of this Contact.  # E501
+        :param modified: The modified of this Contact.
         :type: datetime
         """
 
@@ -219,10 +217,10 @@ class Contact(object):
 
     @property
     def address_line1(self):
-        """Gets the address_line1 of this Contact.  # E501
+        """Gets the address_line1 of this Contact.
 
 
-        :return: The address_line1 of this Contact.  # E501
+        :return: The address_line1 of this Contact.
         :rtype: str
         """
         return self._address_line1
@@ -232,7 +230,7 @@ class Contact(object):
         """Sets the address_line1 of this Contact.
 
 
-        :param address_line1: The address_line1 of this Contact.  # E501
+        :param address_line1: The address_line1 of this Contact.
         :type: str
         """
 
@@ -240,10 +238,10 @@ class Contact(object):
 
     @property
     def address_line2(self):
-        """Gets the address_line2 of this Contact.  # E501
+        """Gets the address_line2 of this Contact.
 
 
-        :return: The address_line2 of this Contact.  # E501
+        :return: The address_line2 of this Contact.
         :rtype: str
         """
         return self._address_line2
@@ -253,7 +251,7 @@ class Contact(object):
         """Sets the address_line2 of this Contact.
 
 
-        :param address_line2: The address_line2 of this Contact.  # E501
+        :param address_line2: The address_line2 of this Contact.
         :type: str
         """
 
@@ -261,10 +259,10 @@ class Contact(object):
 
     @property
     def address_line3(self):
-        """Gets the address_line3 of this Contact.  # E501
+        """Gets the address_line3 of this Contact.
 
 
-        :return: The address_line3 of this Contact.  # E501
+        :return: The address_line3 of this Contact.
         :rtype: str
         """
         return self._address_line3
@@ -274,7 +272,7 @@ class Contact(object):
         """Sets the address_line3 of this Contact.
 
 
-        :param address_line3: The address_line3 of this Contact.  # E501
+        :param address_line3: The address_line3 of this Contact.
         :type: str
         """
 
@@ -282,10 +280,10 @@ class Contact(object):
 
     @property
     def available(self):
-        """Gets the available of this Contact.  # E501
+        """Gets the available of this Contact.
 
 
-        :return: The available of this Contact.  # E501
+        :return: The available of this Contact.
         :rtype: str
         """
         return self._available
@@ -295,7 +293,7 @@ class Contact(object):
         """Sets the available of this Contact.
 
 
-        :param available: The available of this Contact.  # E501
+        :param available: The available of this Contact.
         :type: str
         """
 
@@ -303,10 +301,10 @@ class Contact(object):
 
     @property
     def city(self):
-        """Gets the city of this Contact.  # E501
+        """Gets the city of this Contact.
 
 
-        :return: The city of this Contact.  # E501
+        :return: The city of this Contact.
         :rtype: str
         """
         return self._city
@@ -316,7 +314,7 @@ class Contact(object):
         """Sets the city of this Contact.
 
 
-        :param city: The city of this Contact.  # E501
+        :param city: The city of this Contact.
         :type: str
         """
 
@@ -324,10 +322,10 @@ class Contact(object):
 
     @property
     def country_code(self):
-        """Gets the country_code of this Contact.  # E501
+        """Gets the country_code of this Contact.
 
 
-        :return: The country_code of this Contact.  # E501
+        :return: The country_code of this Contact.
         :rtype: str
         """
         return self._country_code
@@ -337,7 +335,7 @@ class Contact(object):
         """Sets the country_code of this Contact.
 
 
-        :param country_code: The country_code of this Contact.  # E501
+        :param country_code: The country_code of this Contact.
         :type: str
         """
 
@@ -345,10 +343,10 @@ class Contact(object):
 
     @property
     def email(self):
-        """Gets the email of this Contact.  # E501
+        """Gets the email of this Contact.
 
 
-        :return: The email of this Contact.  # E501
+        :return: The email of this Contact.
         :rtype: str
         """
         return self._email
@@ -358,7 +356,7 @@ class Contact(object):
         """Sets the email of this Contact.
 
 
-        :param email: The email of this Contact.  # E501
+        :param email: The email of this Contact.
         :type: str
         """
 
@@ -366,10 +364,10 @@ class Contact(object):
 
     @property
     def fax(self):
-        """Gets the fax of this Contact.  # E501
+        """Gets the fax of this Contact.
 
 
-        :return: The fax of this Contact.  # E501
+        :return: The fax of this Contact.
         :rtype: str
         """
         return self._fax
@@ -379,7 +377,7 @@ class Contact(object):
         """Sets the fax of this Contact.
 
 
-        :param fax: The fax of this Contact.  # E501
+        :param fax: The fax of this Contact.
         :type: str
         """
 
@@ -387,10 +385,10 @@ class Contact(object):
 
     @property
     def hash(self):
-        """Gets the hash of this Contact.  # E501
+        """Gets the hash of this Contact.
 
 
-        :return: The hash of this Contact.  # E501
+        :return: The hash of this Contact.
         :rtype: str
         """
         return self._hash
@@ -400,7 +398,7 @@ class Contact(object):
         """Sets the hash of this Contact.
 
 
-        :param hash: The hash of this Contact.  # E501
+        :param hash: The hash of this Contact.
         :type: str
         """
 
@@ -408,10 +406,10 @@ class Contact(object):
 
     @property
     def name(self):
-        """Gets the name of this Contact.  # E501
+        """Gets the name of this Contact.
 
 
-        :return: The name of this Contact.  # E501
+        :return: The name of this Contact.
         :rtype: str
         """
         return self._name
@@ -421,7 +419,7 @@ class Contact(object):
         """Sets the name of this Contact.
 
 
-        :param name: The name of this Contact.  # E501
+        :param name: The name of this Contact.
         :type: str
         """
 
@@ -429,10 +427,10 @@ class Contact(object):
 
     @property
     def organization(self):
-        """Gets the organization of this Contact.  # E501
+        """Gets the organization of this Contact.
 
 
-        :return: The organization of this Contact.  # E501
+        :return: The organization of this Contact.
         :rtype: str
         """
         return self._organization
@@ -442,7 +440,7 @@ class Contact(object):
         """Sets the organization of this Contact.
 
 
-        :param organization: The organization of this Contact.  # E501
+        :param organization: The organization of this Contact.
         :type: str
         """
 
@@ -450,10 +448,10 @@ class Contact(object):
 
     @property
     def phone(self):
-        """Gets the phone of this Contact.  # E501
+        """Gets the phone of this Contact.
 
 
-        :return: The phone of this Contact.  # E501
+        :return: The phone of this Contact.
         :rtype: str
         """
         return self._phone
@@ -463,7 +461,7 @@ class Contact(object):
         """Sets the phone of this Contact.
 
 
-        :param phone: The phone of this Contact.  # E501
+        :param phone: The phone of this Contact.
         :type: str
         """
 
@@ -471,10 +469,10 @@ class Contact(object):
 
     @property
     def type(self):
-        """Gets the type of this Contact.  # E501
+        """Gets the type of this Contact.
 
 
-        :return: The type of this Contact.  # E501
+        :return: The type of this Contact.
         :rtype: str
         """
         return self._type
@@ -484,15 +482,15 @@ class Contact(object):
         """Sets the type of this Contact.
 
 
-        :param type: The type of this Contact.  # E501
+        :param type: The type of this Contact.
         :type: str
         """
         if type is None:
-            raise ValueError("Invalid value for `type`, must not be `None`")  # E501
-        allowed_values = ["custom", "group", "user"]  # E501
+            raise ValueError("Invalid value for `type`, must not be `None`")
+        allowed_values = ["custom", "group", "user"]
         if type not in allowed_values:
             raise ValueError(
-                "Invalid value for `type` ({0}), must be one of {1}".format(  # E501
+                "Invalid value for `type` ({0}), must be one of {1}".format(
                     type, allowed_values
                 )
             )
@@ -501,10 +499,10 @@ class Contact(object):
 
     @property
     def zip_code(self):
-        """Gets the zip_code of this Contact.  # E501
+        """Gets the zip_code of this Contact.
 
 
-        :return: The zip_code of this Contact.  # E501
+        :return: The zip_code of this Contact.
         :rtype: str
         """
         return self._zip_code
@@ -514,7 +512,7 @@ class Contact(object):
         """Sets the zip_code of this Contact.
 
 
-        :param zip_code: The zip_code of this Contact.  # E501
+        :param zip_code: The zip_code of this Contact.
         :type: str
         """
 
@@ -524,7 +522,7 @@ class Contact(object):
         """Returns the model properties as a dict"""
         result = {}
 
-        for attr, _ in six.iteritems(self.swagger_types):
+        for attr, _ in self.attr_types.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
