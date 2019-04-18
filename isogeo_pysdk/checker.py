@@ -140,7 +140,7 @@ class IsogeoChecker(object):
          from Isogeo PySDK to get new bearer
         """
         warnings.warn(
-            "Method is now executed as a decorator wihtin the main SDK class. Will be removed in future versions.",
+            "Method is now executed as a decorator within the main SDK class. Will be removed in future versions.",
             DeprecationWarning,
         )
         if datetime.now() < token.get("expires_at"):
