@@ -36,6 +36,8 @@ except (ImportError, ValueError, SystemError):
     import checker
     import utils
 
+from models import Contact
+
 # ##############################################################################
 # ########## Globals ###############
 # ##################################
@@ -182,8 +184,144 @@ class IsogeoSession(OAuth2Session):
         else:
             pass
 
-    # -- KEYWORDS -----------------------------------------------------------
+    # -- METADATA = RESOURCE --------------------------------------------------
+    def resource(
+        self,
+        id_resource: str = None,
+        subresource=None,
+        include: list = [],
+        prot: str = "https",
+    ) -> dict:
+        """Get complete or partial metadata about one specific resource.
 
+        :param str id_resource: metadata UUID to get
+        :param list include: subresources that should be included.
+         Must be a list of strings. Available values: 'isogeo.SUBRESOURCES'
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # if subresource route
+        if isinstance(subresource, str):
+            subresource = "/{}".format(checker._check_subresource(subresource))
+        else:
+            subresource = ""
+            # _includes specific parsing
+            include = checker._check_filter_includes(include)
+
+        # handling request parameters
+        payload = {"id": id_resource, "_include": include}
+        # resource search
+        md_url = "{}{}{}".format(
+            utils.get_request_base_url(route="resources"), id_resource, subresource
+        )
+
+        resource_req = self.get(
+            md_url,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+        )
+        checker.check_api_response(resource_req)
+
+        # end of method
+        return resource_req.json()
+
+    def md_exists(self, resource_id: str) -> bool:
+        """Check if the specified metadata exists or is available for the authenticated user.
+
+        :param str resource_id: identifier of the resource to verify
+        """
+        url_md_check = "{}{}".format(
+            utils.get_request_base_url("resources"), resource_id
+        )
+
+        return checker.check_api_response(self.get(url_md_check))
+
+    def md_create(
+        self,
+        workgroup_id: str,
+        resource_type: str,
+        title: str,
+        abstract: str,
+        series: bool = 0,
+    ) -> dict:
+        """Create a metadata from Isogeo database.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param str resource_type: type of metadata to create. Must be one of...
+        :param str title: title of metadata to create
+        :param bool series: set if metadata is a series or not
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        data = {
+            "title": title,
+            "abstract": abstract,
+            "type": resource_type,
+            "series": series,
+        }
+
+        url_md_create = "{}://v1.{}.isogeo.com/groups/{}/resources/".format(
+            self.prot, self.api_url, workgroup_id
+        )
+
+        new_md = self.post(
+            url_md_create, data=data, proxies=self.proxies, verify=self.ssl
+        )
+
+        return new_md.json()
+
+    def md_delete(self, resource_id: str) -> dict:
+        """Delete a metadata from Isogeo database.
+
+        :param str resource_id: identifier of the resource to delete
+        """
+        url_md_del = "{}://{}.isogeo.com/resources/{}".format(
+            self.prot, self.api_url, resource_id
+        )
+
+        md_deletion = self.delete(url_md_del)
+
+        return md_deletion
+
+    # -- CONTACTS --------------------------------------------------
+    def contact(
+        self, id_contact: str, include: list = ["count"], prot: str = "https"
+    ) -> dict:
+        """Get a contact.
+
+        :param str id_contact: contact UUID to get
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # handle include
+        include = checker._check_filter_includes(include, "contact")
+        # handling request parameters
+        payload = {"_include": include}
+
+        # contact  search
+        contact_url = "{}{}".format(
+            utils.get_request_base_url(route="contacts"), id_contact
+        )
+
+        resource_req = self.get(
+            contact_url,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+        )
+        checker.check_api_response(resource_req)
+
+        # end of method
+        return resource_req.json()
+
+    # -- KEYWORDS -----------------------------------------------------------
     def thesauri(self, token: dict = None, prot: str = "https") -> dict:
         """Get list of available thesauri.
 
@@ -360,47 +498,6 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return license_req.json()
 
-    def create(
-        self, workgroup_id: str, resource_type: str, title: str, abstract: str, series: bool = 0
-    ) -> dict:
-        """Create a metadata from Isogeo database.
-
-        :param str workgroup_id: identifier of the owner workgroup
-        :param str resource_type: type of metadata to create. Must be one of...
-        :param str title: title of metadata to create
-        :param bool series: set if metadata is a series or not
-        """
-        # check metadata UUID
-        if not checker.check_is_uuid(workgroup_id):
-            raise ValueError("Workgroup ID is not a correct UUID.")
-        else:
-            pass
-
-        data = {"title": title, "abstract": abstract, "type": resource_type, "series": series}
-
-        url_md_create = "{}://v1.{}.isogeo.com/groups/{}/resources/".format(
-            self.prot, self.api_url, workgroup_id
-        )
-
-        new_md = self.post(
-            url_md_create, data=data, proxies=self.proxies, verify=self.ssl
-        )
-
-        return new_md.json()
-
-    def md_delete(self, resource_id: str) -> dict:
-        """Delete a metadata from Isogeo database.
-
-        :param str resource_id: identifier of the resource to delete
-        """
-        url_md_del = "{}://{}.isogeo.com/resources/{}".format(
-            self.prot, self.api_url, resource_id
-        )
-
-        md_deletion = self.delete(url_md_del)
-
-        return md_deletion
-
 
 # ##############################################################################
 # ##### Stand alone program ########
@@ -408,8 +505,10 @@ class IsogeoSession(OAuth2Session):
 if __name__ == "__main__":
     """ standalone execution """
     # ------------ Specific imports ----------------
-    from os import environ
     from dotenv import load_dotenv
+    from os import environ
+    import pprint
+    from time import sleep
 
     # ------------ Log & debug ----------------
     logger = logging.getLogger()
