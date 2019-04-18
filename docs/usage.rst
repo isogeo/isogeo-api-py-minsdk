@@ -240,7 +240,20 @@ Get CSW GetCapabilities for a share
                                         share_token="TokenOhDearToken")
 
 --------------------------------
-Get CSW GetRecord for a metadata
+Get CSW GetRecords for a share
+--------------------------------
+
+.. code-block:: python
+
+    from isogeo_pysdk import IsogeoUtils
+    utils = IsogeoUtils()
+
+    csw_getrecords_url = utils.get_view_url(webapp="csw_getrecords",
+                                            share_id="ShareUniqueIdentifier",
+                                            share_token="TokenOhDearToken")
+
+--------------------------------
+Get CSW GetRecordById for a metadata
 --------------------------------
 
 .. code-block:: python
@@ -250,10 +263,10 @@ Get CSW GetRecord for a metadata
 
     uuid_md_source = "82e73458e29a4edbaf8bfce9e16fa78b"
 
-    csw_getrec_url = utils.get_view_url(webapp="csw_getrec",
-                                        md_uuid_urn=utils.convert_uuid(uuid_md_source, 2),
-                                        share_id="ShareUniqueIdentifier",
-                                        share_token="TokenOhDearToken")
+    csw_getrecord_url = utils.get_view_url(webapp="csw_getrec",
+                                           md_uuid_urn=utils.convert_uuid(uuid_md_source, 2),
+                                           share_id="ShareUniqueIdentifier",
+                                           share_token="TokenOhDearToken")
 
 ------------------------------------
 Register a custom webapp and get URL
