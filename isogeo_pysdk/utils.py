@@ -255,11 +255,7 @@ class IsogeoUtils(object):
         return version_req.json().get("version")
 
     # -- URLs builders -------------------------------------------------------
-    def get_request_base_url(
-        self,
-        route: str,
-        prot: str = "https",
-    ) -> str:
+    def get_request_base_url(self, route: str, prot: str = "https") -> str:
         """Build the request url for the specified route.
 
         :param str route: route to format
