@@ -520,7 +520,7 @@ if __name__ == "__main__":
     credentials = utils.credentials_loader("client_secrets_scripts.json")
 
     # get user ID as environment variables
-    load_dotenv("dev.env", verbose=1)
+    load_dotenv("dev.env")
 
     # instanciate
     isogeo = IsogeoSession(
@@ -530,18 +530,53 @@ if __name__ == "__main__":
     )
 
     # getting a token
-    token = isogeo.connect(username=environ.get("ISOGEO_USER_NAME"),
-                           password=environ.get("ISOGEO_USER_PASSWORD"))
+    token = isogeo.connect(
+        username=environ.get("ISOGEO_USER_NAME"),
+        password=environ.get("ISOGEO_USER_PASSWORD"),
+    )
 
-    # licenses
-    lics = isogeo.licenses(owner_id="32f7e95ec4e94ca3bc1afda960003882")
-    print(lics)
+    # # licenses
+    # lics = isogeo.licenses(owner_id="32f7e95ec4e94ca3bc1afda960003882")
+    # print(lics)
 
-    # memo : par défaut order_dir = asc
-    k = isogeo.keywords(thez_id="1616597fbc4348c8b11ef9d59cf594c8",
-                        order_by="count.isogeo",
-                        order_dir="desc",
-                        page_size=10,
-                        include="all"
-                        )
-    print(k)
+    # # memo : par défaut order_dir = asc
+    # k = isogeo.keywords(thez_id="1616597fbc4348c8b11ef9d59cf594c8",
+    #                     order_by="count.isogeo",
+    #                     order_dir="desc",
+    #                     page_size=10,
+    #                     include="all"
+    #                     )
+    # print(k)
+
+    # md = isogeo.md_create(
+    #     workgroup_id=WORKGROUP_UUID,
+    #     resource_type="vectorDataset",
+    #     title="Salut Simon",
+    #     abstract="meuh",
+    #     series=0
+    # )
+
+    # print(md)
+    # print(md.get("_id"))
+
+    # sleep(10)    # ensure that metadata has been created
+
+    # deleted = isogeo.md_delete(resource_id="cd44a3cbabd347a2aba428d95b055697")
+    # print(deleted)
+
+    # md_ok = isogeo.md_exists("7d3f238a3aad411eb9fc9fca1da76bb3")
+    # print(md_ok)
+
+    # md = isogeo.resource(id_resource="196831cb153e4f30a220ae21512bcb5e")
+    # pprint.pprint(md)
+
+    ct = isogeo.contact(id_contact="49b248a4985041aebee7d5d6c337d82f")
+    # pprint.pprint(ct)
+
+    print(ct.get("_id"))
+    t = Contact(**ct)
+    # print(dir(t))
+
+    # print(t._id)
+    # print(t.to_dict())
+    print(t.to_str())
