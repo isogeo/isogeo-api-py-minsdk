@@ -93,6 +93,8 @@ _SUBRESOURCES_MD = (
 
 _SUBRESOURCES_KW = ("_abilities", "count", "thesaurus")
 
+_SUBRESOURCES_CT = ("count",)
+
 # ##############################################################################
 # ########## Classes ###############
 # ##################################
@@ -383,20 +385,22 @@ class IsogeoChecker(object):
             raise TypeError("'specific_tag' expects a list")
         return specific_tag
 
-    def _check_filter_includes(self, includes: list, resource: str = "metadata"):
+    def _check_filter_includes(self, includes: list, entity: str = "metadata"):
         """Check if specific_resources parameter is valid.
 
         :param list includes: sub resources to check
-        :param str resource: resource type to check sub resources.
-         Must be one of: metadata | keyword.
+        :param str entity: entity type to check sub resources.
+         Must be one of: contact | metadata | keyword.
         """
-        # check resource parameter
-        if resource == "metadata":
+        # check entity parameter
+        if entity == "metadata":
             ref_subresources = _SUBRESOURCES_MD
-        elif resource == "keyword":
+        elif entity == "keyword":
             ref_subresources = _SUBRESOURCES_KW
+        elif entity == "contact":
+            ref_subresources = _SUBRESOURCES_CT
         else:
-            raise ValueError("Must be one of: metadata | keyword.")
+            raise ValueError("Must be one of: contact | metadata | keyword.")
 
         # sub resources manager
         if isinstance(includes, str) and includes.lower() == "all":
