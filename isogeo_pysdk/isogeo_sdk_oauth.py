@@ -321,6 +321,45 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return resource_req.json()
 
+    def contact_create(
+        self,
+        workgroup_id: str,
+        check_exists: bool = 1,
+        contact: object = Contact()
+    ) -> dict:
+        """Add a new contact to a workgroup.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param bool check_exists: check if a contact with the same email already exists
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        url_ct_create = utils.get_request_base_url(route="groups/{}/contacts".format(workgroup_id))
+
+        new_ct = self.post(
+            url_ct_create, data=contact.to_dict_creation(), proxies=self.proxies, verify=self.ssl
+        )
+
+        return new_ct.json()
+
+    def contact_delete(self, workgroup_id: str, contact_id: str) -> dict:
+        """Delete a contact from Isogeo database.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param str contact_id: identifier of the resource to delete
+        """
+        url_ct_del = "{}://{}.isogeo.com/groups/{}/contacts/{}".format(
+            self.prot, self.api_url, workgroup_id, contact_id
+        )
+
+        ct_deletion = self.delete(url_ct_del)
+
+        return ct_deletion
+
     # -- KEYWORDS -----------------------------------------------------------
     def thesauri(self, token: dict = None, prot: str = "https") -> dict:
         """Get list of available thesauri.
@@ -513,7 +552,7 @@ if __name__ == "__main__":
     # ------------ Log & debug ----------------
     logger = logging.getLogger()
     logging.captureWarnings(True)
-    logger.setLevel(logging.INFO)
+    logger.setLevel(logging.DEBUG)
 
     # ------------ Real start ----------------
     # load application credentials from downloaded file
