@@ -47,7 +47,21 @@ class Contact(object):
         "organization": "str",
         "phone": "str",
         "type": "str",
-        "zip_code": "str",
+        "zip_code": "str"
+    }
+
+    attr_crea = {
+        "address_line1": "str",
+        "address_line2": "str",
+        "address_line3": "str",
+        "city": "str",
+        "country_code": "str",
+        "email": "str",
+        "fax": "str",
+        "name": "str",
+        "organization": "str",
+        "phone": "str",
+        "zip_code": "str"
     }
 
     attr_map = {
@@ -67,7 +81,7 @@ class Contact(object):
         "organization": "organization",
         "phone": "phone",
         "type": "type",
-        "zip_code": "zipCode",
+        "zipCode": "zipCode",
     }
 
     def __init__(
@@ -152,6 +166,7 @@ class Contact(object):
         if zipCode is not None:
             self.zip_code = zipCode
 
+    # -- PROPERTIES ----------
     @property
     def created(self):
         """Gets the created of this Contact.
@@ -173,27 +188,29 @@ class Contact(object):
 
         self._created = created
 
+    # object UUID
     @property
-    def _id(self):
-        """Gets the _id of this Contact.
+    def id(self):
+        """Gets the id of this Contact.  # noqa: E501
 
 
-        :return: The _id of this Contact.
+        :return: The id of this Contact.  # noqa: E501
         :rtype: str
         """
         return self._id
 
-    @_id.setter
-    def _id(self, _id):
-        """Sets the _id of this Contact.
+    @id.setter
+    def id(self, id):
+        """Sets the id of this Contact.
 
 
-        :param _id: The _id of this Contact.
+        :param id: The id of this Contact.  # noqa: E501
         :type: str
         """
 
-        self._id = _id
+        self._id = id
 
+    # DATES
     @property
     def modified(self):
         """Gets the modified of this Contact.
@@ -518,11 +535,41 @@ class Contact(object):
 
         self._zip_code = zip_code
 
+    # -- METHODS ----
     def to_dict(self):
         """Returns the model properties as a dict"""
         result = {}
 
         for attr, _ in self.attr_types.items():
+            value = getattr(self, attr)
+            if isinstance(value, list):
+                result[attr] = list(
+                    map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)
+                )
+            elif hasattr(value, "to_dict"):
+                result[attr] = value.to_dict()
+            elif isinstance(value, dict):
+                result[attr] = dict(
+                    map(
+                        lambda item: (item[0], item[1].to_dict())
+                        if hasattr(item[1], "to_dict")
+                        else item,
+                        value.items(),
+                    )
+                )
+            else:
+                result[attr] = value
+        if issubclass(Contact, dict):
+            for key, value in self.items():
+                result[key] = value
+
+        return result
+
+    def to_dict_creation(self):
+        """Returns the model properties as a dict structured for creation purpose (POST)"""
+        result = {}
+
+        for attr, _ in self.attr_crea.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -572,5 +619,5 @@ class Contact(object):
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    ct = Contact()
-    print(dir(ct))
+    ct = Contact(name="bonjour", email="truc@test.com")
+    print(ct.to_str())
