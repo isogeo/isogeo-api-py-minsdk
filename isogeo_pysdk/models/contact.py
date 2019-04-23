@@ -391,18 +391,18 @@ class Contact(object):
     # organization
     @property
     def organization(self) -> str:
-        """Gets the id of this Contact.
+        """Gets the organization of this Contact.
 
-        :return: The id of this Contact.
+        :return: The organization of this Contact.
         :rtype: str
         """
         return self._organization
 
     @organization.setter
     def organization(self, organization: str):
-        """Sets the id of this Contact.
+        """Sets the organization of this Contact.
 
-        :param str XX: The id of this Contact.
+        :param str organization: The organization of this Contact.
         """
 
         self._organization = organization
@@ -410,18 +410,18 @@ class Contact(object):
     # phone
     @property
     def phone(self) -> str:
-        """Gets the id of this Contact.
+        """Gets the phone number of this Contact.
 
-        :return: The id of this Contact.
+        :return: The phone number of this Contact.
         :rtype: str
         """
         return self._phone
 
     @phone.setter
     def phone(self, phone: str):
-        """Sets the id of this Contact.
+        """Sets the phone number of this Contact.
 
-        :param str XX: The id of this Contact.
+        :param str phone: The phone number of this Contact.
         """
 
         self._phone = phone
@@ -429,18 +429,18 @@ class Contact(object):
     # type
     @property
     def type(self) -> str:
-        """Gets the id of this Contact.
+        """Gets the type of this Contact.
 
-        :return: The id of this Contact.
+        :return: The type of this Contact.
         :rtype: str
         """
         return self._type
 
     @type.setter
     def type(self, type: str):
-        """Sets the id of this Contact.
+        """Sets the type of this Contact.
 
-        :param str XX: The id of this Contact.
+        :param str type: The type of this Contact.
         """
 
         self._type = type
@@ -448,18 +448,18 @@ class Contact(object):
     # zipCode
     @property
     def zipCode(self) -> str:
-        """Gets the id of this Contact.
+        """Gets the zip (postal) code of this Contact.
 
-        :return: The id of this Contact.
+        :return: The zip (postal) code of this Contact.
         :rtype: str
         """
         return self._zipCode
 
     @zipCode.setter
     def zipCode(self, zipCode: str):
-        """Sets the id of this Contact.
+        """Sets the zip (postal) code of this Contact.
 
-        :param str id: The id of this Contact.
+        :param str zipCode: The zip (postal) code of this Contact.
         """
 
         self._zipCode = zipCode
@@ -527,22 +527,22 @@ class Contact(object):
 
         return result
 
-    def to_str(self):
+    def to_str(self) -> str:
         """Returns the string representation of the model"""
         return pprint.pformat(self.to_dict())
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         """For `print` and `pprint`"""
         return self.to_str()
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         """Returns true if both objects are equal"""
         if not isinstance(other, Contact):
             return False
 
         return self.__dict__ == other.__dict__
 
-    def __ne__(self, other):
+    def __ne__(self, other) -> bool:
         """Returns true if both objects are not equal"""
         return not self == other
 
@@ -552,5 +552,12 @@ class Contact(object):
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    ct = Contact(name="bonjour", email="truc@test.com")
-    print(ct.to_str())
+    ct = Contact()
+    ct.email = "change@truc.fr"
+    print(ct.email)
+    print(ct.__dict__)
+    print(ct._id)
+    print(ct.__dict__.get("_id"))
+    print(hasattr(ct, "_id"))
+    print(ct.to_dict_creation())
+    # print(ct.to_str())

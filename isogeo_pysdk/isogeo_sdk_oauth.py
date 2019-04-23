@@ -29,14 +29,15 @@ from requests_oauthlib import OAuth2Session
 
 # modules
 try:
-    from isogeo_sdk import version
     from . import checker
+    from .models import Contact
     from . import utils
+    from . import version
 except (ImportError, ValueError, SystemError):
     import checker
+    from models.contact import Contact
     import utils
-
-from models import Contact
+    from isogeo_sdk import version
 
 # ##############################################################################
 # ########## Globals ###############
@@ -322,19 +323,30 @@ class IsogeoSession(OAuth2Session):
         return resource_req.json()
 
     def contact_create(
-        self, workgroup_id: str, check_exists: bool = 1, contact: object = Contact()
+        self, workgroup_id: str, check_exists: int = 0, contact: object = Contact()
     ) -> dict:
         """Add a new contact to a workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param bool check_exists: check if a contact with the same email already exists
+        :param int check_exists: check if a contact already exists inot the workgroup:
+
+        - 0 = no check [DEFAULT]
+        - 1 = compare name
+        - 2 = compare email
+
+        :param class contact: Contact model object to create
         """
-        # check metadata UUID
+        # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
             raise ValueError("Workgroup ID is not a correct UUID.")
         else:
             pass
 
+        # check if contact already exists in workgroup
+        if check_exists:
+            logging.debug(NotImplemented)
+
+        # build request url
         url_ct_create = utils.get_request_base_url(
             route="groups/{}/contacts".format(workgroup_id)
         )
@@ -354,13 +366,71 @@ class IsogeoSession(OAuth2Session):
         :param str workgroup_id: identifier of the owner workgroup
         :param str contact_id: identifier of the resource to delete
         """
-        url_ct_del = "{}://{}.isogeo.com/groups/{}/contacts/{}".format(
-            self.prot, self.api_url, workgroup_id, contact_id
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # check contact UUID
+        if not checker.check_is_uuid(contact_id):
+            raise ValueError("Contact ID is not a correct UUID: {}".format(contact_id))
+        else:
+            pass
+
+        # request URL
+        url_ct_delete = utils.get_request_base_url(
+            route="groups/{}/contacts/{}".format(workgroup_id, contact_id)
         )
 
-        ct_deletion = self.delete(url_ct_del)
+        ct_deletion = self.delete(url_ct_delete)
 
         return ct_deletion
+
+    def contact_exists(self, contact_id: str) -> bool:
+        """Check if the specified contact exists and is available for the authenticated user.
+
+        :param str contact_id: identifier of the contact to verify
+        """
+        url_ct_check = "{}{}".format(utils.get_request_base_url("contacts"), contact_id)
+
+        return checker.check_api_response(self.get(url_ct_check))
+
+    def contact_update(self, workgroup_id: str, contact: object) -> dict:
+        """Update a contact into a workgroup address-book.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param class contact: Contact model object to update
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # check contact UUID
+        if not checker.check_is_uuid(contact._id):
+            raise ValueError("Contact ID is not a correct UUID: {}".format(contact._id))
+        else:
+            pass
+
+        # request URL
+        url_ct_update = utils.get_request_base_url(
+            route="groups/{}/contacts/{}".format(workgroup_id, contact._id)
+        )
+
+        ct_update = self.put(
+            url=url_ct_update,
+            data=contact.to_dict_creation(),
+            proxies=self.proxies,
+            verify=self.ssl,
+        )
+
+        return ct_update.json()
 
     # -- KEYWORDS -----------------------------------------------------------
     def thesauri(self, token: dict = None, prot: str = "https") -> dict:

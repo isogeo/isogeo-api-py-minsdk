@@ -7,6 +7,7 @@
 """
 
 from .isogeo_sdk import Isogeo, version
+from .isogeo_sdk_oauth import IsogeoSession
 from .checker import IsogeoChecker
 from .models import *
 from .translator import IsogeoTranslator
