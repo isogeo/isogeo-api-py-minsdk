@@ -57,7 +57,8 @@ class TestRoutes(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
-        pass
+        # close
+        self.isogeo.close()
 
     # -- ALL APPS ------------------------------------------------------------
     def test_resources_search(self):

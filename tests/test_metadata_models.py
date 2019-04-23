@@ -59,7 +59,8 @@ class TestMetadataModels(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
-        pass
+        # close
+        self.isogeo.close()
 
     # metadata models
     def test_search_result_vector_min(self):

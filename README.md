@@ -48,6 +48,9 @@ print("Search __dict__ keys: ", search.keys())  # search response basic structur
 print("Search query parameters: ", search.get('query'))  # search response query passed
 print("Total count of metadatas shared: ", search.get("total"))  # total of available resources
 print("Count of resources got by request: {}\n".format(len(search.get("results"))))  # total of resources returned by search request
+
+# close the session when you finish
+isogeo.close()
 ```
 
 Samples are available in `the source repository <https://github.com/isogeo/isogeo-api-py-minsdk/tree/master/isogeo_pysdk/samples>`_.

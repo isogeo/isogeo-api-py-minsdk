@@ -60,7 +60,8 @@ class TestKeywords(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
-        pass
+        # close
+        self.isogeo.close()
 
     # subresources
     def test_keywords_includes_ok(self):

@@ -55,7 +55,8 @@ class TestExportXML19139(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
-        pass
+        # close
+        self.isogeo.close()
 
     # metadata models
     def test_export_XML19139(self):

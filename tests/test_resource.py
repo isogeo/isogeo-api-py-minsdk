@@ -62,7 +62,8 @@ class TestResource(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
-        pass
+        # close
+        self.isogeo.close()
 
     # includes
     def test_resource_includes_ok(self):

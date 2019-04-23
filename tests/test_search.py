@@ -57,7 +57,8 @@ class TestSearch(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
-        pass
+        # close session
+        self.isogeo.close()
 
     # basic search and results
     def test_search(self):

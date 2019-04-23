@@ -71,6 +71,8 @@ class TestIsogeoChecker(unittest.TestCase):
         self.assertEqual(
             len(checker.check_bearer_validity(isogeo.token, isogeo.connect())), 4
         )
+        # close
+        isogeo.close()
 
     def test_checker_validity_bearer_expired(self):
         """When a search works, check the response structure."""
@@ -84,6 +86,8 @@ class TestIsogeoChecker(unittest.TestCase):
         self.assertEqual(
             len(checker.check_bearer_validity(isogeo.token, isogeo.connect())), 4
         )
+        # close
+        isogeo.close()
 
     # UUID
     def test_checker_uuid_valid(self):

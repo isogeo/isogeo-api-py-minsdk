@@ -54,7 +54,8 @@ class TestDownloadHosted(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
-        pass
+        # close
+        self.isogeo.close()
 
     def test_dl_hosted(self):
         """Download an hosted data from Isogeo metadata."""

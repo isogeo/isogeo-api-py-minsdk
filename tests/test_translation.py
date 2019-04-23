@@ -92,7 +92,8 @@ class TestIsogeoTranslator(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
-        pass
+        # close session
+        self.isogeo.close()
 
     # tests
     def test_translation_fr(self):
