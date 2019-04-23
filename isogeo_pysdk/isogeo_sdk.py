@@ -698,7 +698,7 @@ class Isogeo(Session):
         :param str query: search terms
         :param int offset: pagination start
         :param str order_by: sort criteria. Available values :
-        
+
             - count.group,
             - count.isogeo,
             - text
