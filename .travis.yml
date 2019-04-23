@@ -6,7 +6,6 @@ git:
 
 # https://docs.travis-ci.com/user/languages/python/#specifying-python-versions
 python:
-  - "3.5"
   - "3.6"
 
 matrix:

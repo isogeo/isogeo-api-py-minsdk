@@ -53,7 +53,7 @@ setup(
         "dev": ["configparser"],
         "test": ["coverage", "pycodestyle", "python-dateutil"],
     },
-    python_requires=">=3.5, <4",
+    python_requires=">=3.6, <4",
     # packaging
     packages=find_packages(
         exclude=["contrib", "docs", "*.tests", "*.tests.*", "tests.*", "tests"]
