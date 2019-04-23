@@ -322,10 +322,7 @@ class IsogeoSession(OAuth2Session):
         return resource_req.json()
 
     def contact_create(
-        self,
-        workgroup_id: str,
-        check_exists: bool = 1,
-        contact: object = Contact()
+        self, workgroup_id: str, check_exists: bool = 1, contact: object = Contact()
     ) -> dict:
         """Add a new contact to a workgroup.
 
@@ -338,10 +335,15 @@ class IsogeoSession(OAuth2Session):
         else:
             pass
 
-        url_ct_create = utils.get_request_base_url(route="groups/{}/contacts".format(workgroup_id))
+        url_ct_create = utils.get_request_base_url(
+            route="groups/{}/contacts".format(workgroup_id)
+        )
 
         new_ct = self.post(
-            url_ct_create, data=contact.to_dict_creation(), proxies=self.proxies, verify=self.ssl
+            url_ct_create,
+            data=contact.to_dict_creation(),
+            proxies=self.proxies,
+            verify=self.ssl,
         )
 
         return new_ct.json()

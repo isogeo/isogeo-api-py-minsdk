@@ -8,7 +8,7 @@
 
 from .isogeo_sdk import Isogeo, version
 from .checker import IsogeoChecker
-from models import *
+from .models import *
 from .translator import IsogeoTranslator
 from .utils import IsogeoUtils
 

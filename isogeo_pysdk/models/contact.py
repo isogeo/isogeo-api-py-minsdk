@@ -4,7 +4,7 @@
 """
     Isogeo API v1 - Model of Contact entity
 
-    See: http://help.isogeo.com/api/tech/#definition-contact
+    See: http://help.isogeo.com/api/complete/index.html#definition-contact
 """
 
 # #############################################################################
@@ -25,63 +25,46 @@ class Contact(object):
 
     """
     Attributes:
-      attr_types (dict): The key is attribute name
-                            and the value is attribute type.
-      attr_map (dict): The key is attribute name
-                            and the value is json key in definition.
+      attr_types (dict): basic structure of contact attributes. {"attribute name": "attribute type"}.
+      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
+      attr_map (dict): mapping between read and write attributes. {"attribute name - GET": "attribute type - POST"}
     """
     attr_types = {
-        "_created": "datetime",
         "_id": "str",
-        "address_line1": "str",
-        "address_line2": "str",
-        "address_line3": "str",
-        "available": "str",
+        "_tag": "str",
+        "addressLine1": "str",
+        "addressLine2": "str",
+        "addressLine3": "str",
         "city": "str",
-        "country_code": "str",
+        "count": "int",
+        "countryCode": "str",
         "email": "str",
         "fax": "str",
-        "hash": "str",
-        "modified": "datetime",
         "name": "str",
         "organization": "str",
         "phone": "str",
         "type": "str",
-        "zip_code": "str"
+        "zipCode": "str",
     }
 
     attr_crea = {
-        "address_line1": "str",
-        "address_line2": "str",
-        "address_line3": "str",
+        "addressLine1": "str",
+        "addressLine2": "str",
+        "addressLine3": "str",
         "city": "str",
-        "country_code": "str",
+        "countryCode": "str",
         "email": "str",
         "fax": "str",
         "name": "str",
         "organization": "str",
         "phone": "str",
-        "zip_code": "str"
+        "zipCode": "str",
     }
 
     attr_map = {
-        "created": "_created",
-        "id": "_id",
-        "modified": "_modified",
-        "address_line1": "addressLine1",
-        "address_line2": "addressLine2",
-        "address_line3": "addressLine3",
-        "available": "available",
-        "city": "city",
-        "country_code": "countryCode",
-        "email": "email",
-        "fax": "fax",
-        "hash": "hash",
-        "name": "name",
-        "organization": "organization",
-        "phone": "phone",
-        "type": "type",
-        "zipCode": "zipCode",
+        "fax": "faxNumber",
+        "organization": "organizationName",
+        "phone": "phoneNumber",
     }
 
     def __init__(
@@ -105,221 +88,196 @@ class Contact(object):
         phone: str = None,
         type: str = None,
         zipCode: str = None,
-        # swaggered
+        # auto-generated or deprecated
         created=None,
         modified=None,
-        hash=None,
     ):
         """Contact model"""
 
-        self._created = None
-        self._modified = None
-        self._address_line1 = None
-        self._address_line2 = None
-        self._address_line3 = None
+        # default values for the object attributes/properties
+        self.__id = None
+        self.__tag = None
+        self._addressLine1 = None
+        self._addressLine2 = None
+        self._addressLine3 = None
         self._available = None
         self._city = None
-        self._country_code = None
+        self._count = None
+        self._countryCode = None
         self._email = None
         self._fax = None
-        self._id = None
-        self._hash = None
         self._name = None
         self._organization = None
         self._phone = None
         self._type = None
-        self._zip_code = None
-        self.discriminator = None
+        self._zipCode = None
+        self._hash = None
+        self._created = None
+        self._modified = None
 
-        if created is not None:
-            self.created = created
+        # if values have been passed, so use them as objects attributes.
+        # attributes are prefixed by an underscore '_'
+        if _deleted is not None:
+            self._deleted = _deleted
         if _id is not None:
-            self._id = _id
-        if modified is not None:
-            self.modified = modified
+            self.__id = _id
+        if _tag is not None:
+            self.__tag = _tag
         if addressLine1 is not None:
-            self.address_line1 = addressLine1
+            self._addressLine1 = addressLine1
         if addressLine2 is not None:
-            self.address_line2 = addressLine2
+            self._addressLine2 = addressLine2
         if addressLine3 is not None:
-            self.address_line3 = addressLine3
+            self._addressLine3 = addressLine3
         if available is not None:
-            self.available = available
+            self._available = available
         if city is not None:
-            self.city = city
+            self._city = city
+        if count is not None:
+            self._count = count
         if countryCode is not None:
-            self.country_code = countryCode
+            self._countryCode = countryCode
         if email is not None:
-            self.email = email
+            self._email = email
         if fax is not None:
-            self.fax = fax
-        if hash is not None:
-            self.hash = hash
+            self._fax = fax
         if name is not None:
-            self.name = name
+            self._name = name
         if organization is not None:
-            self.organization = organization
+            self._organization = organization
+        if owner is not None:
+            self._owner = owner
         if phone is not None:
-            self.phone = phone
+            self._phone = phone
         if type is not None:
-            self.type = type
+            self._type = type
         if zipCode is not None:
-            self.zip_code = zipCode
+            self._zipCode = zipCode
+        # auto-generated or deprecated
+        if created is not None:
+            self._created = created
+        if modified is not None:
+            self._modified = modified
 
-    # -- PROPERTIES ----------
+    # -- PROPERTIES --------------------------------------------------------------------
+    # contact UUID
     @property
-    def created(self):
-        """Gets the created of this Contact.
+    def _id(self) -> str:
+        """Gets the id of this Contact.
 
-
-        :return: The created of this Contact.
-        :rtype: datetime
-        """
-        return self._created
-
-    @created.setter
-    def created(self, created):
-        """Sets the created of this Contact.
-
-
-        :param created: The created of this Contact.
-        :type: datetime
-        """
-
-        self._created = created
-
-    # object UUID
-    @property
-    def id(self):
-        """Gets the id of this Contact.  # noqa: E501
-
-
-        :return: The id of this Contact.  # noqa: E501
+        :return: The id of this Contact.
         :rtype: str
         """
-        return self._id
+        return self.__id
 
-    @id.setter
-    def id(self, id):
+    @_id.setter
+    def _id(self, _id: str):
         """Sets the id of this Contact.
 
-
-        :param id: The id of this Contact.  # noqa: E501
-        :type: str
+        :param str id: The id of this Contact.
         """
 
-        self._id = id
+        self.__id = _id
 
-    # DATES
+    # contact UUID
     @property
-    def modified(self):
-        """Gets the modified of this Contact.
+    def _tag(self) -> str:
+        """Gets the tag used for Isogeo filters of this Contact.
 
-
-        :return: The modified of this Contact.
-        :rtype: datetime
-        """
-        return self._modified
-
-    @modified.setter
-    def modified(self, modified):
-        """Sets the modified of this Contact.
-
-
-        :param modified: The modified of this Contact.
-        :type: datetime
-        """
-
-        self._modified = modified
-
-    @property
-    def address_line1(self):
-        """Gets the address_line1 of this Contact.
-
-
-        :return: The address_line1 of this Contact.
+        :return: The tag of this Contact.
         :rtype: str
         """
-        return self._address_line1
+        return self.__tag
 
-    @address_line1.setter
-    def address_line1(self, address_line1):
-        """Sets the address_line1 of this Contact.
+    @_tag.setter
+    def _tag(self, _tag: str):
+        """Sets the tag used into Isogeo filters of this Contact.
 
-
-        :param address_line1: The address_line1 of this Contact.
-        :type: str
+        :param str _tag: the tag of this Contact.
         """
 
-        self._address_line1 = address_line1
+        self.__tag = _tag
 
+    # adress first line
     @property
-    def address_line2(self):
-        """Gets the address_line2 of this Contact.
+    def addressLine1(self) -> str:
+        """Gets the id of this Contact.
 
-
-        :return: The address_line2 of this Contact.
+        :return: The id of this Contact.
         :rtype: str
         """
-        return self._address_line2
+        return self._addressLine1
 
-    @address_line2.setter
-    def address_line2(self, address_line2):
-        """Sets the address_line2 of this Contact.
+    @addressLine1.setter
+    def addressLine1(self, addressLine1: str):
+        """Sets the first line of the address of this Contact.
 
-
-        :param address_line2: The address_line2 of this Contact.
-        :type: str
+        :param str addressLine1: The first address line of this Contact.
         """
 
-        self._address_line2 = address_line2
+        self._addressLine1 = addressLine1
 
+    # adress second line
     @property
-    def address_line3(self):
-        """Gets the address_line3 of this Contact.
+    def addressLine2(self) -> str:
+        """Gets the id of this Contact.
 
-
-        :return: The address_line3 of this Contact.
+        :return: The second address line of this Contact.
         :rtype: str
         """
-        return self._address_line3
+        return self._addressLine2
 
-    @address_line3.setter
-    def address_line3(self, address_line3):
-        """Sets the address_line3 of this Contact.
+    @addressLine2.setter
+    def addressLine2(self, addressLine2: str):
+        """Sets the id of this Contact.
 
-
-        :param address_line3: The address_line3 of this Contact.
-        :type: str
+        :param str addressLine2: The second address line of this Contact.
         """
 
-        self._address_line3 = address_line3
+        self._addressLine2 = addressLine2
 
+    # adress third line
     @property
-    def available(self):
-        """Gets the available of this Contact.
+    def addressLine3(self) -> str:
+        """Gets the third address line of this Contact.
 
+        :return: The The third address line of this Contact.
+        :rtype: str
+        """
+        return self._addressLine3
 
-        :return: The available of this Contact.
+    @addressLine3.setter
+    def addressLine3(self, addressLine3: str):
+        """Sets the third address line of this Contact.
+
+        :param str addressLine3: The The third address line of this Contact.
+        """
+
+        self._addressLine3 = addressLine3
+
+    # available
+    @property
+    def available(self) -> bool:
+        """Gets the availibility of this Contact.
+
+        :return: The availibility of this Contact.
         :rtype: str
         """
         return self._available
 
     @available.setter
-    def available(self, available):
-        """Sets the available of this Contact.
+    def available(self, available: bool):
+        """Sets the availability of this Contact for edition actions.
 
-
-        :param available: The available of this Contact.
-        :type: str
+        :param str available: The availability of this Contact.
         """
 
         self._available = available
 
+    # city
     @property
-    def city(self):
+    def city(self) -> str:
         """Gets the city of this Contact.
-
 
         :return: The city of this Contact.
         :rtype: str
@@ -327,216 +285,187 @@ class Contact(object):
         return self._city
 
     @city.setter
-    def city(self, city):
+    def city(self, city: str):
         """Sets the city of this Contact.
 
-
-        :param city: The city of this Contact.
-        :type: str
+        :param str city: The city of this Contact.
         """
 
         self._city = city
 
+    # count of resource linked to the contact
     @property
-    def country_code(self):
-        """Gets the country_code of this Contact.
+    def count(self) -> int:
+        """Gets the id of this Contact.
 
-
-        :return: The country_code of this Contact.
+        :return: The id of this Contact.
         :rtype: str
         """
-        return self._country_code
+        return self._count
 
-    @country_code.setter
-    def country_code(self, country_code):
-        """Sets the country_code of this Contact.
+    @count.setter
+    def count(self, count: int):
+        """Sets the count of this Contact.
 
-
-        :param country_code: The country_code of this Contact.
-        :type: str
+        :param int count: count of associated resources to the Contact
         """
 
-        self._country_code = country_code
+        self._count = count
 
+    # country code
     @property
-    def email(self):
-        """Gets the email of this Contact.
+    def countryCode(self) -> str:
+        """Gets the id of this Contact.
 
+        :return: The id of this Contact.
+        :rtype: str
+        """
+        return self._countryCode
 
-        :return: The email of this Contact.
+    @countryCode.setter
+    def countryCode(self, countryCode: str):
+        """Sets the id of this Contact.
+
+        :param str XX: The id of this Contact.
+        """
+
+        self._countryCode = countryCode
+
+    # email
+    @property
+    def email(self) -> str:
+        """Gets the id of this Contact.
+
+        :return: The id of this Contact.
         :rtype: str
         """
         return self._email
 
     @email.setter
-    def email(self, email):
-        """Sets the email of this Contact.
+    def email(self, email: str):
+        """Sets the id of this Contact.
 
-
-        :param email: The email of this Contact.
-        :type: str
+        :param str XX: The id of this Contact.
         """
 
         self._email = email
 
+    # fax number
     @property
-    def fax(self):
-        """Gets the fax of this Contact.
+    def fax(self) -> str:
+        """Gets the id of this Contact.
 
-
-        :return: The fax of this Contact.
+        :return: The id of this Contact.
         :rtype: str
         """
         return self._fax
 
     @fax.setter
-    def fax(self, fax):
-        """Sets the fax of this Contact.
+    def fax(self, fax: str):
+        """Sets the id of this Contact.
 
-
-        :param fax: The fax of this Contact.
-        :type: str
+        :param str XX: The id of this Contact.
         """
 
         self._fax = fax
 
+    # name
     @property
-    def hash(self):
-        """Gets the hash of this Contact.
+    def name(self) -> str:
+        """Gets the id of this Contact.
 
-
-        :return: The hash of this Contact.
-        :rtype: str
-        """
-        return self._hash
-
-    @hash.setter
-    def hash(self, hash):
-        """Sets the hash of this Contact.
-
-
-        :param hash: The hash of this Contact.
-        :type: str
-        """
-
-        self._hash = hash
-
-    @property
-    def name(self):
-        """Gets the name of this Contact.
-
-
-        :return: The name of this Contact.
+        :return: The id of this Contact.
         :rtype: str
         """
         return self._name
 
     @name.setter
-    def name(self, name):
-        """Sets the name of this Contact.
+    def name(self, name: str):
+        """Sets the id of this Contact.
 
-
-        :param name: The name of this Contact.
-        :type: str
+        :param str XX: The id of this Contact.
         """
 
         self._name = name
 
+    # organization
     @property
-    def organization(self):
-        """Gets the organization of this Contact.
+    def organization(self) -> str:
+        """Gets the id of this Contact.
 
-
-        :return: The organization of this Contact.
+        :return: The id of this Contact.
         :rtype: str
         """
         return self._organization
 
     @organization.setter
-    def organization(self, organization):
-        """Sets the organization of this Contact.
+    def organization(self, organization: str):
+        """Sets the id of this Contact.
 
-
-        :param organization: The organization of this Contact.
-        :type: str
+        :param str XX: The id of this Contact.
         """
 
         self._organization = organization
 
+    # phone
     @property
-    def phone(self):
-        """Gets the phone of this Contact.
+    def phone(self) -> str:
+        """Gets the id of this Contact.
 
-
-        :return: The phone of this Contact.
+        :return: The id of this Contact.
         :rtype: str
         """
         return self._phone
 
     @phone.setter
-    def phone(self, phone):
-        """Sets the phone of this Contact.
+    def phone(self, phone: str):
+        """Sets the id of this Contact.
 
-
-        :param phone: The phone of this Contact.
-        :type: str
+        :param str XX: The id of this Contact.
         """
 
         self._phone = phone
 
+    # type
     @property
-    def type(self):
-        """Gets the type of this Contact.
+    def type(self) -> str:
+        """Gets the id of this Contact.
 
-
-        :return: The type of this Contact.
+        :return: The id of this Contact.
         :rtype: str
         """
         return self._type
 
     @type.setter
-    def type(self, type):
-        """Sets the type of this Contact.
+    def type(self, type: str):
+        """Sets the id of this Contact.
 
-
-        :param type: The type of this Contact.
-        :type: str
+        :param str XX: The id of this Contact.
         """
-        if type is None:
-            raise ValueError("Invalid value for `type`, must not be `None`")
-        allowed_values = ["custom", "group", "user"]
-        if type not in allowed_values:
-            raise ValueError(
-                "Invalid value for `type` ({0}), must be one of {1}".format(
-                    type, allowed_values
-                )
-            )
 
         self._type = type
 
+    # zipCode
     @property
-    def zip_code(self):
-        """Gets the zip_code of this Contact.
+    def zipCode(self) -> str:
+        """Gets the id of this Contact.
 
-
-        :return: The zip_code of this Contact.
+        :return: The id of this Contact.
         :rtype: str
         """
-        return self._zip_code
+        return self._zipCode
 
-    @zip_code.setter
-    def zip_code(self, zip_code):
-        """Sets the zip_code of this Contact.
+    @zipCode.setter
+    def zipCode(self, zipCode: str):
+        """Sets the id of this Contact.
 
-
-        :param zip_code: The zip_code of this Contact.
-        :type: str
+        :param str id: The id of this Contact.
         """
 
-        self._zip_code = zip_code
+        self._zipCode = zipCode
 
-    # -- METHODS ----
-    def to_dict(self):
+    # -- METHODS -----------------------------------------------------------------------
+    def to_dict(self) -> dict:
         """Returns the model properties as a dict"""
         result = {}
 
@@ -565,12 +494,16 @@ class Contact(object):
 
         return result
 
-    def to_dict_creation(self):
+    def to_dict_creation(self) -> dict:
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
         for attr, _ in self.attr_crea.items():
+            # get attribute value
             value = getattr(self, attr)
+            # switch attribute name for creation purpose
+            if attr in self.attr_map:
+                attr = self.attr_map.get(attr)
             if isinstance(value, list):
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)
