@@ -47,7 +47,10 @@ setup(
         "Isogeo API": "http://help.isogeo.com/api/"
     },
     # dependencies
-    install_requires=["requests>=2.20.0"],
+    install_requires=[
+        "requests>=2.20.0",
+        "requests-oauthlib>=1.2.0"
+        ],
     extras_require={
         "api-write": ["requests_oauthlib"],
         "dev": ["configparser"],
