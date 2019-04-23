@@ -11,7 +11,7 @@
 #
 #
 
-black
+black==19.3b0
 codecov
 coverage
 requests==2.21.*
