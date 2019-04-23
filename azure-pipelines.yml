@@ -32,11 +32,19 @@ jobs:
       pip install -U -r tests/requirements_test.txt
     displayName: 'Install dependencies'
 
+  - task: DownloadSecureFile@1
+    inputs:
+      secureFile: 'dev.env'
+
   - script: |
       pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html --cov-append tests
     env:
       ISOGEO_API_DEV_ID: $(ISOGEO_API_DEV_ID)
       ISOGEO_API_DEV_SECRET: $(ISOGEO_API_DEV_SECRET)
+      ISOGEO_API_USER_CLIENT_ID: $(ISOGEO_API_USER_CLIENT_ID)
+      ISOGEO_API_USER_CLIENT_SECRET: $(ISOGEO_API_USER_CLIENT_SECRET)
+      ISOGEO_USER_NAME: $(ISOGEO_USER_NAME)
+      ISOGEO_USER_PASSWORD: $(ISOGEO_USER_PASSWORD)
     displayName: 'Tests and coverage'
 
   - task: PublishTestResults@2
