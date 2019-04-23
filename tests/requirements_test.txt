@@ -11,7 +11,7 @@
 #
 #
 
-black==19.3b0
+autopep8
 codecov
 coverage
 requests==2.21.*
