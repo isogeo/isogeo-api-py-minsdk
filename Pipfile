@@ -16,6 +16,7 @@ python-dotenv = "*"
 setuptools = "*"
 twine = "*"
 wheel = "*"
+pylint = "*"
 
 [packages]
 requests = ">=2.20.0"
