@@ -30,12 +30,15 @@ from requests_oauthlib import OAuth2Session
 # modules
 try:
     from . import checker
-    from .models import Contact
+    from .models import Contact, Event, Link, Specification
     from . import utils
     from . import version
 except (ImportError, ValueError, SystemError):
     import checker
     from models.contact import Contact
+    from models.event import Event
+    from models.link import Link
+    from models.specification import Specification
     import utils
     from isogeo_sdk import version
 
@@ -580,10 +583,9 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return licenses_req.json()
 
-    def license(self, license_id: str, token: dict = None, prot: str = "https") -> dict:
+    def license(self, license_id: str, prot: str = "https") -> dict:
         """Get details about a specific license.
 
-        :param str token: API auth token
         :param str license_id: license UUID
         :param str prot: https [DEFAULT] or http
          (use it only for dev and tracking needs).
@@ -609,6 +611,127 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return license_req.json()
 
+    # -- SPECIFICATIONS --------------------------------------------------
+    def specification(
+        self, id_specification: str, include: list = ["count"], prot: str = "https"
+    ) -> dict:
+        """Get a specification.
+
+        :param str id_specification: specification UUID to get
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # handle include
+        # include = checker._check_filter_includes(include, "specification")
+        # handling request parameters
+        payload = {"_include": include}
+
+        # specification  search
+        specification_url = "{}{}".format(
+            utils.get_request_base_url(route="specifications"), id_specification
+        )
+
+        specification_req = self.get(
+            specification_url,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+        )
+        checker.check_api_response(specification_req)
+
+        # end of method
+        return specification_req.json()
+
+    # -- EVENTS --------------------------------------------------
+    def event(
+        self, id_metadata: str, id_event: str, prot: str = "https"
+    ) -> dict:
+        """Get an event.
+
+        :param str id_event: event UUID to get
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(id_metadata):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(id_metadata)
+            )
+        else:
+            pass
+
+        # check contact UUID
+        if not checker.check_is_uuid(id_event):
+            raise ValueError("Event ID is not a correct UUID: {}".format(id_event))
+        else:
+            pass
+
+        # request URL
+        url_event = utils.get_request_base_url(
+            route="resources/{}/events/{}".format(id_metadata, id_event)
+        )
+
+        event_req = self.get(
+            url_event,
+            headers=self.header,
+            proxies=self.proxies,
+            verify=self.ssl,
+        )
+
+        checker.check_api_response(event_req)
+
+        # add parent resource id to keep tracking
+        event_augmented = event_req.json()
+        event_augmented["parent_resource"] = id_metadata
+
+        # end of method
+        return event_augmented
+
+    # -- LINKS --------------------------------------------------
+    def link(
+        self, id_metadata: str, id_link: str, prot: str = "https"
+    ) -> dict:
+        """Get an link.
+
+        :param str id_link: link UUID to get
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(id_metadata):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(id_metadata)
+            )
+        else:
+            pass
+
+        # check contact UUID
+        if not checker.check_is_uuid(id_link):
+            raise ValueError("Link ID is not a correct UUID: {}".format(id_link))
+        else:
+            pass
+
+        # request URL
+        url_link = utils.get_request_base_url(
+            route="resources/{}/links/{}".format(id_metadata, id_link)
+        )
+
+        link_req = self.get(
+            url_link,
+            headers=self.header,
+            proxies=self.proxies,
+            verify=self.ssl,
+        )
+
+        checker.check_api_response(link_req)
+
+        # add parent resource id to keep tracking
+        link_augmented = link_req.json()
+        link_augmented["parent_resource"] = id_metadata
+
+        # end of method
+        return link_augmented
 
 # ##############################################################################
 # ##### Stand alone program ########
