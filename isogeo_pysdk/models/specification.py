@@ -22,7 +22,7 @@ class Specification(object):
     """Specifications are entities defining rules of data creation.
 
 
-    Model:
+    Sample:
 
     ```json
     {
