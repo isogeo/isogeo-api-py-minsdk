@@ -7,7 +7,7 @@
 #
 # Author:       Julien Moura @Isogeo
 #
-# Python:       3.5+
+# Python:       3.6+
 # Created:      22/12/2015
 # Updated:      10/04/2019
 # -----------------------------------------------------------------------------
@@ -29,19 +29,15 @@ from sys import platform as opersys
 from requests import ConnectionError, Session
 
 # modules
-try:
-    from . import checker
-    from . import utils
-except (ImportError, ValueError, SystemError):
-    import checker
-    import utils
+from isogeo_pysdk.checker import IsogeoChecker
+from isogeo_pysdk.utils import IsogeoUtils
 
 # ##############################################################################
 # ########## Globals ###############
 # ##################################
 
-checker = checker.IsogeoChecker()
-utils = utils.IsogeoUtils()
+checker = IsogeoChecker()
+utils = IsogeoUtils()
 version = "2.21.0"
 
 # #############################################################################

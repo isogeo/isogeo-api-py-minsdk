@@ -5,11 +5,10 @@
 # Name:         Isogeo
 # Purpose:      Python minimalist SDK to use Isogeo API
 #
-# Author:       Julien Moura (@geojulien)
+# Author:       Julien Moura (@geojulien) for Isogeo
 #
-# Python:       2.7.x
+# Python:       3.6.x
 # Created:      22/12/2015
-# Updated:      10/01/2016
 # -----------------------------------------------------------------------------
 
 # #############################################################################
@@ -28,27 +27,18 @@ from oauthlib.oauth2 import LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
 # modules
-try:
-    from . import checker
-    from .models import Contact, Event, Link, Specification, Workgroup
-    from . import utils
-    from . import version
-except (ImportError, ValueError, SystemError):
-    import checker
-    from models.contact import Contact
-    from models.event import Event
-    from models.link import Link
-    from models.specification import Specification
-    from models.workgroup import Workgroup
-    import utils
-    from isogeo_sdk import version
+from isogeo_pysdk.checker import IsogeoChecker
+from isogeo_pysdk.models import Contact, Event, Link, Specification, Workgroup
+from isogeo_pysdk.utils import IsogeoUtils
+from isogeo_pysdk import version
+
 
 # ##############################################################################
 # ########## Globals ###############
 # ##################################
 
-checker = checker.IsogeoChecker()
-utils = utils.IsogeoUtils()
+checker = IsogeoChecker()
+utils = IsogeoUtils()
 
 # #############################################################################
 # ########## Classes ###############
@@ -734,7 +724,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return link_augmented
 
-    # -- LINKS --------------------------------------------------
+    # -- WORKGROUPS --------------------------------------------------
     def workgroup(
         self, id_workgroup: str, prot: str = "https"
     ) -> dict:
