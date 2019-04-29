@@ -767,6 +767,39 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return workgroup_req.json()
 
+    def workgroup_stats(
+        self, id_workgroup: str, prot: str = "https"
+    ) -> dict:
+        """Retruns statistics for the specified workgroup.
+
+        :param str id_workgroup: workgroup UUID to get
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # check contact UUID
+        if not checker.check_is_uuid(id_workgroup):
+            raise ValueError("Workgroup ID is not a correct UUID: {}".format(id_workgroup))
+        else:
+            pass
+
+        # request URL
+        url_workgroup = utils.get_request_base_url(
+            route="/groups/{}/statistics".format(id_workgroup)
+        )
+
+        workgroup_req = self.get(
+            url_workgroup,
+            headers=self.header,
+            proxies=self.proxies,
+            verify=self.ssl,
+        )
+
+        checker.check_api_response(workgroup_req)
+
+        # end of method
+        return workgroup_req.json()
+
+
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
