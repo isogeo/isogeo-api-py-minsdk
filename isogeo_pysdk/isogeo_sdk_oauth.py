@@ -30,7 +30,7 @@ from requests_oauthlib import OAuth2Session
 # modules
 try:
     from . import checker
-    from .models import Contact, Event, Link, Specification
+    from .models import Contact, Event, Link, Specification, Workgroup
     from . import utils
     from . import version
 except (ImportError, ValueError, SystemError):
@@ -39,6 +39,7 @@ except (ImportError, ValueError, SystemError):
     from models.event import Event
     from models.link import Link
     from models.specification import Specification
+    from models.workgroup import Workgroup
     import utils
     from isogeo_sdk import version
 
@@ -732,6 +733,39 @@ class IsogeoSession(OAuth2Session):
 
         # end of method
         return link_augmented
+
+    # -- LINKS --------------------------------------------------
+    def workgroup(
+        self, id_workgroup: str, prot: str = "https"
+    ) -> dict:
+        """Get an workgroup.
+
+        :param str id_workgroup: workgroup UUID to get
+        :param str prot: https [DEFAULT] or http
+         (use it only for dev and tracking needs).
+        """
+        # check contact UUID
+        if not checker.check_is_uuid(id_workgroup):
+            raise ValueError("Workgroup ID is not a correct UUID: {}".format(id_workgroup))
+        else:
+            pass
+
+        # request URL
+        url_workgroup = utils.get_request_base_url(
+            route="/groups/{}".format(id_workgroup)
+        )
+
+        workgroup_req = self.get(
+            url_workgroup,
+            headers=self.header,
+            proxies=self.proxies,
+            verify=self.ssl,
+        )
+
+        checker.check_api_response(workgroup_req)
+
+        # end of method
+        return workgroup_req.json()
 
 # ##############################################################################
 # ##### Stand alone program ########
