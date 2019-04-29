@@ -4,6 +4,7 @@
       "eriklynd.json-tools",
       "lextudio.restructuredtext",
       "ms-python.python",
+      "ms-vscode.powershell",
       "felixrieseberg.vsc-travis-ci-status"
     ]
   }
