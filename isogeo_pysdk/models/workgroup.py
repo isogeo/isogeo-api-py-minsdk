@@ -14,6 +14,8 @@
 # standard library
 import pprint
 
+# other model
+from isogeo_pysdk.models import Contact
 
 # #############################################################################
 # ########## Classes ###############
@@ -73,7 +75,7 @@ class Workgroup(object):
         "hasCswClient": str,
         "metadataLanguage": str,
         "keywordsCasing": str,
-        "themeColor": str
+        "themeColor": str,
     }
 
     attr_crea = {
@@ -84,19 +86,13 @@ class Workgroup(object):
         "hasCswClient": str,
         "metadataLanguage": str,
         "keywordsCasing": str,
-        "themeColor": str
+        "themeColor": str,
     }
 
-    attr_map = {
-    }
+    attr_map = {}
 
     # possible values for workgroup 'keywordsCasing' attribute
-    GROUP_KEYWORDSCASING_VALUES = (
-        "capitalized",
-        "lowercase",
-        "mixedcase",
-        "uppercase"
-    )
+    GROUP_KEYWORDSCASING_VALUES = ("capitalized", "lowercase", "mixedcase", "uppercase")
 
     def __init__(
         self,
@@ -112,7 +108,7 @@ class Workgroup(object):
         hasScanFme: bool = None,
         keywordsCasing: str = None,
         metadataLanguage: str = None,
-        themeColor: str = None
+        themeColor: str = None,
     ):
         """Workgroup model"""
 
@@ -124,12 +120,11 @@ class Workgroup(object):
         self._areKeywordsRestricted = None
         self._canCreateLegacyServiceLinks = None
         self._canCreateMetadata = None
-        self._contact = None,
+        self._contact = (None,)
         self._hasCswClient = None
         self._keywordsCasing = None
         self._metadataLanguage = None
         self._themeColor = None
-
 
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
@@ -141,8 +136,6 @@ class Workgroup(object):
             self._canCreateLegacyServiceLinks = canCreateLegacyServiceLinks
         if canCreateMetadata is not None:
             self._canCreateMetadata = canCreateMetadata
-        if contact is not None:
-            self._contact = contact
         if hasCswClient is not None:
             self._hasCswClient = hasCswClient
         if keywordsCasing is not None:
@@ -151,6 +144,9 @@ class Workgroup(object):
             self._metadataLanguage = metadataLanguage
         if themeColor is not None:
             self._themeColor = themeColor
+
+        # required
+        self._contact = contact
 
     # -- PROPERTIES --------------------------------------------------------------------
     # workgroup UUID
@@ -243,8 +239,11 @@ class Workgroup(object):
     def contact(self, contact: dict):
         """Sets the contact of this Workgroup.
 
-        :param dict contact: The contact of this Workgroup. Must be one of GROUP_KIND_VALUES
+        :param dict contact: The contact of this Workgroup.
         """
+
+        if contact is None:
+            raise ValueError("Invalid value for `contact`, must not be `None`")
 
         self._contact = contact
 
@@ -413,3 +412,4 @@ class Workgroup(object):
 if __name__ == "__main__":
     """ standalone execution """
     obj = Workgroup()
+    print(obj)

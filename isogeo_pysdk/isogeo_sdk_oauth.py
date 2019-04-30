@@ -82,6 +82,10 @@ class IsogeoSession(OAuth2Session):
         self.client_secret = client_secret
         self.prot = "https"
 
+        # caching
+        self._wg_cts_emails = {}
+        self._wg_cts_names = {}
+
         # checking internet connection
         if not checker.check_internet_connection():
             raise EnvironmentError("Internet connection issue.")
@@ -317,7 +321,7 @@ class IsogeoSession(OAuth2Session):
         return resource_req.json()
 
     def contact_create(
-        self, workgroup_id: str, check_exists: int = 0, contact: object = Contact()
+        self, workgroup_id: str, check_exists: int = 1, contact: object = Contact()
     ) -> dict:
         """Add a new contact to a workgroup.
 
@@ -337,8 +341,22 @@ class IsogeoSession(OAuth2Session):
             pass
 
         # check if contact already exists in workgroup
-        if check_exists:
-            logging.debug(NotImplemented)
+        if check_exists == 1:
+            # retrieve workgroup contacts
+            if not self._wg_cts_names:
+                self.workgroup_contacts(workgroup_id=workgroup_id, include=[])
+            # check
+            if contact.name in self._wg_cts_names:
+                logging.debug("Contact with the same name already exists: {}. Use 'contact_update' instead.".format(contact.name))
+                return False
+        elif check_exists == 2:
+            # retrieve workgroup contacts
+            if not self._wg_cts_emails:
+                self.workgroup_contacts(workgroup_id=workgroup_id, include=[])
+            # check
+            if contact.email in self._wg_cts_emails:
+                logging.debug("Contact with the same email already exists: {}. Use 'contact_update' instead.".format(contact.email)) 
+                return False
 
         # build request url
         url_ct_create = utils.get_request_base_url(
@@ -725,31 +743,26 @@ class IsogeoSession(OAuth2Session):
         return link_augmented
 
     # -- WORKGROUPS --------------------------------------------------
-    def workgroup(
-        self, id_workgroup: str, prot: str = "https"
-    ) -> dict:
+    def workgroup(self, workgroup_id: str) -> dict:
         """Get an workgroup.
 
-        :param str id_workgroup: workgroup UUID to get
-        :param str prot: https [DEFAULT] or http
-         (use it only for dev and tracking needs).
+        :param str workgroup_id: workgroup UUID to get
         """
-        # check contact UUID
-        if not checker.check_is_uuid(id_workgroup):
-            raise ValueError("Workgroup ID is not a correct UUID: {}".format(id_workgroup))
+        # check UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
         else:
             pass
 
         # request URL
         url_workgroup = utils.get_request_base_url(
-            route="/groups/{}".format(id_workgroup)
+            route="/groups/{}".format(workgroup_id)
         )
 
         workgroup_req = self.get(
-            url_workgroup,
-            headers=self.header,
-            proxies=self.proxies,
-            verify=self.ssl,
+            url_workgroup, headers=self.header, proxies=self.proxies, verify=self.ssl
         )
 
         checker.check_api_response(workgroup_req)
@@ -757,31 +770,66 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return workgroup_req.json()
 
-    def workgroup_stats(
-        self, id_workgroup: str, prot: str = "https"
-    ) -> dict:
-        """Retruns statistics for the specified workgroup.
+    def workgroup_contacts(self, workgroup_id: str, include: list = ["count"], caching: bool = 1) -> dict:
+        """List workgroup contacts.
 
-        :param str id_workgroup: workgroup UUID to get
-        :param str prot: https [DEFAULT] or http
-         (use it only for dev and tracking needs).
+        :param str workgroup_id: identifier of the owner workgroup
+        :param list include: identifier of the owner workgroup
+        :param bool caching: identifier of the owner workgroup
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        payload = {"_include": include}
+
+        # handle include
+        include = checker._check_filter_includes(include, "contact")
+
+        # build request url
+        url_ct_list = utils.get_request_base_url(
+            route="groups/{}/contacts".format(workgroup_id)
+        )
+
+        wg_contacts = self.get(
+            url_ct_list,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+        )
+
+        wg_contacts = wg_contacts.json()
+
+        # if caching use or store the workgroup contacts
+        if caching and not self._wg_cts_emails and not self._wg_cts_names:
+            for i in wg_contacts:
+                self._wg_cts_emails[i.get("email")] = i.get("_id")
+                self._wg_cts_names[i.get("name")] = i.get("_id")
+
+        return wg_contacts
+
+    def workgroup_stats(self, workgroup_id: str) -> dict:
+        """Returns statistics for the specified workgroup.
+
+        :param str workgroup_id: workgroup UUID to get
         """
         # check contact UUID
-        if not checker.check_is_uuid(id_workgroup):
-            raise ValueError("Workgroup ID is not a correct UUID: {}".format(id_workgroup))
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
         else:
             pass
 
         # request URL
         url_workgroup = utils.get_request_base_url(
-            route="/groups/{}/statistics".format(id_workgroup)
+            route="/groups/{}/statistics".format(workgroup_id)
         )
 
         workgroup_req = self.get(
-            url_workgroup,
-            headers=self.header,
-            proxies=self.proxies,
-            verify=self.ssl,
+            url_workgroup, headers=self.header, proxies=self.proxies, verify=self.ssl
         )
 
         checker.check_api_response(workgroup_req)
