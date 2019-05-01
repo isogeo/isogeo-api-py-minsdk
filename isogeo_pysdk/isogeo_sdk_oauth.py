@@ -68,12 +68,13 @@ class IsogeoSession(OAuth2Session):
         state=None,
         token_updater=None,
         # custom
-        client_secret=None,
-        proxy: dict = None,
-        auth_mode: str = "user_private",
-        platform: str = "prod",
-        lang: str = "en",
         app_name: str = "isogeo-pysdk-writer/{}".format(version),
+        auth_mode: str = "user_private",
+        client_secret: str = None,
+        lang: str = "en",
+        platform: str = "prod",
+        proxy: dict = None,
+        timeout: tuple = (5, 30),
         # additional
         **kwargs,
     ):
@@ -81,6 +82,9 @@ class IsogeoSession(OAuth2Session):
         self.app_name = app_name
         self.client_secret = client_secret
         self.prot = "https"
+        self.timeout = (
+            timeout
+        )  # default timeout (see: https://2.python-requests.org/en/master/user/advanced/#timeouts)
 
         # caching
         self._wg_cts_emails = {}
@@ -220,6 +224,7 @@ class IsogeoSession(OAuth2Session):
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
+            timeout=self.timeout,
         )
         checker.check_api_response(resource_req)
 
@@ -270,7 +275,11 @@ class IsogeoSession(OAuth2Session):
         )
 
         new_md = self.post(
-            url_md_create, data=data, proxies=self.proxies, verify=self.ssl
+            url_md_create,
+            data=data,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
         )
 
         return new_md.json()
@@ -356,6 +365,7 @@ class IsogeoSession(OAuth2Session):
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
+            timeout=self.timeout,
         )
         checker.check_api_response(resource_req)
 
@@ -410,6 +420,7 @@ class IsogeoSession(OAuth2Session):
             data=contact.to_dict_creation(),
             proxies=self.proxies,
             verify=self.ssl,
+            timeout=self.timeout,
         )
 
         return new_ct.json()
@@ -482,6 +493,7 @@ class IsogeoSession(OAuth2Session):
             data=contact.to_dict_creation(),
             proxies=self.proxies,
             verify=self.ssl,
+            timeout=self.timeout,
         )
 
         return ct_update.json()
@@ -497,7 +509,11 @@ class IsogeoSession(OAuth2Session):
         # passing auth parameter
         thez_url = "{}://v1.{}.isogeo.com/thesauri".format(prot, self.api_url)
         thez_req = self.get(
-            thez_url, headers=self.header, proxies=self.proxies, verify=self.ssl
+            thez_url,
+            headers=self.header,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
         )
 
         # checking response
@@ -532,6 +548,7 @@ class IsogeoSession(OAuth2Session):
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
+            timeout=self.timeout,
         )
 
         # checking response
@@ -592,6 +609,7 @@ class IsogeoSession(OAuth2Session):
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
+            timeout=self.timeout,
         )
 
         # checking response
@@ -624,6 +642,7 @@ class IsogeoSession(OAuth2Session):
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
+            timeout=self.timeout,
         )
 
         # checking response
@@ -654,6 +673,7 @@ class IsogeoSession(OAuth2Session):
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
+            timeout=self.timeout,
         )
 
         # checking response
@@ -688,6 +708,7 @@ class IsogeoSession(OAuth2Session):
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
+            timeout=self.timeout,
         )
         checker.check_api_response(specification_req)
 
@@ -728,6 +749,7 @@ class IsogeoSession(OAuth2Session):
             headers=self.header,
             proxies=self.proxies,
             verify=self.ssl,
+            timeout=self.timeout,
         )
 
         checker.check_api_response(event_req)
@@ -773,6 +795,7 @@ class IsogeoSession(OAuth2Session):
             headers=self.header,
             proxies=self.proxies,
             verify=self.ssl,
+            timeout=self.timeout,
         )
 
         checker.check_api_response(link_req)
@@ -804,7 +827,11 @@ class IsogeoSession(OAuth2Session):
         )
 
         workgroup_req = self.get(
-            url_workgroup, headers=self.header, proxies=self.proxies, verify=self.ssl
+            url_workgroup,
+            headers=self.header,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
         )
 
         checker.check_api_response(workgroup_req)
@@ -883,6 +910,7 @@ class IsogeoSession(OAuth2Session):
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
+            timeout=self.timeout,
         )
 
         wg_contacts = wg_contacts.json()
@@ -914,7 +942,11 @@ class IsogeoSession(OAuth2Session):
         )
 
         workgroup_req = self.get(
-            url_workgroup, headers=self.header, proxies=self.proxies, verify=self.ssl
+            url_workgroup,
+            headers=self.header,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
         )
 
         checker.check_api_response(workgroup_req)
