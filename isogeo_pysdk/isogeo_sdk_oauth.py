@@ -89,7 +89,6 @@ class IsogeoSession(OAuth2Session):
 
         self.app_name = app_name
         self.client_secret = client_secret
-        self.prot = "https"
         self.timeout = (
             timeout
         )  # default timeout (see: https://2.python-requests.org/en/master/user/advanced/#timeouts)
@@ -197,19 +196,13 @@ class IsogeoSession(OAuth2Session):
 
     # -- METADATA = RESOURCE --------------------------------------------------
     def resource(
-        self,
-        id_resource: str = None,
-        subresource=None,
-        include: list = [],
-        prot: str = "https",
+        self, resource_id: str = None, subresource=None, include: list = []
     ) -> dict:
         """Get complete or partial metadata about one specific resource.
 
         :param str id_resource: metadata UUID to get
         :param list include: subresources that should be included.
          Must be a list of strings. Available values: 'isogeo.SUBRESOURCES'
-        :param str prot: https [DEFAULT] or http
-         (use it only for dev and tracking needs).
         """
         # if subresource route
         if isinstance(subresource, str):
@@ -223,7 +216,7 @@ class IsogeoSession(OAuth2Session):
         payload = {"id": id_resource, "_include": include}
         # resource search
         md_url = "{}{}{}".format(
-            utils.get_request_base_url(route="resources"), id_resource, subresource
+            utils.get_request_base_url(route="resources"), resource_id, subresource
         )
 
         resource_req = self.get(
@@ -278,8 +271,9 @@ class IsogeoSession(OAuth2Session):
             "series": series,
         }
 
-        url_md_create = "{}://v1.{}.isogeo.com/groups/{}/resources/".format(
-            self.prot, self.api_url, workgroup_id
+        # resource route
+        url_md_create = utils.get_request_base_url(
+            route="groups/{}/resources/".format(workgroup_id)
         )
 
         new_md = self.post(
@@ -297,8 +291,9 @@ class IsogeoSession(OAuth2Session):
 
         :param str resource_id: identifier of the resource to delete
         """
-        url_md_del = "{}://{}.isogeo.com/resources/{}".format(
-            self.prot, self.api_url, resource_id
+        # resource route
+        url_md_del = utils.get_request_base_url(
+            route="resources/{}".format(resource_id)
         )
 
         md_deletion = self.delete(url_md_del)
@@ -348,14 +343,10 @@ class IsogeoSession(OAuth2Session):
         return req.json()
 
     # -- CONTACTS --------------------------------------------------
-    def contact(
-        self, id_contact: str, include: list = ["count"], prot: str = "https"
-    ) -> dict:
+    def contact(self, contact_id: str, include: list = ["count"]) -> dict:
         """Get a contact.
 
-        :param str id_contact: contact UUID to get
-        :param str prot: https [DEFAULT] or http
-         (use it only for dev and tracking needs).
+        :param str contact_id: contact UUID to get
         """
         # handle include
         include = checker._check_filter_includes(include, "contact")
@@ -507,17 +498,15 @@ class IsogeoSession(OAuth2Session):
         return ct_update.json()
 
     # -- KEYWORDS -----------------------------------------------------------
-    def thesauri(self, token: dict = None, prot: str = "https") -> dict:
-        """Get list of available thesauri.
-
-        :param str token: API auth token
-        :param str prot: https [DEFAULT] or http
-         (use it only for dev and tracking needs).
+    def thesauri(self) -> dict:
+        """Get available thesauri.
         """
-        # passing auth parameter
-        thez_url = "{}://v1.{}.isogeo.com/thesauri".format(prot, self.api_url)
+        # request URL
+        url_thesauri = utils.get_request_base_url(route="thesauri")
+
+        # request
         thez_req = self.get(
-            thez_url,
+            url_thesauri,
             headers=self.header,
             proxies=self.proxies,
             verify=self.ssl,
@@ -530,15 +519,9 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return thez_req.json()
 
-    def thesaurus(
-        self,
-        token: dict = None,
-        thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
-        prot: str = "https",
-    ) -> dict:
+    def thesaurus(self, thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8") -> dict:
         """Get a thesaurus.
 
-        :param str token: API auth token
         :param str thez_id: thesaurus UUID
         :param str prot: https [DEFAULT] or http
          (use it only for dev and tracking needs).
@@ -546,12 +529,12 @@ class IsogeoSession(OAuth2Session):
         # handling request parameters
         payload = {"tid": thez_id}
 
-        # passing auth parameter
-        thez_url = "{}://v1.{}.isogeo.com/thesauri/{}".format(
-            prot, self.api_url, thez_id
-        )
+        # request url
+        url_thesaurus = utils.get_request_base_url(route="thesauri/{}".format(thez_id))
+
+        # request
         thez_req = self.get(
-            thez_url,
+            url_thesaurus,
             headers=self.header,
             params=payload,
             proxies=self.proxies,
@@ -567,7 +550,6 @@ class IsogeoSession(OAuth2Session):
 
     def keywords(
         self,
-        token: dict = None,
         thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
         query: str = "",
         offset: int = 0,
@@ -577,11 +559,9 @@ class IsogeoSession(OAuth2Session):
         specific_md: list = [],
         specific_tag: list = [],
         include: list = [],
-        prot: str = "https",
     ) -> dict:
         """Search for keywords within a specific thesaurus.
 
-        :param str token: API auth token
         :param str thez_id: thesaurus UUID
         :param str query: search terms, equivalent of **q** parameter in API.
         :param int offset: offset to start page size from a specific results index
@@ -599,7 +579,12 @@ class IsogeoSession(OAuth2Session):
         :param int page_size: limits the number of results. Default: 20.
         :param list specific_md: list of metadata UUIDs to filter on
         :param list specific_tag: list of tags UUIDs to filter on
-        :param list include: subresources that should be returned.
+        :param list include: subresources that should be returned. Available values:
+
+          * '_abilities'
+          * 'count'
+          * 'thesaurus'
+
         """
         # specific resources specific parsing
         specific_md = checker._check_filter_specific_md(specific_md)
@@ -621,13 +606,13 @@ class IsogeoSession(OAuth2Session):
             "q": query,
         }
 
-        # search request
-        keywords_url = "{}://v1.{}.isogeo.com/thesauri/{}/keywords/search".format(
-            prot, self.api_url, thez_id
+        # keywords route
+        url_keywords = utils.get_request_base_url(
+            route="thesauri/{}/keywords/search".format(thez_id)
         )
 
         kwds_req = self.get(
-            keywords_url,
+            url=url_keywords,
             headers=self.header,
             params=payload,
             proxies=self.proxies,
@@ -701,23 +686,20 @@ class IsogeoSession(OAuth2Session):
         return license_req.json()
 
     # -- SPECIFICATIONS --------------------------------------------------
-    def specification(
-        self, id_specification: str, include: list = ["count"], prot: str = "https"
-    ) -> dict:
+    def specification(self, specification_id: str, include: list = ["count"]) -> dict:
         """Get a specification.
 
-        :param str id_specification: specification UUID to get
-        :param str prot: https [DEFAULT] or http
-         (use it only for dev and tracking needs).
+        :param str specification_id: specification UUID to get
         """
         # handle include
         # include = checker._check_filter_includes(include, "specification")
+
         # handling request parameters
         payload = {"_include": include}
 
-        # specification  search
+        # specification route
         specification_url = "{}{}".format(
-            utils.get_request_base_url(route="specifications"), id_specification
+            utils.get_request_base_url(route="specifications"), specification_id
         )
 
         specification_req = self.get(
@@ -734,19 +716,15 @@ class IsogeoSession(OAuth2Session):
         return specification_req.json()
 
     # -- EVENTS --------------------------------------------------
-    def event(
-        self, id_metadata: str, id_event: str, prot: str = "https"
-    ) -> dict:
+    def event(self, metadata_id: str, event_id: str) -> dict:
         """Get an event.
 
-        :param str id_event: event UUID to get
-        :param str prot: https [DEFAULT] or http
-         (use it only for dev and tracking needs).
+        :param str event_id: event UUID to get
         """
         # check metadata UUID
-        if not checker.check_is_uuid(id_metadata):
+        if not checker.check_is_uuid(metadata_id):
             raise ValueError(
-                "Metadata ID is not a correct UUID: {}".format(id_metadata)
+                "Metadata ID is not a correct UUID: {}".format(metadata_id)
             )
         else:
             pass
@@ -759,7 +737,7 @@ class IsogeoSession(OAuth2Session):
 
         # request URL
         url_event = utils.get_request_base_url(
-            route="resources/{}/events/{}".format(id_metadata, id_event)
+            route="resources/{}/events/{}".format(metadata_id, event_id)
         )
 
         event_req = self.get(
@@ -780,14 +758,10 @@ class IsogeoSession(OAuth2Session):
         return event_augmented
 
     # -- LINKS --------------------------------------------------
-    def link(
-        self, id_metadata: str, id_link: str, prot: str = "https"
-    ) -> dict:
+    def link(self, metadata_id: str, link_id: str) -> dict:
         """Get an link.
 
-        :param str id_link: link UUID to get
-        :param str prot: https [DEFAULT] or http
-         (use it only for dev and tracking needs).
+        :param str link_id: link UUID to get
         """
         # check metadata UUID
         if not checker.check_is_uuid(id_metadata):
@@ -805,7 +779,7 @@ class IsogeoSession(OAuth2Session):
 
         # request URL
         url_link = utils.get_request_base_url(
-            route="resources/{}/links/{}".format(id_metadata, id_link)
+            route="resources/{}/links/{}".format(metadata_id, link_id)
         )
 
         link_req = self.get(
