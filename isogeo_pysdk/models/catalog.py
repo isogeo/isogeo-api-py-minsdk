@@ -83,16 +83,17 @@ class Catalog(object):
         "_created": str,
         "_id": str,
         "_modified": str,
+        "_tag": str,
         "code": str,
-        "count": str,
+        "count": int,
         "name": str,
         "owner": Workgroup,
-        "scan": str,
+        "scan": bool,
     }
 
-    attr_crea = {"name": str, "$scan": bool}
+    attr_crea = {"name": str, "scan": bool}
 
-    attr_map = {"scan": "$scan"}
+    attr_map = {"scan": "IsScanSink"}
 
     def __init__(
         self,
@@ -110,6 +111,7 @@ class Catalog(object):
         """Catalog model"""
 
         # default values for the object attributes/properties
+        self.__abilities = None
         self.__created = None
         self.__id = None
         self.__modified = None
@@ -122,8 +124,16 @@ class Catalog(object):
 
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
+        if _abilities is not None:
+            self.__abilities = _abilities
+        if _created is not None:
+            self.__created = _created
         if _id is not None:
             self.__id = _id
+        if _modified is not None:
+            self.__modified = _modified
+        if _tag is not None:
+            self.__tag = _tag
         if code is not None:
             self._code = code
         if count is not None:
@@ -137,6 +147,26 @@ class Catalog(object):
         self._owner = owner
 
     # -- PROPERTIES --------------------------------------------------------------------
+    # catalog abilities
+    @property
+    def _abilities(self) -> str:
+        """Gets the abilities of this Catalog.
+
+        :return: The abilities of this Catalog.
+        :rtype: str
+        """
+        return self.__abilities
+
+    # catalog creation date
+    @property
+    def _created(self) -> str:
+        """Gets the created of this Catalog.
+
+        :return: The created of this Catalog.
+        :rtype: str
+        """
+        return self.__created
+
     # catalog UUID
     @property
     def _id(self) -> str:
@@ -155,6 +185,26 @@ class Catalog(object):
         """
 
         self.__id = _id
+
+    # catalog last modification date
+    @property
+    def _modified(self) -> str:
+        """Gets the modified of this Catalog.
+
+        :return: The modified of this Catalog.
+        :rtype: str
+        """
+        return self.__modified
+
+    # catalog tag for search
+    @property
+    def _tag(self) -> str:
+        """Gets the tag of this Catalog.
+
+        :return: The tag of this Catalog.
+        :rtype: str
+        """
+        return self.__tag
 
     # code
     @property
@@ -236,11 +286,11 @@ class Catalog(object):
 
     # scan
     @property
-    def scan(self) -> str:
+    def scan(self) -> bool:
         """Gets the scan of this Catalog.
 
         :return: The scan of this Catalog.
-        :rtype: str
+        :rtype: bool
         """
         return self._scan
 
@@ -248,7 +298,7 @@ class Catalog(object):
     def scan(self, scan: bool):
         """Sets the scan of this Catalog.
 
-        :param str scan: The scan of this Catalog. Must be one of GROUP_KIND_VALUES
+        :param bool scan: The scan of this Catalog. Must be one of GROUP_KIND_VALUES
         """
 
         self._scan = scan
@@ -293,7 +343,9 @@ class Catalog(object):
             # switch attribute name for creation purpose
             if attr in self.attr_map:
                 attr = self.attr_map.get(attr)
+            # process value depending on attr type
             if isinstance(value, list):
+                
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)
                 )
@@ -341,5 +393,8 @@ class Catalog(object):
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    cat = Catalog()
-    print(cat)
+    cat = Catalog(name="youpi", scan=1)
+    to_crea = cat.to_dict_creation()
+    print(type(to_crea.get('IsScanSink')))
+
+    

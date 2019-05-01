@@ -344,8 +344,93 @@ class IsogeoSession(OAuth2Session):
         )
         checker.check_api_response(req)
 
+        # handle bad JSON attribute
+        catalog = req.json()
+        catalog["scan"] = catalog.pop("$scan")
+
         # end of method
-        return req.json()
+        return catalog
+
+    def catalog_create(
+        self, workgroup_id: str, check_exists: bool = 1, catalog: object = Catalog()
+    ) -> dict:
+        """Add a new catalog to a workgroup.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param int check_exists: check if a catalog already exists inot the workgroup:
+
+        - 0 = no check
+        - 1 = compare name [DEFAULT]
+
+        :param class catalog: Catalog model object to create
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        # check if catalog already exists in workgroup
+        if check_exists:
+            # retrieve workgroup catalogs
+            if not self._wg_cats_names:
+                self.workgroup_catalogs(workgroup_id=workgroup_id, include=[])
+            # check
+            if catalog.name in self._wg_cats_names:
+                logging.debug(
+                    "Catalog with the same name already exists: {}. Use 'catalog_update' instead.".format(
+                        catalog.name
+                    )
+                )
+                return False
+
+        # build request url
+        url_cat_create = utils.get_request_base_url(
+            route="groups/{}/catalogs".format(workgroup_id)
+        )
+
+        new_cat = self.post(
+            url_cat_create,
+            data=catalog.to_dict_creation(),
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+
+        # handle bad JSON attribute
+        catalog = new_cat.json()
+        catalog["scan"] = catalog.pop("$scan")
+
+        return catalog
+
+    def catalog_delete(self, workgroup_id: str, catalog_id: str) -> dict:
+        """Delete a catalog from Isogeo database.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param str catalog_id: identifier of the catalog to delete
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # check catalog UUID
+        if not checker.check_is_uuid(catalog_id):
+            raise ValueError("Catalog ID is not a correct UUID: {}".format(catalog_id))
+        else:
+            pass
+
+        # request URL
+        url_cat_delete = utils.get_request_base_url(
+            route="groups/{}/catalogs/{}".format(workgroup_id, catalog_id)
+        )
+
+        cat_deletion = self.delete(url_cat_delete)
+
+        return cat_deletion
 
     # -- CONTACTS --------------------------------------------------
     def contact(self, contact_id: str, include: list = ["count"]) -> dict:
