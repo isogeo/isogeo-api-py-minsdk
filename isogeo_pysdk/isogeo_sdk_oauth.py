@@ -384,8 +384,8 @@ class IsogeoSession(OAuth2Session):
         :param str workgroup_id: identifier of the owner workgroup
         :param int check_exists: check if a contact already exists inot the workgroup:
 
-        - 0 = no check [DEFAULT]
-        - 1 = compare name
+        - 0 = no check
+        - 1 = compare name [DEFAULT]
         - 2 = compare email
 
         :param class contact: Contact model object to create

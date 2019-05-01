@@ -40,6 +40,7 @@ class Contact(object):
         "countryCode": "str",
         "email": "str",
         "fax": "str",
+        "hash": "str",
         "name": "str",
         "organization": "str",
         "phone": "str",
@@ -82,6 +83,7 @@ class Contact(object):
         countryCode: str = None,
         email: str = None,
         fax: str = None,
+        hash: str = None,
         name: str = None,
         organization: str = None,
         owner: dict = None,
@@ -106,6 +108,7 @@ class Contact(object):
         self._countryCode = None
         self._email = None
         self._fax = None
+        self._hash = None
         self._name = None
         self._organization = None
         self._phone = None
@@ -141,6 +144,8 @@ class Contact(object):
             self._email = email
         if fax is not None:
             self._fax = fax
+        if hash is not None:
+            self._hash = hash
         if name is not None:
             self._name = name
         if organization is not None:
@@ -315,18 +320,18 @@ class Contact(object):
     # country code
     @property
     def countryCode(self) -> str:
-        """Gets the id of this Contact.
+        """Gets the country code of this Contact.
 
-        :return: The id of this Contact.
+        :return: The country code of this Contact.
         :rtype: str
         """
         return self._countryCode
 
     @countryCode.setter
     def countryCode(self, countryCode: str):
-        """Sets the id of this Contact.
+        """Sets the country code of this Contact.
 
-        :param str XX: The id of this Contact.
+        :param str countryCode: The country code of this Contact.
         """
 
         self._countryCode = countryCode
@@ -334,18 +339,18 @@ class Contact(object):
     # email
     @property
     def email(self) -> str:
-        """Gets the id of this Contact.
+        """Gets the email of this Contact.
 
-        :return: The id of this Contact.
+        :return: The email of this Contact.
         :rtype: str
         """
         return self._email
 
     @email.setter
     def email(self, email: str):
-        """Sets the id of this Contact.
+        """Sets the email of this Contact.
 
-        :param str XX: The id of this Contact.
+        :param str email: The id of this Contact.
         """
 
         self._email = email
@@ -353,37 +358,56 @@ class Contact(object):
     # fax number
     @property
     def fax(self) -> str:
-        """Gets the id of this Contact.
+        """Gets the fax of this Contact.
 
-        :return: The id of this Contact.
+        :return: The fax of this Contact.
         :rtype: str
         """
         return self._fax
 
     @fax.setter
     def fax(self, fax: str):
-        """Sets the id of this Contact.
+        """Sets the fax of this Contact.
 
-        :param str XX: The id of this Contact.
+        :param str XX: The fax of this Contact.
         """
 
         self._fax = fax
 
+    # hash
+    @property
+    def hash(self) -> str:
+        """Gets the hash of this Contact.
+
+        :return: The hash of this Contact.
+        :rtype: str
+        """
+        return self._hash
+
+    @hash.setter
+    def hash(self, hash: str):
+        """Sets the hash of this Contact.
+
+        :param str XX: The hash of this Contact.
+        """
+
+        self._hash = hash
+
     # name
     @property
     def name(self) -> str:
-        """Gets the id of this Contact.
+        """Gets the name of this Contact.
 
-        :return: The id of this Contact.
+        :return: The name of this Contact.
         :rtype: str
         """
         return self._name
 
     @name.setter
     def name(self, name: str):
-        """Sets the id of this Contact.
+        """Sets the name of this Contact.
 
-        :param str XX: The id of this Contact.
+        :param str name: The name of this Contact.
         """
 
         self._name = name
