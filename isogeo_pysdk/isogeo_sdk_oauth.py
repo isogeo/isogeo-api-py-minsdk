@@ -583,8 +583,23 @@ class IsogeoSession(OAuth2Session):
 
         :param str token: API auth token
         :param str thez_id: thesaurus UUID
-        :param str prot: https [DEFAULT] or http
-         (use it only for dev and tracking needs).
+        :param str query: search terms, equivalent of **q** parameter in API.
+        :param int offset: offset to start page size from a specific results index
+        :param str order_by: sorting results. Available values:
+
+          * 'count.group': metadata creation date [DEFAULT if relevance is null]
+          * 'count.isogeo': metadata last update
+          * 'text': alphabetical order
+
+        :param str order_dir: sorting direction. Available values:
+
+          * 'desc': descending [DEFAULT]
+          * 'asc': ascending
+
+        :param int page_size: limits the number of results. Default: 20.
+        :param list specific_md: list of metadata UUIDs to filter on
+        :param list specific_tag: list of tags UUIDs to filter on
+        :param list include: subresources that should be returned.
         """
         # specific resources specific parsing
         specific_md = checker._check_filter_specific_md(specific_md)
