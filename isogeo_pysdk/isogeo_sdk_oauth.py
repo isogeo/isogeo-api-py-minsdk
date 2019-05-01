@@ -28,7 +28,7 @@ from requests_oauthlib import OAuth2Session
 
 # modules
 from isogeo_pysdk.checker import IsogeoChecker
-from isogeo_pysdk.models import Contact, Event, Link, Specification, Workgroup
+from isogeo_pysdk.models import Catalog, Contact, Event, Link, Specification, Workgroup
 from isogeo_pysdk.utils import IsogeoUtils
 from isogeo_pysdk import version
 
@@ -287,6 +287,48 @@ class IsogeoSession(OAuth2Session):
         md_deletion = self.delete(url_md_del)
 
         return md_deletion
+
+    # -- CATALOGS --------------------------------------------------
+    def catalog(
+        self, workgroup_id: str, catalog_id: str, include: list = ["count"]
+    ) -> dict:
+        """Get a catalog of a workgroup.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param str catalog_id: catalog UUID to get
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # handle include
+        # include = checker._check_filter_includes(include, "catalog")
+
+        # handling request parameters
+        payload = {"_include": include}
+
+        # catalog get url
+        url_catalog = utils.get_request_base_url(
+            route="groups/{}/catalogs/{}".format(workgroup_id, catalog_id)
+        )
+
+        # request
+        req = self.get(
+            url_catalog,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+        checker.check_api_response(req)
+
+        # end of method
+        return req.json()
 
     # -- CONTACTS --------------------------------------------------
     def contact(
@@ -770,12 +812,55 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return workgroup_req.json()
 
-    def workgroup_contacts(self, workgroup_id: str, include: list = ["count"], caching: bool = 1) -> dict:
+    def workgroup_catalogs(
+        self, workgroup_id: str, include: list = ["count"], caching: bool = 1
+    ) -> dict:
+        """List workgroup catalogs.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param list include: identifier of the owner workgroup
+        :param bool caching: option to cache the response
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        payload = {"_include": include}
+
+        # handle include
+        # include = checker._check_filter_includes(include, "catalog")
+
+        # build request url
+        url_ct_list = utils.get_request_base_url(
+            route="groups/{}/catalogs".format(workgroup_id)
+        )
+
+        wg_catalogs = self.get(
+            url_ct_list,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+
+        wg_catalogs = wg_catalogs.json()
+
+        # if caching use or store the workgroup catalogs
+        if caching and not self._wg_cats_names:
+            self._wg_cats_names = {i.get("name"): i.get("_id") for i in wg_catalogs}
+
+        return wg_catalogs
+
+    def workgroup_contacts(
+        self, workgroup_id: str, include: list = ["count"], caching: bool = 1
+    ) -> dict:
         """List workgroup contacts.
 
         :param str workgroup_id: identifier of the owner workgroup
         :param list include: identifier of the owner workgroup
-        :param bool caching: identifier of the owner workgroup
+        :param bool caching: option to cache the response
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
