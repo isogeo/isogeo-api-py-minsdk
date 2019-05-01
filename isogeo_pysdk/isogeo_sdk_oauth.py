@@ -94,8 +94,9 @@ class IsogeoSession(OAuth2Session):
         )  # default timeout (see: https://2.python-requests.org/en/master/user/advanced/#timeouts)
 
         # caching
-        self._wg_cts_emails = {}
-        self._wg_cts_names = {}
+        self._wg_cts_emails = {}  # workgroup contacts by emails
+        self._wg_cts_names = {}  # workgroup contacts by names
+        self._wg_cats_names = {}  # workgroup catalogs by names
 
         # checking internet connection
         if not checker.check_internet_connection():
@@ -200,7 +201,7 @@ class IsogeoSession(OAuth2Session):
     ) -> dict:
         """Get complete or partial metadata about one specific resource.
 
-        :param str id_resource: metadata UUID to get
+        :param str resource_id: metadata UUID to get
         :param list include: subresources that should be included.
          Must be a list of strings. Available values: 'isogeo.SUBRESOURCES'
         """
@@ -213,7 +214,7 @@ class IsogeoSession(OAuth2Session):
             include = checker._check_filter_includes(include)
 
         # handling request parameters
-        payload = {"id": id_resource, "_include": include}
+        payload = {"id": resource_id, "_include": include}
         # resource search
         md_url = "{}{}{}".format(
             utils.get_request_base_url(route="resources"), resource_id, subresource
@@ -248,14 +249,15 @@ class IsogeoSession(OAuth2Session):
         workgroup_id: str,
         resource_type: str,
         title: str,
-        abstract: str,
+        abstract: str = None,
         series: bool = 0,
     ) -> dict:
         """Create a metadata from Isogeo database.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param str resource_type: type of metadata to create. Must be one of...
-        :param str title: title of metadata to create
+        :param str resource_type: data type. Must be one of...
+        :param str title: title
+        :param str abstract: abstract (description)
         :param bool series: set if metadata is a series or not
         """
         # check metadata UUID
@@ -264,6 +266,7 @@ class IsogeoSession(OAuth2Session):
         else:
             pass
 
+        # prepare metadata
         data = {
             "title": title,
             "abstract": abstract,
@@ -276,6 +279,7 @@ class IsogeoSession(OAuth2Session):
             route="groups/{}/resources/".format(workgroup_id)
         )
 
+        # request
         new_md = self.post(
             url_md_create,
             data=data,
@@ -296,6 +300,7 @@ class IsogeoSession(OAuth2Session):
             route="resources/{}".format(resource_id)
         )
 
+        # request
         md_deletion = self.delete(url_md_del)
 
         return md_deletion
@@ -323,7 +328,7 @@ class IsogeoSession(OAuth2Session):
         # handling request parameters
         payload = {"_include": include}
 
-        # catalog get url
+        # catalog route
         url_catalog = utils.get_request_base_url(
             route="groups/{}/catalogs/{}".format(workgroup_id, catalog_id)
         )
@@ -355,7 +360,7 @@ class IsogeoSession(OAuth2Session):
 
         # contact  search
         contact_url = "{}{}".format(
-            utils.get_request_base_url(route="contacts"), id_contact
+            utils.get_request_base_url(route="contacts"), contact_id
         )
 
         resource_req = self.get(
@@ -398,7 +403,11 @@ class IsogeoSession(OAuth2Session):
                 self.workgroup_contacts(workgroup_id=workgroup_id, include=[])
             # check
             if contact.name in self._wg_cts_names:
-                logging.debug("Contact with the same name already exists: {}. Use 'contact_update' instead.".format(contact.name))
+                logging.debug(
+                    "Contact with the same name already exists: {}. Use 'contact_update' instead.".format(
+                        contact.name
+                    )
+                )
                 return False
         elif check_exists == 2:
             # retrieve workgroup contacts
@@ -406,7 +415,11 @@ class IsogeoSession(OAuth2Session):
                 self.workgroup_contacts(workgroup_id=workgroup_id, include=[])
             # check
             if contact.email in self._wg_cts_emails:
-                logging.debug("Contact with the same email already exists: {}. Use 'contact_update' instead.".format(contact.email)) 
+                logging.debug(
+                    "Contact with the same email already exists: {}. Use 'contact_update' instead.".format(
+                        contact.email
+                    )
+                )
                 return False
 
         # build request url
@@ -523,8 +536,6 @@ class IsogeoSession(OAuth2Session):
         """Get a thesaurus.
 
         :param str thez_id: thesaurus UUID
-        :param str prot: https [DEFAULT] or http
-         (use it only for dev and tracking needs).
         """
         # handling request parameters
         payload = {"tid": thez_id}
@@ -611,6 +622,7 @@ class IsogeoSession(OAuth2Session):
             route="thesauri/{}/keywords/search".format(thez_id)
         )
 
+        # request
         kwds_req = self.get(
             url=url_keywords,
             headers=self.header,
@@ -702,6 +714,7 @@ class IsogeoSession(OAuth2Session):
             utils.get_request_base_url(route="specifications"), specification_id
         )
 
+        # request
         specification_req = self.get(
             specification_url,
             headers=self.header,
@@ -730,8 +743,8 @@ class IsogeoSession(OAuth2Session):
             pass
 
         # check contact UUID
-        if not checker.check_is_uuid(id_event):
-            raise ValueError("Event ID is not a correct UUID: {}".format(id_event))
+        if not checker.check_is_uuid(event_id):
+            raise ValueError("Event ID is not a correct UUID: {}".format(event_id))
         else:
             pass
 
@@ -752,7 +765,7 @@ class IsogeoSession(OAuth2Session):
 
         # add parent resource id to keep tracking
         event_augmented = event_req.json()
-        event_augmented["parent_resource"] = id_metadata
+        event_augmented["parent_resource"] = metadata_id
 
         # end of method
         return event_augmented
@@ -764,16 +777,16 @@ class IsogeoSession(OAuth2Session):
         :param str link_id: link UUID to get
         """
         # check metadata UUID
-        if not checker.check_is_uuid(id_metadata):
+        if not checker.check_is_uuid(metadata_id):
             raise ValueError(
-                "Metadata ID is not a correct UUID: {}".format(id_metadata)
+                "Metadata ID is not a correct UUID: {}".format(metadata_id)
             )
         else:
             pass
 
         # check contact UUID
-        if not checker.check_is_uuid(id_link):
-            raise ValueError("Link ID is not a correct UUID: {}".format(id_link))
+        if not checker.check_is_uuid(link_id):
+            raise ValueError("Link ID is not a correct UUID: {}".format(link_id))
         else:
             pass
 
@@ -794,7 +807,7 @@ class IsogeoSession(OAuth2Session):
 
         # add parent resource id to keep tracking
         link_augmented = link_req.json()
-        link_augmented["parent_resource"] = id_metadata
+        link_augmented["parent_resource"] = metadata_id
 
         # end of method
         return link_augmented
