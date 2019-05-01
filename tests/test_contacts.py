@@ -54,7 +54,6 @@ class TestContacts(unittest.TestCase):
 
     if not app_script_id or not app_script_secret:
         logging.critical("No API credentials set as env variables.")
-        print(environ.keys())
         exit()
     else:
         pass
@@ -87,7 +86,7 @@ class TestContacts(unittest.TestCase):
 
     # -- ALL APPS ------------------------------------------------------------
     def test_contacts_create_basic(self):
-        """GET :groups/{workgroup_uuid}/contacts/{contact_uuid}"""
+        """POST :groups/{workgroup_uuid}/contacts/}"""
         ct = Contact(name="TEST_UNIT_AUTO {}".format(self.datestamp))
         new_ct = self.isogeo.contact_create(workgroup_id=workgroup_test, contact=ct)
 
@@ -97,6 +96,98 @@ class TestContacts(unittest.TestCase):
 
         # add created contact to deletion
         self.li_contacts_to_delete.append(new_ct.get("_id"))
+
+    def test_contacts_create_complete(self):
+        """POST :groups/{workgroup_uuid}/contacts/}"""
+        ct = Contact(
+            addressLine1="26 rue du faubourg Saint-Antoine",
+            addressLine2="4è étage",
+            addressLine3="Porte rouge",
+            name="TEST_UNIT_AUTO {}".format(self.datestamp),
+            city="Paris",
+            email="test@isogeo.fr",
+            fax="+33987654321",
+            organization="Isogeo",
+            phone="+33789456123",
+            countryCode="FR",
+            zipCode="75012",
+        )
+        new_ct = self.isogeo.contact_create(workgroup_id=workgroup_test, contact=ct)
+
+        # checks
+        self.assertEqual(new_ct.get("name"), "TEST_UNIT_AUTO {}".format(self.datestamp))
+        self.assertEqual(new_ct.get("type"), "custom")
+        self.assertTrue(self.isogeo.contact_exists(new_ct.get("_id")))
+
+        # add created contact to deletion
+        self.li_contacts_to_delete.append(new_ct.get("_id"))
+
+    def test_contacts_create_checking_name(self):
+        """POST :groups/{workgroup_uuid}/contacts/}"""
+        # create a contact
+        ct = Contact(
+            name="TEST_UNIT_AUTO {}".format(self.datestamp),
+            email="test@isogeo.fr",
+        )
+        new_ct_1 = self.isogeo.contact_create(
+            workgroup_id=workgroup_test,
+            check_exists=0,
+            contact=ct
+        )
+        # try to create a contact with the same email = False
+        ct = Contact(
+            name="TEST_UNIT_AUTO {}".format(self.datestamp),
+            email="test2@isogeo.fr",
+        )
+        new_ct_2 = self.isogeo.contact_create(
+            workgroup_id=workgroup_test,
+            check_exists=1,
+            contact=ct
+        )
+
+        # check the result
+        self.assertEqual(new_ct_2, False)
+
+        # add created contact to deletion
+        self.li_contacts_to_delete.append(new_ct_1.get("_id"))
+
+    def test_contacts_create_checking_email(self):
+        """POST :groups/{workgroup_uuid}/contacts/}"""
+        # create a contact
+        ct = Contact(
+            name="TEST_UNIT_AUTO {}".format(self.datestamp),
+            email="test@isogeo.fr",
+        )
+        new_ct_1 = self.isogeo.contact_create(
+            workgroup_id=workgroup_test,
+            check_exists=0,
+            contact=ct
+        )
+        # try to create a contact with the same email = False
+        ct = Contact(
+            name="TEST_UNIT_AUTO {}_2".format(self.datestamp),
+            email="test@isogeo.fr",
+        )
+        new_ct_2 = self.isogeo.contact_create(
+            workgroup_id=workgroup_test,
+            check_exists=2,
+            contact=ct
+        )
+
+        # check the result
+        self.assertEqual(new_ct_2, False)
+
+        # add created contact to deletion
+        self.li_contacts_to_delete.append(new_ct_1.get("_id"))
+
+    def test_contacts_get_workgroup(self):
+        """GET :groups/{workgroup_uuid}/contacts}"""
+        # retrieve workgroup contacts
+        wg_contacts = self.isogeo.workgroup_contacts(workgroup_id=workgroup_test)
+        # parse and test object loader
+        for i in wg_contacts:
+            ct = Contact(**i)
+            yield ct.name
 
 
 # ##############################################################################
