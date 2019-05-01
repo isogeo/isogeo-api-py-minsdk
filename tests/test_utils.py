@@ -207,14 +207,11 @@ class TestIsogeoUtils(unittest.TestCase):
                 tab="what_a_tab_name",
             )
 
-    # -- URLs Builders - request ------------------------------------- 
+    # -- URLs Builders - request -------------------------------------
     def test_get_request_base_url(self):
         """Test URL request builder."""
         resource_url = self.utils.get_request_base_url("resource")
-        self.assertEqual(
-            resource_url,
-            "https://api.isogeo.com/resource/",
-        )
+        self.assertEqual(resource_url, "https://api.isogeo.com/resource/")
 
     # -- URLs Builders - view on web app -------------------------------------
     def test_get_view_url_ok(self):
@@ -273,7 +270,7 @@ class TestIsogeoUtils(unittest.TestCase):
         csw_getrecords_url = self.utils.get_view_url(
             webapp="csw_getrecords",
             share_id="1e07910d365449b59b6596a9b428ecd9",
-            share_token="TokenOhDearToken"
+            share_token="TokenOhDearToken",
         )
         self.assertEqual(
             csw_getrecords_url,
@@ -283,7 +280,7 @@ class TestIsogeoUtils(unittest.TestCase):
             "&ElementSetName=brief&maxRecords=20&OutputFormat=application/xml"
             "&OutputSchema=http://www.opengis.net/cat/csw/2.0.2"
             "&namespace=xmlns(csw=http://www.opengis.net/cat/csw/2.0.2)"
-            "&TypeNames=csw:Record&startPosition=1"
+            "&TypeNames=csw:Record&startPosition=1",
         )
 
     def test_get_view_url_bad(self):

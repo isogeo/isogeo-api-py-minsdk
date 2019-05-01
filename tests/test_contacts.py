@@ -70,14 +70,11 @@ class TestContacts(unittest.TestCase):
         self.isogeo = IsogeoSession(
             client=LegacyApplicationClient(client_id=app_script_id),
             auto_refresh_url="https://id.api.isogeo.com/oauth/token",
-            client_secret=app_script_secret
+            client_secret=app_script_secret,
         )
 
         # getting a token
-        self.token = self.isogeo.connect(
-            username=user_email,
-            password=user_password,
-        )
+        self.token = self.isogeo.connect(username=user_email, password=user_password)
 
     def tearDown(self):
         """Executed after each test."""

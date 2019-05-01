@@ -15,7 +15,7 @@
 import pprint
 
 # other model
-from isogeo_pysdk.models import Contact
+from isogeo_pysdk.models.contact import Contact
 
 # #############################################################################
 # ########## Classes ###############
@@ -71,7 +71,7 @@ class Workgroup(object):
         "areKeywordsRestricted": list,
         "canCreateLegacyServiceLinks": str,
         "canCreateMetadata": str,
-        "contact": dict,
+        "contact": Contact,
         "hasCswClient": str,
         "metadataLanguage": str,
         "keywordsCasing": str,
@@ -82,7 +82,7 @@ class Workgroup(object):
         "areKeywordsRestricted": list,
         "canCreateLegacyServiceLinks": str,
         "canCreateMetadata": str,
-        "contact": dict,
+        "contact": Contact,
         "hasCswClient": str,
         "metadataLanguage": str,
         "keywordsCasing": str,

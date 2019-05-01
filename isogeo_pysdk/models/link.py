@@ -51,7 +51,7 @@ class Link(object):
         "title": str,
         "type": str,
         "parent_resource": str,
-        "url": str
+        "url": str,
     }
 
     attr_crea = {
@@ -61,18 +61,13 @@ class Link(object):
         "type": str,
         "parent_resource": str,
         "url": str,
-        "waitForSync": bool
+        "waitForSync": bool,
     }
 
-    attr_map = {
-    }
+    attr_map = {}
 
     # possible values for link 'action' attribute
-    LINK_ACTIONS_VALUES = (
-        "download",
-        "other",
-        "view",
-    )
+    LINK_ACTIONS_VALUES = ("download", "other", "view")
     # possible values for link 'kind' attribute
     LINK_KINDS_VALUES = (
         "data",
@@ -82,15 +77,11 @@ class Link(object):
         "url",
         "wfs",
         "wms",
-        "wmts"
+        "wmts",
     )
 
     # possible values for link 'type' attribute
-    LINK_TYPESS_VALUES = (
-        "hosted",
-        "link",
-        "url",
-    )
+    LINK_TYPESS_VALUES = ("hosted", "link", "url")
 
     def __init__(
         self,
@@ -102,7 +93,7 @@ class Link(object):
         url: str = None,
         # implementation additional parameters
         parent_resource: str = None,
-        waitForSync: bool = 1
+        waitForSync: bool = 1,
     ):
         """Link model"""
 

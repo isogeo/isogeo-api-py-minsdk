@@ -266,14 +266,10 @@ class TestIsogeoChecker(unittest.TestCase):
         )
         self.assertIsInstance(subresources, str)
         # metadata sub resources - all
-        subresources = checker._check_filter_includes(
-            includes="all", entity="metadata"
-        )
+        subresources = checker._check_filter_includes(includes="all", entity="metadata")
         self.assertIsInstance(subresources, str)
         # keyword sub resources
-        subresources = checker._check_filter_includes(
-            includes="all", entity="keyword"
-        )
+        subresources = checker._check_filter_includes(includes="all", entity="keyword")
         self.assertIsInstance(subresources, str)
 
     def test_check_filter_includes_bad(self):

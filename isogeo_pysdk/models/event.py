@@ -54,19 +54,13 @@ class Event(object):
         "description": "str",
         "kind": "str",
         "parent_resource": "str",
-        "waitForSync": "bool"
-
+        "waitForSync": "bool",
     }
 
-    attr_map = {
-    }
+    attr_map = {}
 
     # possible values for event kinds
-    EVENTS_KINDS_VALUES = (
-        "creation",
-        "publication",
-        "update"
-    )
+    EVENTS_KINDS_VALUES = ("creation", "publication", "update")
 
     def __init__(
         self,
@@ -75,7 +69,7 @@ class Event(object):
         description: str = None,
         kind: str = None,
         parent_resource: str = None,
-        waitForSync: bool = 1
+        waitForSync: bool = 1,
     ):
         """Event model"""
 

@@ -52,17 +52,9 @@ class Specification(object):
         "published": "str",
     }
 
-    attr_crea = {
-        "link": "str",
-        "name": "str",
-        "published": "str",
-    }
+    attr_crea = {"link": "str", "name": "str", "published": "str"}
 
-    attr_map = {
-        "link": "link",
-        "name": "name",
-        "published": "published",
-    }
+    attr_map = {"link": "link", "name": "name", "published": "published"}
 
     def __init__(
         self,
