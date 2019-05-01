@@ -28,7 +28,15 @@ from requests_oauthlib import OAuth2Session
 
 # modules
 from isogeo_pysdk.checker import IsogeoChecker
-from isogeo_pysdk.models import Catalog, Contact, Event, Link, Specification, Workgroup
+from isogeo_pysdk.models import (
+    Catalog,
+    Contact,
+    Event,
+    License,
+    Link,
+    Specification,
+    Workgroup,
+)
 from isogeo_pysdk.utils import IsogeoUtils
 from isogeo_pysdk import version
 
@@ -619,25 +627,22 @@ class IsogeoSession(OAuth2Session):
         return kwds_req.json()
 
     # -- LICENCES ---------------------------------------------
-    def licenses(
-        self, token: dict = None, owner_id: str = None, prot: str = "https"
-    ) -> dict:
+    def licenses(self, workgroup_id: str = None, include: list = ["count"]) -> dict:
         """Get information about licenses owned by a specific workgroup.
 
-        :param str token: API auth token
-        :param str owner_id: workgroup UUID
-        :param str prot: https [DEFAULT] or http
-         (use it only for dev and tracking needs).
+        :param str workgroup_id: workgroup UUID
         """
         # handling request parameters
-        payload = {"gid": owner_id}
+        payload = {"_include": include}
 
-        # search request
-        licenses_url = "{}://v1.{}.isogeo.com/groups/{}/licenses".format(
-            prot, self.api_url, owner_id
+        # request URL
+        url_licenses = utils.get_request_base_url(
+            route="groups/{}/licenses".format(workgroup_id)
         )
+
+        # request
         licenses_req = self.get(
-            licenses_url,
+            url_licenses,
             headers=self.header,
             params=payload,
             proxies=self.proxies,
@@ -653,22 +658,20 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return licenses_req.json()
 
-    def license(self, license_id: str, prot: str = "https") -> dict:
+    def license(self, license_id: str) -> dict:
         """Get details about a specific license.
 
         :param str license_id: license UUID
-        :param str prot: https [DEFAULT] or http
-         (use it only for dev and tracking needs).
         """
         # handling request parameters
         payload = {"lid": license_id}
 
-        # search request
-        license_url = "{}://v1.{}.isogeo.com/licenses/{}".format(
-            prot, self.api_url, license_id
-        )
+        # lciense route
+        url_license = utils.get_request_base_url(route="licenses/{}".format(license_id))
+
+        # request
         license_req = self.get(
-            license_url,
+            url_license,
             headers=self.header,
             params=payload,
             proxies=self.proxies,
