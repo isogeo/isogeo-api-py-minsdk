@@ -50,7 +50,7 @@ workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 class TestContacts(unittest.TestCase):
-    """Test search to Isogeo API."""
+    """Test Contact model of Isogeo API."""
 
     if not app_script_id or not app_script_secret:
         logging.critical("No API credentials set as env variables.")
@@ -183,11 +183,23 @@ class TestContacts(unittest.TestCase):
     def test_contacts_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/contacts}"""
         # retrieve workgroup contacts
-        wg_contacts = self.isogeo.workgroup_contacts(workgroup_id=workgroup_test)
+        wg_contacts = self.isogeo.workgroup_contacts(
+            workgroup_id=workgroup_test,
+            caching=0
+        )
         # parse and test object loader
         for i in wg_contacts:
             ct = Contact(**i)
-            yield ct.name
+            yield (
+                ct._id,
+                ct._tag,
+                ct._addressLine1,
+                ct._addressLine2,
+                ct._addressLine3,
+                ct._city,
+                ct._count,
+                ct.name
+            )
 
 
 # ##############################################################################
