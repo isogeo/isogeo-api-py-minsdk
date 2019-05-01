@@ -9,7 +9,7 @@
     "python.jediEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.flake8Args": [
-        "--ignore=E24,E501,W504",
+        "--ignore=E24,E265,E501,W504",
         "--verbose"
     ],
     "python.linting.pylintEnabled": true,
