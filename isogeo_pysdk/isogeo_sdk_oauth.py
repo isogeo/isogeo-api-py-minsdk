@@ -475,7 +475,11 @@ class IsogeoSession(OAuth2Session):
             timeout=self.timeout,
         )
 
-        return cat_update.json()
+        # handle bad JSON attribute
+        catalog = cat_update.json()
+        catalog["scan"] = catalog.pop("$scan")
+
+        return catalog
 
     # -- CONTACTS --------------------------------------------------
     def contact(self, contact_id: str, include: list = ["count"]) -> dict:
@@ -1008,6 +1012,10 @@ class IsogeoSession(OAuth2Session):
         )
 
         wg_catalogs = wg_catalogs.json()
+
+        # handle bad JSON attribute (invalid character)
+        for i in wg_catalogs:
+            i["scan"] = i.pop("$scan")
 
         # if caching use or store the workgroup catalogs
         if caching and not self._wg_cats_names:
