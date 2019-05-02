@@ -432,6 +432,51 @@ class IsogeoSession(OAuth2Session):
 
         return cat_deletion
 
+    def catalog_exists(self, catalog_id: str) -> bool:
+        """Check if the specified catalog exists and is available for the authenticated user.
+
+        :param str catalog_id: identifier of the catalog to verify
+        """
+        url_cat_check = "{}{}".format(utils.get_request_base_url("catalogs"), catalog_id)
+
+        return checker.check_api_response(self.get(url_cat_check))
+
+    def catalog_update(self, workgroup_id: str, catalog: Catalog) -> dict:
+        """Update a catalog into a workgroup address-book.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param class catalog: Catalog model object to update
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # check catalog UUID
+        if not checker.check_is_uuid(catalog._id):
+            raise ValueError("Catalog ID is not a correct UUID: {}".format(catalog._id))
+        else:
+            pass
+
+        # request route
+        url_cat_update = utils.get_request_base_url(
+            route="groups/{}/catalogs/{}".format(workgroup_id, catalog._id)
+        )
+
+        # request
+        cat_update = self.put(
+            url=url_cat_update,
+            data=catalog.to_dict(),
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+
+        return cat_update.json()
+
     # -- CONTACTS --------------------------------------------------
     def contact(self, contact_id: str, include: list = ["count"]) -> dict:
         """Get a contact.
