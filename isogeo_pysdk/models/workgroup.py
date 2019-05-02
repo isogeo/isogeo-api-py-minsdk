@@ -63,33 +63,42 @@ class Workgroup(object):
     Attributes:
       attr_types (dict): basic structure of workgroup attributes. {"attribute name": "attribute type"}.
       attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-      attr_
+      attr_map (dict): mapping between read and write attributes. {"attribute name - GET": "attribute type - POST"}
       GROUP_KEYWORDSCASING_VALUES (tuple): possible values for 'canCreateLegacyServiceLinks' option
     """
     attr_types = {
         "_id": str,
-        "areKeywordsRestricted": list,
-        "canCreateLegacyServiceLinks": str,
-        "canCreateMetadata": str,
+        "areKeywordsRestricted": bool,
+        "canCreateLegacyServiceLinks": bool,
+        "canCreateMetadata": bool,
         "contact": Contact,
-        "hasCswClient": str,
+        "hasCswClient": bool,
         "metadataLanguage": str,
         "keywordsCasing": str,
         "themeColor": str,
     }
 
     attr_crea = {
-        "areKeywordsRestricted": list,
-        "canCreateLegacyServiceLinks": str,
-        "canCreateMetadata": str,
         "contact": Contact,
-        "hasCswClient": str,
         "metadataLanguage": str,
-        "keywordsCasing": str,
-        "themeColor": str,
+        "canCreateLegacyServiceLinks": bool,
+        "canCreateMetadata": bool,
     }
 
-    attr_map = {}
+    attr_map = {
+        "contact": [
+            "contact.addressLine1",
+            "contact.addressLine2",
+            "contact.addressLine3",
+            "contact.city",
+            "contact.countryCode",
+            "contact.email",
+            "contact.fax",
+            "contact.name",
+            "contact.phone",
+            "contact.zipCode",
+        ],
+    }
 
     # possible values for workgroup 'keywordsCasing' attribute
     GROUP_KEYWORDSCASING_VALUES = ("capitalized", "lowercase", "mixedcase", "uppercase")
@@ -103,7 +112,7 @@ class Workgroup(object):
         areKeywordsRestricted: bool = None,
         canCreateLegacyServiceLinks: bool = None,
         canCreateMetadata: bool = None,
-        contact: dict = None,
+        contact: Contact = None,
         hasCswClient: bool = None,
         hasScanFme: bool = None,
         keywordsCasing: str = None,
@@ -120,7 +129,7 @@ class Workgroup(object):
         self._areKeywordsRestricted = None
         self._canCreateLegacyServiceLinks = None
         self._canCreateMetadata = None
-        self._contact = (None,)
+        self._contact = Contact
         self._hasCswClient = None
         self._keywordsCasing = None
         self._metadataLanguage = None
@@ -227,7 +236,7 @@ class Workgroup(object):
 
     # contact
     @property
-    def contact(self) -> dict:
+    def contact(self) -> Contact:
         """Gets the contact of this Workgroup.
 
         :return: The contact of this Workgroup.
@@ -236,7 +245,7 @@ class Workgroup(object):
         return self._contact
 
     @contact.setter
-    def contact(self, contact: dict):
+    def contact(self, contact: Contact):
         """Sets the contact of this Workgroup.
 
         :param dict contact: The contact of this Workgroup.
@@ -357,16 +366,23 @@ class Workgroup(object):
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
-        for attr, _ in self.attr_crea.items():
+        for attr in self.attr_crea:
             # get attribute value
             value = getattr(self, attr)
             # switch attribute name for creation purpose
             if attr in self.attr_map:
                 attr = self.attr_map.get(attr)
+            # serialize depending on value type
             if isinstance(value, list):
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)
                 )
+            # handle nested Contact properties
+            elif isinstance(value, Contact):
+                for i in attr:
+                    result[i] = value.to_dict_creation().get(i.split(".")[1])
+                # result[attr] = value.to_dict_creation().get(attr.split(".")[1])
+            # handle other nested objects with 'to_dict' method
             elif hasattr(value, "to_dict"):
                 result[attr] = value.to_dict()
             elif isinstance(value, dict):
