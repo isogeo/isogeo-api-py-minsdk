@@ -19,6 +19,7 @@
 # Standard library
 from os import environ
 import logging
+from socket import gethostname
 from sys import exit
 from time import gmtime, strftime
 import unittest
@@ -36,6 +37,9 @@ from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Contact
 # ##################################
 
 load_dotenv("dev.env", override=True)
+
+# host machine name - used as discriminator
+hostname = gethostname()
 
 # API access
 app_script_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
@@ -63,7 +67,7 @@ class TestContacts(unittest.TestCase):
     def setUp(self):
         """Executed before each test."""
         # tests stuff
-        self.datestamp = strftime("%Y-%m-%d_%H%M%S", gmtime())
+        self.discriminator = "{}_{}".format(hostname, strftime("%Y-%m-%d_%H%M%S", gmtime()))
         self.li_contacts_to_delete = []
         # API connection
         self.isogeo = IsogeoSession(
@@ -73,7 +77,7 @@ class TestContacts(unittest.TestCase):
         )
 
         # getting a token
-        self.token = self.isogeo.connect(username=user_email, password=user_password)
+        self.isogeo.connect(username=user_email, password=user_password)
 
     def tearDown(self):
         """Executed after each test."""
@@ -87,11 +91,11 @@ class TestContacts(unittest.TestCase):
     # -- ALL APPS ------------------------------------------------------------
     def test_contacts_create_basic(self):
         """POST :groups/{workgroup_uuid}/contacts/}"""
-        ct = Contact(name="TEST_UNIT_AUTO {}".format(self.datestamp))
+        ct = Contact(name="TEST_UNIT_AUTO {}".format(self.discriminator))
         new_ct = self.isogeo.contact_create(workgroup_id=workgroup_test, contact=ct)
 
         # checks
-        self.assertEqual(new_ct.get("name"), "TEST_UNIT_AUTO {}".format(self.datestamp))
+        self.assertEqual(new_ct.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator))
         self.assertTrue(self.isogeo.contact_exists(new_ct.get("_id")))
 
         # add created contact to deletion
@@ -103,7 +107,7 @@ class TestContacts(unittest.TestCase):
             addressLine1="26 rue du faubourg Saint-Antoine",
             addressLine2="4è étage",
             addressLine3="Porte rouge",
-            name="TEST_UNIT_AUTO {}".format(self.datestamp),
+            name="TEST_UNIT_AUTO {}".format(self.discriminator),
             city="Paris",
             email="test@isogeo.fr",
             fax="+33987654321",
@@ -115,7 +119,7 @@ class TestContacts(unittest.TestCase):
         new_ct = self.isogeo.contact_create(workgroup_id=workgroup_test, contact=ct)
 
         # checks
-        self.assertEqual(new_ct.get("name"), "TEST_UNIT_AUTO {}".format(self.datestamp))
+        self.assertEqual(new_ct.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator))
         self.assertEqual(new_ct.get("type"), "custom")
         self.assertTrue(self.isogeo.contact_exists(new_ct.get("_id")))
 
@@ -126,7 +130,7 @@ class TestContacts(unittest.TestCase):
         """POST :groups/{workgroup_uuid}/contacts/}"""
         # create a contact
         ct = Contact(
-            name="TEST_UNIT_AUTO {}".format(self.datestamp),
+            name="TEST_UNIT_AUTO {}".format(self.discriminator),
             email="test@isogeo.fr",
         )
         new_ct_1 = self.isogeo.contact_create(
@@ -136,7 +140,7 @@ class TestContacts(unittest.TestCase):
         )
         # try to create a contact with the same email = False
         ct = Contact(
-            name="TEST_UNIT_AUTO {}".format(self.datestamp),
+            name="TEST_UNIT_AUTO {}".format(self.discriminator),
             email="test2@isogeo.fr",
         )
         new_ct_2 = self.isogeo.contact_create(
@@ -155,7 +159,7 @@ class TestContacts(unittest.TestCase):
         """POST :groups/{workgroup_uuid}/contacts/}"""
         # create a contact
         ct = Contact(
-            name="TEST_UNIT_AUTO {}".format(self.datestamp),
+            name="TEST_UNIT_AUTO {}".format(self.discriminator),
             email="test@isogeo.fr",
         )
         new_ct_1 = self.isogeo.contact_create(
@@ -165,7 +169,7 @@ class TestContacts(unittest.TestCase):
         )
         # try to create a contact with the same email = False
         ct = Contact(
-            name="TEST_UNIT_AUTO {}_2".format(self.datestamp),
+            name="TEST_UNIT_AUTO {}_2".format(self.discriminator),
             email="test@isogeo.fr",
         )
         new_ct_2 = self.isogeo.contact_create(
@@ -200,6 +204,20 @@ class TestContacts(unittest.TestCase):
                 ct._count,
                 ct.name
             )
+
+    def test_contacts_update(self):
+        """PUT :groups/{workgroup_uuid}/contacts/{contact_uuid}}"""
+        # create a new contact
+        cat = Contact(name="TEST_UNIT_UPDATE {}".format(self.discriminator))
+        new_cat_created = Contact(**self.isogeo.contact_create(workgroup_id=workgroup_test, contact=cat))
+        # set a different name
+        new_cat_created.name = "TEST_UNIT_UPDATE_OTRO {}".format(self.discriminator)
+        # update the contact
+        cat_updated = self.isogeo.contact_update(workgroup_test, new_cat_created)
+        # check if the change is effective
+        self.assertEqual(cat_updated.get("name"), "TEST_UNIT_UPDATE_OTRO {}".format(self.discriminator))
+        # # add created contact to deletion
+        self.li_contacts_to_delete.append(cat_updated.get("_id"))
 
 
 # ##############################################################################
