@@ -466,7 +466,9 @@ class IsogeoSession(OAuth2Session):
 
         :param str catalog_id: identifier of the catalog to verify
         """
-        url_cat_check = "{}{}".format(utils.get_request_base_url("catalogs"), catalog_id)
+        url_cat_check = "{}{}".format(
+            utils.get_request_base_url("catalogs"), catalog_id
+        )
 
         return checker.check_api_response(self.get(url_cat_check))
 
@@ -976,7 +978,9 @@ class IsogeoSession(OAuth2Session):
         return link_augmented
 
     # -- WORKGROUPS --------------------------------------------------
-    def workgroup(self, workgroup_id: str) -> dict:
+    def workgroup(
+        self, workgroup_id: str, include: list = ["_abilities", "limits"]
+    ) -> dict:
         """Get an workgroup.
 
         :param str workgroup_id: workgroup UUID to get
@@ -989,6 +993,11 @@ class IsogeoSession(OAuth2Session):
         else:
             pass
 
+        # handle include
+        # include = checker._check_filter_includes(include, "workgroup")
+        # handling request parameters
+        payload = {"_include": include}
+
         # request URL
         url_workgroup = utils.get_request_base_url(
             route="/groups/{}".format(workgroup_id)
@@ -997,6 +1006,7 @@ class IsogeoSession(OAuth2Session):
         workgroup_req = self.get(
             url_workgroup,
             headers=self.header,
+            params=payload,
             proxies=self.proxies,
             verify=self.ssl,
             timeout=self.timeout,
@@ -1125,10 +1135,10 @@ class IsogeoSession(OAuth2Session):
         else:
             pass
 
-        payload = {"_include": include}
 
         # handle include
         include = checker._check_filter_includes(include, "contact")
+        payload = {"_include": include}
 
         # build request url
         url_ct_list = utils.get_request_base_url(
