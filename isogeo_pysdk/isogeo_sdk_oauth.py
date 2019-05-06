@@ -18,6 +18,8 @@
 # Standard library
 import locale
 import logging
+from datetime import datetime, timedelta
+from functools import wraps
 from math import ceil
 import re
 from sys import platform as opersys
@@ -194,6 +196,33 @@ class IsogeoSession(OAuth2Session):
             return {"user-agent": self.app_name}
         else:
             pass
+
+    # -- DECORATORS -----------------------------------------------------------
+    def _check_bearer_validity(decorated_func):
+        """Check API Bearer token validity and refresh it if needed.
+
+        Isogeo ID delivers authentication bearers which are valid during
+        a certain time. So this decorator checks the validity of the token
+        comparing with actual datetime (UTC) and renews it if necessary.
+        See: https://tools.ietf.org/html/rfc6750#section-2
+
+        :param decorated_func token: original function to execute after check
+        """
+
+        @wraps(decorated_func)
+        def wrapper(self, *args, **kwargs):
+            # compare token expiration date and ask for a new one if it's expired
+            if datetime.now() < datetime.utcfromtimestamp(self.token.get("expires_at")):
+                self.refresh_token(token_url=self.auto_refresh_url)
+                logging.debug("Token was about to expire, so has been renewed.")
+            else:
+                logging.debug("Token is still valid.")
+                pass
+
+            # let continue running the original function
+            return decorated_func(self, *args, **kwargs)
+
+        return wrapper
 
     # -- METADATA = RESOURCE --------------------------------------------------
     def resource(
@@ -978,6 +1007,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return workgroup_req.json()
 
+    @_check_bearer_validity
     def workgroup_catalogs(
         self, workgroup_id: str, include: list = ["count"], caching: bool = 1
     ) -> dict:
