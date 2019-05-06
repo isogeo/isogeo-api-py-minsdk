@@ -94,16 +94,18 @@ class TestAccount(unittest.TestCase):
         """PUT :/account/}"""
         # get account
         me = self.isogeo._user
+        prev_language = me.language
         # modify language
         me.language = "en"
         # update it
-        me_updated = self.isogeo.account_update(me)
+        self.isogeo.account_update(me)
         # confirm
         self.assertTrue(self.isogeo.account().language == "en")
 
-
-
-
+        # restablish previous language
+        me.language = prev_language
+        # update it
+        self.isogeo.account_update(me)
 
 
 # ##############################################################################
