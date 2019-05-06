@@ -1007,6 +1007,63 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return workgroup_req.json()
 
+    def workgroup_create(
+        self, workgroup_name: Workgroup, check_exists: int = 1
+    ) -> dict:
+        """Add a new workgroup to Isogeo.
+
+        :param str workgroup_name: name of the new Workgroup to create
+        :param int check_exists: check if a workgroup already exists into Isogeo:
+
+        - 0 = no check
+        - 1 = compare name [DEFAULT]
+        - 2 = compare email
+        """
+        # check if workgroup already exists in workgroup
+        if check_exists == 1:
+            logger.debug(NotImplemented)
+        #     # retrieve workgroup workgroups
+        #     if not self._wg_cts_names:
+        #         self.workgroup_workgroups(workgroup_id=workgroup_id, include=[])
+        #     # check
+        #     if workgroup.name in self._wg_cts_names:
+        #         logging.debug(
+        #             "Workgroup with the same name already exists: {}. Use 'workgroup_update' instead.".format(
+        #                 workgroup.name
+        #             )
+        #         )
+        #         return False
+        # elif check_exists == 2:
+        #     # retrieve workgroup workgroups
+        #     if not self._wg_cts_emails:
+        #         self.workgroup_workgroups(workgroup_id=workgroup_id, include=[])
+        #     # check
+        #     if workgroup.email in self._wg_cts_emails:
+        #         logging.debug(
+        #             "Workgroup with the same email already exists: {}. Use 'workgroup_update' instead.".format(
+        #                 workgroup.email
+        #             )
+        #         )
+        #         return False
+
+        # build request url
+        url_wg_create = utils.get_request_base_url(route="groups")
+
+        # request
+        new_wg = self.post(
+            url_wg_create,
+            data=workgroup_name.to_dict_creation(),
+            # data={
+            #     "contact.name": workgroup_name,
+            #     "canCreateMetadata": True
+            # },
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+
+        return new_wg.json()
+
     @_check_bearer_validity
     def workgroup_catalogs(
         self, workgroup_id: str, include: list = ["count"], caching: bool = 1
