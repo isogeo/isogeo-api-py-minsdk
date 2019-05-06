@@ -192,6 +192,7 @@ class IsogeoSession(OAuth2Session):
             password=password,
             client_id=self.client_id,
             client_secret=self.client_secret,
+            verify=self.ssl
         )
 
         # get authenticated user informations

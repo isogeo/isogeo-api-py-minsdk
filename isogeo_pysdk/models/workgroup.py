@@ -97,7 +97,7 @@ class Workgroup(object):
             "contact.name",
             "contact.phone",
             "contact.zipCode",
-        ],
+        ]
     }
 
     # possible values for workgroup 'keywordsCasing' attribute

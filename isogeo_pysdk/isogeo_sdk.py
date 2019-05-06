@@ -245,7 +245,7 @@ class Isogeo(Session):
         Isogeo ID delivers authentication bearers which are valid during
         a certain time. So this decorator checks the validity of the token
         comparing with actual datetime (UTC) and renews it if necessary.
-        See: http://tools.ietf.org/html/rfc6750#section-2
+        See: https://tools.ietf.org/html/rfc6750#section-2
 
         :param decorated_func token: original function to execute after check
         """
