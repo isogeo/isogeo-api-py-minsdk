@@ -37,6 +37,7 @@ from isogeo_pysdk.models import (
     License,
     Link,
     Specification,
+    User,
     Workgroup,
 )
 from isogeo_pysdk.utils import IsogeoUtils
@@ -96,9 +97,10 @@ class IsogeoSession(OAuth2Session):
         )  # default timeout (see: https://2.python-requests.org/en/master/user/advanced/#timeouts)
 
         # caching
-        self._wg_cts_emails = {}  # workgroup contacts by emails
-        self._wg_cts_names = {}  # workgroup contacts by names
-        self._wg_cats_names = {}  # workgroup catalogs by names
+        self._user = {}             # authenticated user profile
+        self._wg_cts_emails = {}    # workgroup contacts by emails
+        self._wg_cts_names = {}     # workgroup contacts by names
+        self._wg_cats_names = {}    # workgroup catalogs by names
 
         # checking internet connection
         if not checker.check_internet_connection():
@@ -174,15 +176,26 @@ class IsogeoSession(OAuth2Session):
             **kwargs,
         )
 
-    def connect(self, username, password):
+    def connect(self, username: str, password: str):
+        """Authenticate application with user credentials and get token.
 
-        return self.fetch_token(
+        Isogeo API uses oAuth 2.0 protocol (https://tools.ietf.org/html/rfc6749)
+        see: http://help.isogeo.com/api/fr/authentication/concepts.html
+
+        :param str username: user login (email)
+        :param str password: user password
+        """
+        # get token
+        self.token = self.fetch_token(
             token_url=self.auto_refresh_url,
             username=username,
             password=password,
             client_id=self.client_id,
             client_secret=self.client_secret,
         )
+
+        # get authenticated user informations
+        self.account()
 
     # -- PROPERTIES -----------------------------------------------------------
     @property
@@ -223,6 +236,63 @@ class IsogeoSession(OAuth2Session):
             return decorated_func(self, *args, **kwargs)
 
         return wrapper
+
+    # -- ACCOUNT AND MEMBERSHIPS -------------------------------------------------------
+    def account(self, caching: bool = 1) -> User:
+        """Get authenticated user account(= profile) informations.
+
+        :param bool caching: option to cache the response
+        """
+        # request url
+        url_account = utils.get_request_base_url(route="account")
+
+        # build request
+        account_req = self.get(
+            url_account,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+        # check request response
+        checker.check_api_response(account_req)
+
+        # if caching use or store the response
+        if caching and not self._user:
+            self._user = User(**account_req.json())
+
+        # end of method
+        return User(**account_req.json())
+
+    def account_update(self, user_account: User) -> User:
+        """Update authenticated user account(= profile) informations.
+
+        :param class user_account: user account model object to update
+        """
+        # check account UUID
+        if not checker.check_is_uuid(user_account._id):
+            raise ValueError("User account ID is not a correct UUID: {}".format(user_account._id))
+        else:
+            pass
+
+        # request url
+        url_account = utils.get_request_base_url(route="account")
+
+        # build request
+        account_req = self.put(
+            url=url_account,
+            data=user_account.to_dict(),
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+        # check request response
+        checker.check_api_response(account_req)
+
+        # if caching use or store the response
+        self._user = User(**account_req.json())
+
+        # end of method
+        return User(**account_req.json())
 
     # -- METADATA = RESOURCE --------------------------------------------------
     def resource(
