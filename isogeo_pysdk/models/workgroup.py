@@ -14,7 +14,7 @@
 # standard library
 import pprint
 
-# other model
+# submodels
 from isogeo_pysdk.models.contact import Contact
 
 # #############################################################################
@@ -105,6 +105,7 @@ class Workgroup(object):
 
     def __init__(
         self,
+        _abilities: list = None,
         _created: str = None,
         _id: str = None,
         _modified: str = None,
@@ -116,12 +117,14 @@ class Workgroup(object):
         hasCswClient: bool = None,
         hasScanFme: bool = None,
         keywordsCasing: str = None,
+        limits: dict = None,
         metadataLanguage: str = None,
         themeColor: str = None,
     ):
         """Workgroup model"""
 
         # default values for the object attributes/properties
+        self.__abilities = None
         self.__created = None
         self.__id = None
         self.__modified = None
@@ -132,11 +135,14 @@ class Workgroup(object):
         self._contact = Contact
         self._hasCswClient = None
         self._keywordsCasing = None
+        self._limits = None
         self._metadataLanguage = None
         self._themeColor = None
 
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
+        if _abilities is not None:
+            self.__abilities = _abilities
         if _id is not None:
             self.__id = _id
         if areKeywordsRestricted is not None:
@@ -149,6 +155,8 @@ class Workgroup(object):
             self._hasCswClient = hasCswClient
         if keywordsCasing is not None:
             self._keywordsCasing = keywordsCasing
+        if limits is not None:
+            self._limits = limits
         if metadataLanguage is not None:
             self._metadataLanguage = metadataLanguage
         if themeColor is not None:
