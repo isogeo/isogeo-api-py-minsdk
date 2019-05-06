@@ -1,0 +1,11 @@
+repos:
+-   repo: https://github.com/python/black
+    rev: stable
+    hooks:
+    - id: black
+      language_version: python3.6
+      types: [file, python]
+      args: [
+            "--target-version=py36",
+            "./isogeo_pysdk"
+      ]
