@@ -1088,11 +1088,11 @@ class IsogeoSession(OAuth2Session):
         return workgroup_req.json()
 
     def workgroup_create(
-        self, workgroup_name: Workgroup, check_exists: int = 1
+        self, workgroup: Workgroup, check_exists: int = 1
     ) -> dict:
         """Add a new workgroup to Isogeo.
 
-        :param str workgroup_name: name of the new Workgroup to create
+        :param class workgroup: Workgroup object to create.
         :param int check_exists: check if a workgroup already exists into Isogeo:
 
         - 0 = no check
@@ -1101,7 +1101,7 @@ class IsogeoSession(OAuth2Session):
         """
         # check if workgroup already exists in workgroup
         if check_exists == 1:
-            logger.debug(NotImplemented)
+            logging.debug(NotImplemented)
         #     # retrieve workgroup workgroups
         #     if not self._wg_cts_names:
         #         self.workgroup_workgroups(workgroup_id=workgroup_id, include=[])
@@ -1132,17 +1132,35 @@ class IsogeoSession(OAuth2Session):
         # request
         new_wg = self.post(
             url_wg_create,
-            data=workgroup_name.to_dict_creation(),
-            # data={
-            #     "contact.name": workgroup_name,
-            #     "canCreateMetadata": True
-            # },
+            data=workgroup.to_dict_creation(),
             proxies=self.proxies,
             verify=self.ssl,
             timeout=self.timeout,
         )
 
-        return new_wg.json()
+        return Workgroup(**new_wg.json())
+
+    def workgroup_delete(self, workgroup_id: str) -> dict:
+        """Delete a workgroup from Isogeo database.
+
+        :param str workgroup_id: identifier of the workgroup
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # request URL
+        url_wg_delete = utils.get_request_base_url(
+            route="groups/{}".format(workgroup_id)
+        )
+
+        wg_deletion = self.delete(url_wg_delete)
+
+        return wg_deletion
 
     @_check_bearer_validity
     def workgroup_catalogs(
