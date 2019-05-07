@@ -103,6 +103,7 @@ class IsogeoSession(OAuth2Session):
         self._wg_apps_names = {}  # workgroup applications by names
         self._wg_cats_names = {}  # workgroup catalogs by names
         self._wg_lics_names = {}  # workgroup licenses by names
+        self._wg_specs_names = {}  # workgroup specifications by names
 
         # checking internet connection
         if not checker.check_internet_connection():
@@ -544,6 +545,8 @@ class IsogeoSession(OAuth2Session):
                     )
                 )
                 return False
+        else:
+            pass
 
         # build request url
         url_cat_create = utils.get_request_base_url(
@@ -1372,6 +1375,12 @@ class IsogeoSession(OAuth2Session):
         - 1 = compare name [DEFAULT]
         - 2 = compare email
         """
+        # check if object has a correct contact
+        if not hasattr(workgroup, "contact") or not isinstance(
+            workgroup.contact, Contact
+        ):
+            logging.debug("MMMMM bad workgroup")
+
         # check if workgroup already exists in workgroup
         if check_exists == 1:
             logging.debug(NotImplemented)
@@ -1436,6 +1445,41 @@ class IsogeoSession(OAuth2Session):
         return wg_deletion
 
     @_check_bearer_validity
+    def workgroup_applications(
+        self, workgroup_id: str, caching: bool = 1
+    ) -> dict:
+        """List workgroup applications.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param bool caching: option to cache the response
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        # build request url
+        url_app_list = utils.get_request_base_url(
+            route="groups/{}/applications".format(workgroup_id)
+        )
+
+        wg_applications = self.get(
+            url_app_list,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+
+        wg_applications = wg_applications.json()
+
+        # if caching use or store the workgroup applications
+        if caching and not self._wg_apps_names:
+            self._wg_apps_names = {i.get("name"): i.get("_id") for i in wg_applications}
+
+        return wg_applications
+
+    @_check_bearer_validity
     def workgroup_catalogs(
         self, workgroup_id: str, include: list = ["count"], caching: bool = 1
     ) -> dict:
@@ -1461,15 +1505,19 @@ class IsogeoSession(OAuth2Session):
             route="groups/{}/catalogs".format(workgroup_id)
         )
 
-        wg_catalogs = self.get(
+        req_wg_catalogs = self.get(
             url_ct_list,
+            headers=self.header,
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
             timeout=self.timeout,
         )
 
-        wg_catalogs = wg_catalogs.json()
+        req_check = checker.check_api_response(req_wg_catalogs)
+        if isinstance(req_check, tuple):
+            return req_check
+        wg_catalogs = req_wg_catalogs.json()
 
         # handle bad JSON attribute (invalid character)
         for i in wg_catalogs:
@@ -1496,7 +1544,6 @@ class IsogeoSession(OAuth2Session):
         else:
             pass
 
-
         # handle include
         include = checker._check_filter_includes(include, "contact")
         payload = {"_include": include}
@@ -1506,15 +1553,21 @@ class IsogeoSession(OAuth2Session):
             route="groups/{}/contacts".format(workgroup_id)
         )
 
-        wg_contacts = self.get(
+        # request
+        req_wg_contacts = self.get(
             url_ct_list,
+            headers=self.header,
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
             timeout=self.timeout,
         )
 
-        wg_contacts = wg_contacts.json()
+        # check and get as dict
+        req_check = checker.check_api_response(req_wg_contacts)
+        if isinstance(req_check, tuple):
+            return req_check
+        wg_contacts = req_wg_contacts.json()
 
         # if caching use or store the workgroup contacts
         if caching and not self._wg_cts_emails and not self._wg_cts_names:
