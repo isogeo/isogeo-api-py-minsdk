@@ -20,6 +20,7 @@ import logging
 from concurrent.futures import ThreadPoolExecutor
 from os import environ
 from pathlib import Path
+from random import sample
 from timeit import default_timer
 
 # 3rd party
@@ -103,6 +104,9 @@ if __name__ == "__main__":
 
     # -- Async exports --------------------------------------------------
     # get some object identifiers required for certain routes
+    resource_id = sample(isogeo.search(whole_share=0, page_size=50).get("results"), 1)[
+        0
+    ].get("_id")
     share_id = isogeo.shares()[0].get("_id")
 
     # list of methods to execute
@@ -117,12 +121,19 @@ if __name__ == "__main__":
             "output_json_name": "api_search_complete",
             "params": {"whole_share": 1, "include": "all", "augment": 1},
         },
+        {
+            "route": isogeo.resource,
+            "output_json_name": "api_resource_complete",
+            "params": {"id_resource": resource_id, "include": "all"},
+        },
+        # shares
         {"route": isogeo.shares, "output_json_name": "api_shares", "params": {}},
         {
             "route": isogeo.share,
             "output_json_name": "api_share_augmented",
             "params": {"share_id": share_id, "augment": 1},
         },
+        # static stuff
         {"route": isogeo.thesauri, "output_json_name": "api_thesauri", "params": {}},
         {"route": isogeo.thesaurus, "output_json_name": "api_thesaurus", "params": {}},
         {
@@ -150,9 +161,3 @@ if __name__ == "__main__":
             len(li_api_routes), time_completed_at
         )
     )
-
-# request = isogeo.resource(
-#     resource_id="43380f6c60424095b67cbd1aa9526fe4", include="all"
-# )
-# with open("out_api_resource_complete.json", "w") as json_basic:
-#     json.dump(request, json_basic, sort_keys=True, indent=4)
