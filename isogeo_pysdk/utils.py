@@ -130,10 +130,10 @@ class IsogeoUtils(object):
         platform = platform.lower()
         self.platform = platform
         if platform == "prod":
-            ssl = True
+            self.ssl = True
             logging.debug("Using production platform.")
         elif platform == "qa":
-            ssl = False
+            self.ssl = False
             logging.debug("Using Quality Assurance platform (reduced perfs).")
         else:
             logging.error(
@@ -143,6 +143,10 @@ class IsogeoUtils(object):
                 3,
                 "Platform must be one of: {}".format(" | ".join(self.API_URLS.keys())),
             )
+        # set values
+        self.api_url = self.API_URLS.get(platform)
+        self.app_url = self.APP_URLS.get(platform)
+
         # method ending
         return (
             platform.lower(),
@@ -151,7 +155,7 @@ class IsogeoUtils(object):
             self.CSW_URLS.get(platform),
             self.MNG_URLS.get(platform),
             self.OC_URLS.get(platform),
-            ssl,
+            self.ssl,
         )
 
     def convert_uuid(self, in_uuid: str = str, mode: bool = 0):
