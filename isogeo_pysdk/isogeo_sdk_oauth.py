@@ -1086,6 +1086,37 @@ class IsogeoSession(OAuth2Session):
 
 
     # -- SPECIFICATIONS --------------------------------------------------
+    def specifications(self, workgroup_id: str = None, include: list = ["count"]) -> dict:
+        """Get specifications owned by a specific workgroup.
+
+        :param str workgroup_id: workgroup UUID
+        """
+        # handling request parameters
+        payload = {"_include": include}
+
+        # request URL
+        url_specifications = utils.get_request_base_url(
+            route="groups/{}/specifications".format(workgroup_id)
+        )
+
+        # request
+        specifications_req = self.get(
+            url_specifications,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(specifications_req)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return specifications_req.json()
+
     def specification(self, specification_id: str, include: list = ["count"]) -> dict:
         """Get a specification.
 
@@ -1115,6 +1146,95 @@ class IsogeoSession(OAuth2Session):
 
         # end of method
         return specification_req.json()
+
+    def specification_create(
+        self, workgroup_id: str, check_exists: int = 1, specification: object = Specification()
+    ) -> Specification:
+        """Add a new specification to a workgroup.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param int check_exists: check if a specification already exists inot the workgroup:
+
+        - 0 = no check
+        - 1 = compare name [DEFAULT]
+
+        :param class specification: Specification model object to create
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        # check if specification already exists in workgroup
+        if check_exists == 1:
+            # retrieve workgroup specifications
+            if not self._wg_specs_names:
+                self.workgroup_specifications(workgroup_id=workgroup_id, include=[])
+            # check
+            if specification.name in self._wg_specs_names:
+                logging.debug(
+                    "Specification with the same name already exists: {}. Use 'specification_update' instead.".format(
+                        specification.name
+                    )
+                )
+                return False
+        else:
+            pass
+
+        # build request url
+        url_specification_create = utils.get_request_base_url(
+            route="groups/{}/specifications".format(workgroup_id)
+        )
+
+        # request
+        new_specification = self.post(
+            url_specification_create,
+            data=specification.to_dict_creation(),
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+
+        return Specification(**new_specification.json())
+
+    def specification_delete(self, workgroup_id: str, specification_id: str) -> dict:
+        """Delete a specification from Isogeo database.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param str specification_id: identifier of the resource to delete
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # check specification UUID
+        if not checker.check_is_uuid(specification_id):
+            raise ValueError("Specification ID is not a correct UUID: {}".format(specification_id))
+        else:
+            pass
+
+        # request URL
+        url_ct_delete = utils.get_request_base_url(
+            route="groups/{}/specifications/{}".format(workgroup_id, specification_id)
+        )
+
+        ct_deletion = self.delete(url_ct_delete)
+
+        return ct_deletion
+
+    def specification_exists(self, specification_id: str) -> bool:
+        """Check if the specified specification exists and is available for the authenticated user.
+
+        :param str specification_id: identifier of the specification to verify
+        """
+        url_ct_check = "{}{}".format(utils.get_request_base_url("specifications"), specification_id)
+
+        return checker.check_api_response(self.get(url_ct_check))
 
     # -- EVENTS --------------------------------------------------
     def event(self, metadata_id: str, event_id: str) -> dict:
@@ -1403,6 +1523,98 @@ class IsogeoSession(OAuth2Session):
                 self._wg_cts_names[i.get("name")] = i.get("_id")
 
         return wg_contacts
+
+    def workgroup_licenses(
+        self, workgroup_id: str, include: list = ["count"], caching: bool = 1
+    ) -> dict:
+        """List workgroup licenses.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param list include: identifier of the owner workgroup
+        :param bool caching: option to cache the response
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        # handle include
+        # include = checker._check_filter_includes(include, "contact")
+        payload = {"_include": include}
+
+        # build request url
+        url_licenses_list = utils.get_request_base_url(
+            route="groups/{}/licenses".format(workgroup_id)
+        )
+
+        # request
+        req_wg_licenses = self.get(
+            url_licenses_list,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+
+        # check and get as dict
+        req_check = checker.check_api_response(req_wg_licenses)
+        if isinstance(req_check, tuple):
+            return req_check
+        wg_licenses = req_wg_licenses.json()
+
+        # if caching use or store the workgroup licenses
+        if caching and not self._wg_lics_names:
+            self._wg_lics_names = {i.get("name"): i.get("_id") for i in wg_licenses}
+
+        return wg_licenses
+
+    def workgroup_specifications(
+        self, workgroup_id: str, include: list = ["count"], caching: bool = 1
+    ) -> dict:
+        """List workgroup specifications.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param list include: identifier of the owner workgroup
+        :param bool caching: option to cache the response
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        # handle include
+        # include = checker._check_filter_includes(include, "contact")
+        payload = {"_include": include}
+
+        # build request url
+        url_specifications_list = utils.get_request_base_url(
+            route="groups/{}/specifications".format(workgroup_id)
+        )
+
+        # request
+        req_wg_specifications = self.get(
+            url_specifications_list,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+
+        # check and get as dict
+        req_check = checker.check_api_response(req_wg_specifications)
+        if isinstance(req_check, tuple):
+            return req_check
+        wg_specifications = req_wg_specifications.json()
+
+        # if caching use or store the workgroup specifications
+        if caching and not self._wg_specs_names:
+            self._wg_specs_names = {i.get("name"): i.get("_id") for i in wg_specifications}
+
+        return wg_specifications
 
     def workgroup_stats(self, workgroup_id: str) -> dict:
         """Returns statistics for the specified workgroup.
