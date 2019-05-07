@@ -14,6 +14,8 @@
 # standard library
 import pprint
 
+# submodels
+from isogeo_pysdk.models.contact import Contact
 
 # #############################################################################
 # ########## Classes ###############
@@ -49,6 +51,7 @@ class Specification(object):
         "count": "int",
         "link": "str",
         "name": "str",
+        "owner": dict,
         "published": "str",
     }
 
@@ -64,6 +67,7 @@ class Specification(object):
         count: int = None,
         link: str = None,
         name: str = None,
+        owner: dict = None,
         published: str = None,
     ):
         """Specification model"""
@@ -74,6 +78,7 @@ class Specification(object):
         self._count = None
         self._link = None
         self._name = None
+        self._owner = None
         self._published = None
 
         # if values have been passed, so use them as objects attributes.
@@ -88,6 +93,8 @@ class Specification(object):
             self._link = link
         if name is not None:
             self._name = name
+        if owner is not None:
+            self.owner = owner
         if published is not None:
             self._published = published
 
@@ -186,6 +193,27 @@ class Specification(object):
         """
 
         self._name = name
+
+    # workgroup owner
+    @property
+    def owner(self):
+        """Gets the owner of this Specification.
+
+        :return: The owner of this Specification.
+        :rtype: Workgroup
+        """
+        return self._owner
+
+    @owner.setter
+    def owner(self, owner):
+        """Sets the owner of this Specification.
+
+
+        :param owner: The owner of this Specification.
+        :type: Workgroup
+        """
+
+        self._owner = owner
 
     # published
     @property
