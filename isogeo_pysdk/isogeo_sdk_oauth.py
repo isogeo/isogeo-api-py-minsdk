@@ -83,7 +83,7 @@ class IsogeoSession(OAuth2Session):
         auth_mode: str = "user_private",
         client_secret: str = None,
         lang: str = "en",
-        platform: str = "prod",
+        platform: str = "qa",
         proxy: dict = None,
         timeout: tuple = (5, 30),
         # additional
@@ -97,10 +97,10 @@ class IsogeoSession(OAuth2Session):
         )  # default timeout (see: https://2.python-requests.org/en/master/user/advanced/#timeouts)
 
         # caching
-        self._user = {}             # authenticated user profile
-        self._wg_cts_emails = {}    # workgroup contacts by emails
-        self._wg_cts_names = {}     # workgroup contacts by names
-        self._wg_cats_names = {}    # workgroup catalogs by names
+        self._user = {}  # authenticated user profile
+        self._wg_cts_emails = {}  # workgroup contacts by emails
+        self._wg_cts_names = {}  # workgroup contacts by names
+        self._wg_cats_names = {}  # workgroup catalogs by names
 
         # checking internet connection
         if not checker.check_internet_connection():
@@ -128,7 +128,6 @@ class IsogeoSession(OAuth2Session):
         self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
             platform
         )
-
         # setting language
         if lang.lower() not in ("fr", "en"):
             logging.warning(
@@ -192,7 +191,7 @@ class IsogeoSession(OAuth2Session):
             password=password,
             client_id=self.client_id,
             client_secret=self.client_secret,
-            verify=self.ssl
+            verify=self.ssl,
         )
 
         # get authenticated user informations
@@ -249,10 +248,7 @@ class IsogeoSession(OAuth2Session):
 
         # build request
         account_req = self.get(
-            url_account,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
+            url_account, proxies=self.proxies, verify=self.ssl, timeout=self.timeout
         )
         # check request response
         checker.check_api_response(account_req)
@@ -271,7 +267,9 @@ class IsogeoSession(OAuth2Session):
         """
         # check account UUID
         if not checker.check_is_uuid(user_account._id):
-            raise ValueError("User account ID is not a correct UUID: {}".format(user_account._id))
+            raise ValueError(
+                "User account ID is not a correct UUID: {}".format(user_account._id)
+            )
         else:
             pass
 
@@ -1090,7 +1088,7 @@ class IsogeoSession(OAuth2Session):
 
     def workgroup_create(
         self, workgroup: Workgroup, check_exists: int = 1
-    ) -> dict:
+    ) -> Workgroup:
         """Add a new workgroup to Isogeo.
 
         :param class workgroup: Workgroup object to create.
