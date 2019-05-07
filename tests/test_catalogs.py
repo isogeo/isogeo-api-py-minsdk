@@ -45,6 +45,7 @@ hostname = gethostname()
 # API access
 app_script_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
 app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
+platform = environ.get("ISOGEO_PLATFORM", "qa")
 user_email = environ.get("ISOGEO_USER_NAME")
 user_password = environ.get("ISOGEO_USER_PASSWORD")
 workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
@@ -75,6 +76,7 @@ class TestCatalogs(unittest.TestCase):
             client=LegacyApplicationClient(client_id=app_script_id),
             auto_refresh_url="https://id.api.isogeo.com/oauth/token",
             client_secret=app_script_secret,
+            platform=platform
         )
 
         # getting a token
