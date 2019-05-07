@@ -100,6 +100,7 @@ class IsogeoSession(OAuth2Session):
         self._user = {}  # authenticated user profile
         self._wg_cts_emails = {}  # workgroup contacts by emails
         self._wg_cts_names = {}  # workgroup contacts by names
+        self._wg_apps_names = {}  # workgroup applications by names
         self._wg_cats_names = {}  # workgroup catalogs by names
 
         # checking internet connection
@@ -292,6 +293,67 @@ class IsogeoSession(OAuth2Session):
 
         # end of method
         return User(**account_req.json())
+
+    # -- APPLICATIONS ---------------------------------------------
+    def applications(self, include: list = ["_abilities"]) -> dict:
+        """Get accessible applications by the authenticated user.
+        """
+        # handling request parameters
+        payload = {"_include": include}
+
+        # request URL
+        url_applications = utils.get_request_base_url(
+            route="applications"
+        )
+
+        # request
+        applications_req = self.get(
+            url_applications,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(applications_req)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return applications_req.json()
+
+    def application(self, application_id: str, include: list = ["_abilities", "groups"]) -> dict:
+        """Get a application.
+
+        :param str application_id: application UUID to get
+        """
+        # handle include
+        # include = checker._check_filter_includes(include, "application")
+        # handling request parameters
+        payload = {"_include": include}
+
+        # URL
+        url_application = utils.get_request_base_url(
+            route="applications/{}".format(application_id)
+        )
+
+        # request
+        req_application = self.get(
+            url_application,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+        checker.check_api_response(req_application)
+
+        # end of method
+        return req_application.json()
+
+
 
     # -- METADATA = RESOURCE --------------------------------------------------
     def resource(
