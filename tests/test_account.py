@@ -72,7 +72,7 @@ class TestAccount(unittest.TestCase):
         # API connection
         self.isogeo = IsogeoSession(
             client=LegacyApplicationClient(client_id=app_script_id),
-            auto_refresh_url="https://id.api.isogeo.com/oauth/token",
+            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             client_secret=app_script_secret,
             platform=platform
         )

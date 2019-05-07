@@ -44,7 +44,7 @@ hostname = gethostname()
 # API access
 app_script_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
 app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
-app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
+platform = environ.get("ISOGEO_PLATFORM", "qa")
 user_email = environ.get("ISOGEO_USER_NAME")
 user_password = environ.get("ISOGEO_USER_PASSWORD")
 workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
@@ -73,8 +73,9 @@ class TestWorkgroups(unittest.TestCase):
         # API connection
         self.isogeo = IsogeoSession(
             client=LegacyApplicationClient(client_id=app_script_id),
-            auto_refresh_url="https://id.api.isogeo.com/oauth/token",
+            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             client_secret=app_script_secret,
+            platform=platform
         )
 
         # getting a token
@@ -83,9 +84,9 @@ class TestWorkgroups(unittest.TestCase):
     def tearDown(self):
         """Executed after each test."""
         # clean created workgroups
-        if len(self.li_workgroups_to_delete):
-            for i in self.li_workgroups_to_delete:
-                self.isogeo.workgroup_delete(workgroup_id=workgroup_test)
+        # if len(self.li_workgroups_to_delete):
+        #     for i in self.li_workgroups_to_delete:
+        #         self.isogeo.workgroup_delete(workgroup_id=i)
         # close sessions
         self.isogeo.close()
 
@@ -104,6 +105,19 @@ class TestWorkgroups(unittest.TestCase):
 
         # add created workgroup to deletion
         self.li_workgroups_to_delete.append(new_wg._id)
+
+    def test_workgroups_create_complete(self):
+        """POST :groups/}"""
+        # to create a workgroup, a contact is required
+        existing_wg = Workgroup(self.isogeo.workgroup(workgroup_id=workgroup_test))
+        new_wg = self.isogeo.workgroup_create(workgroup=existing_wg)
+
+        # checks
+        self.assertEqual(new_wg.contact.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator))
+        # self.assertTrue(self.isogeo.workgroup_exists(new_wg.get("_id")))
+
+        # add created workgroup to deletion
+        # self.li_workgroups_to_delete.append(new_wg._id)
 
 
 # ##############################################################################
