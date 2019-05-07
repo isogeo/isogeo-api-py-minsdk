@@ -102,6 +102,7 @@ class IsogeoSession(OAuth2Session):
         self._wg_cts_names = {}  # workgroup contacts by names
         self._wg_apps_names = {}  # workgroup applications by names
         self._wg_cats_names = {}  # workgroup catalogs by names
+        self._wg_lics_names = {}  # workgroup licenses by names
 
         # checking internet connection
         if not checker.check_internet_connection():
@@ -992,6 +993,97 @@ class IsogeoSession(OAuth2Session):
 
         # end of method
         return license_req.json()
+
+    def license_create(
+        self, workgroup_id: str, check_exists: int = 1, license: object = License()
+    ) -> License:
+        """Add a new license to a workgroup.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param int check_exists: check if a license already exists inot the workgroup:
+
+        - 0 = no check
+        - 1 = compare name [DEFAULT]
+
+        :param class license: License model object to create
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        # check if license already exists in workgroup
+        if check_exists == 1:
+            # retrieve workgroup licenses
+            if not self._wg_lics_names:
+                self.workgroup_licenses(workgroup_id=workgroup_id, include=[])
+            # check
+            if license.name in self._wg_lics_names:
+                logging.debug(
+                    "License with the same name already exists: {}. Use 'license_update' instead.".format(
+                        license.name
+                    )
+                )
+                return False
+        else:
+            pass
+
+        # build request url
+        url_license_create = utils.get_request_base_url(
+            route="groups/{}/licenses".format(workgroup_id)
+        )
+
+        # request
+        new_license = self.post(
+            url_license_create,
+            data=license.to_dict_creation(),
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+
+        return License(**new_license.json())
+
+    def license_delete(self, workgroup_id: str, license_id: str) -> dict:
+        """Delete a license from Isogeo database.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param str license_id: identifier of the resource to delete
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # check license UUID
+        if not checker.check_is_uuid(license_id):
+            raise ValueError("License ID is not a correct UUID: {}".format(license_id))
+        else:
+            pass
+
+        # request URL
+        url_ct_delete = utils.get_request_base_url(
+            route="groups/{}/licenses/{}".format(workgroup_id, license_id)
+        )
+
+        ct_deletion = self.delete(url_ct_delete)
+
+        return ct_deletion
+
+    def license_exists(self, license_id: str) -> bool:
+        """Check if the specified license exists and is available for the authenticated user.
+
+        :param str license_id: identifier of the license to verify
+        """
+        url_ct_check = "{}{}".format(utils.get_request_base_url("licenses"), license_id)
+
+        return checker.check_api_response(self.get(url_ct_check))
+
+
 
     # -- SPECIFICATIONS --------------------------------------------------
     def specification(self, specification_id: str, include: list = ["count"]) -> dict:
