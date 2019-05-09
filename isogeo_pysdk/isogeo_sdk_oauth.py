@@ -518,7 +518,7 @@ class IsogeoSession(OAuth2Session):
 
     def catalog_create(
         self, workgroup_id: str, check_exists: bool = 1, catalog: object = Catalog()
-    ) -> dict:
+    ) -> Catalog:
         """Add a new catalog to a workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup
@@ -552,22 +552,34 @@ class IsogeoSession(OAuth2Session):
             pass
 
         # build request url
-        url_cat_create = utils.get_request_base_url(
+        url_catalog_create = utils.get_request_base_url(
             route="groups/{}/catalogs".format(workgroup_id)
         )
 
-        new_cat = self.post(
-            url_cat_create,
+        # request
+        req_new_catalog = self.post(
+            url_catalog_create,
             data=catalog.to_dict_creation(),
+            headers=self.header,
             proxies=self.proxies,
-            verify=self.ssl,
             timeout=self.timeout,
+            verify=self.ssl,
         )
 
+        # checking response
+        req_check = checker.check_api_response(req_new_catalog)
+        if isinstance(req_check, tuple):
+            return req_check
+
         # handle bad JSON attribute
-        catalog = new_cat.json()
+        catalog = req_new_catalog.json()
         catalog["scan"] = catalog.pop("$scan")
 
+        # load new catalog and save it to the cache
+        new_catalog = Catalog(**catalog)
+        self._wg_cats_names[new_catalog.name] = new_catalog._id
+
+        # end of method
         return catalog
 
     def catalog_delete(self, workgroup_id: str, catalog_id: str) -> dict:
@@ -662,26 +674,31 @@ class IsogeoSession(OAuth2Session):
         payload = {"_include": include}
 
         # contact  search
-        contact_url = "{}{}".format(
+        url_contact = "{}{}".format(
             utils.get_request_base_url(route="contacts"), contact_id
         )
 
-        resource_req = self.get(
-            contact_url,
+        # request
+        req_contact = self.get(
+            url_contact,
             headers=self.header,
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
             timeout=self.timeout,
         )
-        checker.check_api_response(resource_req)
+
+        # checking response
+        req_check = checker.check_api_response(req_contact)
+        if isinstance(req_check, tuple):
+            return req_check
 
         # end of method
-        return resource_req.json()
+        return Contact(**req_contact.json())
 
     def contact_create(
         self, workgroup_id: str, check_exists: int = 1, contact: object = Contact()
-    ) -> dict:
+    ) -> Contact:
         """Add a new contact to a workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup
@@ -726,19 +743,32 @@ class IsogeoSession(OAuth2Session):
                 return False
 
         # build request url
-        url_ct_create = utils.get_request_base_url(
+        url_contact_create = utils.get_request_base_url(
             route="groups/{}/contacts".format(workgroup_id)
         )
 
-        new_ct = self.post(
-            url_ct_create,
+        # request
+        req_new_contact = self.post(
+            url_contact_create,
             data=contact.to_dict_creation(),
+            headers=self.header,
             proxies=self.proxies,
-            verify=self.ssl,
             timeout=self.timeout,
+            verify=self.ssl,
         )
 
-        return new_ct.json()
+        # checking response
+        req_check = checker.check_api_response(req_new_contact)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # load new contact and save it to the cache
+        new_contact = Contact(**req_new_contact.json())
+        self._wg_cts_emails[new_contact.email] = new_contact._id
+        self._wg_cts_names[new_contact.name] = new_contact._id
+
+        # method ending
+        return new_contact
 
     def contact_delete(self, workgroup_id: str, contact_id: str) -> dict:
         """Delete a contact from Isogeo database.
@@ -765,7 +795,13 @@ class IsogeoSession(OAuth2Session):
             route="groups/{}/contacts/{}".format(workgroup_id, contact_id)
         )
 
-        ct_deletion = self.delete(url_ct_delete)
+        ct_deletion = self.delete(
+            url_ct_delete,
+            headers=self.header,
+            proxies=self.proxies,
+            timeout=self.timeout,
+            verify=self.ssl,
+        )
 
         return ct_deletion
 
@@ -776,7 +812,15 @@ class IsogeoSession(OAuth2Session):
         """
         url_ct_check = "{}{}".format(utils.get_request_base_url("contacts"), contact_id)
 
-        return checker.check_api_response(self.get(url_ct_check))
+        return checker.check_api_response(
+            self.get(
+                url_ct_check,
+                headers=self.header,
+                proxies=self.proxies,
+                timeout=self.timeout,
+                verify=self.ssl,
+            )
+        )
 
     def contact_update(self, workgroup_id: str, contact: object) -> dict:
         """Update a contact into a workgroup address-book.
@@ -806,9 +850,10 @@ class IsogeoSession(OAuth2Session):
         ct_update = self.put(
             url=url_ct_update,
             data=contact.to_dict_creation(),
+            headers=self.header,
             proxies=self.proxies,
-            verify=self.ssl,
             timeout=self.timeout,
+            verify=self.ssl,
         )
 
         return ct_update.json()
@@ -1089,10 +1134,10 @@ class IsogeoSession(OAuth2Session):
 
         return checker.check_api_response(self.get(url_ct_check))
 
-
-
     # -- SPECIFICATIONS --------------------------------------------------
-    def specifications(self, workgroup_id: str = None, include: list = ["count"]) -> dict:
+    def specifications(
+        self, workgroup_id: str = None, include: list = ["count"]
+    ) -> dict:
         """Get specifications owned by a specific workgroup.
 
         :param str workgroup_id: workgroup UUID
@@ -1154,7 +1199,10 @@ class IsogeoSession(OAuth2Session):
         return specification_req.json()
 
     def specification_create(
-        self, workgroup_id: str, check_exists: int = 1, specification: object = Specification()
+        self,
+        workgroup_id: str,
+        check_exists: int = 1,
+        specification: object = Specification(),
     ) -> Specification:
         """Add a new specification to a workgroup.
 
@@ -1220,7 +1268,9 @@ class IsogeoSession(OAuth2Session):
 
         # check specification UUID
         if not checker.check_is_uuid(specification_id):
-            raise ValueError("Specification ID is not a correct UUID: {}".format(specification_id))
+            raise ValueError(
+                "Specification ID is not a correct UUID: {}".format(specification_id)
+            )
         else:
             pass
 
@@ -1238,7 +1288,9 @@ class IsogeoSession(OAuth2Session):
 
         :param str specification_id: identifier of the specification to verify
         """
-        url_ct_check = "{}{}".format(utils.get_request_base_url("specifications"), specification_id)
+        url_ct_check = "{}{}".format(
+            utils.get_request_base_url("specifications"), specification_id
+        )
 
         return checker.check_api_response(self.get(url_ct_check))
 
@@ -1448,9 +1500,7 @@ class IsogeoSession(OAuth2Session):
         return wg_deletion
 
     @_check_bearer_validity
-    def workgroup_applications(
-        self, workgroup_id: str, caching: bool = 1
-    ) -> dict:
+    def workgroup_applications(self, workgroup_id: str, caching: bool = 1) -> dict:
         """List workgroup applications.
 
         :param str workgroup_id: identifier of the owner workgroup
@@ -1468,10 +1518,7 @@ class IsogeoSession(OAuth2Session):
         )
 
         wg_applications = self.get(
-            url_app_list,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
+            url_app_list, proxies=self.proxies, verify=self.ssl, timeout=self.timeout
         )
 
         wg_applications = wg_applications.json()
@@ -1485,7 +1532,7 @@ class IsogeoSession(OAuth2Session):
     @_check_bearer_validity
     def workgroup_catalogs(
         self, workgroup_id: str, include: list = ["count"], caching: bool = 1
-    ) -> dict:
+    ) -> list:
         """List workgroup catalogs.
 
         :param str workgroup_id: identifier of the owner workgroup
@@ -1534,7 +1581,7 @@ class IsogeoSession(OAuth2Session):
 
     def workgroup_contacts(
         self, workgroup_id: str, include: list = ["count"], caching: bool = 1
-    ) -> dict:
+    ) -> list:
         """List workgroup contacts.
 
         :param str workgroup_id: identifier of the owner workgroup
@@ -1628,7 +1675,7 @@ class IsogeoSession(OAuth2Session):
 
     def workgroup_specifications(
         self, workgroup_id: str, include: list = ["count"], caching: bool = 1
-    ) -> dict:
+    ) -> list:
         """List workgroup specifications.
 
         :param str workgroup_id: identifier of the owner workgroup
@@ -1668,7 +1715,9 @@ class IsogeoSession(OAuth2Session):
 
         # if caching use or store the workgroup specifications
         if caching and not self._wg_specs_names:
-            self._wg_specs_names = {i.get("name"): i.get("_id") for i in wg_specifications}
+            self._wg_specs_names = {
+                i.get("name"): i.get("_id") for i in wg_specifications
+            }
 
         return wg_specifications
 
