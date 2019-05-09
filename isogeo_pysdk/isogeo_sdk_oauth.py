@@ -31,6 +31,7 @@ from requests_oauthlib import OAuth2Session
 # modules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.models import (
+    Application,
     Catalog,
     Contact,
     Event,
@@ -304,9 +305,7 @@ class IsogeoSession(OAuth2Session):
         payload = {"_include": include}
 
         # request URL
-        url_applications = utils.get_request_base_url(
-            route="applications"
-        )
+        url_applications = utils.get_request_base_url(route="applications")
 
         # request
         applications_req = self.get(
@@ -326,7 +325,9 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return applications_req.json()
 
-    def application(self, application_id: str, include: list = ["_abilities", "groups"]) -> dict:
+    def application(
+        self, application_id: str, include: list = ["_abilities", "groups"]
+    ) -> Application:
         """Get a application.
 
         :param str application_id: application UUID to get
@@ -350,12 +351,14 @@ class IsogeoSession(OAuth2Session):
             verify=self.ssl,
             timeout=self.timeout,
         )
-        checker.check_api_response(req_application)
+
+        # checking response
+        req_check = checker.check_api_response(req_application)
+        if isinstance(req_check, tuple):
+            return req_check
 
         # end of method
-        return req_application.json()
-
-
+        return Application(**req_application.json())
 
     # -- METADATA = RESOURCE --------------------------------------------------
     def resource(

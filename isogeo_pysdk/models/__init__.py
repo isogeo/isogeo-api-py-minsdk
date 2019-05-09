@@ -1,6 +1,7 @@
 # coding: utf-8
 #! python3  # noqa: E265
 
+from .application import Application  # noqa: F401
 from .catalog import Catalog  # noqa: F401
 from .contact import Contact  # noqa: F401
 from .event import Event  # noqa: F401
