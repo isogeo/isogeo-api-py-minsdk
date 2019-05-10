@@ -1095,15 +1095,21 @@ class IsogeoSession(OAuth2Session):
         )
 
         # request
-        new_license = self.post(
+        req_new_license = self.post(
             url_license_create,
             data=license.to_dict_creation(),
+            headers=self.header,
             proxies=self.proxies,
             verify=self.ssl,
             timeout=self.timeout,
         )
 
-        return License(**new_license.json())
+        # load new license and save it to the cache
+        new_license = License(**req_new_license.json())
+        self._wg_lics_names[new_license.name] = new_license._id
+
+        # end of method
+        return new_license
 
     def license_delete(self, workgroup_id: str, license_id: str) -> dict:
         """Delete a license from Isogeo database.
@@ -1146,7 +1152,7 @@ class IsogeoSession(OAuth2Session):
     # -- SPECIFICATIONS --------------------------------------------------
     def specifications(
         self, workgroup_id: str = None, include: list = ["count"]
-    ) -> dict:
+    ) -> Specification:
         """Get specifications owned by a specific workgroup.
 
         :param str workgroup_id: workgroup UUID
@@ -1175,7 +1181,7 @@ class IsogeoSession(OAuth2Session):
             return req_check
 
         # end of method
-        return specifications_req.json()
+        return Specification(**specifications_req.json())
 
     def specification(self, specification_id: str, include: list = ["count"]) -> dict:
         """Get a specification.
