@@ -206,7 +206,7 @@ class Workgroup(object):
 
     # canCreateMetadata
     @property
-    def canCreateMetadata(self) -> str:
+    def canCreateMetadata(self) -> bool:
         """Gets the canCreateMetadata of this Workgroup.
 
         :return: The canCreateMetadata of this Workgroup.
@@ -215,7 +215,7 @@ class Workgroup(object):
         return self._canCreateMetadata
 
     @canCreateMetadata.setter
-    def canCreateMetadata(self, canCreateMetadata: str):
+    def canCreateMetadata(self, canCreateMetadata: bool):
         """Sets the canCreateMetadata of this Workgroup.
 
         :param str canCreateMetadata: The canCreateMetadata of this Workgroup.

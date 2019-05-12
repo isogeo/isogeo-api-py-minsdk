@@ -893,7 +893,11 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return req_thesauri.json()
 
-    def thesaurus(self, thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8", include: list = ["_abilities"]) -> Thesaurus:
+    def thesaurus(
+        self,
+        thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
+        include: list = ["_abilities"],
+    ) -> Thesaurus:
         """Get a thesaurus.
 
         :param str thez_id: thesaurus UUID
