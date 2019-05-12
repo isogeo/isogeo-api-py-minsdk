@@ -37,6 +37,7 @@ from isogeo_pysdk.models import (
     Event,
     License,
     Link,
+    Metadata,
     Specification,
     Thesaurus,
     User,
@@ -396,8 +397,13 @@ class IsogeoSession(OAuth2Session):
         )
         checker.check_api_response(resource_req)
 
+        # handle bad JSON attribute
+        metadata = resource_req.json()
+        metadata["coordinateSystem"] = metadata.pop("coordinate-system")
+        metadata["featureAttributes"] = metadata.pop("feature-attributes")
+
         # end of method
-        return resource_req.json()
+        return metadata
 
     def md_exists(self, resource_id: str) -> bool:
         """Check if the specified metadata exists or is available for the authenticated user.

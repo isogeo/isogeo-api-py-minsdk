@@ -7,7 +7,10 @@ from .contact import Contact  # noqa: F401
 from .event import Event  # noqa: F401
 from .license import License  # noqa: F401
 from .link import Link  # noqa: F401
+from .resource import Resource  # noqa: F401
 from .specification import Specification  # noqa: F401
 from .thesaurus import Thesaurus  # noqa: F401
 from .user import User  # noqa: F401
 from .workgroup import Workgroup  # noqa: F401
+
+Metadata = Resource
