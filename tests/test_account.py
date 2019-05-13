@@ -68,13 +68,15 @@ class TestAccount(unittest.TestCase):
     def setUp(self):
         """Executed before each test."""
         # tests stuff
-        self.discriminator = "{}_{}".format(hostname, strftime("%Y-%m-%d_%H%M%S", gmtime()))
+        self.discriminator = "{}_{}".format(
+            hostname, strftime("%Y-%m-%d_%H%M%S", gmtime())
+        )
         # API connection
         self.isogeo = IsogeoSession(
             client=LegacyApplicationClient(client_id=app_script_id),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             client_secret=app_script_secret,
-            platform=platform
+            platform=platform,
         )
 
         # getting a token
@@ -89,8 +91,8 @@ class TestAccount(unittest.TestCase):
     def test_account(self):
         """GET :/account/}"""
         # compare account objects
-        me = self.isogeo.account(caching=0)             # Account route
-        self.assertTrue(me.__eq__(self.isogeo._user))   # account stored during auth step
+        me = self.isogeo.account(caching=0)  # Account route
+        self.assertTrue(me.__eq__(self.isogeo._user))  # account stored during auth step
 
     def test_account_update(self):
         """PUT :/account/}"""

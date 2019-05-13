@@ -69,14 +69,16 @@ class TestCatalogs(unittest.TestCase):
     def setUp(self):
         """Executed before each test."""
         # tests stuff
-        self.discriminator = "{}_{}".format(hostname, strftime("%Y-%m-%d_%H%M%S", gmtime()))
+        self.discriminator = "{}_{}".format(
+            hostname, strftime("%Y-%m-%d_%H%M%S", gmtime())
+        )
         self.li_catalogs_to_delete = []
         # API connection
         self.isogeo = IsogeoSession(
             client=LegacyApplicationClient(client_id=app_script_id),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             client_secret=app_script_secret,
-            platform=platform
+            platform=platform,
         )
 
         # getting a token
@@ -98,7 +100,9 @@ class TestCatalogs(unittest.TestCase):
         new_ct = self.isogeo.catalog_create(workgroup_id=workgroup_test, catalog=ct)
 
         # checks
-        self.assertEqual(new_ct.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator))
+        self.assertEqual(
+            new_ct.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator)
+        )
         self.assertTrue(self.isogeo.catalog_exists(new_ct.get("_id")))
 
         # add created catalog to deletion
@@ -132,22 +136,14 @@ class TestCatalogs(unittest.TestCase):
     def test_catalogs_create_checking_name(self):
         """POST :groups/{workgroup_uuid}/catalogs/}"""
         # create a catalog
-        ct = Catalog(
-            name="TEST_UNIT_AUTO {}".format(self.discriminator)
-        )
+        ct = Catalog(name="TEST_UNIT_AUTO {}".format(self.discriminator))
         new_ct_1 = self.isogeo.catalog_create(
-            workgroup_id=workgroup_test,
-            check_exists=0,
-            catalog=ct
+            workgroup_id=workgroup_test, check_exists=0, catalog=ct
         )
         # try to create a catalog with the same email = False
-        ct = Catalog(
-            name="TEST_UNIT_AUTO {}".format(self.discriminator)
-        )
+        ct = Catalog(name="TEST_UNIT_AUTO {}".format(self.discriminator))
         new_ct_2 = self.isogeo.catalog_create(
-            workgroup_id=workgroup_test,
-            check_exists=1,
-            catalog=ct
+            workgroup_id=workgroup_test, check_exists=1, catalog=ct
         )
 
         # check the result
@@ -160,8 +156,7 @@ class TestCatalogs(unittest.TestCase):
         """GET :groups/{workgroup_uuid}/catalogs}"""
         # retrieve workgroup catalogs
         wg_catalogs = self.isogeo.workgroup_catalogs(
-            workgroup_id=workgroup_test,
-            caching=0
+            workgroup_id=workgroup_test, caching=0
         )
         # parse and test object loader
         for i in wg_catalogs:
@@ -185,14 +180,19 @@ class TestCatalogs(unittest.TestCase):
         """PUT :groups/{workgroup_uuid}/catalogs/{catalog_uuid}}"""
         # create a new catalog
         cat = Catalog(name="TEST_UNIT_UPDATE {}".format(self.discriminator))
-        new_cat_created = Catalog(**self.isogeo.catalog_create(workgroup_id=workgroup_test, catalog=cat))
+        new_cat_created = Catalog(
+            **self.isogeo.catalog_create(workgroup_id=workgroup_test, catalog=cat)
+        )
         # set a different name
         new_cat_created.name = "TEST_UNIT_UPDATE_OTRO {}".format(self.discriminator)
         # update the catalog
         cat_updated = self.isogeo.catalog_update(workgroup_test, new_cat_created)
         Catalog(**cat_updated)
         # check if the change is effective
-        self.assertEqual(cat_updated.get("name"), "TEST_UNIT_UPDATE_OTRO {}".format(self.discriminator))
+        self.assertEqual(
+            cat_updated.get("name"),
+            "TEST_UNIT_UPDATE_OTRO {}".format(self.discriminator),
+        )
         # # add created catalog to deletion
         self.li_catalogs_to_delete.append(cat_updated.get("_id"))
 

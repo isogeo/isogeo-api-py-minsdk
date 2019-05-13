@@ -68,14 +68,16 @@ class TestWorkgroups(unittest.TestCase):
     def setUp(self):
         """Executed before each test."""
         # tests stuff
-        self.discriminator = "{}_{}".format(hostname, strftime("%Y-%m-%d_%H%M%S", gmtime()))
+        self.discriminator = "{}_{}".format(
+            hostname, strftime("%Y-%m-%d_%H%M%S", gmtime())
+        )
         self.li_workgroups_to_delete = []
         # API connection
         self.isogeo = IsogeoSession(
             client=LegacyApplicationClient(client_id=app_script_id),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             client_secret=app_script_secret,
-            platform=platform
+            platform=platform,
         )
 
         # getting a token
@@ -94,13 +96,16 @@ class TestWorkgroups(unittest.TestCase):
     def test_workgroups_create_basic(self):
         """POST :groups/}"""
         # to create a workgroup, a contact is required
-        contact_owner = Contact(name="TEST_UNIT_AUTO {}".format(self.discriminator),
-                                email="test@isogeo.com")
+        contact_owner = Contact(
+            name="TEST_UNIT_AUTO {}".format(self.discriminator), email="test@isogeo.com"
+        )
         wg = Workgroup(contact=contact_owner)
         new_wg = self.isogeo.workgroup_create(workgroup=wg)
 
         # checks
-        self.assertEqual(new_wg.contact.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator))
+        self.assertEqual(
+            new_wg.contact.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator)
+        )
         # self.assertTrue(self.isogeo.workgroup_exists(new_wg.get("_id")))
 
         # add created workgroup to deletion
@@ -113,7 +118,9 @@ class TestWorkgroups(unittest.TestCase):
         new_wg = self.isogeo.workgroup_create(workgroup=existing_wg)
 
         # checks
-        self.assertEqual(new_wg.contact.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator))
+        self.assertEqual(
+            new_wg.contact.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator)
+        )
         # self.assertTrue(self.isogeo.workgroup_exists(new_wg.get("_id")))
 
         # add created workgroup to deletion

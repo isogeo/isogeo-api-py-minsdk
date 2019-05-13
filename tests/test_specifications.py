@@ -69,14 +69,16 @@ class TestSpecifications(unittest.TestCase):
     def setUp(self):
         """Executed before each test."""
         # tests stuff
-        self.discriminator = "{}_{}".format(hostname, strftime("%Y-%m-%d_%H%M%S", gmtime()))
+        self.discriminator = "{}_{}".format(
+            hostname, strftime("%Y-%m-%d_%H%M%S", gmtime())
+        )
         self.li_specifications_to_delete = []
         # API connection
         self.isogeo = IsogeoSession(
             client=LegacyApplicationClient(client_id=app_script_id),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             client_secret=app_script_secret,
-            platform=platform
+            platform=platform,
         )
 
         # getting a token
@@ -87,7 +89,9 @@ class TestSpecifications(unittest.TestCase):
         # clean created specifications
         if len(self.li_specifications_to_delete):
             for i in self.li_specifications_to_delete:
-                self.isogeo.specification_delete(workgroup_id=workgroup_test, specification_id=i)
+                self.isogeo.specification_delete(
+                    workgroup_id=workgroup_test, specification_id=i
+                )
         # close sessions
         self.isogeo.close()
 
@@ -96,8 +100,11 @@ class TestSpecifications(unittest.TestCase):
         """POST :groups/{workgroup_uuid}/specifications/}"""
         spec = Specification(
             name="TEST_UNIT_AUTO {}".format(self.discriminator),
-            link="https://help.isogeo.com/api/fr/")
-        new_spec = self.isogeo.specification_create(workgroup_id=workgroup_test, specification=spec)
+            link="https://help.isogeo.com/api/fr/",
+        )
+        new_spec = self.isogeo.specification_create(
+            workgroup_id=workgroup_test, specification=spec
+        )
 
         # checks
         self.assertEqual(new_spec.name, "TEST_UNIT_AUTO {}".format(self.discriminator))
@@ -105,32 +112,25 @@ class TestSpecifications(unittest.TestCase):
 
         # add created specification to deletion
         self.li_specifications_to_delete.append(new_spec._id)
-        print(new_spec._id)
 
-    # def test_specifications_create_complete(self):
-    #     """POST :groups/{workgroup_uuid}/specifications/}"""
-    #     ct = Specification(
-    #         addressLine1="26 rue du faubourg Saint-Antoine",
-    #         addressLine2="4è étage",
-    #         addressLine3="Porte rouge",
-    #         name="TEST_UNIT_AUTO {}".format(self.discriminator),
-    #         city="Paris",
-    #         email="test@isogeo.fr",
-    #         fax="+33987654321",
-    #         organization="Isogeo",
-    #         phone="+33789456123",
-    #         countryCode="FR",
-    #         zipCode="75012",
-    #     )
-    #     new_ct = self.isogeo.specification_create(workgroup_id=workgroup_test, specification=ct)
+    def test_specifications_create_complete(self):
+        """POST :groups/{workgroup_uuid}/specifications/}"""
+        spec = Specification(
+            name="TEST_UNIT_AUTO {}".format(self.discriminator),
+            link="https://fr.wikipedia.org/wiki/Licence_Creative_Commons",
+        )
+        new_spec = self.isogeo.specification_create(
+            workgroup_id=workgroup_test, specification=spec
+        )
 
-    #     # checks
-    #     self.assertEqual(new_ct.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator))
-    #     self.assertEqual(new_ct.get("type"), "custom")
-    #     self.assertTrue(self.isogeo.specification_exists(new_ct.get("_id")))
+        # checks
+        self.assertEqual(
+            new_spec.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator)
+        )
+        self.assertTrue(self.isogeo.specification_exists(new_spec.get("_id")))
 
-    #     # add created specification to deletion
-    #     self.li_specifications_to_delete.append(new_ct.get("_id"))
+        # add created specification to deletion
+        self.li_specifications_to_delete.append(new_spec.get("_id"))
 
     # def test_specifications_create_checking_name(self):
     #     """POST :groups/{workgroup_uuid}/specifications/}"""
