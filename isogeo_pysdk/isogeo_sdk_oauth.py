@@ -29,6 +29,7 @@ from oauthlib.oauth2 import LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
 # modules
+from isogeo_pysdk.api_hooks import IsogeoHooks
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.models import (
     Application,
@@ -93,6 +94,8 @@ class IsogeoSession(OAuth2Session):
         **kwargs,
     ):
 
+        # custom hooks
+        self.custom_hooks = IsogeoHooks()
         self.app_name = app_name
         self.client_secret = client_secret
         self.timeout = (
@@ -390,6 +393,12 @@ class IsogeoSession(OAuth2Session):
         resource_req = self.get(
             md_url,
             headers=self.header,
+            hooks={
+                "response": [
+                    self.custom_hooks.check_for_error,
+                    # self.custom_hooks.autofix_attributes_resource,
+                ]
+            },
             params=payload,
             proxies=self.proxies,
             verify=self.ssl,
