@@ -421,7 +421,6 @@ class IsogeoSession(OAuth2Session):
             verify=self.ssl,
             timeout=self.timeout,
         )
-        checker.check_api_response(resource_req)
 
         # handle bad JSON attribute
         metadata = resource_req.json()
