@@ -464,6 +464,7 @@ class Resource(object):
         "limitations": list,
         "links": list,
         "modified": str,
+        "name": str,
         "path": str,
         "published": str,
         "scale": int,
@@ -481,7 +482,36 @@ class Resource(object):
     }
 
     attr_crea = {
-
+        # "_abilities": list,
+        # "_creator": dict,
+        # "_id": str,
+        "abstract": str,
+        "collectionContext": str,
+        # "collectionMethod": str,
+        # "created": str,
+        # "distance": float,
+        # "editionProfile": str,
+        "encoding": str,
+        # "features": int,
+        "format": str,
+        "formatVersion": str,
+        # "geometry": str,
+        # "keywords": list,
+        "language": str,
+        # "modified": str,
+        # "name": str,
+        "path": str,
+        "precision": str,
+        # "published": str,
+        "scale": int,
+        "series": bool,
+        "title": str,
+        "topologicalConsistency": str,
+        "type": str,
+        # "updateFrequency": str,
+        # "validFrom": str,
+        # "validTo": str,
+        # "validityComment": str,
     }
 
     attr_map = {
@@ -518,7 +548,9 @@ class Resource(object):
         limitations: list = None,
         links: list = None,
         modified: str = None,
+        name: str = None,
         path: str = None,
+        precision: str = None,
         published: str = None,
         scale: int = None,
         series: bool = None,
@@ -563,7 +595,9 @@ class Resource(object):
         self._limitations = None
         self._links = None
         self._modified = None
+        self._name = None
         self._path = None
+        self._precision = None
         self._published = None
         self._scale = None
         self._series = None
@@ -634,6 +668,8 @@ class Resource(object):
             self._modified = modified
         if path is not None:
             self._path = path
+        if precision is not None:
+            self._precision = precision
         if published is not None:
             self._published = published
         if scale is not None:
@@ -1117,6 +1153,25 @@ class Resource(object):
 
         self._modified = modified
 
+    # name
+    @property
+    def name(self) -> str:
+        """Gets the name of this Resource.
+
+        :return: The name of this Resource.
+        :rtype: str
+        """
+        return self._name
+
+    @name.setter
+    def name(self, name: str):
+        """Sets technical name of the Resource.
+
+        :param str name: technical name this Resource.
+        """
+
+        self._name = name
+
     # path
     @property
     def path(self) -> str:
@@ -1135,6 +1190,25 @@ class Resource(object):
         """
 
         self._path = path
+
+    # precision
+    @property
+    def precision(self) -> str:
+        """Gets the precision of this Resource.
+
+        :return: The precision of this Resource.
+        :rtype: str
+        """
+        return self._precision
+
+    @precision.setter
+    def precision(self, precision: str):
+        """Sets the first line of the address of this Resource.
+
+        :param str precision: The first address line of this Resource.
+        """
+
+        self._precision = precision
 
     # published
     @property
@@ -1269,7 +1343,6 @@ class Resource(object):
 
         self._title = title
 
-
     # topologicalConsistency
     @property
     def topologicalConsistency(self) -> str:
@@ -1383,8 +1456,6 @@ class Resource(object):
         """
 
         self._validityComment = validityComment
-
-
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
