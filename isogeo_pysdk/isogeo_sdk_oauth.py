@@ -486,6 +486,35 @@ class IsogeoSession(OAuth2Session):
 
         return md_deletion
 
+    def md_update(self, metadata: Metadata) -> Metadata:
+        """Update a metadata from Isogeo database.
+
+        :param Metadata metadata: metadata (resource) to edit
+        """
+        # check metadata UUID
+        # if not checker.check_is_uuid(workgroup_id):
+        #     raise ValueError("Workgroup ID is not a correct UUID.")
+        # else:
+        #     pass
+
+        # URL
+        url_metadata_update = utils.get_request_base_url(
+            route="resources/{}".format(metadata._id)
+        )
+
+        # request
+        req_metadata_update = self.patch(
+            url=url_metadata_update,
+            json=metadata.to_dict_creation(),
+            headers=self.header,
+            proxies=self.proxies,
+            timeout=self.timeout,
+            verify=self.ssl,
+        )
+
+        # method ending
+        return Metadata(**req_metadata_update.json())
+
     # -- CATALOGS --------------------------------------------------
     def catalog(
         self, workgroup_id: str, catalog_id: str, include: list = ["count"]
