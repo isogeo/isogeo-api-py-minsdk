@@ -215,7 +215,7 @@ class IsogeoSession(OAuth2Session):
                 "user-agent": self.app_name,
             }
         elif self.auth_mode == "user_private":
-            return {"user-agent": self.app_name}
+            return {"Accept-Encoding": "gzip, deflate", "User-Agent": self.app_name}
         else:
             pass
 
