@@ -148,6 +148,23 @@ class IsogeoSession(OAuth2Session):
         else:
             self.lang = lang.lower()
 
+        # setting locale according to the language passed
+        try:
+            if opersys == "win32":
+                if lang.lower() == "fr":
+                    locale.setlocale(locale.LC_ALL, str("fra_fra"))
+                else:
+                    locale.setlocale(locale.LC_ALL, str("uk_UK"))
+            else:
+                if lang.lower() == "fr":
+                    locale.setlocale(locale.LC_ALL, str("fr_FR.utf8"))
+                else:
+                    locale.setlocale(locale.LC_ALL, str("en_GB.utf8"))
+        except locale.Error as e:
+            logging.error(
+                "Selected locale ({}) is not installed: {}".format(lang.lower(), e)
+            )
+
         # handling proxy parameters
         # see: http://docs.python-requests.org/en/latest/user/advanced/#proxies
         if proxy and isinstance(proxy, dict) and "http" in proxy:
