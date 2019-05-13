@@ -408,8 +408,8 @@ class IsogeoSession(OAuth2Session):
 
         # handle bad JSON attribute
         metadata = resource_req.json()
-        metadata["coordinateSystem"] = metadata.pop("coordinate-system")
-        metadata["featureAttributes"] = metadata.pop("feature-attributes")
+        metadata["coordinateSystem"] = metadata.pop("coordinate-system", list)
+        metadata["featureAttributes"] = metadata.pop("feature-attributes", list)
 
         # end of method
         return metadata
