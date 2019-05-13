@@ -1736,6 +1736,59 @@ class IsogeoSession(OAuth2Session):
 
         return wg_licenses
 
+    @_check_bearer_validity
+    def workgroup_metadata(
+        self,
+        workgroup_id: str,
+        order_by: str = "_created",
+        order_dir: str = "desc",
+        page_size: int = 100,
+        offset: int = 0,
+    ) -> dict:
+        """List workgroup metadata.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        # request parameters
+        payload = {
+            # "_include": include,
+            # "_lang": self.lang,
+            "_limit": page_size,
+            "_offset": offset,
+            "ob": order_by,
+            "od": order_dir,
+            # "q": query,
+            # "s": share,
+        }
+
+        # build request url
+        url_metadata_list = utils.get_request_base_url(
+            route="groups/{}/resources/search".format(workgroup_id)
+        )
+
+        wg_metadata = self.get(
+            url_metadata_list,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+
+        wg_metadata = wg_metadata.json()
+
+        # # if caching use or store the workgroup metadata
+        # if caching and not self._wg_apps_names:
+        #     self._wg_apps_names = {i.get("name"): i.get("_id") for i in wg_metadata}
+
+        return wg_metadata
+
     def workgroup_specifications(
         self, workgroup_id: str, include: list = ["count"], caching: bool = 1
     ) -> list:
