@@ -18,7 +18,7 @@
 # Standard library
 import locale
 import logging
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import wraps
 from math import ceil
 import re
@@ -97,6 +97,7 @@ class IsogeoSession(OAuth2Session):
 
         # custom hooks
         self.custom_hooks = IsogeoHooks()
+
         self.app_name = app_name
         self.client_secret = client_secret
         self.timeout = (
@@ -542,6 +543,150 @@ class IsogeoSession(OAuth2Session):
         return Metadata(**req_metadata_update.json())
 
     @_check_bearer_validity
+    def md_associate_contacts(
+        self, metadata: Metadata, contact_id: str, role="pointOfContact"
+    ) -> dict:
+        """associate a contact to a metadata.
+
+        :param Metadata metadata: metadata (resource) to edit
+        :param str contact_id: UUID of the contact to associate. Must exist into Isogeo or workgroup address book
+        :param str role: role to assign to the contact
+        """
+        # check contact UUID
+        if not checker.check_is_uuid(contact_id):
+            raise ValueError("Contact ID is not a correct UUID.")
+        else:
+            pass
+
+        # URL
+        url_metadata_asso_contact = utils.get_request_base_url(
+            route="resources/{}/contacts/{}".format(metadata._id, contact_id)
+        )
+
+        # request
+        req_metadata_asso_contact = self.put(
+            url=url_metadata_asso_contact,
+            json={"role": role},
+            headers=self.header,
+            proxies=self.proxies,
+            timeout=self.timeout,
+            verify=self.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_metadata_asso_contact)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # method ending
+        return req_metadata_asso_contact.json()
+
+    @_check_bearer_validity
+    def md_associate_events(
+        self,
+        metadata: Metadata,
+        event_date: str or datetime,
+        event_comment: str = None,
+        event_kind: str = "update",
+    ) -> dict:
+        """Associate an event to a metadata.
+
+        :param Metadata metadata: metadata (resource) to edit
+        :param str event_date: date of the event. Must be in the format `YYYY-MM-DD`
+        :param str event_kind: kind of event. Must be one of: creation, update, publication
+        :param str event_comment: text to associate to the event. Not possible for event_kind=='creation'
+        """
+        # check params
+        if event_kind not in ("creation", "update", "publication"):
+            raise ValueError(
+                "'event_kind' must be one of: creation, update, publication"
+            )
+
+        if isinstance(event_date, str):
+            datetime.strptime(event_date, "%Y-%m-%d")
+        elif isinstance(event_date, datetime):
+            event_date = event_date.strftime("%Y-%m-%d")
+        else:
+            raise TypeError("'event_date' must be a str or a datetime")
+
+        # ensure that a creation date doesn't already exist
+        if event_kind == "creation":
+            # retrieve metadata events
+            metadata_events = self.resource(metadata._id, include=["events"])
+            # filter on creation events
+            events_creation = list(
+                filter(
+                    lambda d: d["kind"] in ["creation"], metadata_events.get("events")
+                )
+            )
+            if events_creation:
+                logger.warning(
+                    "A creation event already exist. A metadata can only have one creation event. Use event_update instead."
+                )
+                return self.event(metadata._id, events_creation[0].get("_id"))
+
+        # ensure removing event_comment for creation dates
+        if event_kind == "creation" and event_comment:
+            event_comment = None
+            logger.warning("Event comments are not allowed for creation dates")
+
+        # URL
+        url_metadata_asso_event = utils.get_request_base_url(
+            route="resources/{}/events/".format(metadata._id)
+        )
+
+        # request
+        req_metadata_asso_event = self.post(
+            url=url_metadata_asso_event,
+            json={"date": event_date, "description": event_comment, "kind": event_kind},
+            headers=self.header,
+            proxies=self.proxies,
+            timeout=self.timeout,
+            verify=self.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_metadata_asso_event)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # method ending
+        return req_metadata_asso_event.json()
+
+    @_check_bearer_validity
+    def md_remove_events(self, metadata: Metadata, event_id: str) -> dict:
+        """Associate an event to a metadata.
+
+        :param Metadata metadata: metadata (resource) to edit
+        :param str event_id: UUID of the event to remove
+        """
+        # check event UUID
+        if not checker.check_is_uuid(event_id):
+            raise ValueError("Event ID is not a correct UUID.")
+        else:
+            pass
+        # URL
+        url_metadata_del_event = utils.get_request_base_url(
+            route="resources/{}/events/{}".format(metadata._id, event_id)
+        )
+
+        # request
+        req_metadata_del_event = self.delete(
+            url=url_metadata_del_event,
+            headers=self.header,
+            proxies=self.proxies,
+            timeout=self.timeout,
+            verify=self.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_metadata_del_event)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # method ending
+        return req_metadata_del_event
+
     # -- CATALOGS --------------------------------------------------
     @_check_bearer_validity
     def catalog(
@@ -580,7 +725,11 @@ class IsogeoSession(OAuth2Session):
             verify=self.ssl,
             timeout=self.timeout,
         )
-        checker.check_api_response(req)
+
+        # checking response
+        req_check = checker.check_api_response(req)
+        if isinstance(req_check, tuple):
+            return req_check
 
         # handle bad JSON attribute
         catalog = req.json()
@@ -1747,6 +1896,49 @@ class IsogeoSession(OAuth2Session):
         return wg_contacts
 
     @_check_bearer_validity
+    def workgroup_keywords(
+        self, workgroup_id: str, include: list = ["count"], caching: bool = 1
+    ) -> list:
+        """List workgroup keywords.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param list include: identifier of the owner workgroup
+        :param bool caching: option to cache the response
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        payload = {"_include": include}
+
+        # handle include
+        # include = checker._check_filter_includes(include, "keyword")
+
+        # build request url
+        url_ct_list = utils.get_request_base_url(
+            route="groups/{}/keywords/search".format(workgroup_id)
+        )
+
+        # request
+        req_wg_keywords = self.get(
+            url_ct_list,
+            headers=self.header,
+            params=payload,
+            proxies=self.proxies,
+            verify=self.ssl,
+            timeout=self.timeout,
+        )
+
+        # check response
+        req_check = checker.check_api_response(req_wg_keywords)
+        if isinstance(req_check, tuple):
+            return req_check
+        wg_keywords = req_wg_keywords.json()
+
+        return wg_keywords
+
     @_check_bearer_validity
     def workgroup_licenses(
         self, workgroup_id: str, include: list = ["count"], caching: bool = 1
