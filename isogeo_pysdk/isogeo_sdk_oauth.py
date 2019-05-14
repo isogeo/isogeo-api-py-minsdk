@@ -264,6 +264,7 @@ class IsogeoSession(OAuth2Session):
         return wrapper
 
     # -- ACCOUNT AND MEMBERSHIPS -------------------------------------------------------
+    @_check_bearer_validity
     def account(self, caching: bool = 1) -> User:
         """Get authenticated user account(= profile) informations.
 
@@ -286,6 +287,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return User(**account_req.json())
 
+    @_check_bearer_validity
     def account_update(self, user_account: User) -> User:
         """Update authenticated user account(= profile) informations.
 
@@ -320,7 +322,8 @@ class IsogeoSession(OAuth2Session):
         return User(**account_req.json())
 
     # -- APPLICATIONS ---------------------------------------------
-    def applications(self, include: list = ["_abilities"]) -> dict:
+    @_check_bearer_validity
+    def applications(self, include: list = ["_abilities"]) -> list:
         """Get accessible applications by the authenticated user.
         """
         # handling request parameters
@@ -347,6 +350,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return applications_req.json()
 
+    @_check_bearer_validity
     def application(
         self, application_id: str, include: list = ["_abilities", "groups"]
     ) -> Application:
@@ -383,6 +387,7 @@ class IsogeoSession(OAuth2Session):
         return Application(**req_application.json())
 
     # -- METADATA = RESOURCE --------------------------------------------------
+    @_check_bearer_validity
     def resource(
         self, resource_id: str = None, subresource=None, include: list = []
     ) -> dict:
@@ -430,6 +435,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return metadata
 
+    @_check_bearer_validity
     def md_exists(self, resource_id: str) -> bool:
         """Check if the specified metadata exists or is available for the authenticated user.
 
@@ -441,6 +447,7 @@ class IsogeoSession(OAuth2Session):
 
         return checker.check_api_response(self.get(url_md_check))
 
+    @_check_bearer_validity
     def md_create(
         self,
         workgroup_id: str,
@@ -487,6 +494,7 @@ class IsogeoSession(OAuth2Session):
 
         return new_md.json()
 
+    @_check_bearer_validity
     def md_delete(self, resource_id: str) -> dict:
         """Delete a metadata from Isogeo database.
 
@@ -502,6 +510,7 @@ class IsogeoSession(OAuth2Session):
 
         return md_deletion
 
+    @_check_bearer_validity
     def md_update(self, metadata: Metadata) -> Metadata:
         """Update a metadata from Isogeo database.
 
@@ -531,7 +540,9 @@ class IsogeoSession(OAuth2Session):
         # method ending
         return Metadata(**req_metadata_update.json())
 
+    @_check_bearer_validity
     # -- CATALOGS --------------------------------------------------
+    @_check_bearer_validity
     def catalog(
         self, workgroup_id: str, catalog_id: str, include: list = ["count"]
     ) -> dict:
@@ -577,6 +588,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return catalog
 
+    @_check_bearer_validity
     def catalog_create(
         self, workgroup_id: str, check_exists: bool = 1, catalog: object = Catalog()
     ) -> Catalog:
@@ -643,6 +655,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return catalog
 
+    @_check_bearer_validity
     def catalog_delete(self, workgroup_id: str, catalog_id: str) -> dict:
         """Delete a catalog from Isogeo database.
 
@@ -672,6 +685,7 @@ class IsogeoSession(OAuth2Session):
 
         return cat_deletion
 
+    @_check_bearer_validity
     def catalog_exists(self, catalog_id: str) -> bool:
         """Check if the specified catalog exists and is available for the authenticated user.
 
@@ -683,6 +697,7 @@ class IsogeoSession(OAuth2Session):
 
         return checker.check_api_response(self.get(url_cat_check))
 
+    @_check_bearer_validity
     def catalog_update(self, workgroup_id: str, catalog: Catalog) -> dict:
         """Update a catalog into a workgroup address-book.
 
@@ -724,6 +739,7 @@ class IsogeoSession(OAuth2Session):
         return catalog
 
     # -- CONTACTS --------------------------------------------------
+    @_check_bearer_validity
     def contact(self, contact_id: str, include: list = ["count"]) -> dict:
         """Get a contact.
 
@@ -757,6 +773,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return Contact(**req_contact.json())
 
+    @_check_bearer_validity
     def contact_create(
         self, workgroup_id: str, check_exists: int = 1, contact: object = Contact()
     ) -> Contact:
@@ -831,6 +848,7 @@ class IsogeoSession(OAuth2Session):
         # method ending
         return new_contact
 
+    @_check_bearer_validity
     def contact_delete(self, workgroup_id: str, contact_id: str) -> dict:
         """Delete a contact from Isogeo database.
 
@@ -866,6 +884,7 @@ class IsogeoSession(OAuth2Session):
 
         return ct_deletion
 
+    @_check_bearer_validity
     def contact_exists(self, contact_id: str) -> bool:
         """Check if the specified contact exists and is available for the authenticated user.
 
@@ -883,6 +902,7 @@ class IsogeoSession(OAuth2Session):
             )
         )
 
+    @_check_bearer_validity
     def contact_update(self, workgroup_id: str, contact: object) -> dict:
         """Update a contact into a workgroup address-book.
 
@@ -920,6 +940,7 @@ class IsogeoSession(OAuth2Session):
         return ct_update.json()
 
     # -- KEYWORDS -----------------------------------------------------------
+    @_check_bearer_validity
     def thesauri(self, include: list = ["_abilities"]) -> list:
         """Get available thesauri.
         """
@@ -947,6 +968,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return req_thesauri.json()
 
+    @_check_bearer_validity
     def thesaurus(
         self,
         thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
@@ -980,6 +1002,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return Thesaurus(**req_thesaurus.json())
 
+    @_check_bearer_validity
     def keywords(
         self,
         thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
@@ -1060,6 +1083,7 @@ class IsogeoSession(OAuth2Session):
         return kwds_req.json()
 
     # -- LICENCES ---------------------------------------------
+    @_check_bearer_validity
     def licenses(self, workgroup_id: str = None, include: list = ["count"]) -> dict:
         """Get information about licenses owned by a specific workgroup.
 
@@ -1091,6 +1115,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return licenses_req.json()
 
+    @_check_bearer_validity
     def license(self, license_id: str) -> dict:
         """Get details about a specific license.
 
@@ -1118,6 +1143,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return license_req.json()
 
+    @_check_bearer_validity
     def license_create(
         self, workgroup_id: str, check_exists: int = 1, license: object = License()
     ) -> License:
@@ -1175,6 +1201,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return new_license
 
+    @_check_bearer_validity
     def license_delete(self, workgroup_id: str, license_id: str) -> dict:
         """Delete a license from Isogeo database.
 
@@ -1204,6 +1231,7 @@ class IsogeoSession(OAuth2Session):
 
         return ct_deletion
 
+    @_check_bearer_validity
     def license_exists(self, license_id: str) -> bool:
         """Check if the specified license exists and is available for the authenticated user.
 
@@ -1214,6 +1242,7 @@ class IsogeoSession(OAuth2Session):
         return checker.check_api_response(self.get(url_ct_check))
 
     # -- SPECIFICATIONS --------------------------------------------------
+    @_check_bearer_validity
     def specifications(
         self, workgroup_id: str = None, include: list = ["count"]
     ) -> Specification:
@@ -1247,6 +1276,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return Specification(**specifications_req.json())
 
+    @_check_bearer_validity
     def specification(self, specification_id: str, include: list = ["count"]) -> dict:
         """Get a specification.
 
@@ -1277,6 +1307,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return specification_req.json()
 
+    @_check_bearer_validity
     def specification_create(
         self,
         workgroup_id: str,
@@ -1331,6 +1362,7 @@ class IsogeoSession(OAuth2Session):
 
         return Specification(**new_specification.json())
 
+    @_check_bearer_validity
     def specification_delete(self, workgroup_id: str, specification_id: str) -> dict:
         """Delete a specification from Isogeo database.
 
@@ -1362,6 +1394,7 @@ class IsogeoSession(OAuth2Session):
 
         return ct_deletion
 
+    @_check_bearer_validity
     def specification_exists(self, specification_id: str) -> bool:
         """Check if the specified specification exists and is available for the authenticated user.
 
@@ -1374,6 +1407,7 @@ class IsogeoSession(OAuth2Session):
         return checker.check_api_response(self.get(url_ct_check))
 
     # -- EVENTS --------------------------------------------------
+    @_check_bearer_validity
     def event(self, metadata_id: str, event_id: str) -> dict:
         """Get an event.
 
@@ -1416,6 +1450,7 @@ class IsogeoSession(OAuth2Session):
         return event_augmented
 
     # -- LINKS --------------------------------------------------
+    @_check_bearer_validity
     def link(self, metadata_id: str, link_id: str) -> dict:
         """Get an link.
 
@@ -1458,6 +1493,7 @@ class IsogeoSession(OAuth2Session):
         return link_augmented
 
     # -- WORKGROUPS --------------------------------------------------
+    @_check_bearer_validity
     def workgroup(
         self, workgroup_id: str, include: list = ["_abilities", "limits"]
     ) -> dict:
@@ -1497,6 +1533,7 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return workgroup_req.json()
 
+    @_check_bearer_validity
     def workgroup_create(
         self, workgroup: Workgroup, check_exists: int = 1
     ) -> Workgroup:
@@ -1556,6 +1593,7 @@ class IsogeoSession(OAuth2Session):
 
         return Workgroup(**new_wg.json())
 
+    @_check_bearer_validity
     def workgroup_delete(self, workgroup_id: str) -> dict:
         """Delete a workgroup from Isogeo database.
 
@@ -1658,6 +1696,7 @@ class IsogeoSession(OAuth2Session):
 
         return wg_catalogs
 
+    @_check_bearer_validity
     def workgroup_contacts(
         self, workgroup_id: str, include: list = ["count"], caching: bool = 1
     ) -> list:
@@ -1706,6 +1745,8 @@ class IsogeoSession(OAuth2Session):
 
         return wg_contacts
 
+    @_check_bearer_validity
+    @_check_bearer_validity
     def workgroup_licenses(
         self, workgroup_id: str, include: list = ["count"], caching: bool = 1
     ) -> dict:
@@ -1805,6 +1846,7 @@ class IsogeoSession(OAuth2Session):
 
         return wg_metadata
 
+    @_check_bearer_validity
     def workgroup_specifications(
         self, workgroup_id: str, include: list = ["count"], caching: bool = 1
     ) -> list:
@@ -1853,6 +1895,7 @@ class IsogeoSession(OAuth2Session):
 
         return wg_specifications
 
+    @_check_bearer_validity
     def workgroup_stats(self, workgroup_id: str) -> dict:
         """Returns statistics for the specified workgroup.
 
