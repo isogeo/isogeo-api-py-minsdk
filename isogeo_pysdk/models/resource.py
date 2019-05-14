@@ -487,7 +487,7 @@ class Resource(object):
         # "_id": str,
         "abstract": str,
         "collectionContext": str,
-        # "collectionMethod": str,
+        "collectionMethod": str,
         # "created": str,
         # "distance": float,
         # "editionProfile": str,
@@ -499,7 +499,7 @@ class Resource(object):
         # "keywords": list,
         "language": str,
         # "modified": str,
-        # "name": str,
+        "name": str,
         "path": str,
         "precision": str,
         # "published": str,
@@ -508,7 +508,7 @@ class Resource(object):
         "title": str,
         "topologicalConsistency": str,
         "type": str,
-        # "updateFrequency": str,
+        "updateFrequency": str,
         # "validFrom": str,
         # "validTo": str,
         # "validityComment": str,
@@ -666,6 +666,8 @@ class Resource(object):
             self._links = links
         if modified is not None:
             self._modified = modified
+        if name is not None:
+            self._name = name
         if path is not None:
             self._path = path
         if precision is not None:
