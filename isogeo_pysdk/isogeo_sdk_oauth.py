@@ -52,6 +52,7 @@ from isogeo_pysdk import version
 # ########## Globals ###############
 # ##################################
 
+logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
 utils = IsogeoUtils()
 
