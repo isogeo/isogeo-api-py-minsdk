@@ -13,6 +13,7 @@ from .isogeo_sdk_oauth import IsogeoSession  # noqa: F401
 from .models import *  # noqa: F401
 from .translator import IsogeoTranslator  # noqa: F401
 from .utils import IsogeoUtils  # noqa: F401
+from .decorators import ApiDecorators
 
 __version__ = version
 VERSION = __version__
