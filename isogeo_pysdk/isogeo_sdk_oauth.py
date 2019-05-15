@@ -29,6 +29,7 @@ from oauthlib.oauth2 import LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
 # modules
+from isogeo_pysdk import api, version
 from isogeo_pysdk.api_hooks import IsogeoHooks
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.models import (
@@ -186,6 +187,9 @@ class IsogeoSession(OAuth2Session):
             logging.debug("No proxy set. Use default configuration.")
             pass
 
+        # load routes as subclass
+        self.api = api
+        self.api.license = self.api.ApiLicense(self)
         # get API version
         logging.debug("Isogeo API version: {}".format(utils.get_isogeo_version()))
         logging.debug("Isogeo DB version: {}".format(utils.get_isogeo_version("db")))
@@ -1232,165 +1236,6 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return kwds_req.json()
 
-    # -- LICENCES ---------------------------------------------
-    @_check_bearer_validity
-    def licenses(self, workgroup_id: str = None, include: list = ["count"]) -> dict:
-        """Get information about licenses owned by a specific workgroup.
-
-        :param str workgroup_id: workgroup UUID
-        """
-        # handling request parameters
-        payload = {"_include": include}
-
-        # request URL
-        url_licenses = utils.get_request_base_url(
-            route="groups/{}/licenses".format(workgroup_id)
-        )
-
-        # request
-        licenses_req = self.get(
-            url_licenses,
-            headers=self.header,
-            params=payload,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(licenses_req)
-        if isinstance(req_check, tuple):
-            return req_check
-
-        # end of method
-        return licenses_req.json()
-
-    @_check_bearer_validity
-    def license(self, license_id: str) -> dict:
-        """Get details about a specific license.
-
-        :param str license_id: license UUID
-        """
-        # handling request parameters
-        payload = {"lid": license_id}
-
-        # lciense route
-        url_license = utils.get_request_base_url(route="licenses/{}".format(license_id))
-
-        # request
-        license_req = self.get(
-            url_license,
-            headers=self.header,
-            params=payload,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        # checking response
-        checker.check_api_response(license_req)
-
-        # end of method
-        return license_req.json()
-
-    @_check_bearer_validity
-    def license_create(
-        self, workgroup_id: str, check_exists: int = 1, license: object = License()
-    ) -> License:
-        """Add a new license to a workgroup.
-
-        :param str workgroup_id: identifier of the owner workgroup
-        :param int check_exists: check if a license already exists inot the workgroup:
-
-        - 0 = no check
-        - 1 = compare name [DEFAULT]
-
-        :param class license: License model object to create
-        """
-        # check workgroup UUID
-        if not checker.check_is_uuid(workgroup_id):
-            raise ValueError("Workgroup ID is not a correct UUID.")
-        else:
-            pass
-
-        # check if license already exists in workgroup
-        if check_exists == 1:
-            # retrieve workgroup licenses
-            if not self._wg_lics_names:
-                self.workgroup_licenses(workgroup_id=workgroup_id, include=[])
-            # check
-            if license.name in self._wg_lics_names:
-                logging.debug(
-                    "License with the same name already exists: {}. Use 'license_update' instead.".format(
-                        license.name
-                    )
-                )
-                return False
-        else:
-            pass
-
-        # build request url
-        url_license_create = utils.get_request_base_url(
-            route="groups/{}/licenses".format(workgroup_id)
-        )
-
-        # request
-        req_new_license = self.post(
-            url_license_create,
-            data=license.to_dict_creation(),
-            headers=self.header,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        # load new license and save it to the cache
-        new_license = License(**req_new_license.json())
-        self._wg_lics_names[new_license.name] = new_license._id
-
-        # end of method
-        return new_license
-
-    @_check_bearer_validity
-    def license_delete(self, workgroup_id: str, license_id: str) -> dict:
-        """Delete a license from Isogeo database.
-
-        :param str workgroup_id: identifier of the owner workgroup
-        :param str license_id: identifier of the resource to delete
-        """
-        # check workgroup UUID
-        if not checker.check_is_uuid(workgroup_id):
-            raise ValueError(
-                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
-            )
-        else:
-            pass
-
-        # check license UUID
-        if not checker.check_is_uuid(license_id):
-            raise ValueError("License ID is not a correct UUID: {}".format(license_id))
-        else:
-            pass
-
-        # request URL
-        url_ct_delete = utils.get_request_base_url(
-            route="groups/{}/licenses/{}".format(workgroup_id, license_id)
-        )
-
-        ct_deletion = self.delete(url_ct_delete)
-
-        return ct_deletion
-
-    @_check_bearer_validity
-    def license_exists(self, license_id: str) -> bool:
-        """Check if the specified license exists and is available for the authenticated user.
-
-        :param str license_id: identifier of the license to verify
-        """
-        url_ct_check = "{}{}".format(utils.get_request_base_url("licenses"), license_id)
-
-        return checker.check_api_response(self.get(url_ct_check))
-
     # -- SPECIFICATIONS --------------------------------------------------
     @_check_bearer_validity
     def specifications(
@@ -1938,53 +1783,6 @@ class IsogeoSession(OAuth2Session):
         wg_keywords = req_wg_keywords.json()
 
         return wg_keywords
-
-    @_check_bearer_validity
-    def workgroup_licenses(
-        self, workgroup_id: str, include: list = ["count"], caching: bool = 1
-    ) -> dict:
-        """List workgroup licenses.
-
-        :param str workgroup_id: identifier of the owner workgroup
-        :param list include: identifier of the owner workgroup
-        :param bool caching: option to cache the response
-        """
-        # check workgroup UUID
-        if not checker.check_is_uuid(workgroup_id):
-            raise ValueError("Workgroup ID is not a correct UUID.")
-        else:
-            pass
-
-        # handle include
-        # include = checker._check_filter_includes(include, "contact")
-        payload = {"_include": include}
-
-        # build request url
-        url_licenses_list = utils.get_request_base_url(
-            route="groups/{}/licenses".format(workgroup_id)
-        )
-
-        # request
-        req_wg_licenses = self.get(
-            url_licenses_list,
-            headers=self.header,
-            params=payload,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        # check and get as dict
-        req_check = checker.check_api_response(req_wg_licenses)
-        if isinstance(req_check, tuple):
-            return req_check
-        wg_licenses = req_wg_licenses.json()
-
-        # if caching use or store the workgroup licenses
-        if caching and not self._wg_lics_names:
-            self._wg_lics_names = {i.get("name"): i.get("_id") for i in wg_licenses}
-
-        return wg_licenses
 
     @_check_bearer_validity
     def workgroup_metadata(

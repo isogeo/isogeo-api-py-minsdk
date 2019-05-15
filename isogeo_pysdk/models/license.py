@@ -24,6 +24,8 @@ class License(object):
 
     Sample:
 
+    Licenses owned by Isogeo (locked):
+
     ```json
     {
         '_abilities': [],
@@ -31,6 +33,41 @@ class License(object):
         '_tag': 'license:isogeo:34f800d2370a43d2a1681eb2397b0dd3',
         'link': 'http://professionnels.ign.fr/sites/default/files/cgu-mission-service-public.pdf',
         'name': 'Licence IGN - Mission de service public'
+    }
+    ```
+
+    Licenses owned by a specific workgroup:
+
+    ```json
+    {
+        '_abilities': [
+            'license:delete', 
+            'license:update
+        '],
+        '_id': '8a53902292cd4b329a87677724688757',
+        '_tag': 'license:32f7e95ec4e94ca3bc1afda960003882:8a53902292cd4b329a87677724688757',
+        'content': "Conditions d'utilisation associées au téléchargement des données "
+                    'de "geomayenne.fr" :\n'
+                    '\n'
+                    '* Respecter les droits de propriété intellectuelle en mentionnant '
+                    'la source et la date de dernière mise à jour,\n'
+                    "* Utilisation sous la pleine responsabilité de l'utilisateur qui "
+                    "apprécie l'adéquation de la donnée avec ses besoins.",
+        'count': 6,
+        'link': 'https://www.geomayenne.fr/fichiers/CGU/CU_geomayenne_fr.pdf',
+        'name': 'CU geomayenne.fr',
+        'owner': {'_created': '2015-05-21T12:08:16.4295098+00:00',
+                '_id': '32f7e95ec4e94ca3bc1afda960003882',
+                '_modified': '2019-05-13T16:05:50.8485348+00:00',
+                '_tag': 'owner:32f7e95ec4e94ca3bc1afda960003882',
+                'areKeywordsRestricted': False,
+                'canCreateLegacyServiceLinks': True,
+                'canCreateMetadata': True,
+                'hasCswClient': True,
+                'hasScanFme': True,
+                'keywordsCasing': 'lowercase',
+                'metadataLanguage': 'fr',
+                'themeColor': '#4499A1'}
     }
     ```
     """
@@ -42,6 +79,7 @@ class License(object):
     """
 
     attr_types = {
+        "_abilities": str,
         "_id": str,
         "_tag": str,
         "content": str,
@@ -68,6 +106,7 @@ class License(object):
         """License model"""
 
         # default values for the object attributes/properties
+        self.__abilities = None
         self.__id = None
         self.__tag = None
         self._content = None
@@ -96,6 +135,16 @@ class License(object):
             self.owner = owner
 
     # -- PROPERTIES --------------------------------------------------------------------
+    # abilities of the user related to the metadata
+    @property
+    def _abilities(self) -> str:
+        """Gets the abilities of this Catalog.
+
+        :return: The abilities of this Catalog.
+        :rtype: str
+        """
+        return self.__abilities
+
     # license UUID
     @property
     def _id(self) -> str:
