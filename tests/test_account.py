@@ -19,8 +19,9 @@
 # Standard library
 from os import environ
 import logging
+from random import sample
 from socket import gethostname
-from sys import exit
+from sys import exit, _getframe
 from time import gmtime, strftime
 import unittest
 
@@ -50,6 +51,16 @@ user_password = environ.get("ISOGEO_USER_PASSWORD")
 workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
+# ########## Helpers ###############
+# ##################################
+
+
+def get_test_marker():
+    """Returns the function name"""
+    return "TEST_UNIT_PythonSDK - {}".format(_getframe(1).f_code.co_name)
+
+
+# #############################################################################
 # ########## Classes ###############
 # ##################################
 
@@ -57,43 +68,55 @@ workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 class TestAccount(unittest.TestCase):
     """Test Account model of Isogeo API."""
 
-    if not app_script_id or not app_script_secret:
-        logging.critical("No API credentials set as env variables.")
-        exit()
-    else:
-        pass
-    logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
+    # -- Standard methods --------------------------------------------------------
+    @classmethod
+    def setUpClass(cls):
+        """Executed when module is loaded before any test."""
+        # checks
+        if not app_script_id or not app_script_secret:
+            logging.critical("No API credentials set as env variables.")
+            exit()
+        else:
+            pass
+        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
-    # standard methods
+        # API connection
+        cls.isogeo = IsogeoSession(
+            client=LegacyApplicationClient(client_id=app_script_id),
+            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+            client_secret=app_script_secret,
+            platform=platform,
+        )
+        # getting a token
+        cls.isogeo.connect(username=user_email, password=user_password)
+
     def setUp(self):
         """Executed before each test."""
         # tests stuff
         self.discriminator = "{}_{}".format(
             hostname, strftime("%Y-%m-%d_%H%M%S", gmtime())
         )
-        # API connection
-        self.isogeo = IsogeoSession(
-            client=LegacyApplicationClient(client_id=app_script_id),
-            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
-            client_secret=app_script_secret,
-            platform=platform,
-        )
-
-        # getting a token
-        self.isogeo.connect(username=user_email, password=user_password)
 
     def tearDown(self):
         """Executed after each test."""
-        # close sessions
-        self.isogeo.close()
+        pass
 
-    # -- ALL APPS ------------------------------------------------------------
+    @classmethod
+    def tearDownClass(cls):
+        """Executed after the last test."""
+        # close sessions
+        cls.isogeo.close()
+
+    # -- TESTS ---------------------------------------------------------
+
+    # -- GET --
     def test_account(self):
         """GET :/account/}"""
         # compare account objects
-        me = self.isogeo.account(caching=0)  # Account route
+        me = self.isogeo.account.account(caching=0)  # Account route
         self.assertTrue(me.__eq__(self.isogeo._user))  # account stored during auth step
 
+    # -- PUT/PATCH --
     def test_account_update(self):
         """PUT :/account/}"""
         # get account
@@ -102,14 +125,14 @@ class TestAccount(unittest.TestCase):
         # modify language
         me.language = "en"
         # update it
-        self.isogeo.account_update(me)
+        self.isogeo.account.account_update(me)
         # confirm
-        self.assertTrue(self.isogeo.account().language == "en")
+        self.assertTrue(self.isogeo.account.account().language == "en")
 
         # restablish previous language
         me.language = prev_language
-        # update it
-        self.isogeo.account_update(me)
+        # restore it
+        self.isogeo.account.account_update(me)
 
 
 # ##############################################################################

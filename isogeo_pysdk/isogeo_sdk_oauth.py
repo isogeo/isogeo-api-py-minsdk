@@ -185,6 +185,7 @@ class IsogeoSession(OAuth2Session):
 
         # load routes as subclass
         self.api = api
+        self.account = api.ApiAccount(self)
         self.contact = api.ApiContact(self)
         self.license = api.ApiLicense(self)
         # self.api.metadata = self.api.ApiResource(self)
@@ -227,7 +228,7 @@ class IsogeoSession(OAuth2Session):
         )
 
         # get authenticated user informations
-        self.account()
+        self.account.account()
 
     # -- PROPERTIES -----------------------------------------------------------
     @property
@@ -268,64 +269,6 @@ class IsogeoSession(OAuth2Session):
             return decorated_func(self, *args, **kwargs)
 
         return wrapper
-
-    # -- ACCOUNT AND MEMBERSHIPS -------------------------------------------------------
-    @_check_bearer_validity
-    def account(self, caching: bool = 1) -> User:
-        """Get authenticated user account(= profile) informations.
-
-        :param bool caching: option to cache the response
-        """
-        # request url
-        url_account = utils.get_request_base_url(route="account")
-
-        # build request
-        account_req = self.get(
-            url_account, proxies=self.proxies, verify=self.ssl, timeout=self.timeout
-        )
-        # check request response
-        checker.check_api_response(account_req)
-
-        # if caching use or store the response
-        if caching and not self._user:
-            self._user = User(**account_req.json())
-
-        # end of method
-        return User(**account_req.json())
-
-    @_check_bearer_validity
-    def account_update(self, user_account: User) -> User:
-        """Update authenticated user account(= profile) informations.
-
-        :param class user_account: user account model object to update
-        """
-        # check account UUID
-        if not checker.check_is_uuid(user_account._id):
-            raise ValueError(
-                "User account ID is not a correct UUID: {}".format(user_account._id)
-            )
-        else:
-            pass
-
-        # request url
-        url_account = utils.get_request_base_url(route="account")
-
-        # build request
-        account_req = self.put(
-            url=url_account,
-            data=user_account.to_dict(),
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-        # check request response
-        checker.check_api_response(account_req)
-
-        # if caching use or store the response
-        self._user = User(**account_req.json())
-
-        # end of method
-        return User(**account_req.json())
 
     # -- APPLICATIONS ---------------------------------------------
     @_check_bearer_validity

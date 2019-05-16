@@ -101,7 +101,7 @@ class Specification(object):
         if name is not None:
             self._name = name
         if owner is not None:
-            self.owner = owner
+            self._owner = owner
         if published is not None:
             self._published = published
 

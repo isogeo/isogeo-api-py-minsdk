@@ -61,7 +61,7 @@ class ApiSpecification:
         """Get workgroup specifications.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param list include: identifier of the owner workgroup
+        :param list include: additional parts of model to include in response
         :param bool caching: option to cache the response
         """
         # check workgroup UUID

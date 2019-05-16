@@ -133,7 +133,7 @@ class License(object):
         if name is not None:
             self._name = name
         if owner is not None:
-            self.owner = owner
+            self._owner = owner
 
     # -- PROPERTIES --------------------------------------------------------------------
     # abilities of the user related to the metadata
@@ -269,17 +269,6 @@ class License(object):
         :rtype: Workgroup
         """
         return self._owner
-
-    @owner.setter
-    def owner(self, owner):
-        """Sets the owner of this License.
-
-
-        :param owner: The owner of this License.
-        :type: Workgroup
-        """
-
-        self._owner = owner
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:

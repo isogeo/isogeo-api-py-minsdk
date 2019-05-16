@@ -269,14 +269,10 @@ class TestContacts(unittest.TestCase):
 
         # check both exist
         self.assertTrue(
-            self.isogeo.contact.contact_exists(
-                contact_id_isogeo.get("_id")
-            )
+            self.isogeo.contact.contact_exists(contact_id_isogeo.get("_id"))
         )
         self.assertTrue(
-            self.isogeo.contact.contact_exists(
-                contact_id_specific.get("_id")
-            )
+            self.isogeo.contact.contact_exists(contact_id_specific.get("_id"))
         )
         # self.assertTrue(
         #     self.isogeo.contact.contact_exists(
@@ -285,12 +281,8 @@ class TestContacts(unittest.TestCase):
         # )
 
         # get and check
-        contact_isogeo = self.isogeo.contact.contact(
-            contact_id_isogeo.get("_id")
-        )
-        contact_specific = self.isogeo.contact.contact(
-            contact_id_specific.get("_id")
-        )
+        contact_isogeo = self.isogeo.contact.contact(contact_id_isogeo.get("_id"))
+        contact_specific = self.isogeo.contact.contact(contact_id_specific.get("_id"))
         # contact_user = self.isogeo.contact.contact(
         #     contact_id_user.get("_id")
         # )
@@ -307,9 +299,7 @@ class TestContacts(unittest.TestCase):
             name="{} - {}".format(get_test_marker(), self.discriminator)
         )
         contact_fixture = self.isogeo.contact.contact_create(
-            workgroup_id=workgroup_test,
-            contact=contact_fixture,
-            check_exists=0,
+            workgroup_id=workgroup_test, contact=contact_fixture, check_exists=0
         )
 
         # modify local object
@@ -318,14 +308,10 @@ class TestContacts(unittest.TestCase):
         )
 
         # update the online contact
-        contact_fixture = self.isogeo.contact.contact_update(
-            contact_fixture
-        )
+        contact_fixture = self.isogeo.contact.contact_update(contact_fixture)
 
         # check if the change is effective
-        contact_fixture_updated = self.isogeo.contact.contact(
-            contact_fixture._id
-        )
+        contact_fixture_updated = self.isogeo.contact.contact(contact_fixture._id)
         self.assertEqual(
             contact_fixture_updated.name,
             "{} - UPDATED - {}".format(get_test_marker(), self.discriminator),

@@ -322,4 +322,3 @@ class ApiLicense:
 if __name__ == "__main__":
     """ standalone execution """
     api_license = ApiLicense()
-    print(api_license)

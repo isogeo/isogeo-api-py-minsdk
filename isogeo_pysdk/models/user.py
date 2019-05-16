@@ -72,22 +72,23 @@ class User(object):
       attr_map (dict): mapping between read and write attributes. {"attribute name - GET": "attribute type - POST"}
     """
     attr_types = {
-        "_created": "str",
-        "_id": "str",
-        "_modified": "str",
+        "_abilities": list,
+        "_created": str,
+        "_id": str,
+        "_modified": str,
         "contact": Contact,
-        "language": "str",
-        "mailchimp": "str",
-        "staff": "bool",
-        "timezone": "str",
+        "language": str,
+        "mailchimp": dict,
+        "staff": bool,
+        "timezone": str,
     }
 
     attr_crea = {
         "contact": Contact,
-        "language": "str",
-        "mailchimp": "str",
-        "staff": "bool",
-        "timezone": "str",
+        "language": str,
+        "mailchimp": str,
+        "staff": bool,
+        "timezone": str,
     }
 
     attr_map = {}
@@ -95,14 +96,13 @@ class User(object):
     def __init__(
         self,
         _abilities: list = None,
-        _created: bool = None,
+        _created: str = None,
         _id: str = None,
         _modified: str = None,
         contact: Contact = None,
         language: str = None,
         mailchimp: dict = None,
         staff: bool = None,
-        available: bool = None,
         timezone: str = None,
     ):
         """User model"""
@@ -121,9 +121,9 @@ class User(object):
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
         if _abilities is not None:
-            self._abilities = _abilities
+            self.__abilities = _abilities
         if _created is not None:
-            self._created = _created
+            self.__created = _created
         if _id is not None:
             self.__id = _id
         if _modified is not None:
@@ -151,17 +151,6 @@ class User(object):
         :rtype: Abilities
         """
         return self.__abilities
-
-    @_abilities.setter
-    def _abilities(self, _abilities):
-        """Sets the abilities of this User.
-
-
-        :param abilities: The abilities of this User.  # noqa: E501
-        :type: Abilities
-        """
-
-        self.__abilities = _abilities
 
     # creation date
     @property

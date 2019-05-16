@@ -13,4 +13,6 @@ from .thesaurus import Thesaurus  # noqa: F401
 from .user import User  # noqa: F401
 from .workgroup import Workgroup  # noqa: F401
 
+# shortcuts or confusion reducers
+Account = User
 Metadata = Resource
