@@ -33,12 +33,22 @@ jobs:
   - script: |
       pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html --cov-append tests
     env:
+      # platform
+      ISOGEO_PLATFORM: $(ISOGEO_PLATFORM)
+      OAUTHLIB_INSECURE_TRANSPORT: $(OAUTHLIB_INSECURE_TRANSPORT)
+      # URLs
+      ISOGEO_API_URL: $(ISOGEO_API_URL)
+      ISOGEO_ID_URL: $(ISOGEO_ID_URL)
+      # oAuth2 Client Credentials Grant
       ISOGEO_API_DEV_ID: $(ISOGEO_API_DEV_ID)
       ISOGEO_API_DEV_SECRET: $(ISOGEO_API_DEV_SECRET)
+      # oAuth2 Legacy Application Client
       ISOGEO_API_USER_CLIENT_ID: $(ISOGEO_API_USER_CLIENT_ID)
       ISOGEO_API_USER_CLIENT_SECRET: $(ISOGEO_API_USER_CLIENT_SECRET)
       ISOGEO_USER_NAME: $(ISOGEO_USER_NAME)
       ISOGEO_USER_PASSWORD: $(ISOGEO_USER_PASSWORD)
+      # static fixtures
+      ISOGEO_FIXTURES_METADATA_COMPLETE: $(ISOGEO_FIXTURES_METADATA_COMPLETE)
       ISOGEO_WORKGROUP_TEST_UUID: $(ISOGEO_WORKGROUP_TEST_UUID)
     displayName: 'Tests and coverage'
 
