@@ -190,6 +190,7 @@ class IsogeoSession(OAuth2Session):
         # load routes as subclass
         self.api = api
         self.api.license = self.api.ApiLicense(self)
+        self.api.metadata = self.api.ApiResource(self)
         self.api.specification = self.api.ApiSpecification(self)
 
         # get API version
