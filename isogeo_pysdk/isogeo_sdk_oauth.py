@@ -46,8 +46,6 @@ from isogeo_pysdk.models import (
     Workgroup,
 )
 from isogeo_pysdk.utils import IsogeoUtils
-from isogeo_pysdk import version
-
 
 # ##############################################################################
 # ########## Globals ###############
@@ -107,12 +105,12 @@ class IsogeoSession(OAuth2Session):
 
         # caching
         self._user = {}  # authenticated user profile
-        self._wg_cts_emails = {}  # workgroup contacts by emails
-        self._wg_cts_names = {}  # workgroup contacts by names
-        self._wg_apps_names = {}  # workgroup applications by names
-        self._wg_cats_names = {}  # workgroup catalogs by names
-        self._wg_lics_names = {}  # workgroup licenses by names
-        self._wg_specs_names = {}  # workgroup specifications by names
+        self._wg_contacts_emails = {}  # workgroup contacts by emails
+        self._wg_contacts_names = {}  # workgroup contacts by names
+        self._wg_applications_names = {}  # workgroup applications by names
+        self._wg_catalogs_names = {}  # workgroup catalogs by names
+        self._wg_licenses_names = {}  # workgroup licenses by names
+        self._wg_specifications_names = {}  # workgroup specifications by names
 
         # checking internet connection
         if not checker.check_internet_connection():
@@ -768,10 +766,10 @@ class IsogeoSession(OAuth2Session):
         # check if catalog already exists in workgroup
         if check_exists:
             # retrieve workgroup catalogs
-            if not self._wg_cats_names:
+            if not self._wg_catalogs_names:
                 self.workgroup_catalogs(workgroup_id=workgroup_id, include=[])
             # check
-            if catalog.name in self._wg_cats_names:
+            if catalog.name in self._wg_catalogs_names:
                 logging.debug(
                     "Catalog with the same name already exists: {}. Use 'catalog_update' instead.".format(
                         catalog.name
@@ -807,7 +805,7 @@ class IsogeoSession(OAuth2Session):
 
         # load new catalog and save it to the cache
         new_catalog = Catalog(**catalog)
-        self._wg_cats_names[new_catalog.name] = new_catalog._id
+        self._wg_catalogs_names[new_catalog.name] = new_catalog._id
 
         # end of method
         return catalog
@@ -954,10 +952,10 @@ class IsogeoSession(OAuth2Session):
         # check if contact already exists in workgroup
         if check_exists == 1:
             # retrieve workgroup contacts
-            if not self._wg_cts_names:
+            if not self._wg_contacts_names:
                 self.workgroup_contacts(workgroup_id=workgroup_id, include=[])
             # check
-            if contact.name in self._wg_cts_names:
+            if contact.name in self._wg_contacts_names:
                 logging.debug(
                     "Contact with the same name already exists: {}. Use 'contact_update' instead.".format(
                         contact.name
@@ -966,10 +964,10 @@ class IsogeoSession(OAuth2Session):
                 return False
         elif check_exists == 2:
             # retrieve workgroup contacts
-            if not self._wg_cts_emails:
+            if not self._wg_contacts_emails:
                 self.workgroup_contacts(workgroup_id=workgroup_id, include=[])
             # check
-            if contact.email in self._wg_cts_emails:
+            if contact.email in self._wg_contacts_emails:
                 logging.debug(
                     "Contact with the same email already exists: {}. Use 'contact_update' instead.".format(
                         contact.email
@@ -999,8 +997,8 @@ class IsogeoSession(OAuth2Session):
 
         # load new contact and save it to the cache
         new_contact = Contact(**req_new_contact.json())
-        self._wg_cts_emails[new_contact.email] = new_contact._id
-        self._wg_cts_names[new_contact.name] = new_contact._id
+        self._wg_contacts_emails[new_contact.email] = new_contact._id
+        self._wg_contacts_names[new_contact.name] = new_contact._id
 
         # method ending
         return new_contact
@@ -1389,10 +1387,10 @@ class IsogeoSession(OAuth2Session):
         if check_exists == 1:
             logging.debug(NotImplemented)
         #     # retrieve workgroup workgroups
-        #     if not self._wg_cts_names:
+        #     if not self._wg_contacts_names:
         #         self.workgroup_workgroups(workgroup_id=workgroup_id, include=[])
         #     # check
-        #     if workgroup.name in self._wg_cts_names:
+        #     if workgroup.name in self._wg_contacts_names:
         #         logging.debug(
         #             "Workgroup with the same name already exists: {}. Use 'workgroup_update' instead.".format(
         #                 workgroup.name
@@ -1401,10 +1399,10 @@ class IsogeoSession(OAuth2Session):
         #         return False
         # elif check_exists == 2:
         #     # retrieve workgroup workgroups
-        #     if not self._wg_cts_emails:
+        #     if not self._wg_contacts_emails:
         #         self.workgroup_workgroups(workgroup_id=workgroup_id, include=[])
         #     # check
-        #     if workgroup.email in self._wg_cts_emails:
+        #     if workgroup.email in self._wg_contacts_emails:
         #         logging.debug(
         #             "Workgroup with the same email already exists: {}. Use 'workgroup_update' instead.".format(
         #                 workgroup.email
@@ -1524,8 +1522,8 @@ class IsogeoSession(OAuth2Session):
             i["scan"] = i.pop("$scan")
 
         # if caching use or store the workgroup catalogs
-        if caching and not self._wg_cats_names:
-            self._wg_cats_names = {i.get("name"): i.get("_id") for i in wg_catalogs}
+        if caching and not self._wg_catalogs_names:
+            self._wg_catalogs_names = {i.get("name"): i.get("_id") for i in wg_catalogs}
 
         return wg_catalogs
 
@@ -1571,10 +1569,10 @@ class IsogeoSession(OAuth2Session):
         wg_contacts = req_wg_contacts.json()
 
         # if caching use or store the workgroup contacts
-        if caching and not self._wg_cts_emails and not self._wg_cts_names:
+        if caching and not self._wg_contacts_emails and not self._wg_contacts_names:
             for i in wg_contacts:
-                self._wg_cts_emails[i.get("email")] = i.get("_id")
-                self._wg_cts_names[i.get("name")] = i.get("_id")
+                self._wg_contacts_emails[i.get("email")] = i.get("_id")
+                self._wg_contacts_names[i.get("name")] = i.get("_id")
 
         return wg_contacts
 
