@@ -2,7 +2,7 @@
 #! python3
 
 """
-    Isogeo API v1 - API Routes for Licenses (= CGUs, conditions) entity
+    Isogeo API v1 - API Routes for Licenses (= CGUs, conditions) entities
 
     See: http://help.isogeo.com/api/complete/index.html
 """
@@ -96,8 +96,8 @@ class ApiLicense:
         wg_licenses = req_wg_licenses.json()
 
         # if caching use or store the workgroup licenses
-        if caching and not self.api_client._wg_lics_names:
-            self.api_client._wg_lics_names = {
+        if caching and not self.api_client._wg_licenses_names:
+            self.api_client._wg_licenses_names = {
                 i.get("name"): i.get("_id") for i in wg_licenses
             }
 
@@ -110,6 +110,12 @@ class ApiLicense:
 
         :param str license_id: license UUID
         """
+        # check license UUID
+        if not checker.check_is_uuid(license_id):
+            raise ValueError("License ID is not a correct UUID.")
+        else:
+            pass
+
         # license route
         url_license = utils.get_request_base_url(route="licenses/{}".format(license_id))
 
@@ -153,10 +159,10 @@ class ApiLicense:
         # check if license already exists in workgroup
         if check_exists == 1:
             # retrieve workgroup licenses
-            if not self.api_client._wg_lics_names:
+            if not self.api_client._wg_licenses_names:
                 self.licenses(workgroup_id=workgroup_id, include=[])
             # check
-            if license.name in self.api_client._wg_lics_names:
+            if license.name in self.api_client._wg_licenses_names:
                 logger.debug(
                     "License with the same name already exists: {}. Use 'license_update' instead.".format(
                         license.name
@@ -181,9 +187,14 @@ class ApiLicense:
             timeout=self.api_client.timeout,
         )
 
+        # checking response
+        req_check = checker.check_api_response(req_new_license)
+        if isinstance(req_check, tuple):
+            return req_check
+
         # load new license and save it to the cache
         new_license = License(**req_new_license.json())
-        self.api_client._wg_lics_names[new_license.name] = new_license._id
+        self.api_client._wg_licenses_names[new_license.name] = new_license._id
 
         # end of method
         return new_license
@@ -236,8 +247,16 @@ class ApiLicense:
 
         :param str license_id: identifier of the license to verify
         """
+        # check license UUID
+        if not checker.check_is_uuid(license_id):
+            raise ValueError("License ID is not a correct UUID: {}".format(license_id))
+        else:
+            pass
+
         # URL builder
-        url_license_exists = "{}{}".format(utils.get_request_base_url("licenses"), license_id)
+        url_license_exists = "{}{}".format(
+            utils.get_request_base_url("licenses"), license_id
+        )
 
         # request
         req_license_exists = self.api_client.get(
@@ -291,7 +310,7 @@ class ApiLicense:
         # update license in cache
         new_license = License(**req_license_update.json())
         if caching:
-            self.api_client._wg_lics_names[new_license.name] = new_license._id
+            self.api_client._wg_licenses_names[new_license.name] = new_license._id
 
         # end of method
         return new_license

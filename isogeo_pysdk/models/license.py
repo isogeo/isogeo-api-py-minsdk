@@ -83,6 +83,7 @@ class License(object):
         "_id": str,
         "_tag": str,
         "content": str,
+        "count": int,
         "link": str,
         "name": str,
         "owner": dict,
@@ -97,7 +98,7 @@ class License(object):
         _abilities: list = None,
         _id: str = None,
         _tag: str = None,
-        count: str = None,
+        count: int = None,
         content: str = None,
         link: str = None,
         name: str = None,
@@ -205,9 +206,9 @@ class License(object):
     # count of resource linked to the license
     @property
     def count(self) -> int:
-        """Gets the id of this License.
+        """Gets the count of this License.
 
-        :return: The id of this License.
+        :return: The count of this License.
         :rtype: str
         """
         return self._count
