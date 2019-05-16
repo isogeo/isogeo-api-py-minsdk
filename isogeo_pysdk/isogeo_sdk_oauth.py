@@ -20,8 +20,6 @@ import locale
 import logging
 from datetime import datetime
 from functools import wraps
-from math import ceil
-import re
 from sys import platform as opersys
 
 # 3rd party library
@@ -1425,55 +1423,6 @@ class IsogeoSession(OAuth2Session):
         return wg_metadata
 
     @_check_bearer_validity
-    def workgroup_specifications(
-        self, workgroup_id: str, include: list = ["count"], caching: bool = 1
-    ) -> list:
-        """List workgroup specifications.
-
-        :param str workgroup_id: identifier of the owner workgroup
-        :param list include: identifier of the owner workgroup
-        :param bool caching: option to cache the response
-        """
-        # check workgroup UUID
-        if not checker.check_is_uuid(workgroup_id):
-            raise ValueError("Workgroup ID is not a correct UUID.")
-        else:
-            pass
-
-        # handle include
-        # include = checker._check_filter_includes(include, "contact")
-        payload = {"_include": include}
-
-        # build request url
-        url_specifications_list = utils.get_request_base_url(
-            route="groups/{}/specifications".format(workgroup_id)
-        )
-
-        # request
-        req_wg_specifications = self.get(
-            url_specifications_list,
-            headers=self.header,
-            params=payload,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        # check and get as dict
-        req_check = checker.check_api_response(req_wg_specifications)
-        if isinstance(req_check, tuple):
-            return req_check
-        wg_specifications = req_wg_specifications.json()
-
-        # if caching use or store the workgroup specifications
-        if caching and not self._wg_specs_names:
-            self._wg_specs_names = {
-                i.get("name"): i.get("_id") for i in wg_specifications
-            }
-
-        return wg_specifications
-
-    @_check_bearer_validity
     def workgroup_stats(self, workgroup_id: str) -> dict:
         """Returns statistics for the specified workgroup.
 
@@ -1515,7 +1464,8 @@ if __name__ == "__main__":
     from dotenv import load_dotenv
     from os import environ
     import pprint
-    from time import sleep
+    from time import sleep, gmtime, strftime
+    import urllib3
 
     # ------------ Log & debug ----------------
     logger = logging.getLogger()
@@ -1529,61 +1479,27 @@ if __name__ == "__main__":
     # get user ID as environment variables
     load_dotenv("dev.env")
 
+    # ignore warnings related to the QA self-signed cert
+    if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+        urllib3.disable_warnings()
+
     # instanciate
     isogeo = IsogeoSession(
         client=LegacyApplicationClient(client_id=credentials.get("client_id")),
-        auto_refresh_url="https://id.api.isogeo.com/oauth/token",
+        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         client_secret=credentials.get("client_secret"),
+        platform=environ.get("ISOGEO_PLATFORM"),
     )
 
     # getting a token
-    token = isogeo.connect(
+    isogeo.connect(
         username=environ.get("ISOGEO_USER_NAME"),
         password=environ.get("ISOGEO_USER_PASSWORD"),
     )
 
-    # # licenses
-    # lics = isogeo.licenses(owner_id="32f7e95ec4e94ca3bc1afda960003882")
-    # print(lics)
+    # misc
+    discriminator = strftime("%Y-%m-%d_%H%M%S", gmtime())
+    WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
-    # # memo : par défaut order_dir = asc
-    # k = isogeo.keywords(thez_id="1616597fbc4348c8b11ef9d59cf594c8",
-    #                     order_by="count.isogeo",
-    #                     order_dir="desc",
-    #                     page_size=10,
-    #                     include="all"
-    #                     )
-    # print(k)
-
-    # md = isogeo.md_create(
-    #     workgroup_id=WORKGROUP_UUID,
-    #     resource_type="vectorDataset",
-    #     title="Salut Simon",
-    #     abstract="meuh",
-    #     series=0
-    # )
-
-    # print(md)
-    # print(md.get("_id"))
-
-    # sleep(10)    # ensure that metadata has been created
-
-    # deleted = isogeo.md_delete(resource_id="cd44a3cbabd347a2aba428d95b055697")
-    # print(deleted)
-
-    # md_ok = isogeo.md_exists("7d3f238a3aad411eb9fc9fca1da76bb3")
-    # print(md_ok)
-
-    # md = isogeo.resource(id_resource="196831cb153e4f30a220ae21512bcb5e")
-    # pprint.pprint(md)
-
-    ct = isogeo.contact(id_contact="49b248a4985041aebee7d5d6c337d82f")
-    # pprint.pprint(ct)
-
-    print(ct.get("_id"))
-    t = Contact(**ct)
-    # print(dir(t))
-
-    # print(t._id)
-    # print(t.to_dict())
-    print(t.to_str())
+    # -- END -------
+    isogeo.close()  # close session

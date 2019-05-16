@@ -243,17 +243,6 @@ class Specification(object):
         """
         return self._owner
 
-    @owner.setter
-    def owner(self, owner):
-        """Sets the owner of this Specification.
-
-
-        :param owner: The owner of this Specification.
-        :type: Workgroup
-        """
-
-        self._owner = owner
-
     # published
     @property
     def published(self) -> str:

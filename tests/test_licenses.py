@@ -110,7 +110,7 @@ class TestLicenses(unittest.TestCase):
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.api.license.license_delete(
+                cls.isogeo.license.license_delete(
                     workgroup_id=workgroup_test, license_id=i
                 )
         # close sessions
@@ -128,13 +128,13 @@ class TestLicenses(unittest.TestCase):
         license_new = License(name=license_name)
 
         # create it online
-        license_new = self.isogeo.api.license.license_create(
+        license_new = self.isogeo.license.license_create(
             workgroup_id=workgroup_test, license=license_new, check_exists=0
         )
 
         # checks
         self.assertEqual(license_new.name, license_name)
-        self.assertTrue(self.isogeo.api.license.license_exists(license_new._id))
+        self.assertTrue(self.isogeo.license.license_exists(license_new._id))
 
         # add created license to deletion
         self.li_fixtures_to_delete.append(license_new._id)
@@ -150,7 +150,7 @@ class TestLicenses(unittest.TestCase):
             link="https://fr.wikipedia.org/wiki/Licence_Creative_Commons",
         )
         # create it online
-        license_new = self.isogeo.api.license.license_create(
+        license_new = self.isogeo.license.license_create(
             workgroup_id=workgroup_test, license=license_new, check_exists=0
         )
 
@@ -158,7 +158,7 @@ class TestLicenses(unittest.TestCase):
         self.assertEqual(
             license_new.name, "{} - {}".format(get_test_marker(), self.discriminator)
         )
-        self.assertTrue(self.isogeo.api.license.license_exists(license_new._id))
+        self.assertTrue(self.isogeo.license.license_exists(license_new._id))
 
         # add created license to deletion
         self.li_fixtures_to_delete.append(license_new._id)
@@ -172,12 +172,12 @@ class TestLicenses(unittest.TestCase):
         license_local = License(name=name_to_be_unique)
 
         # create it online
-        license_new_1 = self.isogeo.api.license.license_create(
+        license_new_1 = self.isogeo.license.license_create(
             workgroup_id=workgroup_test, license=license_local, check_exists=0
         )
 
         # try to create a license with the same name
-        license_new_2 = self.isogeo.api.license.license_create(
+        license_new_2 = self.isogeo.license.license_create(
             workgroup_id=workgroup_test, license=license_local, check_exists=1
         )
 
@@ -191,7 +191,7 @@ class TestLicenses(unittest.TestCase):
     def test_licenses_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/licenses}"""
         # retrieve workgroup licenses
-        wg_licenses = self.isogeo.api.license.licenses(
+        wg_licenses = self.isogeo.license.licenses(
             workgroup_id=workgroup_test, caching=1
         )
         self.assertIsInstance(wg_licenses, list)
@@ -217,7 +217,7 @@ class TestLicenses(unittest.TestCase):
         if self.isogeo._wg_licenses_names:
             wg_licenses = self.isogeo._wg_licenses_names
         else:
-            wg_licenses = self.isogeo.api.license.licenses(
+            wg_licenses = self.isogeo.license.licenses(
                 workgroup_id=workgroup_test, caching=0
             )
 
@@ -231,17 +231,15 @@ class TestLicenses(unittest.TestCase):
 
         # check both exist
         self.assertTrue(
-            self.isogeo.api.license.license_exists(license_id_isogeo.get("_id"))
+            self.isogeo.license.license_exists(license_id_isogeo.get("_id"))
         )
         self.assertTrue(
-            self.isogeo.api.license.license_exists(license_id_specific.get("_id"))
+            self.isogeo.license.license_exists(license_id_specific.get("_id"))
         )
 
         # get and check both
-        license_isogeo = self.isogeo.api.license.license(license_id_isogeo.get("_id"))
-        license_specific = self.isogeo.api.license.license(
-            license_id_specific.get("_id")
-        )
+        license_isogeo = self.isogeo.license.license(license_id_isogeo.get("_id"))
+        license_specific = self.isogeo.license.license(license_id_specific.get("_id"))
         self.assertIsInstance(license_isogeo, License)
         self.assertIsInstance(license_specific, License)
 
@@ -252,7 +250,7 @@ class TestLicenses(unittest.TestCase):
         license_fixture = License(
             name="{} - {}".format(get_test_marker(), self.discriminator)
         )
-        license_fixture = self.isogeo.api.license.license_create(
+        license_fixture = self.isogeo.license.license_create(
             workgroup_id=workgroup_test, license=license_fixture, check_exists=0
         )
 
@@ -264,10 +262,10 @@ class TestLicenses(unittest.TestCase):
         license_fixture.link = "https://github.com/isogeo/isogeo-api-py-minsdk"
 
         # update the online license
-        license_fixture = self.isogeo.api.license.license_update(license_fixture)
+        license_fixture = self.isogeo.license.license_update(license_fixture)
 
         # check if the change is effective
-        license_fixture_updated = self.isogeo.api.license.license(license_fixture._id)
+        license_fixture_updated = self.isogeo.license.license(license_fixture._id)
         self.assertEqual(
             license_fixture_updated.name,
             "{} - {}".format(get_test_marker(), self.discriminator),

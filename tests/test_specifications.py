@@ -110,7 +110,7 @@ class TestSpecifications(unittest.TestCase):
         # clean created specifications
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.api.specification.specification_delete(
+                cls.isogeo.specification.specification_delete(
                     workgroup_id=workgroup_test, specification_id=i
                 )
         # close sessions
@@ -127,14 +127,14 @@ class TestSpecifications(unittest.TestCase):
         specification_new = Specification(name=specification_name)
 
         # create it online
-        specification_new = self.isogeo.api.specification.specification_create(
+        specification_new = self.isogeo.specification.specification_create(
             workgroup_id=workgroup_test, specification=specification_new, check_exists=0
         )
 
         # checks
         self.assertEqual(specification_new.name, specification_name)
         self.assertTrue(
-            self.isogeo.api.specification.specification_exists(specification_new._id)
+            self.isogeo.specification.specification_exists(specification_new._id)
         )
 
         # add created specification to deletion
@@ -148,7 +148,7 @@ class TestSpecifications(unittest.TestCase):
             link="https://fr.wikipedia.org/wiki/Licence_Creative_Commons",
         )
         # create it online
-        specification_new = self.isogeo.api.specification.specification_create(
+        specification_new = self.isogeo.specification.specification_create(
             workgroup_id=workgroup_test, specification=specification_new, check_exists=0
         )
 
@@ -158,7 +158,7 @@ class TestSpecifications(unittest.TestCase):
             "{} - {}".format(get_test_marker(), self.discriminator),
         )
         self.assertTrue(
-            self.isogeo.api.specification.specification_exists(specification_new._id)
+            self.isogeo.specification.specification_exists(specification_new._id)
         )
 
         # add created specification to deletion
@@ -173,14 +173,14 @@ class TestSpecifications(unittest.TestCase):
         specification_local = Specification(name=name_to_be_unique)
 
         # create it online
-        specification_new_1 = self.isogeo.api.specification.specification_create(
+        specification_new_1 = self.isogeo.specification.specification_create(
             workgroup_id=workgroup_test,
             specification=specification_local,
             check_exists=0,
         )
 
         # try to create a specification with the same name
-        specification_new_2 = self.isogeo.api.specification.specification_create(
+        specification_new_2 = self.isogeo.specification.specification_create(
             workgroup_id=workgroup_test,
             specification=specification_local,
             check_exists=1,
@@ -196,7 +196,7 @@ class TestSpecifications(unittest.TestCase):
     def test_specifications_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/specifications}"""
         # retrieve workgroup specifications
-        wg_specifications = self.isogeo.api.specification.specifications(
+        wg_specifications = self.isogeo.specification.specifications(
             workgroup_id=workgroup_test, caching=1
         )
         self.assertIsInstance(wg_specifications, list)
@@ -221,7 +221,7 @@ class TestSpecifications(unittest.TestCase):
         if self.isogeo._wg_specifications_names:
             wg_specifications = self.isogeo._wg_specifications_names
         else:
-            wg_specifications = self.isogeo.api.specification.specifications(
+            wg_specifications = self.isogeo.specification.specifications(
                 workgroup_id=workgroup_test, caching=0
             )
 
@@ -235,21 +235,21 @@ class TestSpecifications(unittest.TestCase):
 
         # check both exist
         self.assertTrue(
-            self.isogeo.api.specification.specification_exists(
+            self.isogeo.specification.specification_exists(
                 specification_id_isogeo.get("_id")
             )
         )
         self.assertTrue(
-            self.isogeo.api.specification.specification_exists(
+            self.isogeo.specification.specification_exists(
                 specification_id_specific.get("_id")
             )
         )
 
         # get and check both
-        specification_isogeo = self.isogeo.api.specification.specification(
+        specification_isogeo = self.isogeo.specification.specification(
             specification_id_isogeo.get("_id")
         )
-        specification_specific = self.isogeo.api.specification.specification(
+        specification_specific = self.isogeo.specification.specification(
             specification_id_specific.get("_id")
         )
         self.assertIsInstance(specification_isogeo, Specification)
@@ -262,7 +262,7 @@ class TestSpecifications(unittest.TestCase):
         specification_fixture = Specification(
             name="{} - {}".format(get_test_marker(), self.discriminator)
         )
-        specification_fixture = self.isogeo.api.specification.specification_create(
+        specification_fixture = self.isogeo.specification.specification_create(
             workgroup_id=workgroup_test,
             specification=specification_fixture,
             check_exists=0,
@@ -278,12 +278,12 @@ class TestSpecifications(unittest.TestCase):
         # )
 
         # update the online specification
-        specification_fixture = self.isogeo.api.specification.specification_update(
+        specification_fixture = self.isogeo.specification.specification_update(
             specification_fixture
         )
 
         # check if the change is effective
-        specification_fixture_updated = self.isogeo.api.specification.specification(
+        specification_fixture_updated = self.isogeo.specification.specification(
             specification_fixture._id
         )
         self.assertEqual(

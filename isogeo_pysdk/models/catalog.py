@@ -345,7 +345,7 @@ class Catalog(object):
                 attr = self.attr_map.get(attr)
             # process value depending on attr type
             if isinstance(value, list):
-                
+
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)
                 )
@@ -395,6 +395,4 @@ if __name__ == "__main__":
     """ standalone execution """
     cat = Catalog(name="youpi", scan=1)
     to_crea = cat.to_dict_creation()
-    print(type(to_crea.get('IsScanSink')))
-
-    
+    print(type(to_crea.get("IsScanSink")))
