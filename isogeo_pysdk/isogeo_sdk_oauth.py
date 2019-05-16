@@ -102,10 +102,10 @@ class IsogeoSession(OAuth2Session):
         )  # default timeout (see: https://2.python-requests.org/en/master/user/advanced/#timeouts)
 
         # caching
+        self._applications_names = {}  # workgroup applications by names
         self._user = {}  # authenticated user profile
         self._wg_contacts_emails = {}  # workgroup contacts by emails
         self._wg_contacts_names = {}  # workgroup contacts by names
-        self._wg_applications_names = {}  # workgroup applications by names
         self._wg_catalogs_names = {}  # workgroup catalogs by names
         self._wg_licenses_names = {}  # workgroup licenses by names
         self._wg_specifications_names = {}  # workgroup specifications by names
@@ -186,6 +186,7 @@ class IsogeoSession(OAuth2Session):
         # load routes as subclass
         self.api = api
         self.account = api.ApiAccount(self)
+        self.application = api.ApiApplication(self)
         self.contact = api.ApiContact(self)
         self.license = api.ApiLicense(self)
         # self.api.metadata = self.api.ApiResource(self)
@@ -269,71 +270,6 @@ class IsogeoSession(OAuth2Session):
             return decorated_func(self, *args, **kwargs)
 
         return wrapper
-
-    # -- APPLICATIONS ---------------------------------------------
-    @_check_bearer_validity
-    def applications(self, include: list = ["_abilities"]) -> list:
-        """Get accessible applications by the authenticated user.
-        """
-        # handling request parameters
-        payload = {"_include": include}
-
-        # request URL
-        url_applications = utils.get_request_base_url(route="applications")
-
-        # request
-        applications_req = self.get(
-            url_applications,
-            headers=self.header,
-            params=payload,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(applications_req)
-        if isinstance(req_check, tuple):
-            return req_check
-
-        # end of method
-        return applications_req.json()
-
-    @_check_bearer_validity
-    def application(
-        self, application_id: str, include: list = ["_abilities", "groups"]
-    ) -> Application:
-        """Get a application.
-
-        :param str application_id: application UUID to get
-        """
-        # handle include
-        # include = checker._check_filter_includes(include, "application")
-        # handling request parameters
-        payload = {"_include": include}
-
-        # URL
-        url_application = utils.get_request_base_url(
-            route="applications/{}".format(application_id)
-        )
-
-        # request
-        req_application = self.get(
-            url_application,
-            headers=self.header,
-            params=payload,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_application)
-        if isinstance(req_check, tuple):
-            return req_check
-
-        # end of method
-        return Application(**req_application.json())
 
     # -- METADATA = RESOURCE --------------------------------------------------
     @_check_bearer_validity

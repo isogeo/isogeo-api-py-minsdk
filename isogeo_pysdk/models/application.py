@@ -182,6 +182,8 @@ class Application(object):
             self._staff = staff
         if type is not None:
             self._type = type
+        if url is not None:
+            self._url = url
 
     # -- PROPERTIES --------------------------------------------------------------------
     # application abilities
@@ -264,15 +266,6 @@ class Application(object):
         """
         return self._client_id
 
-    @client_id.setter
-    def client_id(self, client_id: str):
-        """Sets the client_id of this Application.
-
-        :param str client_id: The client_id of this Application.
-        """
-
-        self._client_id = client_id
-
     # client_secret
     @property
     def client_secret(self) -> str:
@@ -282,15 +275,6 @@ class Application(object):
         :rtype: str
         """
         return self._client_secret
-
-    @client_secret.setter
-    def client_secret(self, client_secret: str):
-        """Sets the client_secret of this Application.
-
-        :param str client_secret: The client_secret of this Application.
-        """
-
-        self._client_secret = client_secret
 
     @property
     def groups(self):
@@ -441,7 +425,7 @@ class Application(object):
         :return: The url of this Application.
         :rtype: str
         """
-        return self._staff
+        return self._url
 
     @url.setter
     def url(self, url: str):

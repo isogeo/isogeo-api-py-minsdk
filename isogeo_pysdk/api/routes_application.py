@@ -1,0 +1,312 @@
+# -*- coding: UTF-8 -*-
+#! python3
+
+"""
+    Isogeo API v1 - API Routes for Applications entities
+
+    See: http://help.isogeo.com/api/complete/index.html
+"""
+
+# #############################################################################
+# ########## Libraries #############
+# ##################################
+
+# Standard library
+import logging
+
+# submodules
+from isogeo_pysdk.checker import IsogeoChecker
+from isogeo_pysdk.decorators import ApiDecorators
+from isogeo_pysdk.models import Application
+from isogeo_pysdk.utils import IsogeoUtils
+
+# #############################################################################
+# ########## Global #############
+# ##################################
+
+logger = logging.getLogger(__name__)
+checker = IsogeoChecker()
+utils = IsogeoUtils()
+
+
+# #############################################################################
+# ########## Classes ###############
+# ##################################
+class ApiApplication:
+    """Routes as methods of Isogeo API used to manipulate applications.
+    """
+
+    def __init__(self, api_client=None):
+        if api_client is not None:
+            self.api_client = api_client
+
+        # store API client (Request [Oauthlib] Session) and pass it to the decorators
+        self.api_client = api_client
+        ApiDecorators.api_client = api_client
+
+        # ensure platform and others params to request
+        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
+            self.api_client.platform
+        )
+        # initialize
+        super(ApiApplication, self).__init__()
+
+    @ApiDecorators._check_bearer_validity
+    def applications(self, include: list = ["_abilities"], caching: bool = 1) -> list:
+        """Get  accessible applications by the authenticated user.
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param list include: additionnal subresource to include in the response
+        :param bool caching: option to cache the response
+        """
+        # handling request parameters
+        payload = {"_include": include}
+
+        # URL
+        url_applications = utils.get_request_base_url(route="applications")
+
+        # request
+        req_applications = self.api_client.get(
+            url_applications,
+            headers=self.api_client.header,
+            params=payload,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_applications)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        applications = req_applications.json()
+
+        # if caching use or store the workgroup applications
+        if caching and not self.api_client._applications_names:
+            self.api_client._applications_names = {
+                i.get("name"): i.get("_id") for i in applications
+            }
+
+        # end of method
+        return applications
+
+    @ApiDecorators._check_bearer_validity
+    def application(
+        self, application_id: str, include: list = ["_abilities", "groups"]
+    ) -> Application:
+        """Get details about a specific application.
+
+        :param str application_id: application UUID
+        :param list include: additionnal subresource to include in the response
+        """
+        # check application UUID
+        if not checker.check_is_uuid(application_id):
+            raise ValueError("Application ID is not a correct UUID.")
+        else:
+            pass
+
+        # handling request parameters
+        payload = {"_include": include}
+
+        # URL
+        url_application = utils.get_request_base_url(
+            route="applications/{}".format(application_id)
+        )
+
+        # request
+        req_application = self.api_client.get(
+            url=url_application,
+            headers=self.api_client.header,
+            params=payload,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_application)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return Application(**req_application.json())
+
+    @ApiDecorators._check_bearer_validity
+    def application_create(
+        self, check_exists: int = 1, application: object = Application()
+    ) -> Application:
+        """Add a new application to Isogeo.
+
+        :param int check_exists: check if a application already exists inot the workgroup:
+
+        - 0 = no check
+        - 1 = compare name [DEFAULT]
+
+        :param class application: Application model object to create
+        """
+        # check if application already exists in workgroup
+        if check_exists == 1:
+            # retrieve workgroup applications
+            if not self.api_client._applications_names:
+                self.applications(include=[])
+            # check
+            if application.name in self.api_client._applications_names:
+                logger.debug(
+                    "Application with the same name already exists: {}. Use 'application_update' instead.".format(
+                        application.name
+                    )
+                )
+                return False
+        else:
+            pass
+
+        # URL
+        url_application_create = utils.get_request_base_url(route="applications")
+
+        # request
+        req_new_application = self.api_client.post(
+            url=url_application_create,
+            json=application.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_new_application)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # load new application and save it to the cache
+        new_application = Application(**req_new_application.json())
+        self.api_client._applications_names[new_application.name] = new_application._id
+
+        # end of method
+        return new_application
+
+    @ApiDecorators._check_bearer_validity
+    def application_delete(self, application_id: str):
+        """Delete a application from Isogeo database.
+
+        :param str application_id: identifier of the resource to delete
+        """
+        # check application UUID
+        if not checker.check_is_uuid(application_id):
+            raise ValueError(
+                "Application ID is not a correct UUID: {}".format(application_id)
+            )
+        else:
+            pass
+
+        # request URL
+        url_application_delete = utils.get_request_base_url(
+            route="applications/{}".format(application_id)
+        )
+
+        # request
+        req_application_deletion = self.api_client.delete(
+            url=url_application_delete,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_application_deletion)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_application_deletion
+
+    @ApiDecorators._check_bearer_validity
+    def application_exists(self, application_id: str) -> bool:
+        """Check if the specified application exists and is available for the authenticated user.
+
+        :param str application_id: identifier of the application to verify
+        """
+        # check application UUID
+        if not checker.check_is_uuid(application_id):
+            raise ValueError(
+                "Application ID is not a correct UUID: {}".format(application_id)
+            )
+        else:
+            pass
+
+        # URL builder
+        url_application_exists = "{}{}".format(
+            utils.get_request_base_url("applications"), application_id
+        )
+
+        # request
+        req_application_exists = self.api_client.get(
+            url_application_exists,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_application_exists)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_application_exists
+
+    @ApiDecorators._check_bearer_validity
+    def application_update(
+        self, application: Application, caching: bool = 1
+    ) -> Application:
+        """Update a application owned by a workgroup.
+
+        :param class application: Application model object to update
+        :param bool caching: option to cache the response
+        """
+        # check application UUID
+        if not checker.check_is_uuid(application._id):
+            raise ValueError(
+                "Application ID is not a correct UUID: {}".format(application._id)
+            )
+        else:
+            pass
+
+        # URL
+        url_application_update = utils.get_request_base_url(
+            route="applications/{}".format(application._id)
+        )
+
+        # request
+        req_application_update = self.api_client.put(
+            url=url_application_update,
+            json=application.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_application_update)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # update application in cache
+        new_application = Application(**req_application_update.json())
+        if caching:
+            self.api_client._applications_names[
+                new_application.name
+            ] = new_application._id
+
+        # end of method
+        return new_application
+
+
+# ##############################################################################
+# ##### Stand alone program ########
+# ##################################
+if __name__ == "__main__":
+    """ standalone execution """
+    api_application = ApiApplication()

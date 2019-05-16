@@ -42,16 +42,9 @@ class Thesaurus(object):
       attr_types (dict): basic structure of thesaurus attributes. {"attribute name": "attribute type"}.
       attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
     """
-    attr_types = {
-        "_abilities": list,
-        "_id": str,
-        "code": str,
-        "name": str,
-    }
+    attr_types = {"_abilities": list, "_id": str, "code": str, "name": str}
 
-    attr_crea = {
-        "name": str,
-    }
+    attr_crea = {"name": str}
 
     attr_map = {}
 

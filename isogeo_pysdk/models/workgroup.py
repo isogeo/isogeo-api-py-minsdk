@@ -436,4 +436,3 @@ class Workgroup(object):
 if __name__ == "__main__":
     """ standalone execution """
     obj = Workgroup()
-    print(obj)

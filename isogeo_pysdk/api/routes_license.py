@@ -61,7 +61,7 @@ class ApiLicense:
         """Get workgroup licenses.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param list include: identifier of the owner workgroup
+        :param list include: additionnal subresource to include in the response
         :param bool caching: option to cache the response
         """
         # check workgroup UUID
