@@ -37,7 +37,7 @@ from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Specificat
 # ######## Globals #################
 # ##################################
 
-load_dotenv("dev.env", override=True)
+# load_dotenv("dev.env", override=True)
 
 # host machine name - used as discriminator
 hostname = gethostname()
