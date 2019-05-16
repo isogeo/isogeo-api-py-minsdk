@@ -30,22 +30,24 @@ class Contact(object):
       attr_map (dict): mapping between read and write attributes. {"attribute name - GET": "attribute type - POST"}
     """
     attr_types = {
-        "_id": "str",
-        "_tag": "str",
-        "addressLine1": "str",
-        "addressLine2": "str",
-        "addressLine3": "str",
-        "city": "str",
-        "count": "int",
-        "countryCode": "str",
-        "email": "str",
-        "fax": "str",
-        "hash": "str",
-        "name": "str",
-        "organization": "str",
-        "phone": "str",
-        "type": "str",
-        "zipCode": "str",
+        "_abilities": str,
+        "_id": str,
+        "_tag": str,
+        "addressLine1": str,
+        "addressLine2": str,
+        "addressLine3": str,
+        "city": str,
+        "count": int,
+        "countryCode": str,
+        "email": str,
+        "fax": str,
+        "hash": str,
+        "name": str,
+        "organization": str,
+        "owner": dict,
+        "phone": str,
+        "type": str,
+        "zipCode": str,
     }
 
     attr_crea = {
@@ -97,6 +99,7 @@ class Contact(object):
         """Contact model"""
 
         # default values for the object attributes/properties
+        self.__abilities = None
         self.__id = None
         self.__tag = None
         self._addressLine1 = None
@@ -111,6 +114,7 @@ class Contact(object):
         self._hash = None
         self._name = None
         self._organization = None
+        self._owner = None
         self._phone = None
         self._type = None
         self._zipCode = None
@@ -120,6 +124,8 @@ class Contact(object):
 
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
+        if _abilities is not None:
+            self.__abilities = _abilities
         if _deleted is not None:
             self._deleted = _deleted
         if _id is not None:
@@ -165,6 +171,16 @@ class Contact(object):
             self._modified = modified
 
     # -- PROPERTIES --------------------------------------------------------------------
+    # abilities of the user related to the metadata
+    @property
+    def _abilities(self) -> str:
+        """Gets the abilities of this Catalog.
+
+        :return: The abilities of this Catalog.
+        :rtype: str
+        """
+        return self.__abilities
+
     # contact UUID
     @property
     def _id(self) -> str:
@@ -430,6 +446,16 @@ class Contact(object):
         """
 
         self._organization = organization
+
+    # workgroup owner
+    @property
+    def owner(self):
+        """Gets the owner of this Specification.
+
+        :return: The owner of this Specification.
+        :rtype: Workgroup
+        """
+        return self._owner
 
     # phone
     @property
