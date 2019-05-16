@@ -17,6 +17,7 @@ import pprint
 # submodels
 from isogeo_pysdk.models.contact import Contact
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
@@ -46,18 +47,20 @@ class Specification(object):
       attr_map (dict): mapping between read and write attributes. {"attribute name - GET": "attribute type - POST"}
     """
     attr_types = {
-        "_id": "str",
-        "_tag": "str",
-        "count": "int",
-        "link": "str",
-        "name": "str",
+        "_abilities": str,
+        "_id": str,
+        "_tag": str,
+        "count": int,
+        "isLocked": bool,
+        "link": str,
+        "name": str,
         "owner": dict,
-        "published": "str",
+        "published": str,
     }
 
-    attr_crea = {"link": "str", "name": "str", "published": "str"}
+    attr_crea = {"link": str, "name": str, "published": str}
 
-    attr_map = {"link": "link", "name": "name", "published": "published"}
+    attr_map = {}
 
     def __init__(
         self,
@@ -73,9 +76,11 @@ class Specification(object):
         """Specification model"""
 
         # default values for the object attributes/properties
+        self.__abilities = None
         self.__id = None
         self.__tag = None
         self._count = None
+        self._isLocked = None
         self._link = None
         self._name = None
         self._owner = None
@@ -83,6 +88,8 @@ class Specification(object):
 
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
+        if _abilities is not None:
+            self.__abilities = _abilities
         if _id is not None:
             self.__id = _id
         if _tag is not None:
@@ -99,6 +106,16 @@ class Specification(object):
             self._published = published
 
     # -- PROPERTIES --------------------------------------------------------------------
+    # abilities of the user related to the metadata
+    @property
+    def _abilities(self) -> str:
+        """Gets the abilities of this Catalog.
+
+        :return: The abilities of this Catalog.
+        :rtype: str
+        """
+        return self.__abilities
+
     # specification UUID
     @property
     def _id(self) -> str:
@@ -137,6 +154,9 @@ class Specification(object):
 
         self.__tag = _tag
 
+        if "isogeo" in _tag:
+            self.isLocked = 1
+
     # count of resource linked to the specification
     @property
     def count(self) -> int:
@@ -155,6 +175,25 @@ class Specification(object):
         """
 
         self._count = count
+
+    # isLocked
+    @property
+    def isLocked(self) -> bool:
+        """Gets the isLocked status of this Specification.
+
+        :return: isLocked status of this Specification
+        :rtype: str
+        """
+        return self._isLocked
+
+    @isLocked.setter
+    def isLocked(self, isLocked: bool):
+        """Sets the isLocked of this Specification.
+
+        :param bool isLocked: isLocked status of the Specification
+        """
+
+        self._isLocked = isLocked
 
     # link
     @property
@@ -328,4 +367,4 @@ if __name__ == "__main__":
     print(ct.__dict__.get("_id"))
     print(hasattr(ct, "_id"))
     print(ct.to_dict_creation())
-    # print(ct.to_str())
+    # print(ct.to_str()

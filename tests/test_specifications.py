@@ -21,7 +21,7 @@ from os import environ
 import logging
 from random import sample
 from socket import gethostname
-from sys import exit
+from sys import exit, _getframe
 from time import gmtime, strftime
 import unittest
 
@@ -51,6 +51,16 @@ user_password = environ.get("ISOGEO_USER_PASSWORD")
 workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
+# ########## Helpers ###############
+# ##################################
+
+
+def get_test_marker():
+    """Returns the function name"""
+    return "TEST_UNIT_PythonSDK - {}".format(_getframe(1).f_code.co_name)
+
+
+# #############################################################################
 # ########## Classes ###############
 # ##################################
 
@@ -58,146 +68,239 @@ workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 class TestSpecifications(unittest.TestCase):
     """Test Specification model of Isogeo API."""
 
-    if not app_script_id or not app_script_secret:
-        logging.critical("No API credentials set as env variables.")
-        exit()
-    else:
-        pass
-    logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
+    # -- Standard methods --------------------------------------------------------
+    @classmethod
+    def setUpClass(cls):
+        """Executed when module is loaded before any test."""
+        # checks
+        if not app_script_id or not app_script_secret:
+            logging.critical("No API credentials set as env variables.")
+            exit()
+        else:
+            pass
+        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
-    # standard methods
+        # class vars and attributes
+        cls.li_fixtures_to_delete = []
+
+        # API connection
+        cls.isogeo = IsogeoSession(
+            client=LegacyApplicationClient(client_id=app_script_id),
+            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+            client_secret=app_script_secret,
+            platform=platform,
+        )
+        # getting a token
+        cls.isogeo.connect(username=user_email, password=user_password)
+
     def setUp(self):
         """Executed before each test."""
         # tests stuff
         self.discriminator = "{}_{}".format(
             hostname, strftime("%Y-%m-%d_%H%M%S", gmtime())
         )
-        self.li_specifications_to_delete = []
-        # API connection
-        self.isogeo = IsogeoSession(
-            client=LegacyApplicationClient(client_id=app_script_id),
-            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
-            client_secret=app_script_secret,
-            platform=platform,
-        )
-
-        # getting a token
-        self.isogeo.connect(username=user_email, password=user_password)
 
     def tearDown(self):
         """Executed after each test."""
+        pass
+
+    @classmethod
+    def tearDownClass(cls):
+        """Executed after the last test."""
         # clean created specifications
-        if len(self.li_specifications_to_delete):
-            for i in self.li_specifications_to_delete:
-                self.isogeo.specification_delete(
+        if len(cls.li_fixtures_to_delete):
+            for i in cls.li_fixtures_to_delete:
+                cls.isogeo.api.specification.specification_delete(
                     workgroup_id=workgroup_test, specification_id=i
                 )
         # close sessions
-        self.isogeo.close()
+        cls.isogeo.close()
 
-    # -- ALL APPS ------------------------------------------------------------
+    # -- TESTS ---------------------------------------------------------
+    # -- POST --
     def test_specifications_create_basic(self):
         """POST :groups/{workgroup_uuid}/specifications/}"""
-        spec = Specification(
-            name="TEST_UNIT_AUTO {}".format(self.discriminator),
-            link="https://help.isogeo.com/api/fr/",
-        )
-        new_spec = self.isogeo.specification_create(
-            workgroup_id=workgroup_test, specification=spec
+        # var
+        specification_name = "{} - {}".format(get_test_marker(), self.discriminator)
+
+        # create local object
+        specification_new = Specification(name=specification_name)
+
+        # create it online
+        specification_new = self.isogeo.api.specification.specification_create(
+            workgroup_id=workgroup_test, specification=specification_new, check_exists=0
         )
 
         # checks
-        self.assertEqual(new_spec.name, "TEST_UNIT_AUTO {}".format(self.discriminator))
-        self.assertTrue(self.isogeo.specification_exists(new_spec._id))
+        self.assertEqual(specification_new.name, specification_name)
+        self.assertTrue(
+            self.isogeo.api.specification.specification_exists(specification_new._id)
+        )
 
         # add created specification to deletion
-        self.li_specifications_to_delete.append(new_spec._id)
+        self.li_fixtures_to_delete.append(specification_new._id)
 
     def test_specifications_create_complete(self):
         """POST :groups/{workgroup_uuid}/specifications/}"""
-        spec = Specification(
-            name="TEST_UNIT_AUTO {}".format(self.discriminator),
+        # populate model object locally
+        specification_new = Specification(
+            name="{} - {}".format(get_test_marker(), self.discriminator),
             link="https://fr.wikipedia.org/wiki/Licence_Creative_Commons",
         )
-        new_spec = self.isogeo.specification_create(
-            workgroup_id=workgroup_test, specification=spec
+        # create it online
+        specification_new = self.isogeo.api.specification.specification_create(
+            workgroup_id=workgroup_test, specification=specification_new, check_exists=0
         )
 
         # checks
         self.assertEqual(
-            new_spec.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator)
+            specification_new.name,
+            "{} - {}".format(get_test_marker(), self.discriminator),
         )
-        self.assertTrue(self.isogeo.specification_exists(new_spec.get("_id")))
+        self.assertTrue(
+            self.isogeo.api.specification.specification_exists(specification_new._id)
+        )
 
         # add created specification to deletion
-        self.li_specifications_to_delete.append(new_spec.get("_id"))
+        self.li_fixtures_to_delete.append(specification_new._id)
 
-    # def test_specifications_create_checking_name(self):
-    #     """POST :groups/{workgroup_uuid}/specifications/}"""
-    #     # create a specification
-    #     ct = Specification(
-    #         name="TEST_UNIT_AUTO {}".format(self.discriminator)
-    #     )
-    #     new_ct_1 = self.isogeo.specification_create(
-    #         workgroup_id=workgroup_test,
-    #         check_exists=0,
-    #         specification=ct
-    #     )
-    #     # try to create a specification with the same email = False
-    #     ct = Specification(
-    #         name="TEST_UNIT_AUTO {}".format(self.discriminator)
-    #     )
-    #     new_ct_2 = self.isogeo.specification_create(
-    #         workgroup_id=workgroup_test,
-    #         check_exists=1,
-    #         specification=ct
-    #     )
+    def test_specifications_create_checking_name(self):
+        """POST :groups/{workgroup_uuid}/specifications/}"""
+        # vars
+        name_to_be_unique = "TEST_UNIT_AUTO UNIQUE"
 
-    #     # check the result
-    #     self.assertEqual(new_ct_2, False)
+        # create local object
+        specification_local = Specification(name=name_to_be_unique)
 
-    #     # add created specification to deletion
-    #     self.li_specifications_to_delete.append(new_ct_1.get("_id"))
+        # create it online
+        specification_new_1 = self.isogeo.api.specification.specification_create(
+            workgroup_id=workgroup_test,
+            specification=specification_local,
+            check_exists=0,
+        )
 
-    # def test_specifications_get_workgroup(self):
-    #     """GET :groups/{workgroup_uuid}/specifications}"""
-    #     # retrieve workgroup specifications
-    #     wg_specifications = self.isogeo.workgroup_specifications(
-    #         workgroup_id=workgroup_test,
-    #         caching=0
-    #     )
-    #     # parse and test object loader
-    #     for i in wg_specifications:
-    #         ct = Specification(**i)
-    #         # tests attributes structure
-    #         self.assertTrue(hasattr(ct, "_abilities"))
-    #         self.assertTrue(hasattr(ct, "_created"))
-    #         self.assertTrue(hasattr(ct, "_id"))
-    #         self.assertTrue(hasattr(ct, "_modified"))
-    #         self.assertTrue(hasattr(ct, "_tag"))
-    #         self.assertTrue(hasattr(ct, "code"))
-    #         self.assertTrue(hasattr(ct, "count"))
-    #         self.assertTrue(hasattr(ct, "name"))
-    #         self.assertTrue(hasattr(ct, "owner"))
-    #         self.assertTrue(hasattr(ct, "scan"))
-    #         # tests attributes value
-    #         self.assertEqual(ct.code, i.get("code"))
-    #         self.assertEqual(ct.name, i.get("name"))
+        # try to create a specification with the same name
+        specification_new_2 = self.isogeo.api.specification.specification_create(
+            workgroup_id=workgroup_test,
+            specification=specification_local,
+            check_exists=1,
+        )
 
-    # def test_specifications_update(self):
-    #     """PUT :groups/{workgroup_uuid}/specifications/{specification_uuid}}"""
-    #     # create a new specification
-    #     cat = Specification(name="TEST_UNIT_UPDATE {}".format(self.discriminator))
-    #     new_cat_created = Specification(**self.isogeo.specification_create(workgroup_id=workgroup_test, specification=cat))
-    #     # set a different name
-    #     new_cat_created.name = "TEST_UNIT_UPDATE_OTRO {}".format(self.discriminator)
-    #     # update the specification
-    #     cat_updated = self.isogeo.specification_update(workgroup_test, new_cat_created)
-    #     Specification(**cat_updated)
-    #     # check if the change is effective
-    #     self.assertEqual(cat_updated.get("name"), "TEST_UNIT_UPDATE_OTRO {}".format(self.discriminator))
-    #     # # add created specification to deletion
-    #     self.li_specifications_to_delete.append(cat_updated.get("_id"))
+        # check if object has not been created
+        self.assertEqual(specification_new_2, False)
+
+        # add created specification to deletion
+        self.li_fixtures_to_delete.append(specification_new_1._id)
+
+    # -- GET --
+    def test_specifications_get_workgroup(self):
+        """GET :groups/{workgroup_uuid}/specifications}"""
+        # retrieve workgroup specifications
+        wg_specifications = self.isogeo.api.specification.specifications(
+            workgroup_id=workgroup_test, caching=1
+        )
+        self.assertIsInstance(wg_specifications, list)
+        # parse and test object loader
+        for i in wg_specifications:
+            specification = Specification(**i)
+            # tests attributes structure
+            self.assertTrue(hasattr(specification, "_abilities"))
+            self.assertTrue(hasattr(specification, "_id"))
+            self.assertTrue(hasattr(specification, "_tag"))
+            self.assertTrue(hasattr(specification, "link"))
+            self.assertTrue(hasattr(specification, "name"))
+            self.assertTrue(hasattr(specification, "owner"))
+            # tests attributes value
+            self.assertEqual(specification.link, i.get("link"))
+            self.assertEqual(specification.name, i.get("name"))
+            self.assertEqual(specification.published, i.get("published"))
+
+    def test_specification_detailed(self):
+        """GET :specifications/{specification_uuid}"""
+        # retrieve workgroup specifications
+        if self.isogeo._wg_specifications_names:
+            wg_specifications = self.isogeo._wg_specifications_names
+        else:
+            wg_specifications = self.isogeo.api.specification.specifications(
+                workgroup_id=workgroup_test, caching=0
+            )
+
+        # pick two specifications: one locked by Isogeo, one workgroup specific
+        specification_id_isogeo = sample(
+            list(filter(lambda d: "isogeo" in d.get("_tag"), wg_specifications)), 1
+        )[0]
+        specification_id_specific = sample(
+            list(filter(lambda d: "isogeo" not in d.get("_tag"), wg_specifications)), 1
+        )[0]
+
+        # check both exist
+        self.assertTrue(
+            self.isogeo.api.specification.specification_exists(
+                specification_id_isogeo.get("_id")
+            )
+        )
+        self.assertTrue(
+            self.isogeo.api.specification.specification_exists(
+                specification_id_specific.get("_id")
+            )
+        )
+
+        # get and check both
+        specification_isogeo = self.isogeo.api.specification.specification(
+            specification_id_isogeo.get("_id")
+        )
+        specification_specific = self.isogeo.api.specification.specification(
+            specification_id_specific.get("_id")
+        )
+        self.assertIsInstance(specification_isogeo, Specification)
+        self.assertIsInstance(specification_specific, Specification)
+
+    # -- PUT/PATCH --
+    def test_specifications_update(self):
+        """PUT :groups/{workgroup_uuid}/specifications/{specification_uuid}}"""
+        # create a new specification
+        specification_fixture = Specification(
+            name="{} - {}".format(get_test_marker(), self.discriminator)
+        )
+        specification_fixture = self.isogeo.api.specification.specification_create(
+            workgroup_id=workgroup_test,
+            specification=specification_fixture,
+            check_exists=0,
+        )
+
+        # modify local object
+        specification_fixture.name = "{} - {}".format(
+            get_test_marker(), self.discriminator
+        )
+        specification_fixture.link = "https://github.com/isogeo/isogeo-api-py-minsdk"
+        # specification_fixture.published = "{} content - {}".format(
+        #     get_test_marker(), self.discriminator
+        # )
+
+        # update the online specification
+        specification_fixture = self.isogeo.api.specification.specification_update(
+            specification_fixture
+        )
+
+        # check if the change is effective
+        specification_fixture_updated = self.isogeo.api.specification.specification(
+            specification_fixture._id
+        )
+        self.assertEqual(
+            specification_fixture_updated.name,
+            "{} - {}".format(get_test_marker(), self.discriminator),
+        )
+        self.assertEqual(
+            specification_fixture_updated.link,
+            "https://github.com/isogeo/isogeo-api-py-minsdk",
+        )
+        # self.assertEqual(
+        #     specification_fixture_updated.published,
+        #     "{} content - {}".format(get_test_marker(), self.discriminator),
+        # )
+
+        # add created specification to deletion
+        self.li_fixtures_to_delete.append(specification_fixture_updated._id)
 
 
 # ##############################################################################
