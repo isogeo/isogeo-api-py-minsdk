@@ -50,7 +50,7 @@ jobs:
       # static fixtures
       ISOGEO_FIXTURES_METADATA_COMPLETE: $(ISOGEO_FIXTURES_METADATA_COMPLETE)
       ISOGEO_WORKGROUP_TEST_UUID: $(ISOGEO_WORKGROUP_TEST_UUID)
-    displayName: 'Tests and coverage'
+    displayName: 'Tests and coverage - Pytest'
 
   - task: PublishTestResults@2
     displayName: "Publish unit test results"
