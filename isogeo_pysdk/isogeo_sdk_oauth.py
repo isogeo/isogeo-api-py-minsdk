@@ -101,9 +101,12 @@ class IsogeoSession(OAuth2Session):
             timeout
         )  # default timeout (see: https://2.python-requests.org/en/master/user/advanced/#timeouts)
 
-        # caching
-        self._applications_names = {}  # workgroup applications by names
+        # -- CACHE
+        # user
+        self._applications_names = {}  # user applications by names
         self._user = {}  # authenticated user profile
+        # workgroup
+        self._wg_applications_names = {}  # workgroup applications by names
         self._wg_contacts_emails = {}  # workgroup contacts by emails
         self._wg_contacts_names = {}  # workgroup contacts by names
         self._wg_catalogs_names = {}  # workgroup catalogs by names
@@ -923,36 +926,6 @@ class IsogeoSession(OAuth2Session):
         wg_deletion = self.delete(url_wg_delete)
 
         return wg_deletion
-
-    @_check_bearer_validity
-    def workgroup_applications(self, workgroup_id: str, caching: bool = 1) -> dict:
-        """List workgroup applications.
-
-        :param str workgroup_id: identifier of the owner workgroup
-        :param bool caching: option to cache the response
-        """
-        # check workgroup UUID
-        if not checker.check_is_uuid(workgroup_id):
-            raise ValueError("Workgroup ID is not a correct UUID.")
-        else:
-            pass
-
-        # build request url
-        url_app_list = utils.get_request_base_url(
-            route="groups/{}/applications".format(workgroup_id)
-        )
-
-        wg_applications = self.get(
-            url_app_list, proxies=self.proxies, verify=self.ssl, timeout=self.timeout
-        )
-
-        wg_applications = wg_applications.json()
-
-        # if caching use or store the workgroup applications
-        if caching and not self._wg_apps_names:
-            self._wg_apps_names = {i.get("name"): i.get("_id") for i in wg_applications}
-
-        return wg_applications
 
     @_check_bearer_validity
     def workgroup_keywords(

@@ -181,8 +181,39 @@ class TestApplications(unittest.TestCase):
     # -- GET --
     def test_applications(self):
         """GET :/applications}"""
+        # retrieve user applications
+        user_applications = self.isogeo.application.applications(caching=1)
+        self.assertIsInstance(user_applications, list)
+        # parse and test object loader
+        for i in user_applications:
+            application = Application(**i)
+            # tests attributes structure
+            self.assertTrue(hasattr(application, "_abilities"))
+            self.assertTrue(hasattr(application, "_created"))
+            self.assertTrue(hasattr(application, "_id"))
+            self.assertTrue(hasattr(application, "_modified"))
+            self.assertTrue(hasattr(application, "canHaveManyGroups"))
+            self.assertTrue(hasattr(application, "client_id"))
+            self.assertTrue(hasattr(application, "client_secret"))
+            self.assertTrue(hasattr(application, "groups"))
+            self.assertTrue(hasattr(application, "name"))
+            self.assertTrue(hasattr(application, "redirect_uris"))
+            self.assertTrue(hasattr(application, "scopes"))
+            self.assertTrue(hasattr(application, "staff"))
+            self.assertTrue(hasattr(application, "type"))
+            self.assertTrue(hasattr(application, "url"))
+            # tests attributes value
+            self.assertEqual(application.client_id, i.get("client_id"))
+            self.assertEqual(application.client_secret, i.get("client_secret"))
+            self.assertEqual(application.name, i.get("name"))
+            self.assertEqual(application.staff, i.get("staff"))
+
+    def test_applications_workgroup(self):
+        """GET :/groups/{workgroup_uiid}/applications}"""
         # retrieve workgroup applications
-        wg_applications = self.isogeo.application.applications(caching=1)
+        wg_applications = self.isogeo.application.applications(
+            workgroup_id=workgroup_test, caching=1
+        )
         self.assertIsInstance(wg_applications, list)
         # parse and test object loader
         for i in wg_applications:

@@ -52,10 +52,15 @@ class ApiApplication:
         super(ApiApplication, self).__init__()
 
     @ApiDecorators._check_bearer_validity
-    def applications(self, include: list = ["_abilities"], caching: bool = 1) -> list:
-        """Get  accessible applications by the authenticated user.
+    def applications(
+        self,
+        workgroup_id: str = None,
+        include: list = ["_abilities"],
+        caching: bool = 1,
+    ) -> list:
+        """Get all applications which are accessible by the authenticated user OR applications for a workgroup.
 
-        :param str workgroup_id: identifier of the owner workgroup
+        :param str workgroup_id: identifier of the owner workgroup. If `None`, then list applications for
         :param list include: additionnal subresource to include in the response
         :param bool caching: option to cache the response
         """
@@ -63,11 +68,27 @@ class ApiApplication:
         payload = {"_include": include}
 
         # URL
-        url_applications = utils.get_request_base_url(route="applications")
+        if workgroup_id is not None:
+            logger.debug(
+                "Listing applications for a workgroup: {}".format(workgroup_id)
+            )
+            if not checker.check_is_uuid(workgroup_id):
+                raise ValueError("Workgroup ID is not a correct UUID.")
+            else:
+                url_applications = utils.get_request_base_url(
+                    route="groups/{}/applications".format(workgroup_id)
+                )
+        else:
+            logger.debug(
+                "Listing applications for the authenticated user: {}".format(
+                    self.api_client._user.contact.get("name")
+                )
+            )
+            url_applications = utils.get_request_base_url(route="applications")
 
         # request
         req_applications = self.api_client.get(
-            url_applications,
+            url=url_applications,
             headers=self.api_client.header,
             params=payload,
             proxies=self.api_client.proxies,
@@ -83,10 +104,16 @@ class ApiApplication:
         applications = req_applications.json()
 
         # if caching use or store the workgroup applications
-        if caching and not self.api_client._applications_names:
+        if caching and workgroup_id is None:
             self.api_client._applications_names = {
                 i.get("name"): i.get("_id") for i in applications
             }
+        elif caching:
+            self.api_client._wg_applications_names = {
+                i.get("name"): i.get("_id") for i in applications
+            }
+        else:
+            pass
 
         # end of method
         return applications
