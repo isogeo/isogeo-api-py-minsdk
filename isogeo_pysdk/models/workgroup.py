@@ -17,17 +17,22 @@ import pprint
 # submodels
 from isogeo_pysdk.models.contact import Contact
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 class Workgroup(object):
-    """Workgroups are entities included as subresource into metadata for data history canCreateMetadata.
+    """Workgroups are entities containing metadata.
 
 
     Sample:
 
     ```json
     {
+        '_abilities': [
+            'group:manage',
+            'group:update'
+        ],
         '_created': '2015-05-21T12:08:16.4295098+00:00',
         '_id': '32f7e95ec4e94ca3bc1afda960003882',
         '_modified': '2018-12-27T10:47:28.7880956+00:00',
@@ -35,24 +40,45 @@ class Workgroup(object):
         'areKeywordsRestricted': False,
         'canCreateLegacyServiceLinks': True,
         'canCreateMetadata': True,
-        'contact': {'_deleted': False,
-                    '_id': '2a3aefc4f80347f590afe58127f6cb0f',
-                    '_tag': 'contact:group:2a3aefc4f80347f590afe58127f6cb0f',
-                    'addressLine1': '26 rue du faubourg Saint-Antoine',
-                    'addressLine2': '4éme étage',
-                    'addressLine3': 'bouton porte',
-                    'available': False,
-                    'city': 'Paris',
-                    'countryCode': 'FR',
-                    'email': 'dev@isogeo.com',
-                    'fax': '33 (0)9 67 46 50 06',
-                    'name': 'Isogeo Test',
-                    'phone': '33 (0)9 67 46 50 06',
-                    'type': 'group',
-                    'zipCode': '75012'},
+        'contact': {
+            '_deleted': False,
+            '_id': '2a3aefc4f80347f590afe58127f6cb0f',
+            '_tag': 'contact:group:2a3aefc4f80347f590afe58127f6cb0f',
+            'addressLine1': '26 rue du faubourg Saint-Antoine',
+            'addressLine2': '4éme étage',
+            'addressLine3': 'bouton porte',
+            'available': False,
+            'city': 'Paris',
+            'countryCode': 'FR',
+            'email': 'dev@isogeo.com',
+            'fax': '33 (0)9 67 46 50 06',
+            'name': 'Isogeo Test',
+            'phone': '33 (0)9 67 46 50 06',
+            'type': 'group',
+            'zipCode': '75012'
+        },
         'hasCswClient': True,
         'hasScanFme': True,
         'keywordsCasing': 'lowercase',
+        'limits': {
+            'canDiffuse': False,
+            'canShare': True,
+            'Workgroups': {
+                'current': 1,
+                'max': -1
+            },
+            'resources': {
+                'current': 2,
+                'max': 20
+            },
+            'upload': {
+                'current': 0,
+                'max': 1073741824
+            },
+            'users': {
+                'current': 1,
+                'max': 2}
+            },
         'metadataLanguage': 'fr',
         'themeColor': '#4499A1'
     }
@@ -67,14 +93,20 @@ class Workgroup(object):
       GROUP_KEYWORDSCASING_VALUES (tuple): possible values for 'canCreateLegacyServiceLinks' option
     """
     attr_types = {
+        "_abilities": list,
+        "_created": str,
         "_id": str,
+        "_modified": str,
+        "_tag": str,
         "areKeywordsRestricted": bool,
         "canCreateLegacyServiceLinks": bool,
         "canCreateMetadata": bool,
+        "code": str,
         "contact": Contact,
         "hasCswClient": bool,
-        "metadataLanguage": str,
+        "limits": dict,
         "keywordsCasing": str,
+        "metadataLanguage": str,
         "themeColor": str,
     }
 
@@ -113,6 +145,7 @@ class Workgroup(object):
         areKeywordsRestricted: bool = None,
         canCreateLegacyServiceLinks: bool = None,
         canCreateMetadata: bool = None,
+        code: str = None,
         contact: Contact = None,
         hasCswClient: bool = None,
         hasScanFme: bool = None,
@@ -132,6 +165,7 @@ class Workgroup(object):
         self._areKeywordsRestricted = None
         self._canCreateLegacyServiceLinks = None
         self._canCreateMetadata = None
+        self._code = code
         self._contact = Contact
         self._hasCswClient = None
         self._keywordsCasing = None
@@ -143,14 +177,20 @@ class Workgroup(object):
         # attributes are prefixed by an underscore '_'
         if _abilities is not None:
             self.__abilities = _abilities
+        if _created is not None:
+            self.__created = _created
         if _id is not None:
             self.__id = _id
+        if _modified is not None:
+            self.__modified = _modified
         if areKeywordsRestricted is not None:
             self._areKeywordsRestricted = areKeywordsRestricted
         if canCreateLegacyServiceLinks is not None:
             self._canCreateLegacyServiceLinks = canCreateLegacyServiceLinks
         if canCreateMetadata is not None:
             self._canCreateMetadata = canCreateMetadata
+        if code is not None:
+            self._code = code
         if hasCswClient is not None:
             self._hasCswClient = hasCswClient
         if keywordsCasing is not None:
@@ -166,6 +206,26 @@ class Workgroup(object):
         self._contact = contact
 
     # -- PROPERTIES --------------------------------------------------------------------
+    # workgroup abilities
+    @property
+    def _abilities(self) -> str:
+        """Gets the abilities of this Workgroup.
+
+        :return: The abilities of this Workgroup.
+        :rtype: str
+        """
+        return self.__abilities
+
+    # workgroup creation date
+    @property
+    def _created(self) -> str:
+        """Gets the created of this Workgroup.
+
+        :return: The created of this Workgroup.
+        :rtype: str
+        """
+        return self.__created
+
     # workgroup UUID
     @property
     def _id(self) -> str:
@@ -176,14 +236,25 @@ class Workgroup(object):
         """
         return self.__id
 
-    @_id.setter
-    def _id(self, _id: str):
-        """Sets the id of this Workgroup.
+    # workgroup last modification date
+    @property
+    def _modified(self) -> str:
+        """Gets the modified of this Workgroup.
 
-        :param str id: The id of this Workgroup.
+        :return: The modified of this Workgroup.
+        :rtype: str
         """
+        return self.__modified
 
-        self.__id = _id
+    # Workgroup tag for search
+    @property
+    def _tag(self) -> str:
+        """Gets the tag of this Workgroup.
+
+        :return: The tag of this Workgroup.
+        :rtype: str
+        """
+        return self.__tag
 
     # areKeywordsRestricted
     @property
@@ -241,6 +312,16 @@ class Workgroup(object):
         """
 
         self._canCreateLegacyServiceLinks = canCreateLegacyServiceLinks
+
+    # code
+    @property
+    def code(self) -> str:
+        """Gets the code of this Workgroup.
+
+        :return: The code of this Workgroup.
+        :rtype: str
+        """
+        return self._code
 
     # contact
     @property
@@ -301,6 +382,25 @@ class Workgroup(object):
         """
 
         self._keywordsCasing = keywordsCasing
+
+    # limits
+    @property
+    def limits(self) -> dict:
+        """Gets the limits of this Workgroup.
+
+        :return: The limits of this Workgroup.
+        :rtype: dict
+        """
+        return self._limits
+
+    @limits.setter
+    def limits(self, limits: dict):
+        """Sets the limits of this Workgroup.
+
+        :param dict limits: The limits of this Workgroup.
+        """
+
+        self._limits = limits
 
     # metadataLanguage
     @property
