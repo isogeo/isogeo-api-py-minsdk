@@ -8,7 +8,7 @@
     # for whole test
     python -m unittest tests.test_catalogs
     # for specific
-    python -m unittest tests.test_catalogs.TestCatalogs.test_catalogs_create
+    python -m unittest tests.test_catalogs.TestCatalogs.test_catalogs_create_basic
     ```
 """
 
@@ -19,9 +19,10 @@
 # Standard library
 from os import environ
 import logging
+from pathlib import Path
 from random import sample
 from socket import gethostname
-from sys import exit
+from sys import exit, _getframe
 from time import gmtime, strftime
 import unittest
 
@@ -37,18 +38,25 @@ from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Catalog
 # ######## Globals #################
 # ##################################
 
-load_dotenv("dev.env", override=True)
+
+if Path("dev.env").exists():
+    load_dotenv("dev.env", override=True)
 
 # host machine name - used as discriminator
 hostname = gethostname()
 
 # API access
-app_script_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
-app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
-platform = environ.get("ISOGEO_PLATFORM", "qa")
-user_email = environ.get("ISOGEO_USER_NAME")
-user_password = environ.get("ISOGEO_USER_PASSWORD")
 workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+
+# #############################################################################
+# ########## Helpers ###############
+# ##################################
+
+
+def get_test_marker():
+    """Returns the function name"""
+    return "TEST_UNIT_PythonSDK - {}".format(_getframe(1).f_code.co_name)
+
 
 # #############################################################################
 # ########## Classes ###############
@@ -58,100 +66,136 @@ workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 class TestCatalogs(unittest.TestCase):
     """Test Catalog model of Isogeo API."""
 
-    if not app_script_id or not app_script_secret:
-        logging.critical("No API credentials set as env variables.")
-        exit()
-    else:
-        pass
-    logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
+    # -- Standard methods --------------------------------------------------------
+    @classmethod
+    def setUpClass(cls):
+        """Executed when module is loaded before any test."""
+        # checks
+        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_CLIENT_SECRET"
+        ):
+            logging.critical("No API credentials set as env variables.")
+            exit()
+        else:
+            pass
+        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
-    # standard methods
+        # class vars and attributes
+        cls.li_fixtures_to_delete = []
+
+        # API connection
+        cls.isogeo = IsogeoSession(
+            client=LegacyApplicationClient(
+                client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")
+            ),
+            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+            platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        )
+        # getting a token
+        cls.isogeo.connect(
+            username=environ.get("ISOGEO_USER_NAME"),
+            password=environ.get("ISOGEO_USER_PASSWORD"),
+        )
+
     def setUp(self):
         """Executed before each test."""
         # tests stuff
         self.discriminator = "{}_{}".format(
             hostname, strftime("%Y-%m-%d_%H%M%S", gmtime())
         )
-        self.li_catalogs_to_delete = []
-        # API connection
-        self.isogeo = IsogeoSession(
-            client=LegacyApplicationClient(client_id=app_script_id),
-            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
-            client_secret=app_script_secret,
-            platform=platform,
-        )
-
-        # getting a token
-        self.isogeo.connect(username=user_email, password=user_password)
 
     def tearDown(self):
         """Executed after each test."""
-        # clean created catalogs
-        if len(self.li_catalogs_to_delete):
-            for i in self.li_catalogs_to_delete:
-                self.isogeo.catalog_delete(workgroup_id=workgroup_test, catalog_id=i)
-        # close sessions
-        self.isogeo.close()
+        pass
 
-    # -- ALL APPS ------------------------------------------------------------
+    @classmethod
+    def tearDownClass(cls):
+        """Executed after the last test."""
+        # clean created licenses
+        if len(cls.li_fixtures_to_delete):
+            for i in cls.li_fixtures_to_delete:
+                # cls.isogeo.catalog.catalog_delete(workgroup_id=workgroup_test, catalog_id=i)
+                pass
+        # close sessions
+        cls.isogeo.close()
+
+    # -- TESTS ---------------------------------------------------------
+
+    # -- POST --
     def test_catalogs_create_basic(self):
         """POST :groups/{workgroup_uuid}/catalogs/}"""
-        ct = Catalog(name="TEST_UNIT_AUTO {}".format(self.discriminator))
-        new_ct = self.isogeo.catalog_create(workgroup_id=workgroup_test, catalog=ct)
+        # var
+        catalog_name = "{} - {}".format(get_test_marker(), self.discriminator)
+
+        # create local object
+        catalog_new = Catalog(name=catalog_name)
+
+        # create it online
+        catalog_new = self.isogeo.catalog.catalog_create(
+            workgroup_id=workgroup_test, catalog=catalog_new, check_exists=0
+        )
+
+        # checks
+        self.assertEqual(catalog_new.name, catalog_name)
+        self.assertTrue(
+            self.isogeo.catalog.catalog_exists(
+                catalog_new.owner.get("_id"), catalog_new._id
+            )
+        )
+
+        # add created catalog to deletion
+        self.li_fixtures_to_delete.append(catalog_new._id)
+
+    def test_catalogs_create_complete(self):
+        """POST :groups/{workgroup_uuid}/catalogs/}"""
+        # populate model object locally
+        catalog_new = Catalog(
+            name="{} - {}".format(get_test_marker(), self.discriminator), scan=True
+        )
+        # create it online
+        catalog_new = self.isogeo.catalog.catalog_create(
+            workgroup_id=workgroup_test, catalog=catalog_new, check_exists=0
+        )
 
         # checks
         self.assertEqual(
-            new_ct.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator)
+            catalog_new.name, "{} - {}".format(get_test_marker(), self.discriminator)
         )
-        self.assertTrue(self.isogeo.catalog_exists(new_ct.get("_id")))
+        self.assertTrue(
+            self.isogeo.catalog.catalog_exists(
+                catalog_new.owner.get("_id"), catalog_new._id
+            )
+        )
 
         # add created catalog to deletion
-        self.li_catalogs_to_delete.append(new_ct.get("_id"))
-
-    # def test_catalogs_create_complete(self):
-    #     """POST :groups/{workgroup_uuid}/catalogs/}"""
-    #     ct = Catalog(
-    #         addressLine1="26 rue du faubourg Saint-Antoine",
-    #         addressLine2="4è étage",
-    #         addressLine3="Porte rouge",
-    #         name="TEST_UNIT_AUTO {}".format(self.discriminator),
-    #         city="Paris",
-    #         email="test@isogeo.fr",
-    #         fax="+33987654321",
-    #         organization="Isogeo",
-    #         phone="+33789456123",
-    #         countryCode="FR",
-    #         zipCode="75012",
-    #     )
-    #     new_ct = self.isogeo.catalog_create(workgroup_id=workgroup_test, catalog=ct)
-
-    #     # checks
-    #     self.assertEqual(new_ct.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator))
-    #     self.assertEqual(new_ct.get("type"), "custom")
-    #     self.assertTrue(self.isogeo.catalog_exists(new_ct.get("_id")))
-
-    #     # add created catalog to deletion
-    #     self.li_catalogs_to_delete.append(new_ct.get("_id"))
+        self.li_fixtures_to_delete.append(catalog_new._id)
 
     def test_catalogs_create_checking_name(self):
         """POST :groups/{workgroup_uuid}/catalogs/}"""
-        # create a catalog
-        ct = Catalog(name="TEST_UNIT_AUTO {}".format(self.discriminator))
-        new_ct_1 = self.isogeo.catalog_create(
-            workgroup_id=workgroup_test, check_exists=0, catalog=ct
-        )
-        # try to create a catalog with the same email = False
-        ct = Catalog(name="TEST_UNIT_AUTO {}".format(self.discriminator))
-        new_ct_2 = self.isogeo.catalog_create(
-            workgroup_id=workgroup_test, check_exists=1, catalog=ct
+        # vars
+        name_to_be_unique = "TEST_UNIT_AUTO UNIQUE"
+
+        # create local object
+        catalog_local = Catalog(name=name_to_be_unique)
+
+        # create it online
+        catalog_new_1 = self.isogeo.catalog.catalog_create(
+            workgroup_id=workgroup_test, catalog=catalog_local, check_exists=0
         )
 
-        # check the result
-        self.assertEqual(new_ct_2, False)
+        # try to create a catalog with the same name
+        catalog_new_2 = self.isogeo.catalog.catalog_create(
+            workgroup_id=workgroup_test, catalog=catalog_local, check_exists=1
+        )
+
+        # check if object has not been created
+        self.assertEqual(catalog_new_2, False)
 
         # add created catalog to deletion
-        self.li_catalogs_to_delete.append(new_ct_1.get("_id"))
+        self.li_fixtures_to_delete.append(catalog_new_1._id)
 
+    # -- GET --
     def test_catalogs_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/catalogs}"""
         # retrieve workgroup catalogs
@@ -173,28 +217,42 @@ class TestCatalogs(unittest.TestCase):
             self.assertTrue(hasattr(ct, "owner"))
             self.assertTrue(hasattr(ct, "scan"))
             # tests attributes value
+            self.assertEqual(ct._created, i.get("_created"))
+            self.assertEqual(ct._id, i.get("_id"))
+            self.assertEqual(ct._modified, i.get("_modified"))
+            self.assertEqual(ct._tag, i.get("_tag"))
             self.assertEqual(ct.code, i.get("code"))
+            self.assertEqual(ct.count, i.get("count"))
             self.assertEqual(ct.name, i.get("name"))
 
+    # -- PUT/PATCH --
     def test_catalogs_update(self):
         """PUT :groups/{workgroup_uuid}/catalogs/{catalog_uuid}}"""
         # create a new catalog
-        cat = Catalog(name="TEST_UNIT_UPDATE {}".format(self.discriminator))
-        new_cat_created = Catalog(
-            **self.isogeo.catalog_create(workgroup_id=workgroup_test, catalog=cat)
+        catalog_fixture = Catalog(name="{}".format(get_test_marker()))
+        catalog_fixture = self.isogeo.catalog.catalog_create(
+            workgroup_id=workgroup_test, catalog=catalog_fixture, check_exists=0
         )
-        # set a different name
-        new_cat_created.name = "TEST_UNIT_UPDATE_OTRO {}".format(self.discriminator)
-        # update the catalog
-        cat_updated = self.isogeo.catalog_update(workgroup_test, new_cat_created)
-        Catalog(**cat_updated)
+
+        # modify local object
+        catalog_fixture.name = "{} - {}".format(get_test_marker(), self.discriminator)
+        catalog_fixture.scan = True
+
+        # update the online catalog
+        catalog_fixture = self.isogeo.catalog.catalog_update(catalog_fixture)
+
         # check if the change is effective
-        self.assertEqual(
-            cat_updated.get("name"),
-            "TEST_UNIT_UPDATE_OTRO {}".format(self.discriminator),
+        catalog_fixture_updated = self.isogeo.catalog.catalog(
+            catalog_fixture.owner.get("_id"), catalog_fixture._id
         )
-        # # add created catalog to deletion
-        self.li_catalogs_to_delete.append(cat_updated.get("_id"))
+        self.assertEqual(
+            catalog_fixture_updated.name,
+            "{} - {}".format(get_test_marker(), self.discriminator),
+        )
+        self.assertEqual(catalog_fixture_updated.scan, True)
+
+        # add created catalog to deletion
+        self.li_fixtures_to_delete.append(catalog_fixture_updated._id)
 
 
 # ##############################################################################

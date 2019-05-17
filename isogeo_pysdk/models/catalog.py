@@ -17,8 +17,6 @@ import pprint
 # other model
 from isogeo_pysdk.models.workgroup import Workgroup
 
-# from workgroup import Workgroup
-
 
 # #############################################################################
 # ########## Classes ###############
@@ -91,9 +89,9 @@ class Catalog(object):
         "scan": bool,
     }
 
-    attr_crea = {"name": str, "scan": bool}
+    attr_crea = {"code": str, "name": str, "scan": bool}
 
-    attr_map = {"scan": "IsScanSink"}
+    attr_map = {"scan": "$scan"}
 
     def __init__(
         self,
@@ -272,17 +270,6 @@ class Catalog(object):
         :rtype: Workgroup
         """
         return self._owner
-
-    @owner.setter
-    def owner(self, owner):
-        """Sets the owner of this Catalog.
-
-
-        :param owner: The owner of this Catalog.  # noqa: E501
-        :type: Workgroup
-        """
-
-        self._owner = owner
 
     # scan
     @property
