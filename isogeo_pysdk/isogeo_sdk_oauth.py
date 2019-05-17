@@ -107,9 +107,9 @@ class IsogeoSession(OAuth2Session):
         self._user = {}  # authenticated user profile
         # workgroup
         self._wg_applications_names = {}  # workgroup applications by names
+        self._wg_catalogs_names = {}  # workgroup catalogs by names
         self._wg_contacts_emails = {}  # workgroup contacts by emails
         self._wg_contacts_names = {}  # workgroup contacts by names
-        self._wg_catalogs_names = {}  # workgroup catalogs by names
         self._wg_licenses_names = {}  # workgroup licenses by names
         self._wg_specifications_names = {}  # workgroup specifications by names
 

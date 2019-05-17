@@ -115,7 +115,9 @@ class TestCatalogs(unittest.TestCase):
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                # cls.isogeo.catalog.catalog_delete(workgroup_id=workgroup_test, catalog_id=i)
+                cls.isogeo.catalog.catalog_delete(
+                    workgroup_id=workgroup_test, catalog_id=i
+                )
                 pass
         # close sessions
         cls.isogeo.close()
@@ -199,31 +201,34 @@ class TestCatalogs(unittest.TestCase):
     def test_catalogs_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/catalogs}"""
         # retrieve workgroup catalogs
-        wg_catalogs = self.isogeo.workgroup_catalogs(
+        wg_catalogs = self.isogeo.catalog.catalogs(
             workgroup_id=workgroup_test, caching=0
         )
         # parse and test object loader
         for i in wg_catalogs:
-            ct = Catalog(**i)
+            # handle bad json attribute
+            i["scan"] = i.pop("$scan")
+            # load it
+            contact = Catalog(**i)
             # tests attributes structure
-            self.assertTrue(hasattr(ct, "_abilities"))
-            self.assertTrue(hasattr(ct, "_created"))
-            self.assertTrue(hasattr(ct, "_id"))
-            self.assertTrue(hasattr(ct, "_modified"))
-            self.assertTrue(hasattr(ct, "_tag"))
-            self.assertTrue(hasattr(ct, "code"))
-            self.assertTrue(hasattr(ct, "count"))
-            self.assertTrue(hasattr(ct, "name"))
-            self.assertTrue(hasattr(ct, "owner"))
-            self.assertTrue(hasattr(ct, "scan"))
+            self.assertTrue(hasattr(contact, "_abilities"))
+            self.assertTrue(hasattr(contact, "_created"))
+            self.assertTrue(hasattr(contact, "_id"))
+            self.assertTrue(hasattr(contact, "_modified"))
+            self.assertTrue(hasattr(contact, "_tag"))
+            self.assertTrue(hasattr(contact, "code"))
+            self.assertTrue(hasattr(contact, "count"))
+            self.assertTrue(hasattr(contact, "name"))
+            self.assertTrue(hasattr(contact, "owner"))
+            self.assertTrue(hasattr(contact, "scan"))
             # tests attributes value
-            self.assertEqual(ct._created, i.get("_created"))
-            self.assertEqual(ct._id, i.get("_id"))
-            self.assertEqual(ct._modified, i.get("_modified"))
-            self.assertEqual(ct._tag, i.get("_tag"))
-            self.assertEqual(ct.code, i.get("code"))
-            self.assertEqual(ct.count, i.get("count"))
-            self.assertEqual(ct.name, i.get("name"))
+            self.assertEqual(contact._created, i.get("_created"))
+            self.assertEqual(contact._id, i.get("_id"))
+            self.assertEqual(contact._modified, i.get("_modified"))
+            self.assertEqual(contact._tag, i.get("_tag"))
+            self.assertEqual(contact.code, i.get("code"))
+            self.assertEqual(contact.count, i.get("count"))
+            self.assertEqual(contact.name, i.get("name"))
 
     # -- PUT/PATCH --
     def test_catalogs_update(self):
