@@ -34,6 +34,7 @@ from isogeo_pysdk.models import (
     Application,
     Catalog,
     Contact,
+    Datasource,
     Event,
     License,
     Link,
@@ -110,6 +111,8 @@ class IsogeoSession(OAuth2Session):
         self._wg_catalogs_names = {}  # workgroup catalogs by names
         self._wg_contacts_emails = {}  # workgroup contacts by emails
         self._wg_contacts_names = {}  # workgroup contacts by names
+        self._wg_datasources_names = {}  # workgroup datasources by names
+        self._wg_datasources_urls = {}  # workgroup datasources by urls (location)
         self._wg_licenses_names = {}  # workgroup licenses by names
         self._wg_specifications_names = {}  # workgroup specifications by names
 
@@ -187,11 +190,12 @@ class IsogeoSession(OAuth2Session):
             pass
 
         # load routes as subclass
-        self.api = api
+        # self.api = api
         self.account = api.ApiAccount(self)
         self.application = api.ApiApplication(self)
         self.catalog = api.ApiCatalog(self)
         self.contact = api.ApiContact(self)
+        self.datasource = api.ApiDatasource(self)
         self.license = api.ApiLicense(self)
         # self.api.metadata = self.api.ApiResource(self)
         self.specification = api.ApiSpecification(self)

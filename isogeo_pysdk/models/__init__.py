@@ -5,6 +5,7 @@ from .application import Application  # noqa: F401
 from .catalog import Catalog  # noqa: F401
 from .contact import Contact  # noqa: F401
 from .event import Event  # noqa: F401
+from .datasource import Datasource  # noqa: F401
 from .license import License  # noqa: F401
 from .link import Link  # noqa: F401
 from .resource import Resource  # noqa: F401
