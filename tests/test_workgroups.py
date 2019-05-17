@@ -19,6 +19,7 @@
 # Standard library
 from os import environ
 import logging
+from pathlib import Path
 from random import sample
 from socket import gethostname
 from sys import exit, _getframe
@@ -37,7 +38,8 @@ from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Contact, W
 # ######## Globals #################
 # ##################################
 
-load_dotenv("dev.env", override=True)
+if Path("dev.env").exists():
+    load_dotenv("dev.env", override=True)
 
 # host machine name - used as discriminator
 hostname = gethostname()
@@ -71,7 +73,7 @@ class TestWorkgroups(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not app_script_id or not app_script_secret:
+        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get("ISOGEO_API_USER_CLIENT_SECRET"):
             logging.critical("No API credentials set as env variables.")
             exit()
         else:
@@ -83,7 +85,7 @@ class TestWorkgroups(unittest.TestCase):
 
         # API connection
         cls.isogeo = IsogeoSession(
-            client=LegacyApplicationClient(client_id=app_script_id),
+            client=LegacyApplicationClient(client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             client_secret=app_script_secret,
             platform=platform,
