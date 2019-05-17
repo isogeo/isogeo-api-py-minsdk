@@ -214,15 +214,6 @@ class Catalog(object):
         """
         return self._code
 
-    @code.setter
-    def code(self, code: str):
-        """Sets the code of this Catalog.
-
-        :param str code: The code of this Catalog.
-        """
-
-        self._code = code
-
     # name
     @property
     def name(self) -> str:

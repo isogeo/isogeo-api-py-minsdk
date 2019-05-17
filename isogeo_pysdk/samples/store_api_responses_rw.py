@@ -102,12 +102,15 @@ if __name__ == "__main__":
     # handle warnings
     if environ.get("ISOGEO_PLATFORM").lower() == "qa":
         import urllib3
+
         urllib3.disable_warnings()
 
     # -- Authentication and connection ---------------------------------
     # Isogeo client
     isogeo = IsogeoSession(
-        client=LegacyApplicationClient(client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")),
+        client=LegacyApplicationClient(
+            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")
+        ),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
@@ -120,9 +123,7 @@ if __name__ == "__main__":
     )
 
     # display elapsed time
-    print(
-        "Authentication succeeded at {:5.2f}s".format(default_timer() - START_TIME)
-    )
+    print("Authentication succeeded at {:5.2f}s".format(default_timer() - START_TIME))
 
     # get some object identifiers required for certain routes
     app_id = sample(isogeo.applications(include=[]), 1)[0].get("_id")
@@ -133,18 +134,16 @@ if __name__ == "__main__":
 
     # display elapsed time
     print(
-        "Fixtures identifiers synchronously retrieved at {:5.2f}s".format(default_timer() - START_TIME)
+        "Fixtures identifiers synchronously retrieved at {:5.2f}s".format(
+            default_timer() - START_TIME
+        )
     )
 
     # -- Async exports --------------------------------------------------
     # list of methods to execute
     li_api_routes = [
         # Account
-        {
-            "route": isogeo.account,
-            "output_json_name": "api_account",
-            "params": {},
-        },
+        {"route": isogeo.account, "output_json_name": "api_account", "params": {}},
         # Applications
         {
             "route": isogeo.applications,
@@ -154,15 +153,13 @@ if __name__ == "__main__":
         {
             "route": isogeo.application,
             "output_json_name": "api_application",
-            "params": {
-                "application_id": app_id
-            },
+            "params": {"application_id": app_id},
         },
         # Keywords
         {
             "route": isogeo.keywords,
             "output_json_name": "api_keywords",
-            "params": {"include": ["count"], "order_by": 'count.isogeo'},
+            "params": {"include": ["count"], "order_by": "count.isogeo"},
         },
         # Licenses
         {

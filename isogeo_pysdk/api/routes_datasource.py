@@ -2,7 +2,7 @@
 #! python3
 
 """
-    Isogeo API v1 - API Routes for Datasources (= CGUs, conditions) entities
+    Isogeo API v1 - API Routes for Datasources entities
 
     See: http://help.isogeo.com/api/complete/index.html
 """

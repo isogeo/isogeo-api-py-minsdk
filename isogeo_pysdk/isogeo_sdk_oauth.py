@@ -103,8 +103,10 @@ class IsogeoSession(OAuth2Session):
         )  # default timeout (see: https://2.python-requests.org/en/master/user/advanced/#timeouts)
 
         # -- CACHE
+        # platform
+        self._applications_names = {}  # Isogeo applications by names
+        self._workgroups_names = {}  # Isogeo workgroups by names
         # user
-        self._applications_names = {}  # user applications by names
         self._user = {}  # authenticated user profile
         # workgroup
         self._wg_applications_names = {}  # workgroup applications by names
@@ -199,6 +201,7 @@ class IsogeoSession(OAuth2Session):
         self.license = api.ApiLicense(self)
         # self.api.metadata = self.api.ApiResource(self)
         self.specification = api.ApiSpecification(self)
+        self.workgroup = api.ApiWorkgroup(self)
 
         # get API version
         logging.debug("Isogeo API version: {}".format(utils.get_isogeo_version()))
@@ -808,129 +811,6 @@ class IsogeoSession(OAuth2Session):
         return link_augmented
 
     # -- WORKGROUPS --------------------------------------------------
-    @_check_bearer_validity
-    def workgroup(
-        self, workgroup_id: str, include: list = ["_abilities", "limits"]
-    ) -> dict:
-        """Get an workgroup.
-
-        :param str workgroup_id: workgroup UUID to get
-        """
-        # check UUID
-        if not checker.check_is_uuid(workgroup_id):
-            raise ValueError(
-                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
-            )
-        else:
-            pass
-
-        # handle include
-        # include = checker._check_filter_includes(include, "workgroup")
-        # handling request parameters
-        payload = {"_include": include}
-
-        # request URL
-        url_workgroup = utils.get_request_base_url(
-            route="/groups/{}".format(workgroup_id)
-        )
-
-        workgroup_req = self.get(
-            url_workgroup,
-            headers=self.header,
-            params=payload,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        checker.check_api_response(workgroup_req)
-
-        # end of method
-        return workgroup_req.json()
-
-    @_check_bearer_validity
-    def workgroup_create(
-        self, workgroup: Workgroup, check_exists: int = 1
-    ) -> Workgroup:
-        """Add a new workgroup to Isogeo.
-
-        :param class workgroup: Workgroup object to create.
-        :param int check_exists: check if a workgroup already exists into Isogeo:
-
-        - 0 = no check
-        - 1 = compare name [DEFAULT]
-        - 2 = compare email
-        """
-        # check if object has a correct contact
-        if not hasattr(workgroup, "contact") or not isinstance(
-            workgroup.contact, Contact
-        ):
-            logging.debug("MMMMM bad workgroup")
-
-        # check if workgroup already exists in workgroup
-        if check_exists == 1:
-            logging.debug(NotImplemented)
-        #     # retrieve workgroup workgroups
-        #     if not self._wg_contacts_names:
-        #         self.workgroup_workgroups(workgroup_id=workgroup_id, include=[])
-        #     # check
-        #     if workgroup.name in self._wg_contacts_names:
-        #         logging.debug(
-        #             "Workgroup with the same name already exists: {}. Use 'workgroup_update' instead.".format(
-        #                 workgroup.name
-        #             )
-        #         )
-        #         return False
-        # elif check_exists == 2:
-        #     # retrieve workgroup workgroups
-        #     if not self._wg_contacts_emails:
-        #         self.workgroup_workgroups(workgroup_id=workgroup_id, include=[])
-        #     # check
-        #     if workgroup.email in self._wg_contacts_emails:
-        #         logging.debug(
-        #             "Workgroup with the same email already exists: {}. Use 'workgroup_update' instead.".format(
-        #                 workgroup.email
-        #             )
-        #         )
-        #         return False
-
-        # build request url
-        url_wg_create = utils.get_request_base_url(route="groups")
-
-        # request
-        new_wg = self.post(
-            url_wg_create,
-            data=workgroup.to_dict_creation(),
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        return Workgroup(**new_wg.json())
-
-    @_check_bearer_validity
-    def workgroup_delete(self, workgroup_id: str) -> dict:
-        """Delete a workgroup from Isogeo database.
-
-        :param str workgroup_id: identifier of the workgroup
-        """
-        # check workgroup UUID
-        if not checker.check_is_uuid(workgroup_id):
-            raise ValueError(
-                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
-            )
-        else:
-            pass
-
-        # request URL
-        url_wg_delete = utils.get_request_base_url(
-            route="groups/{}".format(workgroup_id)
-        )
-
-        wg_deletion = self.delete(url_wg_delete)
-
-        return wg_deletion
-
     @_check_bearer_validity
     def workgroup_keywords(
         self, workgroup_id: str, include: list = ["count"], caching: bool = 1
