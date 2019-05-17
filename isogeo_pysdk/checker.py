@@ -26,6 +26,8 @@ from uuid import UUID
 # ########## Globals ###############
 # ##################################
 
+logger = logging.getLogger(__name__)
+
 FILTER_KEYS = {
     "action": [],
     "catalog": [],

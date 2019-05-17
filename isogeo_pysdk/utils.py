@@ -37,6 +37,7 @@ except (ImportError, ValueError, SystemError):
 # ##################################
 
 checker = checker.IsogeoChecker()
+logger = logging.getLogger(__name__)
 
 # ##############################################################################
 # ########## Classes ###############
@@ -769,9 +770,3 @@ class IsogeoUtils(object):
 if __name__ == "__main__":
     """Standalone execution."""
     utils = IsogeoUtils()
-    print(utils.get_view_url(
-            webapp="csw_getrecords",
-            share_id="1e07910d365449b59b6596a9b428ecd9",
-            share_token="TokenOhDearToken")
-    )
-    
