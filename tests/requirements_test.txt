@@ -14,7 +14,7 @@
 autopep8
 codecov
 coverage
-requests==2.21.*
+requests==2.22.*
 pycodestyle
 python-dateutil
 python-dotenv
