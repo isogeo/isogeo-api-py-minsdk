@@ -73,22 +73,31 @@ class TestAccount(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not app_script_id or not app_script_secret:
+        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_CLIENT_SECRET"
+        ):
             logging.critical("No API credentials set as env variables.")
             exit()
         else:
             pass
         logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
+        print("Using this client: {}".format(environ.get("ISOGEO_API_USER_CLIENT_ID")[:11]))
+        print("Using this username: {}".format(environ.get("ISOGEO_USER_NAME")[:5]))
 
         # API connection
         cls.isogeo = IsogeoSession(
-            client=LegacyApplicationClient(client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")),
+            client=LegacyApplicationClient(
+                client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")
+            ),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
-            client_secret=app_script_secret,
-            platform=platform,
+            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+            platform=environ.get("ISOGEO_PLATFORM"),
         )
         # getting a token
-        cls.isogeo.connect(username=user_email, password=user_password)
+        cls.isogeo.connect(
+            username=environ.get("ISOGEO_USER_NAME"),
+            password=environ.get("ISOGEO_USER_PASSWORD"),
+        )
 
     def setUp(self):
         """Executed before each test."""
