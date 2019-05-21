@@ -40,7 +40,7 @@ class ApiResource:
         )
         super(ApiResource, self).__init__()
 
-    def workgroup_metadatoto(
+    def workgroup_metadata(
         self,
         workgroup_id: str,
         order_by: str = "_created",
