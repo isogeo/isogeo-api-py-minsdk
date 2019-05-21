@@ -18,7 +18,7 @@
         {
             "label": "Build package and upload",
             "type": "shell",
-            "dependsOn":[
+            "dependsOn": [
                 "Format code"
             ],
             "command": "./tool_build_upload.ps1",
@@ -33,6 +33,14 @@
             "type": "shell",
             "command": "./tool_docs_build.ps1",
             "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Format code and tests",
+            "dependsOn": [
+                "Format code",
+                "Format tests"
+            ],
             "problemMatcher": []
         },
         {
