@@ -4,7 +4,7 @@
 
 [![Build Status](https://travis-ci.org/isogeo/isogeo-api-py-minsdk.svg?branch=master)](https://travis-ci.org/isogeo/isogeo-api-py-minsdk) [![Build Status](https://dev.azure.com/isogeo/Python%20SDK/_apis/build/status/isogeo.isogeo-api-py-minsdk?branchName=master)](https://dev.azure.com/isogeo/Python%20SDK/_build/latest?definitionId=3&branchName=master) [![codecov](https://codecov.io/gh/isogeo/isogeo-api-py-minsdk/branch/master/graph/badge.svg)](https://codecov.io/gh/isogeo/isogeo-api-py-minsdk)
 
-[![Documentation Status](https://readthedocs.org/projects/isogeo-api-pysdk/badge/?version=latest)](https://isogeo-api-pysdk.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/isogeo-api-pysdk/badge/?version=latest)](https://isogeo-api-pysdk.readthedocs.io/en/latest/?badge=latest) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
 A Python package to use Isogeo REST API.
 
