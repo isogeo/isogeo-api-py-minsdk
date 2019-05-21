@@ -198,6 +198,7 @@ class IsogeoSession(OAuth2Session):
         self.catalog = api.ApiCatalog(self)
         self.contact = api.ApiContact(self)
         self.datasource = api.ApiDatasource(self)
+        self.keyword = api.ApiKeyword(self)
         self.license = api.ApiLicense(self)
         # self.api.metadata = self.api.ApiResource(self)
         self.specification = api.ApiSpecification(self)
@@ -644,86 +645,6 @@ class IsogeoSession(OAuth2Session):
         # end of method
         return Thesaurus(**req_thesaurus.json())
 
-    @_check_bearer_validity
-    def keywords(
-        self,
-        thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
-        query: str = "",
-        offset: int = 0,
-        order_by: str = "text",  # available values : count.group, count.isogeo, text
-        order_dir: str = "desc",
-        page_size: int = 20,
-        specific_md: list = [],
-        specific_tag: list = [],
-        include: list = [],
-    ) -> dict:
-        """Search for keywords within a specific thesaurus.
-
-        :param str thez_id: thesaurus UUID
-        :param str query: search terms, equivalent of **q** parameter in API.
-        :param int offset: offset to start page size from a specific results index
-        :param str order_by: sorting results. Available values:
-
-          * 'count.group': metadata creation date [DEFAULT if relevance is null]
-          * 'count.isogeo': metadata last update
-          * 'text': alphabetical order
-
-        :param str order_dir: sorting direction. Available values:
-
-          * 'desc': descending [DEFAULT]
-          * 'asc': ascending
-
-        :param int page_size: limits the number of results. Default: 20.
-        :param list specific_md: list of metadata UUIDs to filter on
-        :param list specific_tag: list of tags UUIDs to filter on
-        :param list include: subresources that should be returned. Available values:
-
-          * '_abilities'
-          * 'count'
-          * 'thesaurus'
-
-        """
-        # specific resources specific parsing
-        specific_md = checker._check_filter_specific_md(specific_md)
-        # sub resources specific parsing
-        include = checker._check_filter_includes(include, "keyword")
-        # specific tag specific parsing
-        specific_tag = checker._check_filter_specific_tag(specific_tag)
-
-        # handling request parameters
-        payload = {
-            "_id": specific_md,
-            "_include": include,
-            "_limit": page_size,
-            "_offset": offset,
-            "_tag": specific_tag,
-            "tid": thez_id,
-            "ob": order_by,
-            "od": order_dir,
-            "q": query,
-        }
-
-        # keywords route
-        url_keywords = utils.get_request_base_url(
-            route="thesauri/{}/keywords/search".format(thez_id)
-        )
-
-        # request
-        kwds_req = self.get(
-            url=url_keywords,
-            headers=self.header,
-            params=payload,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        # checking response
-        checker.check_api_response(kwds_req)
-
-        # end of method
-        return kwds_req.json()
-
     # -- EVENTS --------------------------------------------------
     @_check_bearer_validity
     def event(self, metadata_id: str, event_id: str) -> dict:
@@ -811,50 +732,6 @@ class IsogeoSession(OAuth2Session):
         return link_augmented
 
     # -- WORKGROUPS --------------------------------------------------
-    @_check_bearer_validity
-    def workgroup_keywords(
-        self, workgroup_id: str, include: list = ["count"], caching: bool = 1
-    ) -> list:
-        """List workgroup keywords.
-
-        :param str workgroup_id: identifier of the owner workgroup
-        :param list include: identifier of the owner workgroup
-        :param bool caching: option to cache the response
-        """
-        # check workgroup UUID
-        if not checker.check_is_uuid(workgroup_id):
-            raise ValueError("Workgroup ID is not a correct UUID.")
-        else:
-            pass
-
-        payload = {"_include": include}
-
-        # handle include
-        # include = checker._check_filter_includes(include, "keyword")
-
-        # build request url
-        url_ct_list = utils.get_request_base_url(
-            route="groups/{}/keywords/search".format(workgroup_id)
-        )
-
-        # request
-        req_wg_keywords = self.get(
-            url_ct_list,
-            headers=self.header,
-            params=payload,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        # check response
-        req_check = checker.check_api_response(req_wg_keywords)
-        if isinstance(req_check, tuple):
-            return req_check
-        wg_keywords = req_wg_keywords.json()
-
-        return wg_keywords
-
     @_check_bearer_validity
     def workgroup_metadata(
         self,
