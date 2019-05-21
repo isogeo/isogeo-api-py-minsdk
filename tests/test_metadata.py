@@ -80,7 +80,9 @@ class TestMetadata(unittest.TestCase):
         self.li_metadata_to_delete = []
         # API connection
         self.isogeo = IsogeoSession(
-            client=LegacyApplicationClient(client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")),
+            client=LegacyApplicationClient(
+                client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")
+            ),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             client_secret=app_script_secret,
             platform=platform,

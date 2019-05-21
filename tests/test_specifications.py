@@ -85,7 +85,9 @@ class TestSpecifications(unittest.TestCase):
 
         # API connection
         cls.isogeo = IsogeoSession(
-            client=LegacyApplicationClient(client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")),
+            client=LegacyApplicationClient(
+                client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")
+            ),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             client_secret=app_script_secret,
             platform=platform,

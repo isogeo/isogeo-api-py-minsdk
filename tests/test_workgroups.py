@@ -73,7 +73,9 @@ class TestWorkgroups(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get("ISOGEO_API_USER_CLIENT_SECRET"):
+        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_CLIENT_SECRET"
+        ):
             logging.critical("No API credentials set as env variables.")
             exit()
         else:
@@ -85,7 +87,9 @@ class TestWorkgroups(unittest.TestCase):
 
         # API connection
         cls.isogeo = IsogeoSession(
-            client=LegacyApplicationClient(client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")),
+            client=LegacyApplicationClient(
+                client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")
+            ),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             client_secret=app_script_secret,
             platform=platform,
