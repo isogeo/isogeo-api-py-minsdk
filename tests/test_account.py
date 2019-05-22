@@ -20,6 +20,7 @@
 from os import environ
 import logging
 from random import sample
+from pathlib import Path
 from socket import gethostname
 from sys import exit, _getframe
 from time import gmtime, strftime
@@ -27,7 +28,6 @@ import unittest
 
 # 3rd party
 from dotenv import load_dotenv
-from oauthlib.oauth2 import LegacyApplicationClient
 
 # module target
 from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, User
@@ -37,7 +37,8 @@ from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, User
 # ######## Globals #################
 # ##################################
 
-load_dotenv("dev.env", override=True)
+if Path("dev.env").exists():
+    load_dotenv("dev.env", override=True)
 
 # host machine name - used as discriminator
 hostname = gethostname()
@@ -81,17 +82,13 @@ class TestAccount(unittest.TestCase):
         else:
             pass
         logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
-        print("Using this client: {}".format(environ.get("ISOGEO_API_USER_CLIENT_ID")[:11]))
-        print("Using this username: {}".format(environ.get("ISOGEO_USER_NAME")[:5]))
 
         # API connection
         cls.isogeo = IsogeoSession(
-            client=LegacyApplicationClient(
-                client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")
-            ),
-            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
             client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
-            platform=environ.get("ISOGEO_PLATFORM"),
+            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+            platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
         # getting a token
         cls.isogeo.connect(

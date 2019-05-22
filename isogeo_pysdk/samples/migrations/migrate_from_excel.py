@@ -23,7 +23,7 @@ import urllib3
 
 # 3rd party
 from dotenv import load_dotenv
-from oauthlib.oauth2 import LegacyApplicationClient
+
 from openpyxl import load_workbook
 
 # module target
@@ -80,10 +80,10 @@ print("Excel workbook loaded at {:5.2f}s".format(default_timer() - START_TIME))
 # -- AUTH --------
 # Isogeo client
 isogeo = IsogeoSession(
-    client=LegacyApplicationClient(client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")),
-    auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+    client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
     client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
-    platform=platform,
+    auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+    platform=environ.get("ISOGEO_PLATFORM", "qa"),
 )
 
 # getting a token

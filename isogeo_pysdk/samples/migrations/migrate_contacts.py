@@ -19,7 +19,7 @@ import logging
 
 # 3rd party
 from dotenv import load_dotenv
-from oauthlib.oauth2 import LegacyApplicationClient
+
 
 # module target
 from isogeo_pysdk import (
@@ -56,10 +56,10 @@ dst_platform = "qa"
 
 # Isogeo client
 src_isogeo = IsogeoSession(
-    client=LegacyApplicationClient(client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")),
-    auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+    client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
     client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
-    platform=src_platform,
+    auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+    platform=environ.get("ISOGEO_PLATFORM", "qa"),
 )
 
 # getting a token
@@ -90,10 +90,10 @@ src_isogeo.close()
 
 # Isogeo client
 dst_isogeo = IsogeoSession(
-    client=LegacyApplicationClient(client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")),
-    auto_refresh_url="{}/oauth/token".format("https://id.api.isogeo.com/"),
+    client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
     client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
-    platform=dst_platform,
+    auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+    platform=environ.get("ISOGEO_PLATFORM", "qa"),
 )
 
 # getting a token

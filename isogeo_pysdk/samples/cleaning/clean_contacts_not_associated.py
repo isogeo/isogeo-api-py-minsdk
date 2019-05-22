@@ -22,7 +22,7 @@ from timeit import default_timer
 
 # 3rd party
 from dotenv import load_dotenv
-from oauthlib.oauth2 import LegacyApplicationClient
+
 
 # Isogeo
 from isogeo_pysdk import IsogeoSession
@@ -92,11 +92,9 @@ if __name__ == "__main__":
     # -- Authentication and connection ---------------------------------
     # Isogeo client
     isogeo = IsogeoSession(
-        client=LegacyApplicationClient(
-            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")
-        ),
-        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+        client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
         client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
     )
 

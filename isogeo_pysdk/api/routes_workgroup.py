@@ -315,7 +315,6 @@ class ApiWorkgroup:
         # end of method
         return workgroup_updated
 
-
     # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity
     def statistics(self, workgroup_id: str) -> dict:

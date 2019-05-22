@@ -28,7 +28,6 @@ import unittest
 
 # 3rd party
 from dotenv import load_dotenv
-from oauthlib.oauth2 import LegacyApplicationClient
 
 # module target
 from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Contact, Workgroup
@@ -87,12 +86,10 @@ class TestWorkgroups(unittest.TestCase):
 
         # API connection
         cls.isogeo = IsogeoSession(
-            client=LegacyApplicationClient(
-                client_id=environ.get("ISOGEO_API_USER_CLIENT_ID")
-            ),
+            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
+            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
-            client_secret=app_script_secret,
-            platform=platform,
+            platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
         # getting a token
         cls.isogeo.connect(username=user_email, password=user_password)
