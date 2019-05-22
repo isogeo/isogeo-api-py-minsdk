@@ -51,6 +51,8 @@ class ApiWorkgroup:
         # initialize
         super(ApiWorkgroup, self).__init__()
 
+    # -- Routes to manage the  Workgroup objects ---------------------------------------
+
     @ApiDecorators._check_bearer_validity
     def workgroups(
         self, include: list = ["_abilities", "limits"], caching: bool = 1
@@ -312,6 +314,43 @@ class ApiWorkgroup:
 
         # end of method
         return workgroup_updated
+
+
+    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def statistics(self, workgroup_id: str) -> dict:
+        """Returns statistics for the specified workgroup.
+
+        :param str workgroup_id: workgroup UUID
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # URL builder
+        url_workgroup_statistics = utils.get_request_base_url(
+            route="/groups/{}/statistics".format(workgroup_id)
+        )
+
+        # request
+        req_workgroup_statistics = self.api_client.get(
+            url=url_workgroup_statistics,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_workgroup_statistics)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_workgroup_statistics.json()
 
 
 # ##############################################################################

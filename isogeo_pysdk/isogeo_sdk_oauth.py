@@ -785,38 +785,6 @@ class IsogeoSession(OAuth2Session):
 
         return wg_metadata
 
-    @_check_bearer_validity
-    def workgroup_stats(self, workgroup_id: str) -> dict:
-        """Returns statistics for the specified workgroup.
-
-        :param str workgroup_id: workgroup UUID to get
-        """
-        # check contact UUID
-        if not checker.check_is_uuid(workgroup_id):
-            raise ValueError(
-                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
-            )
-        else:
-            pass
-
-        # request URL
-        url_workgroup = utils.get_request_base_url(
-            route="/groups/{}/statistics".format(workgroup_id)
-        )
-
-        workgroup_req = self.get(
-            url_workgroup,
-            headers=self.header,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        checker.check_api_response(workgroup_req)
-
-        # end of method
-        return workgroup_req.json()
-
 
 # ##############################################################################
 # ##### Stand alone program ########

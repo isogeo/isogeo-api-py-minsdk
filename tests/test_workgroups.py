@@ -229,6 +229,14 @@ class TestWorkgroups(unittest.TestCase):
 
         self.assertIsInstance(workgroup, Workgroup)
 
+    def test_workgroup_statistics(self):
+        """GET :groups/{workgroup_uuid}/statistics"""
+        # get
+        workgroup_statistics = self.isogeo.workgroup.statistics(workgroup_test)
+        # check
+        self.assertIsInstance(workgroup_statistics, dict)
+        self.assertEqual(len(workgroup_statistics), 12)
+
     # -- PUT/PATCH --
     # def test_workgroups_update(self):
     #     """PUT :groups/{workgroup_uuid}"""
