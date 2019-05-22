@@ -15,7 +15,7 @@ jobs:
         python.version: '3.6'
       Python37:
         python.version: '3.7'
-    maxParallel: 3
+    maxParallel: 2
 
   steps:
   - task: UsePythonVersion@0
@@ -59,8 +59,13 @@ jobs:
       testResultsFiles: '**/test-*.xml'
       testRunTitle: 'Publish test results for Python $(python.version)'
 
+  # Codecov. Inspired from: https://github.com/codecov/example-azure-pipelines
+  - script: |
+      bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f coverage.xml -F adder -F subtractor
+    displayName: "Publish coverage results to Codecov"
+
   - task: PublishCodeCoverageResults@1
-    displayName: "Publish coverage results"
+    displayName: "Publish coverage results to Azure Pipelines"
     inputs:
       codeCoverageTool: Cobertura
       summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
