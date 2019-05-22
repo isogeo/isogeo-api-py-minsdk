@@ -93,3 +93,6 @@ junit/*
 # PTVS
 *.ptvs
 *.vs
+
+*_wip*
+*.xlsx
