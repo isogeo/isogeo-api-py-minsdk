@@ -73,13 +73,11 @@ class IsogeoSession(OAuth2Session):
     def __init__(
         self,
         client_id=None,
-        client=None,
         auto_refresh_url=None,
-        auto_refresh_kwargs=None,
-        scope=None,
         redirect_uri=None,
-        token=None,
+        scope=None,
         state=None,
+        token=None,
         token_updater=None,
         # custom
         app_name: str = "isogeo-pysdk-writer/{}".format(version),
@@ -125,6 +123,13 @@ class IsogeoSession(OAuth2Session):
             pass
 
         # testing parameters
+        if not checker.check_is_uuid(client_id.split("-")[-1]):
+            logger.error("Client ID structure length issue: it should be 64 chars.")
+            raise ValueError(
+                "Client ID isn't good: part after name is expected to be a valid UUID."
+            )
+        else:
+            pass
         if len(client_secret) != 64:
             logging.error("App secret length issue: it should be 64 chars.")
             raise ValueError(1, "Secret isn't good: it must be 64 chars.")
@@ -191,6 +196,13 @@ class IsogeoSession(OAuth2Session):
             logging.debug("No proxy set. Use default configuration.")
             pass
 
+        # set client
+        self.auto_refresh_kwargs = {
+            "client_id": client_id,
+            "client_secret": client_secret,
+        }
+        self.client = LegacyApplicationClient(client_id=client_id)
+
         # load routes as subclass
         # self.api = api
         self.account = api.ApiAccount(self)
@@ -210,9 +222,9 @@ class IsogeoSession(OAuth2Session):
 
         return super().__init__(
             client_id=client_id,
-            client=client,
+            client=self.client,
             auto_refresh_url=auto_refresh_url,
-            auto_refresh_kwargs=auto_refresh_kwargs,
+            auto_refresh_kwargs=self.auto_refresh_kwargs,
             scope=scope,
             redirect_uri=redirect_uri,
             token=token,
@@ -816,9 +828,9 @@ if __name__ == "__main__":
 
     # instanciate
     isogeo = IsogeoSession(
-        client=LegacyApplicationClient(client_id=credentials.get("client_id")),
+        client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
+        client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
-        client_secret=credentials.get("client_secret"),
         platform=environ.get("ISOGEO_PLATFORM"),
     )
 

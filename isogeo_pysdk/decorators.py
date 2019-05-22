@@ -44,7 +44,7 @@ class ApiDecorators(object):
         @wraps(decorated_func)
         def wrapper(*args, **kwargs):
             # compare token expiration date and ask for a new one if it's expired
-            if datetime.utcnow() < datetime.utcfromtimestamp(
+            if datetime.utcnow() > datetime.utcfromtimestamp(
                 self.api_client.token.get("expires_at")
             ):
                 self.api_client.refresh_token(
