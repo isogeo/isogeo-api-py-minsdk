@@ -64,12 +64,6 @@ class IsogeoSession(OAuth2Session):
     # -- ATTRIBUTES -----------------------------------------------------------
     AUTH_MODES = {"group", "user_private", "user_public"}
 
-    _THESAURI_DICT = {
-        "isogeo": "1616597fbc4348c8b11ef9d59cf594c8",
-        "inspire-theme": "926c676c380046d7af99bcae343ac813",
-        "iso19115-topic": "926f969ee2bb470a84066625f68b96bb",
-    }
-
     def __init__(
         self,
         client_id=None,
@@ -103,6 +97,7 @@ class IsogeoSession(OAuth2Session):
         # -- CACHE
         # platform
         self._applications_names = {}  # Isogeo applications by names
+        self._thesauri_codes = {}  # Isogeo thesauri by names
         self._workgroups_names = {}  # Isogeo workgroups by names
         # user
         self._user = {}  # authenticated user profile
@@ -214,6 +209,7 @@ class IsogeoSession(OAuth2Session):
         self.license = api.ApiLicense(self)
         # self.api.metadata = self.api.ApiResource(self)
         self.specification = api.ApiSpecification(self)
+        self.thesaurus = api.ApiThesaurus(self)
         self.workgroup = api.ApiWorkgroup(self)
 
         # get API version
@@ -593,69 +589,6 @@ class IsogeoSession(OAuth2Session):
 
         # method ending
         return req_metadata_del_event
-
-    # -- KEYWORDS -----------------------------------------------------------
-    @_check_bearer_validity
-    def thesauri(self, include: list = ["_abilities"]) -> list:
-        """Get available thesauri.
-        """
-        # handling request parameters
-        payload = {"_include": include}
-
-        # request URL
-        url_thesauri = utils.get_request_base_url(route="thesauri")
-
-        # request
-        req_thesauri = self.get(
-            url_thesauri,
-            params=payload,
-            headers=self.header,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_thesauri)
-        if isinstance(req_check, tuple):
-            return req_check
-
-        # end of method
-        return req_thesauri.json()
-
-    @_check_bearer_validity
-    def thesaurus(
-        self,
-        thez_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
-        include: list = ["_abilities"],
-    ) -> Thesaurus:
-        """Get a thesaurus.
-
-        :param str thez_id: thesaurus UUID
-        """
-        # handling request parameters
-        payload = {"_include": include}
-
-        # request url
-        url_thesaurus = utils.get_request_base_url(route="thesauri/{}".format(thez_id))
-
-        # request
-        req_thesaurus = self.get(
-            url_thesaurus,
-            headers=self.header,
-            params=payload,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_thesaurus)
-        if isinstance(req_check, tuple):
-            return req_check
-
-        # end of method
-        return Thesaurus(**req_thesaurus.json())
 
     # -- EVENTS --------------------------------------------------
     @_check_bearer_validity
