@@ -18,6 +18,7 @@ import logging
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.utils import IsogeoUtils
+from isogeo_pysdk.models import Metadata
 
 from .routes_event import ApiEvent
 
@@ -25,6 +26,7 @@ from .routes_event import ApiEvent
 # ########## Libraries #############
 # ##################################
 
+logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
 utils = IsogeoUtils()
 
@@ -54,6 +56,52 @@ class ApiResource:
 
         # initialize
         super(ApiResource, self).__init__()
+
+    @ApiDecorators._check_bearer_validity
+    def metadata(self, metadata_id: str, include: list = []) -> Metadata:
+        """Get complete or partial metadata abou a specific metadata (= resource).
+
+        :param str metadata_id: metadata UUID to get
+        :param list include: subresources that should be included.
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata_id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata_id)
+            )
+        else:
+            pass
+
+        # request parameters
+        payload = {"_include": checker._check_filter_includes(include)}
+
+        # URL
+        url_resource = utils.get_request_base_url(
+            route="resources/{}".format(metadata_id)
+        )
+
+        # request
+        req_resource = self.api_client.get(
+            url=url_resource,
+            headers=self.api_client.header,
+            params=payload,
+            proxies=self.api_client.proxies,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_resource)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # handle bad JSON attribute
+        metadata = req_resource.json()
+        metadata["coordinateSystem"] = metadata.pop("coordinate-system", list)
+        metadata["featureAttributes"] = metadata.pop("feature-attributes", list)
+
+        # end of method
+        return Metadata(**metadata)
 
     # def workgroup_metadata(
     #     self,

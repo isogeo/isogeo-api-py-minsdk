@@ -279,158 +279,110 @@ class IsogeoSession(OAuth2Session):
         return wrapper
 
     # -- METADATA = RESOURCE --------------------------------------------------
-    @_check_bearer_validity
-    def resource(
-        self, resource_id: str = None, subresource=None, include: list = []
-    ) -> dict:
-        """Get complete or partial metadata about one specific resource.
+    # @_check_bearer_validity
+    # def md_exists(self, resource_id: str) -> bool:
+    #     """Check if the specified metadata exists or is available for the authenticated user.
 
-        :param str resource_id: metadata UUID to get
-        :param list include: subresources that should be included.
-         Must be a list of strings. Available values: 'isogeo.SUBRESOURCES'
-        """
-        # if subresource route
-        if isinstance(subresource, str):
-            subresource = "/{}".format(checker._check_subresource(subresource))
-        else:
-            subresource = ""
-            # _includes specific parsing
-            include = checker._check_filter_includes(include)
+    #     :param str resource_id: identifier of the resource to verify
+    #     """
+    #     url_md_check = "{}{}".format(
+    #         utils.get_request_base_url("resources"), resource_id
+    #     )
 
-        # handling request parameters
-        payload = {"id": resource_id, "_include": include}
-        # resource search
-        md_url = "{}{}{}".format(
-            utils.get_request_base_url(route="resources"), resource_id, subresource
-        )
+    #     return checker.check_api_response(self.get(url_md_check))
 
-        resource_req = self.get(
-            md_url,
-            headers=self.header,
-            hooks={
-                "response": [
-                    self.custom_hooks.check_for_error,
-                    # self.custom_hooks.autofix_attributes_resource,
-                ]
-            },
-            params=payload,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
+    # @_check_bearer_validity
+    # def md_create(
+    #     self,
+    #     workgroup_id: str,
+    #     resource_type: str,
+    #     title: str,
+    #     abstract: str = None,
+    #     series: bool = 0,
+    # ) -> dict:
+    #     """Create a metadata from Isogeo database.
 
-        # handle bad JSON attribute
-        metadata = resource_req.json()
-        metadata["coordinateSystem"] = metadata.pop("coordinate-system", list)
-        metadata["featureAttributes"] = metadata.pop("feature-attributes", list)
+    #     :param str workgroup_id: identifier of the owner workgroup
+    #     :param str resource_type: data type. Must be one of...
+    #     :param str title: title
+    #     :param str abstract: abstract (description)
+    #     :param bool series: set if metadata is a series or not
+    #     """
+    #     # check metadata UUID
+    #     if not checker.check_is_uuid(workgroup_id):
+    #         raise ValueError("Workgroup ID is not a correct UUID.")
+    #     else:
+    #         pass
 
-        # end of method
-        return metadata
+    #     # prepare metadata
+    #     data = {
+    #         "title": title,
+    #         "abstract": abstract,
+    #         "type": resource_type,
+    #         "series": series,
+    #     }
 
-    @_check_bearer_validity
-    def md_exists(self, resource_id: str) -> bool:
-        """Check if the specified metadata exists or is available for the authenticated user.
+    #     # resource route
+    #     url_md_create = utils.get_request_base_url(
+    #         route="groups/{}/resources/".format(workgroup_id)
+    #     )
 
-        :param str resource_id: identifier of the resource to verify
-        """
-        url_md_check = "{}{}".format(
-            utils.get_request_base_url("resources"), resource_id
-        )
+    #     # request
+    #     new_md = self.post(
+    #         url_md_create,
+    #         data=data,
+    #         proxies=self.proxies,
+    #         verify=self.ssl,
+    #         timeout=self.timeout,
+    #     )
 
-        return checker.check_api_response(self.get(url_md_check))
+    #     return new_md.json()
 
-    @_check_bearer_validity
-    def md_create(
-        self,
-        workgroup_id: str,
-        resource_type: str,
-        title: str,
-        abstract: str = None,
-        series: bool = 0,
-    ) -> dict:
-        """Create a metadata from Isogeo database.
+    # @_check_bearer_validity
+    # def md_delete(self, resource_id: str) -> dict:
+    #     """Delete a metadata from Isogeo database.
 
-        :param str workgroup_id: identifier of the owner workgroup
-        :param str resource_type: data type. Must be one of...
-        :param str title: title
-        :param str abstract: abstract (description)
-        :param bool series: set if metadata is a series or not
-        """
-        # check metadata UUID
-        if not checker.check_is_uuid(workgroup_id):
-            raise ValueError("Workgroup ID is not a correct UUID.")
-        else:
-            pass
+    #     :param str resource_id: identifier of the resource to delete
+    #     """
+    #     # resource route
+    #     url_md_del = utils.get_request_base_url(
+    #         route="resources/{}".format(resource_id)
+    #     )
 
-        # prepare metadata
-        data = {
-            "title": title,
-            "abstract": abstract,
-            "type": resource_type,
-            "series": series,
-        }
+    #     # request
+    #     md_deletion = self.delete(url_md_del)
 
-        # resource route
-        url_md_create = utils.get_request_base_url(
-            route="groups/{}/resources/".format(workgroup_id)
-        )
+    #     return md_deletion
 
-        # request
-        new_md = self.post(
-            url_md_create,
-            data=data,
-            proxies=self.proxies,
-            verify=self.ssl,
-            timeout=self.timeout,
-        )
+    # @_check_bearer_validity
+    # def md_update(self, metadata: Metadata) -> Metadata:
+    #     """Update a metadata from Isogeo database.
 
-        return new_md.json()
+    #     :param Metadata metadata: metadata (resource) to edit
+    #     """
+    #     # check metadata UUID
+    #     # if not checker.check_is_uuid(workgroup_id):
+    #     #     raise ValueError("Workgroup ID is not a correct UUID.")
+    #     # else:
+    #     #     pass
 
-    @_check_bearer_validity
-    def md_delete(self, resource_id: str) -> dict:
-        """Delete a metadata from Isogeo database.
+    #     # URL
+    #     url_metadata_update = utils.get_request_base_url(
+    #         route="resources/{}".format(metadata._id)
+    #     )
 
-        :param str resource_id: identifier of the resource to delete
-        """
-        # resource route
-        url_md_del = utils.get_request_base_url(
-            route="resources/{}".format(resource_id)
-        )
+    #     # request
+    #     req_metadata_update = self.patch(
+    #         url=url_metadata_update,
+    #         json=metadata.to_dict_creation(),
+    #         headers=self.header,
+    #         proxies=self.proxies,
+    #         timeout=self.timeout,
+    #         verify=self.ssl,
+    #     )
 
-        # request
-        md_deletion = self.delete(url_md_del)
-
-        return md_deletion
-
-    @_check_bearer_validity
-    def md_update(self, metadata: Metadata) -> Metadata:
-        """Update a metadata from Isogeo database.
-
-        :param Metadata metadata: metadata (resource) to edit
-        """
-        # check metadata UUID
-        # if not checker.check_is_uuid(workgroup_id):
-        #     raise ValueError("Workgroup ID is not a correct UUID.")
-        # else:
-        #     pass
-
-        # URL
-        url_metadata_update = utils.get_request_base_url(
-            route="resources/{}".format(metadata._id)
-        )
-
-        # request
-        req_metadata_update = self.patch(
-            url=url_metadata_update,
-            json=metadata.to_dict_creation(),
-            headers=self.header,
-            proxies=self.proxies,
-            timeout=self.timeout,
-            verify=self.ssl,
-        )
-
-        # method ending
-        return Metadata(**req_metadata_update.json())
+    #     # method ending
+    #     return Metadata(**req_metadata_update.json())
 
     @_check_bearer_validity
     def md_associate_contacts(
