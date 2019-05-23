@@ -31,7 +31,7 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Event, Metadata
+from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Event
 
 
 # #############################################################################
@@ -96,9 +96,7 @@ class TestEvents(unittest.TestCase):
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
-        cls.metadata_fixture = Metadata(
-            **cls.isogeo.resource(resource_id=MD_TEST_FIXTURE)
-        )
+        cls.metadata_fixture = cls.isogeo.metadata.metadata(metadata_id=MD_TEST_FIXTURE)
 
     def setUp(self):
         """Executed before each test."""
@@ -117,9 +115,7 @@ class TestEvents(unittest.TestCase):
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.metadata.events.delete(
-                    event=i
-                )
+                cls.isogeo.metadata.events.delete(event=i)
                 pass
         # close sessions
         cls.isogeo.close()
@@ -139,13 +135,12 @@ class TestEvents(unittest.TestCase):
             date=event_date,
             kind=event_kind,
             description=event_description,
-            parent_resource=self.metadata_fixture._id
+            parent_resource=self.metadata_fixture._id,
         )
 
         # create it online
         event_new = self.isogeo.metadata.events.create(
-            metadata=self.metadata_fixture,
-            event=event_new
+            metadata=self.metadata_fixture, event=event_new
         )
 
         # checks

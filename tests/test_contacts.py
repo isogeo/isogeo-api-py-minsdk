@@ -131,7 +131,7 @@ class TestContacts(unittest.TestCase):
 
         # checks
         self.assertEqual(contact_new.name, contact_name)
-        self.assertTrue(self.isogeo.contact.contact_exists(contact_new._id))
+        self.assertTrue(self.isogeo.contact.exists(contact_new._id))
 
         # add created specification to deletion
         self.li_fixtures_to_delete.append(contact_new._id)
@@ -162,7 +162,7 @@ class TestContacts(unittest.TestCase):
         # checks
         self.assertEqual(contact_new.name, contact_name)
         self.assertEqual(contact_new.type, "custom")
-        self.assertTrue(self.isogeo.contact.contact_exists(contact_new._id))
+        self.assertTrue(self.isogeo.contact.exists(contact_new._id))
 
         # add created contact to deletion
         self.li_fixtures_to_delete.append(contact_new._id)
@@ -266,14 +266,10 @@ class TestContacts(unittest.TestCase):
         # )[0]
 
         # check both exist
-        self.assertTrue(
-            self.isogeo.contact.contact_exists(contact_id_isogeo.get("_id"))
-        )
-        self.assertTrue(
-            self.isogeo.contact.contact_exists(contact_id_specific.get("_id"))
-        )
+        self.assertTrue(self.isogeo.contact.exists(contact_id_isogeo.get("_id")))
+        self.assertTrue(self.isogeo.contact.exists(contact_id_specific.get("_id")))
         # self.assertTrue(
-        #     self.isogeo.contact.contact_exists(
+        #     self.isogeo.contact.exists(
         #         contact_id_user.get("_id")
         #     )
         # )
@@ -306,7 +302,7 @@ class TestContacts(unittest.TestCase):
         )
 
         # update the online contact
-        contact_fixture = self.isogeo.contact.contact_update(contact_fixture)
+        contact_fixture = self.isogeo.contact.update(contact_fixture)
 
         # check if the change is effective
         contact_fixture_updated = self.isogeo.contact.contact(contact_fixture._id)

@@ -128,11 +128,7 @@ class ApiEvent:
         return Event(**event_augmented)
 
     @ApiDecorators._check_bearer_validity
-    def create(
-        self,
-        metadata: Metadata,
-        event: Event
-    ) -> Event:
+    def create(self, metadata: Metadata, event: Event) -> Event:
         """Add a new event to a metadata (= resource).
 
         :param Metadata metadata: metadata (resource) to edit
@@ -154,7 +150,9 @@ class ApiEvent:
         # ensure that a creation date doesn't already exist
         if event.kind == "creation":
             # retrieve metadata events
-            metadata_events = self.api_client.resource(metadata._id, include=["events"])
+            metadata_events = self.api_client.metadata.metadata(
+                metadata._id, include=["events"]
+            )
             # filter on creation events
             events_creation = list(
                 filter(
@@ -180,7 +178,11 @@ class ApiEvent:
         # request
         req_new_event = self.api_client.post(
             url=url_event_create,
-            json={"date": event.date, "description": event.description, "kind": event.kind},
+            json={
+                "date": event.date,
+                "description": event.description,
+                "kind": event.kind,
+            },
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
             verify=self.api_client.ssl,

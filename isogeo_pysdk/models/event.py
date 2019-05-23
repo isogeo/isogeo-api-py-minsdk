@@ -50,12 +50,7 @@ class Event(object):
         "parent_resource": str,
     }
 
-    attr_crea = {
-        "date": str,
-        "description": str,
-        "kind": str,
-        "waitForSync": bool,
-    }
+    attr_crea = {"date": str, "description": str, "kind": str, "waitForSync": bool}
 
     attr_map = {}
 

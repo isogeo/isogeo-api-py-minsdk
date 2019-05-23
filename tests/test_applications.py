@@ -125,7 +125,7 @@ class TestApplications(unittest.TestCase):
         application_to_create = Application(name=application_name)
 
         # create it online
-        application_new = self.isogeo.application.application_create(
+        application_new = self.isogeo.application.create(
             application=application_to_create
         )
 
@@ -143,7 +143,7 @@ class TestApplications(unittest.TestCase):
             name=get_test_marker(), type="user", canHaveManyGroups=True
         )
         # create it online
-        application_new = self.isogeo.application.application_create(
+        application_new = self.isogeo.application.create(
             application=application_new, check_exists=0
         )
 
@@ -163,12 +163,12 @@ class TestApplications(unittest.TestCase):
         application_local = Application(name=name_to_be_unique)
 
         # create it online
-        application_new_1 = self.isogeo.application.application_create(
+        application_new_1 = self.isogeo.application.create(
             application=application_local, check_exists=0
         )
 
         # try to create a application with the same name
-        application_new_2 = self.isogeo.application.application_create(
+        application_new_2 = self.isogeo.application.create(
             application=application_local, check_exists=1
         )
 
@@ -305,7 +305,7 @@ class TestApplications(unittest.TestCase):
         """PUT :/applications/{application_uuid}}"""
         # create a new application
         application_fixture = Application(name=get_test_marker())
-        application_fixture = self.isogeo.application.application_create(
+        application_fixture = self.isogeo.application.create(
             application=application_fixture, check_exists=0
         )
 
@@ -314,9 +314,7 @@ class TestApplications(unittest.TestCase):
         application_fixture.url = "https://github.com/isogeo/isogeo-api-py-minsdk"
 
         # update the online application
-        application_fixture = self.isogeo.application.application_update(
-            application_fixture
-        )
+        application_fixture = self.isogeo.application.update(application_fixture)
 
         # check if the change is effective
         application_fixture_updated = self.isogeo.application.application(

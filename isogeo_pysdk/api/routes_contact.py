@@ -267,7 +267,7 @@ class ApiContact:
         return req_contact_deletion
 
     @ApiDecorators._check_bearer_validity
-    def contact_exists(self, contact_id: str) -> bool:
+    def exists(self, contact_id: str) -> bool:
         """Check if the specified contact exists and is available for the authenticated user.
 
         :param str contact_id: identifier of the contact to verify
@@ -300,7 +300,7 @@ class ApiContact:
         return req_contact_exists
 
     @ApiDecorators._check_bearer_validity
-    def contact_update(self, contact: Contact, caching: bool = 1) -> Contact:
+    def update(self, contact: Contact, caching: bool = 1) -> Contact:
         """Update a contact owned by a workgroup.
 
         :param class contact: Contact model object to update

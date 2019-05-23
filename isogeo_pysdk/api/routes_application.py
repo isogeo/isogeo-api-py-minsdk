@@ -160,7 +160,7 @@ class ApiApplication:
         return Application(**req_application.json())
 
     @ApiDecorators._check_bearer_validity
-    def application_create(
+    def create(
         self, check_exists: int = 1, application: object = Application()
     ) -> Application:
         """Add a new application to Isogeo.
@@ -284,9 +284,7 @@ class ApiApplication:
         return req_application_exists
 
     @ApiDecorators._check_bearer_validity
-    def application_update(
-        self, application: Application, caching: bool = 1
-    ) -> Application:
+    def update(self, application: Application, caching: bool = 1) -> Application:
         """Update a application owned by a workgroup.
 
         :param class application: Application model object to update
