@@ -131,32 +131,28 @@ class ApiEvent:
     def create(
         self,
         metadata: Metadata,
-        event_date: str or datetime,
-        event_comment: str = None,
-        event_kind: str = "update",
+        event: Event
     ) -> Event:
         """Add a new event to a metadata (= resource).
 
         :param Metadata metadata: metadata (resource) to edit
-        :param str event_date: date of the event. Must be in the format `YYYY-MM-DD`
-        :param str event_kind: kind of event. Must be one of: creation, update, publication
-        :param str event_comment: text to associate to the event. Not possible for event_kind=='creation'
+        :param Event Event: event object to create
         """
         # check params
-        if event_kind not in ("creation", "update", "publication"):
+        if event.kind not in ("creation", "update", "publication"):
             raise ValueError(
-                "'event_kind' must be one of: creation, update, publication"
+                "'event.kind' must be one of: creation, update, publication"
             )
 
-        if isinstance(event_date, str):
-            datetime.strptime(event_date, "%Y-%m-%d")
-        elif isinstance(event_date, datetime):
-            event_date = event_date.strftime("%Y-%m-%d")
+        if isinstance(event.date, str):
+            datetime.strptime(event.date, "%Y-%m-%d")
+        elif isinstance(event.date, datetime):
+            event.date = event.date.strftime("%Y-%m-%d")
         else:
-            raise TypeError("'event_date' must be a str or a datetime")
+            raise TypeError("'event.date' must be a str or a datetime")
 
         # ensure that a creation date doesn't already exist
-        if event_kind == "creation":
+        if event.kind == "creation":
             # retrieve metadata events
             metadata_events = self.api_client.resource(metadata._id, include=["events"])
             # filter on creation events
@@ -171,9 +167,9 @@ class ApiEvent:
                 )
                 return self.event(metadata._id, events_creation[0].get("_id"))
 
-        # ensure removing event_comment for creation dates
-        if event_kind == "creation" and event_comment:
-            event_comment = None
+        # ensure removing event.description for creation dates
+        if event.kind == "creation" and event.description:
+            event.description = None
             logger.warning("Event comments are not allowed for creation dates")
 
         # URL
@@ -184,7 +180,7 @@ class ApiEvent:
         # request
         req_new_event = self.api_client.post(
             url=url_event_create,
-            json={"date": event_date, "description": event_comment, "kind": event_kind},
+            json={"date": event.date, "description": event.description, "kind": event.kind},
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
             verify=self.api_client.ssl,
@@ -204,21 +200,29 @@ class ApiEvent:
         return Event(**event_augmented)
 
     @ApiDecorators._check_bearer_validity
-    def delete(self, metadata: Metadata, event_id: str):
+    def delete(self, event: Event, metadata: Metadata = None):
         """Delete a event from Isogeo database.
 
-        :param Metadata metadata: metadata (resource) to edit
-        :param str event_id: UUID of the event to delete
+        :param class event: Event model object to delete
+        :param Metadata metadata: parent metadata (resource) containing the event
         """
         # check event UUID
-        if not checker.check_is_uuid(event_id):
-            raise ValueError("Event ID is not a correct UUID: {}".format(event_id))
+        if not checker.check_is_uuid(event._id):
+            raise ValueError("Event ID is not a correct UUID: {}".format(event._id))
+        else:
+            pass
+
+        # retrieve parent metadata
+        if not checker.check_is_uuid(event.parent_resource) and not metadata:
+            raise ValueError("Event parent metadata is required. Requesting it...")
+        elif not checker.check_is_uuid(event.parent_resource) and metadata:
+            event.parent_resource = metadata._id
         else:
             pass
 
         # URL
         url_event_delete = utils.get_request_base_url(
-            route="resources/{}/events/{}".format(metadata._id, event_id)
+            route="resources/{}/events/{}".format(event.parent_resource, event._id)
         )
 
         # request
@@ -237,46 +241,53 @@ class ApiEvent:
 
         return req_event_deletion
 
-    # @ApiDecorators._check_bearer_validity
-    # def event_update(self, event: Event, caching: bool = 1) -> Event:
-    #     """Update a event owned by a workgroup.
+    @ApiDecorators._check_bearer_validity
+    def update(self, event: Event, metadata: Metadata = None) -> Event:
+        """Update an event.
 
-    #     :param class event: Event model object to update
-    #     :param bool caching: option to cache the response
-    #     """
-    #     # check event UUID
-    #     if not checker.check_is_uuid(event._id):
-    #         raise ValueError("Event ID is not a correct UUID: {}".format(event._id))
-    #     else:
-    #         pass
+        :param class event: Event model object to update
+        :param Metadata metadata: parent metadata (resource) containing the event
+        """
+        # check event UUID
+        if not checker.check_is_uuid(event._id):
+            raise ValueError("Event ID is not a correct UUID: {}".format(event._id))
+        else:
+            pass
 
-    #     # URL
-    #     url_event_update = utils.get_request_base_url(
-    #         route="events/{}".format(event._id)
-    #     )
+        # retrieve parent metadata
+        if not checker.check_is_uuid(event.parent_resource) and not metadata:
+            raise ValueError("Event parent metadata is required. Requesting it...")
+        elif not checker.check_is_uuid(event.parent_resource) and metadata:
+            event.parent_resource = metadata._id
+        else:
+            pass
 
-    #     # request
-    #     req_event_update = self.api_client.put(
-    #         url=url_event_update,
-    #         json=event.to_dict_creation(),
-    #         headers=self.api_client.header,
-    #         proxies=self.api_client.proxies,
-    #         verify=self.api_client.ssl,
-    #         timeout=self.api_client.timeout,
-    #     )
+        # URL
+        url_event_update = utils.get_request_base_url(
+            route="resources/{}/events/{}".format(event.parent_resource, event._id)
+        )
 
-    #     # checking response
-    #     req_check = checker.check_api_response(req_event_update)
-    #     if isinstance(req_check, tuple):
-    #         return req_check
+        # request
+        req_event_update = self.api_client.put(
+            url=url_event_update,
+            json=event.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
 
-    #     # update event in cache
-    #     new_event = Event(**req_event_update.json())
-    #     if caching:
-    #         self.api_client._events_names[new_event.name] = new_event._id
+        # checking response
+        req_check = checker.check_api_response(req_event_update)
+        if isinstance(req_check, tuple):
+            return req_check
 
-    #     # end of method
-    #     return new_event
+        # add parent resource id to keep tracking
+        event_augmented = req_event_update.json()
+        event_augmented["parent_resource"] = event.parent_resource
+
+        # end of method
+        return Event(**event_augmented)
 
 
 # ##############################################################################

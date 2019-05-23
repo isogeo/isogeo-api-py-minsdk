@@ -13,6 +13,7 @@
 
 # standard library
 import pprint
+from datetime import datetime
 
 
 # #############################################################################
@@ -42,19 +43,18 @@ class Event(object):
       EVENTS_KINDS_VALUES (tuple): possible values for an event kind
     """
     attr_types = {
-        "_id": "str",
-        "date": "datetime",
-        "description": "str",
-        "parent_resource": "str",
-        "kind": "str",
+        "_id": str,
+        "date": str,
+        "description": str,
+        "kind": str,
+        "parent_resource": str,
     }
 
     attr_crea = {
-        "date": "str",
-        "description": "str",
-        "kind": "str",
-        "parent_resource": "str",
-        "waitForSync": "bool",
+        "date": str,
+        "description": str,
+        "kind": str,
+        "waitForSync": bool,
     }
 
     attr_map = {}
@@ -92,6 +92,10 @@ class Event(object):
             self._description = description
         if kind is not None:
             self._kind = kind
+        if parent_resource is not None:
+            self._parent_resource = parent_resource
+        if waitForSync is not None:
+            self._waitForSync = waitForSync
 
     # -- PROPERTIES --------------------------------------------------------------------
     # event UUID
@@ -103,15 +107,6 @@ class Event(object):
         :rtype: str
         """
         return self.__id
-
-    @_id.setter
-    def _id(self, _id: str):
-        """Sets the id of this Event.
-
-        :param str id: The id of this Event.
-        """
-
-        self.__id = _id
 
     # date
     @property
