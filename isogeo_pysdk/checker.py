@@ -291,7 +291,7 @@ class IsogeoChecker(object):
         """
         # check uuid type
         if not isinstance(uuid_str, str):
-            raise TypeError("'uuid_str' expected a str value.")
+            raise TypeError("'uuid_str' expected a str value. Got: {}".format(uuid_str))
         else:
             pass
         # handle Isogeo specific UUID in XML exports
