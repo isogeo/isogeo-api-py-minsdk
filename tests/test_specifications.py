@@ -110,7 +110,7 @@ class TestSpecifications(unittest.TestCase):
         # clean created specifications
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.specification.specification_delete(
+                cls.isogeo.specification.delete(
                     workgroup_id=workgroup_test, specification_id=i
                 )
         # close sessions

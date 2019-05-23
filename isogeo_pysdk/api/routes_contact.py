@@ -225,7 +225,7 @@ class ApiContact:
         return new_contact
 
     @ApiDecorators._check_bearer_validity
-    def contact_delete(self, workgroup_id: str, contact_id: str):
+    def delete(self, workgroup_id: str, contact_id: str):
         """Delete a contact from Isogeo database.
 
         :param str workgroup_id: identifier of the owner workgroup

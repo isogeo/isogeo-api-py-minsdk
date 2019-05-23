@@ -207,7 +207,7 @@ class ApiSpecification:
         return new_specification
 
     @ApiDecorators._check_bearer_validity
-    def specification_delete(self, workgroup_id: str, specification_id: str) -> dict:
+    def delete(self, workgroup_id: str, specification_id: str) -> dict:
         """Delete a specification from Isogeo database.
 
         :param str workgroup_id: identifier of the owner workgroup

@@ -110,9 +110,7 @@ class TestLicenses(unittest.TestCase):
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.license.license_delete(
-                    workgroup_id=workgroup_test, license_id=i
-                )
+                cls.isogeo.license.delete(workgroup_id=workgroup_test, license_id=i)
         # close sessions
         cls.isogeo.close()
 

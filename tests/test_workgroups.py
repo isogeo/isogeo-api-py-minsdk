@@ -111,7 +111,7 @@ class TestWorkgroups(unittest.TestCase):
         # clean created workgroups
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.workgroup.workgroup_delete(workgroup_id=i)
+                cls.isogeo.workgroup.delete(workgroup_id=i)
         # close sessions
         cls.isogeo.close()
 

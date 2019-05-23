@@ -110,9 +110,7 @@ class TestContacts(unittest.TestCase):
         # clean created contacts
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.contact.contact_delete(
-                    workgroup_id=workgroup_test, contact_id=i
-                )
+                cls.isogeo.contact.delete(workgroup_id=workgroup_test, contact_id=i)
         # close sessions
         cls.isogeo.close()
 

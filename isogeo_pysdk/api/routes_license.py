@@ -200,7 +200,7 @@ class ApiLicense:
         return new_license
 
     @ApiDecorators._check_bearer_validity
-    def license_delete(self, workgroup_id: str, license_id: str):
+    def delete(self, workgroup_id: str, license_id: str):
         """Delete a license from Isogeo database.
 
         :param str workgroup_id: identifier of the owner workgroup

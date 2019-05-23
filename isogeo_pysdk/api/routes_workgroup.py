@@ -201,7 +201,7 @@ class ApiWorkgroup:
         return new_workgroup
 
     @ApiDecorators._check_bearer_validity
-    def workgroup_delete(self, workgroup_id: str):
+    def delete(self, workgroup_id: str):
         """Delete a workgroup from Isogeo database.
 
         :param str workgroup_id: identifier of the workgroup
