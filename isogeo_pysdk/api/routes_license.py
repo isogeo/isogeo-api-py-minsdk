@@ -52,7 +52,7 @@ class ApiLicense:
         super(ApiLicense, self).__init__()
 
     @ApiDecorators._check_bearer_validity
-    def licenses(
+    def listing(
         self,
         workgroup_id: str = None,
         include: list = ["_abilities", "count"],
@@ -137,7 +137,7 @@ class ApiLicense:
         return License(**req_license.json())
 
     @ApiDecorators._check_bearer_validity
-    def license_create(
+    def create(
         self, workgroup_id: str, check_exists: int = 1, license: object = License()
     ) -> License:
         """Add a new license to a workgroup.
@@ -160,7 +160,7 @@ class ApiLicense:
         if check_exists == 1:
             # retrieve workgroup licenses
             if not self.api_client._wg_licenses_names:
-                self.licenses(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=[])
             # check
             if license.name in self.api_client._wg_licenses_names:
                 logger.debug(

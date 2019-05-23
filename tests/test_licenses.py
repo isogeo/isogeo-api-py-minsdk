@@ -126,7 +126,7 @@ class TestLicenses(unittest.TestCase):
         license_new = License(name=license_name)
 
         # create it online
-        license_new = self.isogeo.license.license_create(
+        license_new = self.isogeo.license.create(
             workgroup_id=workgroup_test, license=license_new, check_exists=0
         )
 
@@ -148,7 +148,7 @@ class TestLicenses(unittest.TestCase):
             link="https://fr.wikipedia.org/wiki/Licence_Creative_Commons",
         )
         # create it online
-        license_new = self.isogeo.license.license_create(
+        license_new = self.isogeo.license.create(
             workgroup_id=workgroup_test, license=license_new, check_exists=0
         )
 
@@ -170,12 +170,12 @@ class TestLicenses(unittest.TestCase):
         license_local = License(name=name_to_be_unique)
 
         # create it online
-        license_new_1 = self.isogeo.license.license_create(
+        license_new_1 = self.isogeo.license.create(
             workgroup_id=workgroup_test, license=license_local, check_exists=0
         )
 
         # try to create a license with the same name
-        license_new_2 = self.isogeo.license.license_create(
+        license_new_2 = self.isogeo.license.create(
             workgroup_id=workgroup_test, license=license_local, check_exists=1
         )
 
@@ -189,7 +189,7 @@ class TestLicenses(unittest.TestCase):
     def test_licenses_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/licenses}"""
         # retrieve workgroup licenses
-        wg_licenses = self.isogeo.license.licenses(
+        wg_licenses = self.isogeo.license.listing(
             workgroup_id=workgroup_test, caching=1
         )
         self.assertIsInstance(wg_licenses, list)
@@ -215,7 +215,7 @@ class TestLicenses(unittest.TestCase):
         if self.isogeo._wg_licenses_names:
             wg_licenses = self.isogeo._wg_licenses_names
         else:
-            wg_licenses = self.isogeo.license.licenses(
+            wg_licenses = self.isogeo.license.listing(
                 workgroup_id=workgroup_test, caching=0
             )
 
@@ -248,7 +248,7 @@ class TestLicenses(unittest.TestCase):
         license_fixture = License(
             name="{} - {}".format(get_test_marker(), self.discriminator)
         )
-        license_fixture = self.isogeo.license.license_create(
+        license_fixture = self.isogeo.license.create(
             workgroup_id=workgroup_test, license=license_fixture, check_exists=0
         )
 

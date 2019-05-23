@@ -134,7 +134,7 @@ class TestDatasources(unittest.TestCase):
         )
 
         # create it online
-        datasource_new = self.isogeo.datasource.datasource_create(
+        datasource_new = self.isogeo.datasource.create(
             workgroup_id=workgroup_test, datasource=datasource_new, check_exists=0
         )
 
@@ -155,7 +155,7 @@ class TestDatasources(unittest.TestCase):
             location="https://geobretagne.fr/geonetwork/srv/fre/csw?",
         )
         # create it online
-        datasource_new = self.isogeo.datasource.datasource_create(
+        datasource_new = self.isogeo.datasource.create(
             workgroup_id=workgroup_test, datasource=datasource_new, check_exists=0
         )
 
@@ -182,12 +182,12 @@ class TestDatasources(unittest.TestCase):
         )
 
         # create it online
-        datasource_new_1 = self.isogeo.datasource.datasource_create(
+        datasource_new_1 = self.isogeo.datasource.create(
             workgroup_id=workgroup_test, datasource=datasource_local, check_exists=0
         )
 
         # try to create a datasource with the same name
-        datasource_new_2 = self.isogeo.datasource.datasource_create(
+        datasource_new_2 = self.isogeo.datasource.create(
             workgroup_id=workgroup_test, datasource=datasource_local, check_exists=2
         )
 
@@ -209,12 +209,12 @@ class TestDatasources(unittest.TestCase):
         )
 
         # create it online
-        datasource_new_1 = self.isogeo.datasource.datasource_create(
+        datasource_new_1 = self.isogeo.datasource.create(
             workgroup_id=workgroup_test, datasource=datasource_local, check_exists=0
         )
 
         # try to create a datasource with the same name
-        datasource_new_2 = self.isogeo.datasource.datasource_create(
+        datasource_new_2 = self.isogeo.datasource.create(
             workgroup_id=workgroup_test, datasource=datasource_local, check_exists=1
         )
 
@@ -262,7 +262,7 @@ class TestDatasources(unittest.TestCase):
             name="{}".format(get_test_marker()),
             location="https://geobretagne.fr/geonetwork/srv/fre/csw?",
         )
-        datasource_fixture = self.isogeo.datasource.datasource_create(
+        datasource_fixture = self.isogeo.datasource.create(
             workgroup_id=workgroup_test, datasource=datasource_fixture, check_exists=0
         )
 

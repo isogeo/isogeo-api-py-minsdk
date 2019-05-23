@@ -52,7 +52,7 @@ class ApiSpecification:
         super(ApiSpecification, self).__init__()
 
     @ApiDecorators._check_bearer_validity
-    def specifications(
+    def listing(
         self,
         workgroup_id: str = None,
         include: list = ["_abilities", "count"],
@@ -139,7 +139,7 @@ class ApiSpecification:
         return Specification(**req_specification.json())
 
     @ApiDecorators._check_bearer_validity
-    def specification_create(
+    def create(
         self,
         workgroup_id: str,
         check_exists: int = 1,
@@ -165,7 +165,7 @@ class ApiSpecification:
         if check_exists == 1:
             # retrieve workgroup specifications
             if not self.api_client._wg_specifications_names:
-                self.specifications(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=[])
             # check
             if specification.name in self.api_client._wg_specifications_names:
                 logger.debug(

@@ -52,7 +52,7 @@ class ApiContact:
         super(ApiContact, self).__init__()
 
     @ApiDecorators._check_bearer_validity
-    def contacts(
+    def listing(
         self,
         workgroup_id: str = None,
         include: list = ["_abilities", "count"],
@@ -142,7 +142,7 @@ class ApiContact:
         return Contact(**req_contact.json())
 
     @ApiDecorators._check_bearer_validity
-    def contact_create(
+    def create(
         self, workgroup_id: str, check_exists: int = 1, contact: object = Contact()
     ) -> Contact:
         """Add a new contact to a workgroup.
@@ -172,7 +172,7 @@ class ApiContact:
         if check_exists == 1:
             # retrieve workgroup contacts
             if not self.api_client._wg_contacts_names:
-                self.contacts(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=[])
             # check
             if contact.name in self.api_client._wg_contacts_names:
                 logger.debug(
@@ -184,7 +184,7 @@ class ApiContact:
         elif check_exists == 2:
             # retrieve workgroup contacts
             if not self.api_client._wg_contacts_emails:
-                self.contacts(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=[])
             # check
             if contact.email in self.api_client._wg_contacts_emails:
                 logging.debug(

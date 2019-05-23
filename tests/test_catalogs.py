@@ -132,7 +132,7 @@ class TestCatalogs(unittest.TestCase):
         catalog_new = Catalog(name=catalog_name)
 
         # create it online
-        catalog_new = self.isogeo.catalog.catalog_create(
+        catalog_new = self.isogeo.catalog.create(
             workgroup_id=workgroup_test, catalog=catalog_new, check_exists=0
         )
 
@@ -154,7 +154,7 @@ class TestCatalogs(unittest.TestCase):
             name="{} - {}".format(get_test_marker(), self.discriminator), scan=True
         )
         # create it online
-        catalog_new = self.isogeo.catalog.catalog_create(
+        catalog_new = self.isogeo.catalog.create(
             workgroup_id=workgroup_test, catalog=catalog_new, check_exists=0
         )
 
@@ -180,12 +180,12 @@ class TestCatalogs(unittest.TestCase):
         catalog_local = Catalog(name=name_to_be_unique)
 
         # create it online
-        catalog_new_1 = self.isogeo.catalog.catalog_create(
+        catalog_new_1 = self.isogeo.catalog.create(
             workgroup_id=workgroup_test, catalog=catalog_local, check_exists=0
         )
 
         # try to create a catalog with the same name
-        catalog_new_2 = self.isogeo.catalog.catalog_create(
+        catalog_new_2 = self.isogeo.catalog.create(
             workgroup_id=workgroup_test, catalog=catalog_local, check_exists=1
         )
 
@@ -233,7 +233,7 @@ class TestCatalogs(unittest.TestCase):
         """PUT :groups/{workgroup_uuid}/catalogs/{catalog_uuid}}"""
         # create a new catalog
         catalog_fixture = Catalog(name="{}".format(get_test_marker()))
-        catalog_fixture = self.isogeo.catalog.catalog_create(
+        catalog_fixture = self.isogeo.catalog.create(
             workgroup_id=workgroup_test, catalog=catalog_fixture, check_exists=0
         )
 
@@ -242,7 +242,7 @@ class TestCatalogs(unittest.TestCase):
         catalog_fixture.scan = True
 
         # update the online catalog
-        catalog_fixture = self.isogeo.catalog.catalog_update(catalog_fixture)
+        catalog_fixture = self.isogeo.catalog.update(catalog_fixture)
 
         # check if the change is effective
         catalog_fixture_updated = self.isogeo.catalog.catalog(

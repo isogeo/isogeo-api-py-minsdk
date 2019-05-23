@@ -75,13 +75,13 @@ src_isogeo.connect(
 # src_catalogs = src_isogeo.workgroup_catalogs(workgroup_id=src_group)
 
 # store contacts
-# src_contacts = src_isogeo.workgroup_contacts(workgroup_id=src_group)
+# src_contacts = src_isogeo.workgroup_listing(workgroup_id=src_group)
 
 # store licenses
-src_licenses = src_isogeo.workgroup_licenses(workgroup_id=src_group)
+src_licenses = src_isogeo.workgroup_listing(workgroup_id=src_group)
 
 # store specifications
-# src_specifications = src_isogeo.workgroup_specifications(workgroup_id=src_group)
+# src_specifications = src_isogeo.workgroup_listing(workgroup_id=src_group)
 
 # close source connection
 src_isogeo.close()
@@ -110,7 +110,7 @@ dst_isogeo.connect(
 # # insert contacts
 # for ct in src_contacts:
 #     ct_to_create = Contact(**ct)
-#     dst_isogeo.contact_create(workgroup_id=dst_group, contact=ct_to_create)
+#     dst_isogeo.create(workgroup_id=dst_group, contact=ct_to_create)
 
 # # insert specifications
 # for spec in src_specifications:

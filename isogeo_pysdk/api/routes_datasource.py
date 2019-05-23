@@ -142,7 +142,7 @@ class ApiDatasource:
         return Datasource(**req_datasource.json())
 
     @ApiDecorators._check_bearer_validity
-    def datasource_create(
+    def create(
         self,
         workgroup_id: str,
         datasource: object = Datasource(),

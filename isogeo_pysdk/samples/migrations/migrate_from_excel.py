@@ -177,7 +177,7 @@ for row in ws_vectors.iter_rows(min_row=2):
     )
 
     for contact in contacts_uuids:
-        isogeo.md_associate_contacts(target_md, contact)
+        isogeo.md_associate_listing(target_md, contact)
 
     # events
     if row[dct_i2o_struct.get("date_creation")].value:

@@ -125,7 +125,7 @@ class TestContacts(unittest.TestCase):
         contact_new = Contact(name=contact_name)
 
         # create it online
-        contact_new = self.isogeo.contact.contact_create(
+        contact_new = self.isogeo.contact.create(
             workgroup_id=workgroup_test, contact=contact_new, check_exists=0
         )
 
@@ -155,7 +155,7 @@ class TestContacts(unittest.TestCase):
             countryCode="FR",
             zipCode="75012",
         )
-        contact_new = self.isogeo.contact.contact_create(
+        contact_new = self.isogeo.contact.create(
             workgroup_id=workgroup_test, contact=contact_new
         )
 
@@ -176,12 +176,12 @@ class TestContacts(unittest.TestCase):
         contact_local = Contact(name=name_to_be_unique)
 
         # create it online
-        contact_new_1 = self.isogeo.contact.contact_create(
+        contact_new_1 = self.isogeo.contact.create(
             workgroup_id=workgroup_test, contact=contact_local, check_exists=0
         )
 
         # try to create a contact with the same name
-        contact_new_2 = self.isogeo.contact.contact_create(
+        contact_new_2 = self.isogeo.contact.create(
             workgroup_id=workgroup_test, contact=contact_local, check_exists=1
         )
 
@@ -201,12 +201,12 @@ class TestContacts(unittest.TestCase):
         contact_local = Contact(email=email_to_be_unique, name=name_to_be_unique)
 
         # create it online
-        contact_new_1 = self.isogeo.contact.contact_create(
+        contact_new_1 = self.isogeo.contact.create(
             workgroup_id=workgroup_test, contact=contact_local, check_exists=0
         )
 
         # try to create a contact with the same email
-        contact_new_2 = self.isogeo.contact.contact_create(
+        contact_new_2 = self.isogeo.contact.create(
             workgroup_id=workgroup_test, contact=contact_local, check_exists=2
         )
 
@@ -220,7 +220,7 @@ class TestContacts(unittest.TestCase):
     def test_contacts_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/contacts}"""
         # retrieve workgroup contacts
-        wg_contacts = self.isogeo.contact.contacts(
+        wg_contacts = self.isogeo.contact.listing(
             workgroup_id=workgroup_test, caching=1
         )
         self.assertIsInstance(wg_contacts, list)
@@ -250,7 +250,7 @@ class TestContacts(unittest.TestCase):
         if self.isogeo._wg_contacts_names:
             wg_contacts = self.isogeo._wg_contacts_names
         else:
-            wg_contacts = self.isogeo.contact.contacts(
+            wg_contacts = self.isogeo.contact.listing(
                 workgroup_id=workgroup_test, caching=0
             )
 
@@ -296,7 +296,7 @@ class TestContacts(unittest.TestCase):
         contact_fixture = Contact(
             name="{} - {}".format(get_test_marker(), self.discriminator)
         )
-        contact_fixture = self.isogeo.contact.contact_create(
+        contact_fixture = self.isogeo.contact.create(
             workgroup_id=workgroup_test, contact=contact_fixture, check_exists=0
         )
 

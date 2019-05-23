@@ -128,12 +128,12 @@ class TestWorkgroups(unittest.TestCase):
         )  # to create a workgroup, a contact is required
         workgroup = Workgroup(contact=contact_owner)
         # create it online
-        new_workgroup = self.isogeo.workgroup.workgroup_create(workgroup=workgroup)
+        new_workgroup = self.isogeo.workgroup.create(workgroup=workgroup)
 
         # checks
         self.assertEqual(new_workgroup.contact.get("name"), workgroup_name)
 
-        self.assertTrue(self.isogeo.workgroup.workgroup_exists(new_workgroup._id))
+        self.assertTrue(self.isogeo.workgroup.exists(new_workgroup._id))
 
         # add created workgroup to deletion
         self.li_fixtures_to_delete.append(new_workgroup._id)
@@ -142,13 +142,13 @@ class TestWorkgroups(unittest.TestCase):
     #     """POST :groups/}"""
     #     # to create a workgroup, a contact is required
     #     existing_wg = Workgroup(self.isogeo.workgroup(workgroup_id=workgroup_test))
-    #     new_wg = self.isogeo.workgroup_create(workgroup=existing_wg)
+    #     new_wg = self.isogeo.create(workgroup=existing_wg)
 
     #     # checks
     #     self.assertEqual(
     #         new_wg.contact.get("name"), "TEST_UNIT_AUTO {}".format(self.discriminator)
     #     )
-    #     # self.assertTrue(self.isogeo.workgroup_exists(new_wg.get("_id")))
+    #     # self.assertTrue(self.isogeo.exists(new_wg.get("_id")))
 
     #     # add created workgroup to deletion
     #     # self.li_fixtures_to_delete.append(new_wg._id)
@@ -165,12 +165,12 @@ class TestWorkgroups(unittest.TestCase):
         workgroup_local = Workgroup(contact=contact_owner)
 
         # create it online
-        workgroup_new_1 = self.isogeo.workgroup.workgroup_create(
+        workgroup_new_1 = self.isogeo.workgroup.create(
             workgroup=workgroup_local, check_exists=0
         )
 
         # try to create a workgroup with the same name
-        workgroup_new_2 = self.isogeo.workgroup.workgroup_create(
+        workgroup_new_2 = self.isogeo.workgroup.create(
             workgroup=workgroup_local, check_exists=1
         )
 
@@ -184,7 +184,7 @@ class TestWorkgroups(unittest.TestCase):
     def test_workgroups_listing_global(self):
         """GET :groups/"""
         # retrieve workgroup workgroups
-        wg_workgroups = self.isogeo.workgroup.workgroups(caching=1)
+        wg_workgroups = self.isogeo.workgroup.listing(caching=1)
         self.assertIsInstance(wg_workgroups, list)
         # parse and test object loader
         for i in wg_workgroups:
@@ -213,13 +213,13 @@ class TestWorkgroups(unittest.TestCase):
         if self.isogeo._workgroups_names:
             workgroups = self.isogeo._workgroups_names
         else:
-            workgroups = self.isogeo.workgroup.workgroups(caching=0)
+            workgroups = self.isogeo.workgroup.listing(caching=0)
 
         # pick one workgroup
         workgroup_id = sample(workgroups, 1)[0]
 
         # check both exist
-        self.assertTrue(self.isogeo.workgroup.workgroup_exists(workgroup_id.get("_id")))
+        self.assertTrue(self.isogeo.workgroup.exists(workgroup_id.get("_id")))
 
         # get and check both
         workgroup = self.isogeo.workgroup.workgroup(workgroup_id.get("_id"))
@@ -243,7 +243,7 @@ class TestWorkgroups(unittest.TestCase):
     #     )  # to create a workgroup, a contact is required
     #     workgroup_local = Workgroup(contact=contact_owner)
 
-    #     workgroup_fixture = self.isogeo.workgroup.workgroup_create(
+    #     workgroup_fixture = self.isogeo.workgroup.create(
     #         workgroup=workgroup_local,
     #         check_exists=0,
     #     )
@@ -254,7 +254,7 @@ class TestWorkgroups(unittest.TestCase):
     #     )
 
     #     # update the online workgroup
-    #     workgroup_fixture = self.isogeo.workgroup.workgroup_update(
+    #     workgroup_fixture = self.isogeo.workgroup.update(
     #         workgroup_fixture
     #     )
 

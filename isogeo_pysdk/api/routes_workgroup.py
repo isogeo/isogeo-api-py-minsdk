@@ -54,7 +54,7 @@ class ApiWorkgroup:
     # -- Routes to manage the  Workgroup objects ---------------------------------------
 
     @ApiDecorators._check_bearer_validity
-    def workgroups(
+    def listing(
         self, include: list = ["_abilities", "limits"], caching: bool = 1
     ) -> list:
         """Get workgroups.
@@ -137,7 +137,7 @@ class ApiWorkgroup:
         return Workgroup(**req_workgroup.json())
 
     @ApiDecorators._check_bearer_validity
-    def workgroup_create(
+    def create(
         self, workgroup: object = Workgroup(), check_exists: int = 1
     ) -> Workgroup:
         """Add a new workgroup to Isogeo.
@@ -161,7 +161,7 @@ class ApiWorkgroup:
         if check_exists == 1:
             # retrieve workgroup workgroups
             if not self.api_client._workgroups_names:
-                self.workgroups(include=[])
+                self.listing(include=[])
             # check
             if workgroup.contact.name in self.api_client._workgroups_names:
                 logger.debug(
@@ -236,7 +236,7 @@ class ApiWorkgroup:
         return req_workgroup_deletion
 
     @ApiDecorators._check_bearer_validity
-    def workgroup_exists(self, workgroup_id: str) -> bool:
+    def exists(self, workgroup_id: str) -> bool:
         """Check if the specified workgroup exists and is available for the authenticated user.
 
         :param str workgroup_id: identifier of the workgroup to verify
@@ -271,7 +271,7 @@ class ApiWorkgroup:
         return req_workgroup_exists
 
     @ApiDecorators._check_bearer_validity
-    def workgroup_update(self, workgroup: Workgroup, caching: bool = 1) -> Workgroup:
+    def update(self, workgroup: Workgroup, caching: bool = 1) -> Workgroup:
         """Update a workgroup owned by a workgroup.
 
         :param class workgroup: Workgroup model object to update

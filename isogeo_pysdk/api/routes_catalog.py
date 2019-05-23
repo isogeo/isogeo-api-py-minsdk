@@ -161,7 +161,7 @@ class ApiCatalog:
         return Catalog(**catalog)
 
     @ApiDecorators._check_bearer_validity
-    def catalog_create(
+    def create(
         self, workgroup_id: str, check_exists: int = 1, catalog: object = Catalog()
     ) -> Catalog:
         """Add a new catalog to a workgroup.
@@ -311,7 +311,7 @@ class ApiCatalog:
         return req_catalog_exists
 
     @ApiDecorators._check_bearer_validity
-    def catalog_update(self, catalog: Catalog, caching: bool = 1) -> Catalog:
+    def update(self, catalog: Catalog, caching: bool = 1) -> Catalog:
         """Update a catalog owned by a workgroup.
 
         :param class catalog: Catalog model object to update

@@ -127,7 +127,7 @@ class TestSpecifications(unittest.TestCase):
         specification_new = Specification(name=specification_name)
 
         # create it online
-        specification_new = self.isogeo.specification.specification_create(
+        specification_new = self.isogeo.specification.create(
             workgroup_id=workgroup_test, specification=specification_new, check_exists=0
         )
 
@@ -148,7 +148,7 @@ class TestSpecifications(unittest.TestCase):
             link="https://fr.wikipedia.org/wiki/Licence_Creative_Commons",
         )
         # create it online
-        specification_new = self.isogeo.specification.specification_create(
+        specification_new = self.isogeo.specification.create(
             workgroup_id=workgroup_test, specification=specification_new, check_exists=0
         )
 
@@ -173,14 +173,14 @@ class TestSpecifications(unittest.TestCase):
         specification_local = Specification(name=name_to_be_unique)
 
         # create it online
-        specification_new_1 = self.isogeo.specification.specification_create(
+        specification_new_1 = self.isogeo.specification.create(
             workgroup_id=workgroup_test,
             specification=specification_local,
             check_exists=0,
         )
 
         # try to create a specification with the same name
-        specification_new_2 = self.isogeo.specification.specification_create(
+        specification_new_2 = self.isogeo.specification.create(
             workgroup_id=workgroup_test,
             specification=specification_local,
             check_exists=1,
@@ -196,7 +196,7 @@ class TestSpecifications(unittest.TestCase):
     def test_specifications_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/specifications}"""
         # retrieve workgroup specifications
-        wg_specifications = self.isogeo.specification.specifications(
+        wg_specifications = self.isogeo.specification.listing(
             workgroup_id=workgroup_test, caching=1
         )
         self.assertIsInstance(wg_specifications, list)
@@ -221,7 +221,7 @@ class TestSpecifications(unittest.TestCase):
         if self.isogeo._wg_specifications_names:
             wg_specifications = self.isogeo._wg_specifications_names
         else:
-            wg_specifications = self.isogeo.specification.specifications(
+            wg_specifications = self.isogeo.specification.listing(
                 workgroup_id=workgroup_test, caching=0
             )
 
@@ -262,7 +262,7 @@ class TestSpecifications(unittest.TestCase):
         specification_fixture = Specification(
             name="{} - {}".format(get_test_marker(), self.discriminator)
         )
-        specification_fixture = self.isogeo.specification.specification_create(
+        specification_fixture = self.isogeo.specification.create(
             workgroup_id=workgroup_test,
             specification=specification_fixture,
             check_exists=0,
