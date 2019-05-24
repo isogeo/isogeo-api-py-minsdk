@@ -52,6 +52,15 @@ jobs:
       ISOGEO_WORKGROUP_TEST_UUID: $(ISOGEO_WORKGROUP_TEST_UUID)
     displayName: 'Tests and coverage - Pytest'
 
+  # Codecov. Inspired from: https://github.com/codecov/example-azure-pipelines
+  - task: Bash@3
+    displayName: "Publish coverage results to Codecov"
+    condition: succeededOrFailed()
+    continueOnError: true
+    inputs:
+      targetType: 'inline'
+      script: <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f coverage.xml -F adder -F subtractor
+
   - task: PublishTestResults@2
     displayName: "Publish unit test results"
     condition: succeededOrFailed()
@@ -59,17 +68,13 @@ jobs:
       testResultsFiles: '**/test-*.xml'
       testRunTitle: 'Publish test results for Python $(python.version)'
 
-  # Codecov. Inspired from: https://github.com/codecov/example-azure-pipelines
-  - script: |
-      bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f '$(System.DefaultWorkingDirectory)/**/coverage.xml' -F adder -F subtractor
-    displayName: "Publish coverage results to Codecov"
-
   - task: PublishCodeCoverageResults@1
     displayName: "Publish coverage results to Azure Pipelines"
     inputs:
       codeCoverageTool: Cobertura
       summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
       reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
+
 
 # LINT AND FORMATTING CODE
 - job: 'Lint'
