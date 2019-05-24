@@ -17,7 +17,7 @@ import logging
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Keyword, KeywordSearch
+from isogeo_pysdk.models import Keyword, KeywordSearch, Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -365,6 +365,103 @@ class ApiKeyword:
             return req_check
 
         return req_keyword_deletion
+
+    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def tagging(self, metadata: Metadata, keyword: Keyword) -> dict:
+        """Associate a keyword to a metadata.
+
+        :param Metadata metadata: metadata (resource) to edit
+        :param Keyword keyword: object to associate
+        """
+        # check contact UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError("Metadata ID is not a correct UUID.")
+        else:
+            pass
+
+        # check keyword UUID
+        if not checker.check_is_uuid(keyword._id):
+            raise ValueError("Keyword ID is not a correct UUID.")
+        else:
+            pass
+
+        # URL
+        url_keyword_associate = utils.get_request_base_url(
+            route="resources/{}/keywords/{}".format(metadata._id, keyword._id)
+        )
+
+        # request
+        req_keyword_associate = self.api_client.post(
+            url=url_keyword_associate,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_keyword_associate)
+        if isinstance(req_check, tuple):
+            # handle conflict (see: https://developer.mozilla.org/fr/docs/Web/HTTP/Status/409)
+            if req_check[1] == 409:
+                # log conflict
+                logger.info(
+                    "Metadata '{}' is already tagged by the keyword '{}'. Isogeo API reply: HTTP {} - {}.".format(
+                        metadata._id,
+                        keyword._id,
+                        req_check[1],
+                        req_keyword_associate.reason,
+                    )
+                )
+                # set checker as true
+                req_check = tuple([True, req_check[1]])
+            else:
+                return req_check
+
+        # end of method
+        return req_keyword_associate
+
+    @ApiDecorators._check_bearer_validity
+    def untagging(self, metadata: Metadata, keyword: Keyword) -> dict:
+        """Dissociate a keyword from a metadata.
+
+        :param Metadata metadata: metadata (resource) to edit
+        :param Keyword keyword: object to associate
+        """
+        # check contact UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError("Metadata ID is not a correct UUID.")
+        else:
+            pass
+
+        # check keyword UUID
+        if not checker.check_is_uuid(keyword._id):
+            raise ValueError("Keyword ID is not a correct UUID.")
+        else:
+            pass
+
+        # URL
+        url_keyword_dissociate = utils.get_request_base_url(
+            route="resources/{}/keywords/{}".format(metadata._id, keyword._id)
+        )
+
+        # request
+        req_keyword_dissociate = self.api_client.delete(
+            url=url_keyword_dissociate,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_keyword_dissociate)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_keyword_dissociate
 
 
 # ##############################################################################
