@@ -59,7 +59,7 @@ jobs:
     continueOnError: true
     inputs:
       targetType: 'inline'
-      script: <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f coverage.xml -F adder -F subtractor
+      script: <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f coverage.xml
 
   - task: PublishTestResults@2
     displayName: "Publish unit test results"
