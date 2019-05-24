@@ -61,7 +61,7 @@ jobs:
 
   # Codecov. Inspired from: https://github.com/codecov/example-azure-pipelines
   - script: |
-      bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f coverage.xml -F adder -F subtractor
+      bash <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f '$(System.DefaultWorkingDirectory)/**/coverage.xml' -F adder -F subtractor
     displayName: "Publish coverage results to Codecov"
 
   - task: PublishCodeCoverageResults@1
