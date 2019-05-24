@@ -28,7 +28,26 @@ class Keyword(object):
     Sample:
 
     ```json
-
+    {
+        '_abilities': [
+            'keyword:delete',
+            'keyword:restrict'
+            ],
+        '_created': None,
+        '_id': 'ac56a9fbe6f348a79ec9899ebce2d6da',
+        '_modified': None,
+        '_tag': 'keyword:isogeo:tests-unitaires',
+        'code': 'tests-unitaires',
+        'count': {
+            'isogeo': 0
+            },
+        'description': None,
+        'text': 'tests unitaires',
+        'thesaurus': {
+            '_id': '1616597fbc4348c8b11ef9d59cf594c8', 
+            'code': 'isogeo'
+            }
+    }
     ```
     """
 
@@ -50,9 +69,9 @@ class Keyword(object):
         "text": str,
     }
 
-    attr_crea = {"code": str, "text": str}
+    attr_crea = {"text": str}
 
-    attr_map = {"text": "$text"}
+    attr_map = {}
 
     def __init__(
         self,
@@ -136,15 +155,6 @@ class Keyword(object):
         """
         return self.__id
 
-    @_id.setter
-    def _id(self, _id: str):
-        """Sets the id of this Keyword.
-
-        :param str id: The id of this Keyword.
-        """
-
-        self.__id = _id
-
     # keyword last modification date
     @property
     def _modified(self) -> str:
@@ -184,15 +194,6 @@ class Keyword(object):
         :rtype: dict
         """
         return self._count
-
-    @count.setter
-    def count(self, count: dict):
-        """Sets the count of this Keyword.
-
-        :param dict count: The count of this Keyword.
-        """
-
-        self._count = count
 
     # description
     @property

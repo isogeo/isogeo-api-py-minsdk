@@ -6,7 +6,7 @@
 
     ```python
     # for whole test
-    python -m unittest tests.test_keywords
+    python -m unittest tests.test_keywords_complete
     # for specific
     python -m unittest tests.test_keywords_complete.TestKeywordsComplete.test_keywords_create_basic
     ```
@@ -118,9 +118,7 @@ class TestKeywordsComplete(unittest.TestCase):
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                # cls.isogeo.keyword.keyword_delete(
-                #     workgroup_id=workgroup_test, keyword_id=i
-                # )
+                cls.isogeo.keyword.delete(i)
                 pass
         # close sessions
         cls.isogeo.close()
@@ -128,80 +126,55 @@ class TestKeywordsComplete(unittest.TestCase):
     # -- TESTS ---------------------------------------------------------
 
     # -- POST --
-    # def test_keywords_create_basic(self):
-    #     """POST :groups/{workgroup_uuid}/keywords/}"""
-    #     # var
-    #     keyword_name = "{} - {}".format(get_test_marker(), self.discriminator)
+    def test_keywords_create_basic(self):
+        """POST :thesauri/{isogeo_thesaurus_uuid}/keywords/}"""
+        # var
+        keyword_text = "{} - {}".format(get_test_marker(), self.discriminator)
 
-    #     # create local object
-    #     keyword_new = Keyword(name=keyword_name)
+        # create local object
+        keyword_new = Keyword(text=keyword_text)
 
-    #     # create it online
-    #     keyword_new = self.isogeo.keyword.keyword_create(
-    #         workgroup_id=workgroup_test, keyword=keyword_new, check_exists=0
-    #     )
+        # create it online
+        keyword_new = self.isogeo.keyword.create(keyword=keyword_new)
 
-    #     # checks
-    #     self.assertEqual(keyword_new.name, keyword_name)
-    #     self.assertTrue(
-    #         self.isogeo.keyword.keyword_exists(
-    #             keyword_new.owner.get("_id"), keyword_new._id
-    #         )
-    #     )
+        # checks
+        self.assertEqual(keyword_new.text, keyword_text)
 
-    #     # add created keyword to deletion
-    #     self.li_fixtures_to_delete.append(keyword_new._id)
+        # add created keyword to deletion
+        self.li_fixtures_to_delete.append(keyword_new)
 
-    # def test_keywords_create_complete(self):
-    #     """POST :groups/{workgroup_uuid}/keywords/}"""
-    #     # populate model object locally
-    #     keyword_new = Keyword(
-    #         name="{} - {}".format(get_test_marker(), self.discriminator), scan=True
-    #     )
-    #     # create it online
-    #     keyword_new = self.isogeo.keyword.keyword_create(
-    #         workgroup_id=workgroup_test, keyword=keyword_new, check_exists=0
-    #     )
+    def test_keywords_create_similar(self):
+        """POST :thesauri/{isogeo_thesaurus_uuid}/keywords/}
+        
+        Handling case when the keyword already exists
+        """
+        # var
+        keyword_text = "{} - {}".format(get_test_marker(), self.discriminator)
 
-    #     # checks
-    #     self.assertEqual(
-    #         keyword_new.name, "{} - {}".format(get_test_marker(), self.discriminator)
-    #     )
-    #     self.assertTrue(
-    #         self.isogeo.keyword.keyword_exists(
-    #             keyword_new.owner.get("_id"), keyword_new._id
-    #         )
-    #     )
+        # create local objects
+        keyword_new_1 = Keyword(text=keyword_text)
+        keyword_new_2 = Keyword(text=keyword_text)
 
-    #     # add created keyword to deletion
-    #     self.li_fixtures_to_delete.append(keyword_new._id)
+        # create first it online
+        keyword_new_1_created = self.isogeo.keyword.create(keyword=keyword_new_1)
 
-    # def test_keywords_create_checking_name(self):
-    #     """POST :groups/{workgroup_uuid}/keywords/}"""
-    #     # vars
-    #     name_to_be_unique = "TEST_UNIT_AUTO UNIQUE"
+        # check
+        self.assertEqual(keyword_new_1_created.text, keyword_text)
 
-    #     # create local object
-    #     keyword_local = Keyword(name=name_to_be_unique)
+        # try to create a keyword with the same text
+        keyword_new_2_created = self.isogeo.keyword.create(keyword=keyword_new_2)
 
-    #     # create it online
-    #     keyword_new_1 = self.isogeo.keyword.keyword_create(
-    #         workgroup_id=workgroup_test, keyword=keyword_local, check_exists=0
-    #     )
+        # check
+        self.assertEqual(keyword_new_2_created.text, keyword_text)
 
-    #     # try to create a keyword with the same name
-    #     keyword_new_2 = self.isogeo.keyword.keyword_create(
-    #         workgroup_id=workgroup_test, keyword=keyword_local, check_exists=1
-    #     )
+        # compare
+        self.assertTrue(keyword_new_1_created._id == keyword_new_2_created._id)
 
-    #     # check if object has not been created
-    #     self.assertEqual(keyword_new_2, False)
-
-    #     # add created keyword to deletion
-    #     self.li_fixtures_to_delete.append(keyword_new_1._id)
+        # add created keyword to deletion
+        self.li_fixtures_to_delete.append(keyword_new_1_created)
 
     # -- GET --
-    def test_keywords_get_workgroup(self):
+    def test_keywords_search_workgroup(self):
         """GET :groups/{workgroup_uuid}/keywords/search}"""
         # retrieve workgroup keywords
         wg_keywords = self.isogeo.keyword.workgroup(
@@ -230,7 +203,7 @@ class TestKeywordsComplete(unittest.TestCase):
             self.assertEqual(keyword.text, i.get("text"))
             self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
 
-    def test_keywords_get_thesaurus(self):
+    def test_keywords_search_thesaurus(self):
         """GET :thesauri/{thesauri_uuid}/keywords/search}"""
         # retrieve thesauri keywords
         wg_keywords = self.isogeo.keyword.thesaurus(caching=0)
@@ -257,12 +230,20 @@ class TestKeywordsComplete(unittest.TestCase):
             self.assertEqual(keyword.text, i.get("text"))
             self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
 
+    def test_keyword_detailed(self):
+        """GET :keywords/{keyword_uuid}"""
+        # retrieve thesauri keywords
+        thesaurus_keywords = self.isogeo.keyword.thesaurus(page_size=50, caching=0)
+        # pick one randomly
+        random_keyword = sample(thesaurus_keywords.results, 1)[0]
+        random_keyword = self.isogeo.keyword.keyword(random_keyword.get("_id"))
+
     # -- PUT/PATCH --
     # def test_keywords_update(self):
     #     """PUT :groups/{workgroup_uuid}/keywords/{keyword_uuid}}"""
     #     # create a new keyword
     #     keyword_fixture = Keyword(name="{}".format(get_test_marker()))
-    #     keyword_fixture = self.isogeo.keyword.keyword_create(
+    #     keyword_fixture = self.isogeo.keyword.create(
     #         workgroup_id=workgroup_test, keyword=keyword_fixture, check_exists=0
     #     )
 

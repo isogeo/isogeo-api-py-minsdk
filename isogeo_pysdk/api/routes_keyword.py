@@ -222,10 +222,7 @@ class ApiKeyword:
 
     @ApiDecorators._check_bearer_validity
     def keyword(
-        self,
-        # workgroup_id: str,
-        keyword_id: str,
-        include: list = ["_abilities", "count", "thesaurus"],
+        self, keyword_id: str, include: list = ["_abilities", "count", "thesaurus"]
     ) -> Keyword:
         """Get details about a specific keyword.
 
@@ -271,200 +268,103 @@ class ApiKeyword:
         # end of method
         return Keyword(**req_keyword.json())
 
-    # @ApiDecorators._check_bearer_validity
-    # def keyword_create(
-    #     self, workgroup_id: str, check_exists: int = 1, keyword: object = Keyword()
-    # ) -> Keyword:
-    #     """Add a new keyword to a workgroup.
+    @ApiDecorators._check_bearer_validity
+    def create(self, keyword: Keyword) -> Keyword:
+        """Add a new keyword to the Isogeo thesaurus.
 
-    #     :param str workgroup_id: identifier of the owner workgroup
-    #     :param int check_exists: check if a keyword already exists inot the workgroup:
+        If a keyword with the same text already exists, the Isogeo API returns a 409 HTTP code.
+        Then this method will try to get the closest matching keyword and return it.
 
-    #     - 0 = no check
-    #     - 1 = compare name [DEFAULT]
+        :param Keyword keyword: Keyword model object to create
+        """
+        # URL
+        url_keyword_create = utils.get_request_base_url(
+            route="thesauri/1616597fbc4348c8b11ef9d59cf594c8/keywords"
+        )
 
-    #     :param class keyword: Keyword model object to create
-    #     """
-    #     # check workgroup UUID
-    #     if not checker.check_is_uuid(workgroup_id):
-    #         raise ValueError("Workgroup ID is not a correct UUID.")
-    #     else:
-    #         pass
+        # request
+        req_new_keyword = self.api_client.post(
+            url=url_keyword_create,
+            json=keyword.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
 
-    #     # check if keyword already exists in workgroup
-    #     if check_exists == 1:
-    #         # retrieve workgroup keywords
-    #         if not self.api_client._wg_keywords_names:
-    #             self.keywords(workgroup_id=workgroup_id, include=[])
-    #         # check
-    #         if keyword.name in self.api_client._wg_keywords_names:
-    #             logger.debug(
-    #                 "Keyword with the same name already exists: {}. Use 'keyword_update' instead.".format(
-    #                     keyword.name
-    #                 )
-    #             )
-    #             return False
-    #     else:
-    #         pass
+        # checking response
+        req_check = checker.check_api_response(req_new_keyword)
+        if isinstance(req_check, tuple):
+            # handle conflict (see: https://developer.mozilla.org/fr/docs/Web/HTTP/Status/409)
+            if req_check[1] == 409:
+                # log conflict
+                logger.info(
+                    "A keyword with the same text already exists: '{}'. Isogeo API doesn't allow to create duplicates (HTTP {} - {}). Let's try to get the closes matching keyword...".format(
+                        keyword.text, req_check[1], req_new_keyword.reason
+                    )
+                )
+                # try to return the most probably matching keyword
+                search_for_closest_keyword = self.thesaurus(
+                    caching=0,
+                    include=[],
+                    order_dir="asc",
+                    page_size=1,
+                    query=keyword.text,
+                )
+                if search_for_closest_keyword.results:
+                    logger.info(
+                        "Returning the closest matching keyword for: 'thesauri/keywords/search?query={}'".format(
+                            keyword.text
+                        )
+                    )
+                    return Keyword(**search_for_closest_keyword.results[0])
+                else:
+                    logger.info(
+                        "No match for: 'thesauri/keywords/search?query={}'".format(
+                            keyword.text
+                        )
+                    )
 
-    #     # build request url
-    #     url_keyword_create = utils.get_request_base_url(
-    #         route="groups/{}/keywords".format(workgroup_id)
-    #     )
+            # if other error, then return it
+            return req_check
 
-    #     # request
-    #     req_new_keyword = self.api_client.post(
-    #         url_keyword_create,
-    #         data=keyword.to_dict_creation(),
-    #         headers=self.api_client.header,
-    #         proxies=self.api_client.proxies,
-    #         verify=self.api_client.ssl,
-    #         timeout=self.api_client.timeout,
-    #     )
+        # end of method
+        return Keyword(**req_new_keyword.json())
 
-    #     # checking response
-    #     req_check = checker.check_api_response(req_new_keyword)
-    #     if isinstance(req_check, tuple):
-    #         return req_check
+    @ApiDecorators._check_bearer_validity
+    def delete(self, keyword: Keyword):
+        """Delete a keyword from Isogeo database.
 
-    #     # handle bad JSON attribute
-    #     new_keyword = req_new_keyword.json()
-    #     new_keyword["scan"] = new_keyword.pop("$scan")
+        :param Keyword keyword: Keyword model object to create
+        """
+        # check keyword UUID
+        if not checker.check_is_uuid(keyword._id):
+            raise ValueError("Keyword ID is not a correct UUID: {}".format(keyword._id))
+        else:
+            pass
 
-    #     # load new keyword and save it to the cache
-    #     new_keyword = Keyword(**new_keyword)
-    #     self.api_client._wg_keywords_names[new_keyword.name] = new_keyword._id
+        # URL
+        url_keyword_delete = utils.get_request_base_url(
+            route="thesauri/1616597fbc4348c8b11ef9d59cf594c8/keywords/{}".format(
+                keyword._id
+            )
+        )
 
-    #     # end of method
-    #     return new_keyword
+        # request
+        req_keyword_deletion = self.api_client.delete(
+            url=url_keyword_delete,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
 
-    # @ApiDecorators._check_bearer_validity
-    # def keyword_delete(self, workgroup_id: str, keyword_id: str):
-    #     """Delete a keyword from Isogeo database.
+        # checking response
+        req_check = checker.check_api_response(req_keyword_deletion)
+        if isinstance(req_check, tuple):
+            return req_check
 
-    #     :param str workgroup_id: identifier of the owner workgroup
-    #     :param str keyword_id: identifier of the resource to delete
-    #     """
-    #     # check workgroup UUID
-    #     if not checker.check_is_uuid(workgroup_id):
-    #         raise ValueError(
-    #             "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
-    #         )
-    #     else:
-    #         pass
-
-    #     # check keyword UUID
-    #     if not checker.check_is_uuid(keyword_id):
-    #         raise ValueError("Keyword ID is not a correct UUID: {}".format(keyword_id))
-    #     else:
-    #         pass
-
-    #     # request URL
-    #     url_keyword_delete = utils.get_request_base_url(
-    #         route="groups/{}/keywords/{}".format(workgroup_id, keyword_id)
-    #     )
-
-    #     # request
-    #     req_keyword_deletion = self.api_client.delete(
-    #         url_keyword_delete,
-    #         headers=self.api_client.header,
-    #         proxies=self.api_client.proxies,
-    #         verify=self.api_client.ssl,
-    #         timeout=self.api_client.timeout,
-    #     )
-
-    #     # checking response
-    #     req_check = checker.check_api_response(req_keyword_deletion)
-    #     if isinstance(req_check, tuple):
-    #         return req_check
-
-    #     return req_keyword_deletion
-
-    # @ApiDecorators._check_bearer_validity
-    # def keyword_exists(self, workgroup_id: str, keyword_id: str) -> bool:
-    #     """Check if the specified keyword exists and is available for the authenticated user.
-
-    #     :param str workgroup_id: identifier of the owner workgroup
-    #     :param str keyword_id: identifier of the keyword to verify
-    #     """
-    #     # check workgroup UUID
-    #     if not checker.check_is_uuid(workgroup_id):
-    #         raise ValueError(
-    #             "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
-    #         )
-    #     else:
-    #         pass
-    #     # check keyword UUID
-    #     if not checker.check_is_uuid(keyword_id):
-    #         raise ValueError("Keyword ID is not a correct UUID: {}".format(keyword_id))
-    #     else:
-    #         pass
-
-    #     # URL builder
-    #     url_keyword_exists = utils.get_request_base_url(
-    #         route="groups/{}/keywords/{}".format(workgroup_id, keyword_id)
-    #     )
-
-    #     # request
-    #     req_keyword_exists = self.api_client.get(
-    #         url=url_keyword_exists,
-    #         headers=self.api_client.header,
-    #         proxies=self.api_client.proxies,
-    #         verify=self.api_client.ssl,
-    #         timeout=self.api_client.timeout,
-    #     )
-
-    #     # checking response
-    #     req_check = checker.check_api_response(req_keyword_exists)
-    #     if isinstance(req_check, tuple):
-    #         return req_check
-
-    #     return req_keyword_exists
-
-    # @ApiDecorators._check_bearer_validity
-    # def keyword_update(self, keyword: Keyword, caching: bool = 1) -> Keyword:
-    #     """Update a keyword owned by a workgroup.
-
-    #     :param class keyword: Keyword model object to update
-    #     :param bool caching: option to cache the response
-    #     """
-    #     # check keyword UUID
-    #     if not checker.check_is_uuid(keyword._id):
-    #         raise ValueError("Keyword ID is not a correct UUID: {}".format(keyword._id))
-    #     else:
-    #         pass
-
-    #     # URL
-    #     url_keyword_update = utils.get_request_base_url(
-    #         route="groups/{}/keywords/{}".format(keyword.owner.get("_id"), keyword._id)
-    #     )
-
-    #     # request
-    #     req_keyword_update = self.api_client.put(
-    #         url=url_keyword_update,
-    #         json=keyword.to_dict_creation(),
-    #         headers=self.api_client.header,
-    #         proxies=self.api_client.proxies,
-    #         verify=self.api_client.ssl,
-    #         timeout=self.api_client.timeout,
-    #     )
-
-    #     # checking response
-    #     req_check = checker.check_api_response(req_keyword_update)
-    #     if isinstance(req_check, tuple):
-    #         return req_check
-
-    #     # handle bad JSON attribute
-    #     new_keyword = req_keyword_update.json()
-    #     new_keyword["scan"] = new_keyword.pop("$scan")
-
-    #     # load new keyword and save it to the cache
-    #     new_keyword = Keyword(**new_keyword)
-    #     if caching:
-    #         self.api_client._wg_keywords_names[new_keyword.name] = new_keyword._id
-
-    #     # end of method
-    #     return new_keyword
+        return req_keyword_deletion
 
 
 # ##############################################################################
