@@ -30,7 +30,12 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Application
+from isogeo_pysdk import (
+    IsogeoSession,
+    __version__ as pysdk_version,
+    Application,
+    Workgroup,
+)
 
 
 # #############################################################################
@@ -110,7 +115,7 @@ class TestApplications(unittest.TestCase):
         # clean created applications
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.application.application_delete(application_id=i)
+                cls.isogeo.application.delete(application_id=i)
         # close sessions
         cls.isogeo.close()
 
@@ -126,12 +131,12 @@ class TestApplications(unittest.TestCase):
 
         # create it online
         application_new = self.isogeo.application.create(
-            application=application_to_create
+            application=application_to_create, check_exists=0
         )
 
         # checks
         self.assertEqual(application_new.name, application_name)
-        self.assertTrue(self.isogeo.application.application_exists(application_new._id))
+        self.assertTrue(self.isogeo.application.exists(application_new._id))
 
         # add created application to deletion
         self.li_fixtures_to_delete.append(application_new._id)
@@ -149,7 +154,7 @@ class TestApplications(unittest.TestCase):
 
         # checks
         self.assertEqual(application_new.name, get_test_marker())
-        self.assertTrue(self.isogeo.application.application_exists(application_new._id))
+        self.assertTrue(self.isogeo.application.exists(application_new._id))
 
         # add created application to deletion
         self.li_fixtures_to_delete.append(application_new._id)
@@ -239,6 +244,23 @@ class TestApplications(unittest.TestCase):
             self.assertEqual(application.name, i.get("name"))
             self.assertEqual(application.staff, i.get("staff"))
 
+    def test_application_workgroups(self):
+        """GET :/applications/{application_uiid}/groups}"""
+        # retrieve applications
+        if self.isogeo._applications_names:
+            applications = self.isogeo._applications_names
+        else:
+            applications = self.isogeo.application.applications(caching=0)
+        # pick a random application
+        application_id_group = sample(
+            list(filter(lambda d: d.get("type") == "group", applications)), 1
+        )[0]
+        # retrieve workgroup applications
+        app_workgroups = self.isogeo.application.workgroups(
+            application_id=application_id_group.get("_id")
+        )
+        self.assertIsInstance(app_workgroups, list)
+
     def test_application_detailed(self):
         """GET :applications/{application_uuid}"""
         # retrieve workgroup applications
@@ -273,18 +295,12 @@ class TestApplications(unittest.TestCase):
 
         # check exist
         self.assertTrue(
-            self.isogeo.application.application_exists(
-                application_id_user_confidential.get("_id")
-            )
+            self.isogeo.application.exists(application_id_user_confidential.get("_id"))
         )
         self.assertTrue(
-            self.isogeo.application.application_exists(
-                application_id_user_public.get("_id")
-            )
+            self.isogeo.application.exists(application_id_user_public.get("_id"))
         )
-        self.assertTrue(
-            self.isogeo.application.application_exists(application_id_group.get("_id"))
-        )
+        self.assertTrue(self.isogeo.application.exists(application_id_group.get("_id")))
 
         # get and check
         application_user_confidential = self.isogeo.application.application(

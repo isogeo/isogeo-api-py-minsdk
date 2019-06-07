@@ -61,7 +61,7 @@ class ApiApplication:
         """Get all applications which are accessible by the authenticated user OR applications for a workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup. If `None`, then list applications for
-        :param list include: additionnal subresource to include in the response
+        :param list include: additionnal subresource to include in the response.
         :param bool caching: option to cache the response
         """
         # handling request parameters
@@ -161,7 +161,7 @@ class ApiApplication:
 
     @ApiDecorators._check_bearer_validity
     def create(
-        self, check_exists: int = 1, application: object = Application()
+        self, application: object = Application(), check_exists: int = 1
     ) -> Application:
         """Add a new application to Isogeo.
 
@@ -214,7 +214,7 @@ class ApiApplication:
         return new_application
 
     @ApiDecorators._check_bearer_validity
-    def application_delete(self, application_id: str):
+    def delete(self, application_id: str):
         """Delete a application from Isogeo database.
 
         :param str application_id: identifier of the resource to delete
@@ -249,7 +249,7 @@ class ApiApplication:
         return req_application_deletion
 
     @ApiDecorators._check_bearer_validity
-    def application_exists(self, application_id: str) -> bool:
+    def exists(self, application_id: str) -> bool:
         """Check if the specified application exists and is available for the authenticated user.
 
         :param str application_id: identifier of the application to verify
@@ -327,6 +327,46 @@ class ApiApplication:
 
         # end of method
         return new_application
+
+    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def workgroups(self, application_id: str = None) -> list:
+        """Get all groups associated with an application.
+
+        :param str application_id: identifier of the application
+        """
+        # check application UUID
+        if not checker.check_is_uuid(application_id):
+            raise ValueError(
+                "Application ID is not a correct UUID: {}".format(application_id)
+            )
+        else:
+            pass
+
+        # handling request parameters
+        # payload = {"_include": include}
+
+        # URL
+        url_application_groups = utils.get_request_base_url(
+            route="applications/{}/groups".format(application_id)
+        )
+
+        # request
+        req_applications = self.api_client.get(
+            url=url_application_groups,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_applications)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_applications.json()
 
 
 # ##############################################################################
