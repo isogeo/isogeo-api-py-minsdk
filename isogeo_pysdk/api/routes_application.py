@@ -17,7 +17,7 @@ import logging
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Application
+from isogeo_pysdk.models import Application, Workgroup
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -367,6 +367,89 @@ class ApiApplication:
 
         # end of method
         return req_applications.json()
+
+    @ApiDecorators._check_bearer_validity
+    def associate_group(
+        self, application: Application, workgroup: Workgroup, force: bool = 0
+    ) -> Application:
+        """Associate a application with a workgroup.
+
+        :param Application application: Application model object to update
+        :param Workgroup workgroup: object to associate
+        :param bool force: option to force association changing the `canHaveManyGroups` property
+        """
+        # check application UUID
+        if not checker.check_is_uuid(application._id):
+            raise ValueError(
+                "Application ID is not a correct UUID: {}".format(application._id)
+            )
+        else:
+            pass
+
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup._id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup._id)
+            )
+        else:
+            pass
+
+        # ensure that application got its groups included. If not, then make a new request to get it.
+        """
+            For dev memory, there are two main cases:
+
+            Case 1 - application with no groups associated yet:
+            - self.application(application_id=app_uuid, include=[]).groups[0] is None
+            - len(self.application(application_id=app_uuid, include=[]).groups) == 1
+
+            Case 2 - application with some groups already associated but without include:
+            - self.application(application_id=app_uuid, include=[]).groups[0] is None
+            - len(self.application(application_id=app_uuid, include=[]).groups) == 1
+        """
+        if len(application.groups) and application.groups[0] is None:
+            logger.debug(
+                "Application doesn't contain its included workgroups. Let's make a new request..."
+            )
+            application = self.application(
+                application_id=application._id, include=["groups"]
+            )
+        else:
+            pass
+
+        # check if the application can get multiple groups
+        if not application.canHaveManyGroups and len(application.groups) >= 1:
+            logger.debug("Application can be associated with only one group and has already one.")
+            if force:
+                logger.debug("Force mode enabled: application is being updated to be associated to multiple groups.")
+                application.canHaveManyGroups = True
+                self.update(application)
+            elif not force:
+                logger.error("Force mode disabled: application can't be associated to multiple groups. Update the application or use force mode.")
+                return (0, "Application can't be associated to multiple groups.")
+        else:
+            pass
+
+        # URL
+        url_application_update = utils.get_request_base_url(
+            route="applications/{}/groups/{}".format(application._id, workgroup._id)
+        )
+
+        # request
+        req_application_assocation = self.api_client.put(
+            url=url_application_update,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_application_assocation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_application_assocation
 
 
 # ##############################################################################
