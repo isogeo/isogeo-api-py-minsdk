@@ -60,7 +60,7 @@ class ApiApplication:
     ) -> list:
         """Get all applications which are accessible by the authenticated user OR applications for a workgroup.
 
-        :param str workgroup_id: identifier of the owner workgroup. If `None`, then list applications for
+        :param str workgroup_id: identifier of the owner workgroup. If `None`, then list applications for the autenticated user
         :param list include: additionnal subresource to include in the response.
         :param bool caching: option to cache the response
         """
@@ -371,12 +371,12 @@ class ApiApplication:
     @ApiDecorators._check_bearer_validity
     def associate_group(
         self, application: Application, workgroup: Workgroup, force: bool = 0
-    ) -> Application:
+    ) -> tuple:
         """Associate a application with a workgroup.
 
         :param Application application: Application model object to update
         :param Workgroup workgroup: object to associate
-        :param bool force: option to force association changing the `canHaveManyGroups` property
+        :param bool force: option to force association with multiple groups changing the `canHaveManyGroups` property
         """
         # check application UUID
         if not checker.check_is_uuid(application._id):
@@ -390,6 +390,14 @@ class ApiApplication:
         if not checker.check_is_uuid(workgroup._id):
             raise ValueError(
                 "Workgroup ID is not a correct UUID: {}".format(workgroup._id)
+            )
+        else:
+            pass
+
+        # check application type
+        if application.type != "group":
+            raise TypeError(
+                "Association between applications and workgroup is only possible for 'group applications' type not '{}'".format(application.type)
             )
         else:
             pass
@@ -430,13 +438,13 @@ class ApiApplication:
             pass
 
         # URL
-        url_application_update = utils.get_request_base_url(
+        url_application_association = utils.get_request_base_url(
             route="applications/{}/groups/{}".format(application._id, workgroup._id)
         )
 
         # request
         req_application_assocation = self.api_client.put(
-            url=url_application_update,
+            url=url_application_association,
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
             verify=self.api_client.ssl,
@@ -450,6 +458,61 @@ class ApiApplication:
 
         # end of method
         return req_application_assocation
+
+    @ApiDecorators._check_bearer_validity
+    def dissociate_group(
+        self, application: Application, workgroup: Workgroup
+    ) -> tuple:
+        """Removes the association between the specified group and the specified application.
+
+        :param Application application: Application model object to update
+        :param Workgroup workgroup: object to associate
+        """
+        # check application UUID
+        if not checker.check_is_uuid(application._id):
+            raise ValueError(
+                "Application ID is not a correct UUID: {}".format(application._id)
+            )
+        else:
+            pass
+
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup._id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup._id)
+            )
+        else:
+            pass
+
+        # check application type
+        if application.type != "group":
+            raise TypeError(
+                "Association between applications and workgroup is only possible for 'group applications' type not '{}'".format(application.type)
+            )
+        else:
+            pass
+
+        # URL
+        url_application_dissociation = utils.get_request_base_url(
+            route="applications/{}/groups/{}".format(application._id, workgroup._id)
+        )
+
+        # request
+        req_application_dissociation = self.api_client.delete(
+            url=url_application_dissociation,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_application_dissociation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_application_dissociation
 
 
 # ##############################################################################
