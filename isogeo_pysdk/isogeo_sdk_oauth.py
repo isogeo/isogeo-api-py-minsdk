@@ -113,14 +113,14 @@ class IsogeoSession(OAuth2Session):
         else:
             pass
         if len(client_secret) != 64:
-            logging.error("App secret length issue: it should be 64 chars.")
-            raise ValueError(1, "Secret isn't good: it must be 64 chars.")
+            logger.error("App secret length issue: it should be 64 chars.")
+            raise ValueError(1, "Client Secret isn't good: it must be 64 chars.")
         else:
             pass
 
         # auth mode
         if auth_mode not in self.AUTH_MODES:
-            logging.error("Auth mode value is not good: {}".format(auth_mode))
+            logger.error("Auth mode value is not good: {}".format(auth_mode))
             raise ValueError(
                 "Mode value must be one of: ".format(" | ".join(self.AUTH_MODES))
             )
@@ -133,7 +133,7 @@ class IsogeoSession(OAuth2Session):
         )
         # setting language
         if lang.lower() not in ("fr", "en"):
-            logging.warning(
+            logger.warning(
                 "Isogeo API is only available in English ('en', "
                 "default) or French ('fr'). "
                 "Language has been set on English."
@@ -155,14 +155,14 @@ class IsogeoSession(OAuth2Session):
         #         else:
         #             locale.setlocale(locale.LC_ALL, str("en_GB.utf8"))
         # except locale.Error as e:
-        #     logging.error(
+        #     logger.error(
         #         "Selected locale ({}) is not installed: {}".format(lang.lower(), e)
         #     )
 
         # handling proxy parameters
         # see: http://docs.python-requests.org/en/latest/user/advanced/#proxies
         if proxy and isinstance(proxy, dict) and "http" in proxy:
-            logging.debug("Proxy enabled")
+            logger.debug("Proxy enabled")
             self.proxies = proxy
         elif proxy and not isinstance(proxy, dict):
             raise TypeError(
@@ -175,7 +175,7 @@ class IsogeoSession(OAuth2Session):
             )
         else:
             self.proxies = {}
-            logging.debug("No proxy set. Use default configuration.")
+            logger.debug("No proxy set. Use default configuration.")
             pass
 
         # set client
@@ -200,8 +200,8 @@ class IsogeoSession(OAuth2Session):
         self.workgroup = api.ApiWorkgroup(self)
 
         # get API version
-        logging.debug("Isogeo API version: {}".format(utils.get_isogeo_version()))
-        logging.debug("Isogeo DB version: {}".format(utils.get_isogeo_version("db")))
+        logger.debug("Isogeo API version: {}".format(utils.get_isogeo_version()))
+        logger.debug("Isogeo DB version: {}".format(utils.get_isogeo_version("db")))
 
         return super().__init__(
             client_id=client_id,
@@ -268,9 +268,9 @@ class IsogeoSession(OAuth2Session):
             # compare token expiration date and ask for a new one if it's expired
             if datetime.now() < datetime.utcfromtimestamp(self.token.get("expires_at")):
                 self.refresh_token(token_url=self.auto_refresh_url)
-                logging.debug("Token was about to expire, so has been renewed.")
+                logger.debug("Token was about to expire, so has been renewed.")
             else:
-                logging.debug("Token is still valid.")
+                logger.debug("Token is still valid.")
                 pass
 
             # let continue running the original function
