@@ -84,6 +84,7 @@ class IsogeoSession(OAuth2Session):
         # -- CACHE
         # platform
         self._applications_names = {}  # Isogeo applications by names
+        self._shares_names = {}  # Isogeo applications by names
         self._thesauri_codes = {}  # Isogeo thesauri by names
         self._workgroups_names = {}  # Isogeo workgroups by names
         # user
@@ -96,6 +97,7 @@ class IsogeoSession(OAuth2Session):
         self._wg_datasources_names = {}  # workgroup datasources by names
         self._wg_datasources_urls = {}  # workgroup datasources by urls (location)
         self._wg_licenses_names = {}  # workgroup licenses by names
+        self._wg_shares_names = {}  # workgroup shares by names
         self._wg_specifications_names = {}  # workgroup specifications by names
 
         # checking internet connection
@@ -195,6 +197,7 @@ class IsogeoSession(OAuth2Session):
         self.keyword = api.ApiKeyword(self)
         self.license = api.ApiLicense(self)
         self.metadata = api.ApiResource(self)
+        self.share = api.ApiShare(self)
         self.specification = api.ApiSpecification(self)
         self.thesaurus = api.ApiThesaurus(self)
         self.workgroup = api.ApiWorkgroup(self)
