@@ -31,7 +31,7 @@ jobs:
     displayName: 'Install dependencies'
 
   - script: |
-      pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html --cov-append tests
+      python -m pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html --cov-append tests
     env:
       # platform
       ISOGEO_PLATFORM: $(ISOGEO_PLATFORM)
@@ -52,14 +52,14 @@ jobs:
       ISOGEO_WORKGROUP_TEST_UUID: $(ISOGEO_WORKGROUP_TEST_UUID)
     displayName: 'Tests and coverage - Pytest'
 
-  # Codecov. Inspired from: https://github.com/codecov/example-azure-pipelines
-  - task: Bash@3
-    displayName: "Publish coverage results to Codecov"
-    condition: succeededOrFailed()
-    continueOnError: true
-    inputs:
-      targetType: 'inline'
-      script: <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f coverage.xml
+  # # Codecov. Inspired from: https://github.com/codecov/example-azure-pipelines
+  # - task: Bash@3
+  #   displayName: "Publish coverage results to Codecov"
+  #   condition: succeededOrFailed()
+  #   continueOnError: true
+  #   inputs:
+  #     targetType: 'inline'
+  #     script: <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f coverage.xml
 
   - task: PublishTestResults@2
     displayName: "Publish unit test results"
