@@ -536,10 +536,13 @@ if __name__ == "__main__":
     from time import sleep, gmtime, strftime
     import urllib3
 
+    from isogeo_pysdk.models import Keyword, Share
+
     # ------------ Log & debug ----------------
     logger = logging.getLogger()
     logging.captureWarnings(True)
     logger.setLevel(logging.DEBUG)
+    # logger.setLevel(logging.INFO)
 
     # ------------ Real start ----------------
     # load application credentials from downloaded file
@@ -557,7 +560,7 @@ if __name__ == "__main__":
         client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
         client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
-        platform=environ.get("ISOGEO_PLATFORM"),
+        platform=environ.get("ISOGEO_PLATFORM", "qa"),
     )
 
     # getting a token
@@ -568,6 +571,7 @@ if __name__ == "__main__":
 
     # misc
     discriminator = strftime("%Y-%m-%d_%H%M%S", gmtime())
+    MD_TEST_FIXTURE = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
     WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
     # -- END -------

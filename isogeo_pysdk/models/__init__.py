@@ -11,6 +11,7 @@ from .keyword_search import KeywordSearch  # noqa: F401
 from .license import License  # noqa: F401
 from .link import Link  # noqa: F401
 from .resource import Resource  # noqa: F401
+from .resource_search import ResourceSearch  # noqa: F401
 from .share import Share  # noqa: F401
 from .specification import Specification  # noqa: F401
 from .thesaurus import Thesaurus  # noqa: F401

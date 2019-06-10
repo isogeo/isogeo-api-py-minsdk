@@ -41,7 +41,7 @@ WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 def _meta_delete_contact(contact: dict):
     """Meta function"""
     try:
-        isogeo.contact.contact_delete(
+        isogeo.contact.delete(
             workgroup_id=contact.get("owner").get("_id"), contact_id=contact.get("_id")
         )
 
@@ -108,7 +108,7 @@ if __name__ == "__main__":
     print("Authentication succeeded at {:5.2f}s".format(default_timer() - START_TIME))
 
     # get some object identifiers required for certain routes
-    wg_contacts = isogeo.contact.contacts(
+    wg_contacts = isogeo.contact.listing(
         workgroup_id=WG_TEST_UUID, include=["count"], caching=0
     )
 

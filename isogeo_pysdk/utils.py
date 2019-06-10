@@ -132,10 +132,10 @@ class IsogeoUtils(object):
         self.platform = platform
         if platform == "prod":
             self.ssl = True
-            logging.debug("Using production platform.")
+            logger.debug("Using production platform.")
         elif platform == "qa":
             self.ssl = False
-            logging.debug("Using Quality Assurance platform (reduced perfs).")
+            logger.debug("Using Quality Assurance platform (reduced perfs).")
         else:
             logging.error(
                 "Platform must be one of: {}".format(" | ".join(self.API_URLS.keys()))
