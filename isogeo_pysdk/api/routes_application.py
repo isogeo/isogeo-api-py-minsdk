@@ -397,7 +397,9 @@ class ApiApplication:
         # check application type
         if application.type != "group":
             raise TypeError(
-                "Association between applications and workgroup is only possible for 'group applications' type not '{}'".format(application.type)
+                "Association between applications and workgroup is only possible for 'group applications' type not '{}'".format(
+                    application.type
+                )
             )
         else:
             pass
@@ -426,13 +428,19 @@ class ApiApplication:
 
         # check if the application can get multiple groups
         if not application.canHaveManyGroups and len(application.groups) >= 1:
-            logger.debug("Application can be associated with only one group and has already one.")
+            logger.debug(
+                "Application can be associated with only one group and has already one."
+            )
             if force:
-                logger.debug("Force mode enabled: application is being updated to be associated to multiple groups.")
+                logger.debug(
+                    "Force mode enabled: application is being updated to be associated to multiple groups."
+                )
                 application.canHaveManyGroups = True
                 self.update(application)
             elif not force:
-                logger.error("Force mode disabled: application can't be associated to multiple groups. Update the application or use force mode.")
+                logger.error(
+                    "Force mode disabled: application can't be associated to multiple groups. Update the application or use force mode."
+                )
                 return (0, "Application can't be associated to multiple groups.")
         else:
             pass
@@ -460,9 +468,7 @@ class ApiApplication:
         return req_application_assocation
 
     @ApiDecorators._check_bearer_validity
-    def dissociate_group(
-        self, application: Application, workgroup: Workgroup
-    ) -> tuple:
+    def dissociate_group(self, application: Application, workgroup: Workgroup) -> tuple:
         """Removes the association between the specified group and the specified application.
 
         :param Application application: Application model object to update
@@ -487,7 +493,9 @@ class ApiApplication:
         # check application type
         if application.type != "group":
             raise TypeError(
-                "Association between applications and workgroup is only possible for 'group applications' type not '{}'".format(application.type)
+                "Association between applications and workgroup is only possible for 'group applications' type not '{}'".format(
+                    application.type
+                )
             )
         else:
             pass
