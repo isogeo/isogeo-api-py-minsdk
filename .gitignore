@@ -85,6 +85,7 @@ virtenv*/
 virtualenv/
 *.pypirc
 *env*
+!.env.example
 
 # tests
 junit/*
