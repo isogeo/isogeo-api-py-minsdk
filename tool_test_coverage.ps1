@@ -14,9 +14,8 @@ pip install --upgrade setuptools wheel
 pip install --upgrade -r .\tests\requirements_test.txt
 
 "-- STEP -- Python code style"
-pycodestyle isogeo_pysdk/isogeo_sdk.py --ignore="E265,E501" --statistics --show-source
-pycodestyle isogeo_pysdk/checker.py --ignore="E265,E501" --statistics --show-source
-pycodestyle isogeo_pysdk/utils.py --ignore="E265,E501" --statistics --show-source
+python -m black --target-version=py36 ./isogeo_pysdk
+python -m black --target-version=py36 ./tests
 
 "-- STEP -- Run coverage"
 coverage run -m unittest discover -s tests/

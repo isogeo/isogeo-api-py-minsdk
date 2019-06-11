@@ -545,9 +545,6 @@ if __name__ == "__main__":
     # logger.setLevel(logging.INFO)
 
     # ------------ Real start ----------------
-    # load application credentials from downloaded file
-    credentials = utils.credentials_loader("client_secrets_scripts.json")
-
     # get user ID as environment variables
     load_dotenv("dev.env")
 
