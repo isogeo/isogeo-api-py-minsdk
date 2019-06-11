@@ -228,7 +228,7 @@ class ApiCatalog:
         return new_catalog
 
     @ApiDecorators._check_bearer_validity
-    def catalog_delete(self, workgroup_id: str, catalog_id: str):
+    def delete(self, workgroup_id: str, catalog_id: str):
         """Delete a catalog from Isogeo database.
 
         :param str workgroup_id: identifier of the owner workgroup
@@ -270,7 +270,7 @@ class ApiCatalog:
         return req_catalog_deletion
 
     @ApiDecorators._check_bearer_validity
-    def catalog_exists(self, workgroup_id: str, catalog_id: str) -> bool:
+    def exists(self, workgroup_id: str, catalog_id: str) -> bool:
         """Check if the specified catalog exists and is available for the authenticated user.
 
         :param str workgroup_id: identifier of the owner workgroup

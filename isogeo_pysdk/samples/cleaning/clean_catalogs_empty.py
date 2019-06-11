@@ -40,7 +40,7 @@ WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 def _meta_delete_catalog(catalog: dict):
     """Meta function"""
     try:
-        isogeo.catalog.catalog_delete(
+        isogeo.catalog.delete(
             workgroup_id=catalog.get("owner").get("_id"), catalog_id=catalog.get("_id")
         )
 

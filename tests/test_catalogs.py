@@ -113,9 +113,7 @@ class TestCatalogs(unittest.TestCase):
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.catalog.catalog_delete(
-                    workgroup_id=workgroup_test, catalog_id=i
-                )
+                cls.isogeo.catalog.delete(workgroup_id=workgroup_test, catalog_id=i)
                 pass
         # close sessions
         cls.isogeo.close()
@@ -139,9 +137,7 @@ class TestCatalogs(unittest.TestCase):
         # checks
         self.assertEqual(catalog_new.name, catalog_name)
         self.assertTrue(
-            self.isogeo.catalog.catalog_exists(
-                catalog_new.owner.get("_id"), catalog_new._id
-            )
+            self.isogeo.catalog.exists(catalog_new.owner.get("_id"), catalog_new._id)
         )
 
         # add created catalog to deletion
@@ -163,9 +159,7 @@ class TestCatalogs(unittest.TestCase):
             catalog_new.name, "{} - {}".format(get_test_marker(), self.discriminator)
         )
         self.assertTrue(
-            self.isogeo.catalog.catalog_exists(
-                catalog_new.owner.get("_id"), catalog_new._id
-            )
+            self.isogeo.catalog.exists(catalog_new.owner.get("_id"), catalog_new._id)
         )
 
         # add created catalog to deletion
