@@ -4,6 +4,7 @@
       "eriklynd.json-tools",
       "felixrieseberg.vsc-travis-ci-status",
       "lextudio.restructuredtext",
+      "mikestead.dotenv",
       "ms-azure-devops.azure-pipelines",
       "ms-python.python",
       "ms-vscode.powershell"
