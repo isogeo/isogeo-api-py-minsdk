@@ -157,7 +157,7 @@ class Share(object):
         "type": str,
     }
 
-    attr_crea = {"name": str, "type": str}
+    attr_crea = {"name": str, "type": str, "catalogs": list}
 
     attr_map = {}
 
@@ -186,6 +186,7 @@ class Share(object):
         self._catalogs = None
         self._groups = None
         self._name = None
+        self._rights = None
         self._type = None
         self._urlToken = None
 

@@ -23,7 +23,7 @@ from pathlib import Path
 from random import sample
 from socket import gethostname
 from sys import exit, _getframe
-from time import gmtime, strftime
+from time import gmtime, sleep, strftime
 import unittest
 
 # 3rd party
@@ -31,7 +31,7 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Share
+from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Share, Catalog
 
 
 # #############################################################################
@@ -105,6 +105,7 @@ class TestShares(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
+        sleep(0.5)
         pass
 
     @classmethod
@@ -113,9 +114,7 @@ class TestShares(unittest.TestCase):
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                # cls.isogeo.share.delete(
-                #     workgroup_id=workgroup_test, share_id=i
-                # )
+                cls.isogeo.share.delete(share_id=i)
                 pass
         # close sessions
         cls.isogeo.close()
@@ -123,35 +122,55 @@ class TestShares(unittest.TestCase):
     # -- TESTS ---------------------------------------------------------
 
     # -- POST --
-    # def test_shares_create_basic(self):
-    #     """POST :groups/{workgroup_uuid}/shares/}"""
-    #     # var
-    #     share_name = "{} - {}".format(get_test_marker(), self.discriminator)
+    def test_shares_create_basic_application(self):
+        """POST :groups/{workgroup_uuid}/shares/}"""
+        # var
+        share_name = "{} - {}".format(get_test_marker(), self.discriminator)
 
-    #     # create local object
-    #     share_new = Share(name=share_name)
+        # create local object
+        share_new = Share(name=share_name, type="application")
 
-    #     # create it online
-    #     share_new = self.isogeo.share.create(
-    #         workgroup_id=workgroup_test, share=share_new, check_exists=0
-    #     )
+        # create it online
+        share_new = self.isogeo.share.create(
+            workgroup_id=workgroup_test, share=share_new, check_exists=0
+        )
 
-    #     # checks
-    #     self.assertEqual(share_new.name, share_name)
-    #     self.assertTrue(
-    #         self.isogeo.share.share_exists(
-    #             share_new.owner.get("_id"), share_new._id
-    #         )
-    #     )
+        # checks
+        self.assertEqual(share_new.name, share_name)
+        self.assertTrue(self.isogeo.share.exists(share_new._id))
 
-    #     # add created share to deletion
-    #     self.li_fixtures_to_delete.append(share_new._id)
+        # add created share to deletion
+        self.li_fixtures_to_delete.append(share_new._id)
+
+    def test_shares_create_basic_group(self):
+        """POST :groups/{workgroup_uuid}/shares/}"""
+        # var
+        share_name = "{} - {}".format(get_test_marker(), self.discriminator)
+
+        # create local object
+        share_new = Share(name=share_name, type="group")
+
+        # create it online
+        share_new = self.isogeo.share.create(
+            workgroup_id=workgroup_test, share=share_new, check_exists=0
+        )
+
+        # checks
+        self.assertEqual(share_new.name, share_name)
+        self.assertTrue(self.isogeo.share.exists(share_new._id))
+
+        # add created share to deletion
+        self.li_fixtures_to_delete.append(share_new._id)
 
     # def test_shares_create_complete(self):
     #     """POST :groups/{workgroup_uuid}/shares/}"""
     #     # populate model object locally
     #     share_new = Share(
-    #         name="{} - {}".format(get_test_marker(), self.discriminator), scan=True
+    #         name="{} - {}".format(get_test_marker(), self.discriminator),
+    #         type="application",
+    #         catalogs= [
+    #             isogeo.catalog.catalog(workgroup_id=workgroup_test, "75a6e6b16026410999dc4153f16c7de2")
+    #         ]
     #     )
     #     # create it online
     #     share_new = self.isogeo.share.create(

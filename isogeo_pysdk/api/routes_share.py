@@ -14,10 +14,13 @@
 # Standard library
 import logging
 
+# 3rd party
+from requests.models import Response
+
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Share
+from isogeo_pysdk.models import Catalog, Share
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -144,23 +147,25 @@ class ApiShare:
         return Share(**req_share.json())
 
     @ApiDecorators._check_bearer_validity
-    def create(self, share: object = Share(), check_exists: int = 1) -> Share:
+    def create(
+        self, workgroup_id: str, share: object = Share(), check_exists: int = 1
+    ) -> Share:
         """Add a new share to Isogeo.
 
+        :param str workgroup_id: identifier of the owner workgroup
+        :param Share share: Share model object to create
         :param int check_exists: check if a share already exists inot the workgroup:
 
         - 0 = no check
         - 1 = compare name [DEFAULT]
-
-        :param class share: Share model object to create
         """
         # check if share already exists in workgroup
         if check_exists == 1:
             # retrieve workgroup shares
-            if not self.api_client._shares_names:
-                self.shares(include=[])
+            if not self.api_client._wg_shares_names:
+                self.shares()
             # check
-            if share.name in self.api_client._shares_names:
+            if share.name in self.api_client._wg_shares_names:
                 logger.debug(
                     "Share with the same name already exists: {}. Use 'share_update' instead.".format(
                         share.name
@@ -171,7 +176,9 @@ class ApiShare:
             pass
 
         # URL
-        url_share_create = utils.get_request_base_url(route="shares")
+        url_share_create = utils.get_request_base_url(
+            route="groups/{}/shares".format(workgroup_id)
+        )
 
         # request
         req_new_share = self.api_client.post(
@@ -196,7 +203,7 @@ class ApiShare:
         return new_share
 
     @ApiDecorators._check_bearer_validity
-    def delete(self, share_id: str):
+    def delete(self, share_id: str) -> Response:
         """Delete a share from Isogeo database.
 
         :param str share_id: identifier of the resource to delete
@@ -299,6 +306,89 @@ class ApiShare:
 
         # end of method
         return new_share
+
+    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def associate_catalog(self, share: Share, catalog: Catalog) -> tuple:
+        """Associate a share with a catalog.
+
+        :param Share share: share model object to update
+        :param Catalog catalog: object to associate
+        """
+        # check share UUID
+        if not checker.check_is_uuid(share._id):
+            raise ValueError("Share ID is not a correct UUID: {}".format(share._id))
+        else:
+            pass
+
+        # check catalog UUID
+        if not checker.check_is_uuid(catalog._id):
+            raise ValueError("Catalog ID is not a correct UUID: {}".format(catalog._id))
+        else:
+            pass
+
+        # URL
+        url_share_association = utils.get_request_base_url(
+            route="shares/{}/catalogs/{}".format(share._id, catalog._id)
+        )
+
+        # request
+        req_share_assocation = self.api_client.put(
+            url=url_share_association,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_share_assocation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_share_assocation
+
+    @ApiDecorators._check_bearer_validity
+    def dissociate_catalog(self, share: Share, catalog: Catalog) -> tuple:
+        """Removes the association between the specified share and the specified catalog.
+
+        :param Share share: share model object to update
+        :param Catalog catalog: object to associate
+        """
+        # check share UUID
+        if not checker.check_is_uuid(share._id):
+            raise ValueError("Share ID is not a correct UUID: {}".format(share._id))
+        else:
+            pass
+
+        # check catalog UUID
+        if not checker.check_is_uuid(catalog._id):
+            raise ValueError("Catalog ID is not a correct UUID: {}".format(catalog._id))
+        else:
+            pass
+
+        # URL
+        url_share_association = utils.get_request_base_url(
+            route="shares/{}/catalogs/{}".format(share._id, catalog._id)
+        )
+
+        # request
+        req_share_assocation = self.api_client.delete(
+            url=url_share_association,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_share_assocation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_share_assocation
 
 
 # ##############################################################################
