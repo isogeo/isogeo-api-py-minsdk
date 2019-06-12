@@ -20,7 +20,7 @@ from requests.models import Response
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Catalog, Share
+from isogeo_pysdk.models import Application, Catalog, Share, Workgroup
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -54,6 +54,7 @@ class ApiShare:
         # initialize
         super(ApiShare, self).__init__()
 
+    # -- Routes to manage the object ---------------------------------------------------
     @ApiDecorators._check_bearer_validity
     def shares(self, workgroup_id: str = None, caching: bool = 1) -> list:
         """Get all shares which are accessible by the authenticated user OR shares for a workgroup.
@@ -270,7 +271,7 @@ class ApiShare:
     def update(self, share: Share, caching: bool = 1) -> Share:
         """Update a share owned by a workgroup.
 
-        :param class share: Share model object to update
+        :param Share share: Share model object to update
         :param bool caching: option to cache the response
         """
         # check share UUID
@@ -307,7 +308,207 @@ class ApiShare:
         # end of method
         return new_share
 
+    # -- Routes which are really specific ----------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def reshare(self, share: Share, reshare: bool = 1) -> Share:
+        """Enable/disable the reshare option for the given share.
+
+        Only available for shares of type 'group'.
+
+        :param Share share: Share model object to update
+        :param bool reshare: set option to allow recipients groups
+        """
+        # check share UUID
+        if not checker.check_is_uuid(share._id):
+            raise ValueError("Share ID is not a correct UUID: {}".format(share._id))
+        else:
+            pass
+
+        # check share type
+        if share.type != "group":
+            raise TypeError(
+                "Bad share type. Must be 'group', found {}".format(share.type)
+            )
+        else:
+            pass
+
+        # determine if a request is required or can be avoided
+        if reshare and share.rights == ['reshare']:
+            logger.info("Share has already reshare right enabled.")
+            return share
+        elif not reshare and not share.rights:
+            logger.info("Share has already reshare right disabled.")
+            return share
+        else:
+            pass
+
+        # set new state
+        if reshare:
+            share.rights = ["reshare"]
+        else:
+            share.rights = []
+
+        # URL
+        url_share_refresh = utils.get_request_base_url(
+            route="shares/{}".format(share._id)
+        )
+
+        # request
+        req_share_refresh = self.api_client.put(
+            url=url_share_refresh,
+            json=share.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_share_refresh)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return Share(**req_share_refresh.json())
+
+
+    @ApiDecorators._check_bearer_validity
+    def refresh_token(self, share: Share) -> Share:
+        """Refresh the URL token of a share, used by Cartotheque, CSW, OpenCatalog.
+
+        :param Share share: Share model object to update
+        """
+        # check share UUID
+        if not checker.check_is_uuid(share._id):
+            raise ValueError("Share ID is not a correct UUID: {}".format(share._id))
+        else:
+            pass
+
+        # URL
+        url_share_refresh = utils.get_request_base_url(
+            route="shares/{}/refresh-token".format(share._id)
+        )
+
+        # request
+        req_share_refresh = self.api_client.post(
+            url=url_share_refresh,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_share_refresh)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return Share(**req_share_refresh.json())
+
     # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def associate_application(self, share: Share, application: Application) -> tuple:
+        """Associate a share with an application.
+
+        :param Share share: share model object to update
+        :param Application application: application object to associate
+        """
+        # check share UUID
+        if not checker.check_is_uuid(share._id):
+            raise ValueError("Share ID is not a correct UUID: {}".format(share._id))
+        else:
+            pass
+
+        # check application UUID
+        if not checker.check_is_uuid(application._id):
+            raise ValueError(
+                "Application ID is not a correct UUID: {}".format(application._id)
+            )
+        else:
+            pass
+
+        # check share type
+        if share.type != "application":
+            raise TypeError(
+                "Bad share type. Must be 'application', found {}".format(share.type)
+            )
+        else:
+            pass
+
+        # URL
+        url_share_association = utils.get_request_base_url(
+            route="shares/{}/applications/{}".format(share._id, application._id)
+        )
+
+        # request
+        req_share_association = self.api_client.put(
+            url=url_share_association,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_share_association)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_share_association
+
+    @ApiDecorators._check_bearer_validity
+    def dissociate_application(self, share: Share, application: Application) -> tuple:
+        """Removes the association between the specified share and the specified application.
+
+        :param Share share: share model object to update
+        :param Application application: object to associate
+        """
+        # check share UUID
+        if not checker.check_is_uuid(share._id):
+            raise ValueError("Share ID is not a correct UUID: {}".format(share._id))
+        else:
+            pass
+
+        # check application UUID
+        if not checker.check_is_uuid(application._id):
+            raise ValueError(
+                "Application ID is not a correct UUID: {}".format(application._id)
+            )
+        else:
+            pass
+
+        # check share type
+        if share.type != "application":
+            raise TypeError(
+                "Bad share type. Must be 'application', found {}".format(share.type)
+            )
+        else:
+            pass
+
+        # URL
+        url_share_dissociation = utils.get_request_base_url(
+            route="shares/{}/applications/{}".format(share._id, application._id)
+        )
+
+        # request
+        req_share_dissociation = self.api_client.delete(
+            url=url_share_dissociation,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_share_dissociation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_share_dissociation
+
     @ApiDecorators._check_bearer_validity
     def associate_catalog(self, share: Share, catalog: Catalog) -> tuple:
         """Associate a share with a catalog.
@@ -333,7 +534,7 @@ class ApiShare:
         )
 
         # request
-        req_share_assocation = self.api_client.put(
+        req_share_association = self.api_client.put(
             url=url_share_association,
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
@@ -342,12 +543,12 @@ class ApiShare:
         )
 
         # checking response
-        req_check = checker.check_api_response(req_share_assocation)
+        req_check = checker.check_api_response(req_share_association)
         if isinstance(req_check, tuple):
             return req_check
 
         # end of method
-        return req_share_assocation
+        return req_share_association
 
     @ApiDecorators._check_bearer_validity
     def dissociate_catalog(self, share: Share, catalog: Catalog) -> tuple:
@@ -369,12 +570,63 @@ class ApiShare:
             pass
 
         # URL
-        url_share_association = utils.get_request_base_url(
+        url_share_dissociation = utils.get_request_base_url(
             route="shares/{}/catalogs/{}".format(share._id, catalog._id)
         )
 
         # request
-        req_share_assocation = self.api_client.delete(
+        req_share_dissociation = self.api_client.delete(
+            url=url_share_dissociation,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_share_dissociation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_share_dissociation
+
+    @ApiDecorators._check_bearer_validity
+    def associate_group(self, share: Share, group: Workgroup) -> Response:
+        """Associate a group with a share of type 'group'.
+
+        If the specified group is already associated, the response is still 204.
+
+        :param Share share: share model object to update
+        :param Workgroup group: group object to associate
+        """
+        # check share UUID
+        if not checker.check_is_uuid(share._id):
+            raise ValueError("Share ID is not a correct UUID: {}".format(share._id))
+        else:
+            pass
+
+        # check group UUID
+        if not checker.check_is_uuid(group._id):
+            raise ValueError("Workgroup ID is not a correct UUID: {}".format(group._id))
+        else:
+            pass
+
+        # check share type
+        if share.type != "group":
+            raise TypeError(
+                "Bad share type. Must be 'group', found {}".format(share.type)
+            )
+        else:
+            pass
+
+        # URL
+        url_share_association = utils.get_request_base_url(
+            route="shares/{}/groups/{}".format(share._id, group._id)
+        )
+
+        # request
+        req_share_association = self.api_client.put(
             url=url_share_association,
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
@@ -383,12 +635,64 @@ class ApiShare:
         )
 
         # checking response
-        req_check = checker.check_api_response(req_share_assocation)
+        req_check = checker.check_api_response(req_share_association)
         if isinstance(req_check, tuple):
             return req_check
 
         # end of method
-        return req_share_assocation
+        return req_share_association
+
+    @ApiDecorators._check_bearer_validity
+    def dissociate_group(self, share: Share, group: Workgroup) -> tuple:
+        """Removes the association between the specified share and the specified group.
+
+        If the specified group is associated, the association is removed, Response is 204.
+        If not, the Response is 500.
+
+        :param Share share: share model object to update
+        :param Workgroup group: object to associate
+        """
+        # check share UUID
+        if not checker.check_is_uuid(share._id):
+            raise ValueError("Share ID is not a correct UUID: {}".format(share._id))
+        else:
+            pass
+
+        # check group UUID
+        if not checker.check_is_uuid(group._id):
+            raise ValueError("Workgroup ID is not a correct UUID: {}".format(group._id))
+        else:
+            pass
+
+        # check share type
+        if share.type != "group":
+            raise TypeError(
+                "Bad share type. Must be 'group', found {}".format(share.type)
+            )
+        else:
+            pass
+
+        # URL
+        url_share_dissociation = utils.get_request_base_url(
+            route="shares/{}/groups/{}".format(share._id, group._id)
+        )
+
+        # request
+        req_share_dissociation = self.api_client.delete(
+            url=url_share_dissociation,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_share_dissociation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_share_dissociation
 
 
 # ##############################################################################

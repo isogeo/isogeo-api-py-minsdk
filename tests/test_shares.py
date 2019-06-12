@@ -25,6 +25,7 @@ from socket import gethostname
 from sys import exit, _getframe
 from time import gmtime, sleep, strftime
 import unittest
+import urllib3
 
 # 3rd party
 from dotenv import load_dotenv
@@ -82,6 +83,10 @@ class TestShares(unittest.TestCase):
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
+
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
 
         # API connection
         cls.isogeo = IsogeoSession(
@@ -215,6 +220,39 @@ class TestShares(unittest.TestCase):
     # self.li_fixtures_to_delete.append(share_new_1._id)
 
     # -- GET --
+    def test_shares_get_user(self):
+        """GET :/shares}"""
+        # retrieve workgroup shares
+        shares = self.isogeo.share.shares(caching=0)
+        # parse and test object loader
+        for i in shares[:50]:
+            # load it
+            share = Share(**i)
+            # tests attributes structure
+            self.assertTrue(hasattr(share, "_created"))
+            self.assertTrue(hasattr(share, "_creator"))
+            self.assertTrue(hasattr(share, "_id"))
+            self.assertTrue(hasattr(share, "_modified"))
+            self.assertTrue(hasattr(share, "applications"))
+            self.assertTrue(hasattr(share, "catalogs"))
+            self.assertTrue(hasattr(share, "groups"))
+            self.assertTrue(hasattr(share, "name"))
+            self.assertTrue(hasattr(share, "rights"))
+            self.assertTrue(hasattr(share, "type"))
+            self.assertTrue(hasattr(share, "urlToken"))
+            # tests attributes value
+            self.assertEqual(share._created, i.get("_created"))
+            self.assertEqual(share._creator, i.get("_creator"))
+            self.assertEqual(share._id, i.get("_id"))
+            self.assertEqual(share._modified, i.get("_modified"))
+            self.assertEqual(share.applications, i.get("applications"))
+            self.assertEqual(share.catalogs, i.get("catalogs"))
+            self.assertEqual(share.groups, i.get("groups"))
+            self.assertEqual(share.name, i.get("name"))
+            self.assertEqual(share.rights, i.get("rights"))
+            self.assertEqual(share.type, i.get("type"))
+            self.assertEqual(share.urlToken, i.get("urlToken"))
+
     def test_shares_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/shares}"""
         # retrieve workgroup shares

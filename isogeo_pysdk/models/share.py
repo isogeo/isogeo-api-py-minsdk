@@ -155,9 +155,17 @@ class Share(object):
         "name": str,
         "rights": list,
         "type": str,
+        "urlToken": str
     }
 
-    attr_crea = {"name": str, "type": str, "catalogs": list}
+    attr_crea = {
+        # "applications": list,
+        # "catalogs": list,
+        # "groups": list,
+        "name": str,
+        "rights": list,
+        "type": str,
+    }
 
     attr_map = {}
 
@@ -323,6 +331,15 @@ class Share(object):
         :rtype: str
         """
         return self._rights
+
+    @rights.setter
+    def rights(self, rights: list):
+        """Sets the rights of this Share.
+
+        :param list rights: The rights of this Share.
+        """
+
+        self._rights = rights
 
     @property
     def type(self) -> str:
