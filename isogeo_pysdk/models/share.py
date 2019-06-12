@@ -155,7 +155,7 @@ class Share(object):
         "name": str,
         "rights": list,
         "type": str,
-        "urlToken": str
+        "urlToken": str,
     }
 
     attr_crea = {

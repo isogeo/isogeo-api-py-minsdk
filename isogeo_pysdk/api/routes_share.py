@@ -333,7 +333,7 @@ class ApiShare:
             pass
 
         # determine if a request is required or can be avoided
-        if reshare and share.rights == ['reshare']:
+        if reshare and share.rights == ["reshare"]:
             logger.info("Share has already reshare right enabled.")
             return share
         elif not reshare and not share.rights:
@@ -370,7 +370,6 @@ class ApiShare:
 
         # end of method
         return Share(**req_share_refresh.json())
-
 
     @ApiDecorators._check_bearer_validity
     def refresh_token(self, share: Share) -> Share:
