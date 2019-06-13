@@ -80,7 +80,7 @@ class ApiAccount:
             return req_check
 
         # if caching use or store the response
-        if caching and not self.api_client._user:
+        if caching:
             self.api_client._user = User(**req_account.json())
 
         # end of method

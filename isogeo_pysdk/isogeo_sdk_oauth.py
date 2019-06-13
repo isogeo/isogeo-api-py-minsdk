@@ -30,7 +30,7 @@ from requests_oauthlib import OAuth2Session
 from isogeo_pysdk import api, version
 from isogeo_pysdk.api_hooks import IsogeoHooks
 from isogeo_pysdk.checker import IsogeoChecker
-from isogeo_pysdk.models import Metadata
+from isogeo_pysdk.models import Metadata, User
 from isogeo_pysdk.utils import IsogeoUtils
 
 # ##############################################################################
@@ -88,7 +88,7 @@ class IsogeoSession(OAuth2Session):
         self._thesauri_codes = {}  # Isogeo thesauri by names
         self._workgroups_names = {}  # Isogeo workgroups by names
         # user
-        self._user = {}  # authenticated user profile
+        self._user = User()  # authenticated user profile
         # workgroup
         self._wg_applications_names = {}  # workgroup applications by names
         self._wg_catalogs_names = {}  # workgroup catalogs by names
