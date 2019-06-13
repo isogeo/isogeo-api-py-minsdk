@@ -123,7 +123,7 @@ class TestAccount(unittest.TestCase):
         self.assertTrue(me.__eq__(self.isogeo._user))  # account stored during auth step
 
     # -- PUT/PATCH --
-    def test_account_update(self):
+    def test_update(self):
         """PUT :/account/}"""
         # get account
         me = self.isogeo._user
@@ -131,14 +131,14 @@ class TestAccount(unittest.TestCase):
         # modify language
         me.language = "en"
         # update it
-        self.isogeo.account.account_update(me)
+        self.isogeo.account.update(me)
         # confirm
         self.assertTrue(self.isogeo.account.account().language == "en")
 
         # restablish previous language
         me.language = prev_language
         # restore it
-        self.isogeo.account.account_update(me)
+        self.isogeo.account.update(me)
 
 
 # ##############################################################################

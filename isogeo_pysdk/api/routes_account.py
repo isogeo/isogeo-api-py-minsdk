@@ -87,7 +87,7 @@ class ApiAccount:
         return User(**req_account.json())
 
     @ApiDecorators._check_bearer_validity
-    def account_update(self, account: User, caching: bool = 1) -> User:
+    def update(self, account: User, caching: bool = 1) -> User:
         """Update authenticated user account(= profile) informations.
 
         :param class account: user account model object to update
