@@ -191,16 +191,7 @@ class Contact(object):
         """
         return self.__id
 
-    @_id.setter
-    def _id(self, _id: str):
-        """Sets the id of this Contact.
-
-        :param str id: The id of this Contact.
-        """
-
-        self.__id = _id
-
-    # contact UUID
+    # contact search tag
     @property
     def _tag(self) -> str:
         """Gets the tag used for Isogeo filters of this Contact.
@@ -209,15 +200,6 @@ class Contact(object):
         :rtype: str
         """
         return self.__tag
-
-    @_tag.setter
-    def _tag(self, _tag: str):
-        """Sets the tag used into Isogeo filters of this Contact.
-
-        :param str _tag: the tag of this Contact.
-        """
-
-        self.__tag = _tag
 
     # adress first line
     @property
@@ -603,11 +585,3 @@ class Contact(object):
 if __name__ == "__main__":
     """ standalone execution """
     ct = Contact()
-    ct.email = "change@truc.fr"
-    print(ct.email)
-    print(ct.__dict__)
-    print(ct._id)
-    print(ct.__dict__.get("_id"))
-    print(hasattr(ct, "_id"))
-    print(ct.to_dict_creation())
-    # print(ct.to_str())

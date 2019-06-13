@@ -14,10 +14,14 @@
 # Standard library
 import logging
 
+# 3rd party
+from requests.models import Response
+
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Contact
+from isogeo_pysdk.enums import ContactRoles
+from isogeo_pysdk.models import Contact, Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -339,6 +343,74 @@ class ApiContact:
 
         # end of method
         return new_contact
+
+    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def associate_metadata(
+        self, metadata: Metadata, contact: Contact, role: str = "pointOfContact"
+    ) -> Response:
+        """Associate a metadata with a contact.
+
+        If the specified contact is already associated, the response is still 200.
+
+        :param Metadata metadata: metadata object to update
+        :param Contact contact: contact model object to associate
+        :param str role: role to assign to the contact
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # check contact UUID
+        if not checker.check_is_uuid(contact._id):
+            raise ValueError("Contact ID is not a correct UUID: {}".format(contact._id))
+        else:
+            pass
+
+        # check contact type
+        if contact.type == "group" and not contact.available:
+            raise TypeError(
+                "Contact can't be associated because it's a group contact and it's not available."
+            )
+        else:
+            pass
+
+        # check role contact
+        if role not in ContactRoles.__members__:
+            raise ValueError(
+                "Role '{}' is not an accepted value. Must be one of: {}".format(
+                    role, " | ".join([e.name for e in ContactRoles])
+                )
+            )
+        else:
+            pass
+
+        # URL
+        url_contact_association = utils.get_request_base_url(
+            route="resources/{}/contacts/{}".format(metadata._id, contact._id)
+        )
+
+        # request
+        req_contact_association = self.api_client.put(
+            url=url_contact_association,
+            json={"role": role},
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_contact_association)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_contact_association
 
 
 # ##############################################################################
