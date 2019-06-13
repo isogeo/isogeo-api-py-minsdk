@@ -232,7 +232,7 @@ class ApiDatasource:
         return new_datasource
 
     @ApiDecorators._check_bearer_validity
-    def datasource_delete(self, workgroup_id: str, datasource_id: str):
+    def delete(self, workgroup_id: str, datasource_id: str):
         """Delete a datasource from Isogeo database.
 
         :param str workgroup_id: identifier of the owner workgroup
@@ -276,7 +276,7 @@ class ApiDatasource:
         return req_datasource_deletion
 
     @ApiDecorators._check_bearer_validity
-    def datasource_exists(self, workgroup_id: str, datasource_id: str) -> bool:
+    def exists(self, workgroup_id: str, datasource_id: str) -> bool:
         """Check if the specified datasource exists and is available for the authenticated user.
 
         :param str workgroup_id: identifier of the owner workgroup
@@ -320,7 +320,7 @@ class ApiDatasource:
         return req_datasource_exists
 
     @ApiDecorators._check_bearer_validity
-    def datasource_update(
+    def update(
         self, workgroup_id: str, datasource: Datasource, caching: bool = 1
     ) -> Datasource:
         """Update a datasource owned by a workgroup.

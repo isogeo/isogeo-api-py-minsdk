@@ -133,9 +133,7 @@ class TestSpecifications(unittest.TestCase):
 
         # checks
         self.assertEqual(specification_new.name, specification_name)
-        self.assertTrue(
-            self.isogeo.specification.specification_exists(specification_new._id)
-        )
+        self.assertTrue(self.isogeo.specification.exists(specification_new._id))
 
         # add created specification to deletion
         self.li_fixtures_to_delete.append(specification_new._id)
@@ -157,9 +155,7 @@ class TestSpecifications(unittest.TestCase):
             specification_new.name,
             "{} - {}".format(get_test_marker(), self.discriminator),
         )
-        self.assertTrue(
-            self.isogeo.specification.specification_exists(specification_new._id)
-        )
+        self.assertTrue(self.isogeo.specification.exists(specification_new._id))
 
         # add created specification to deletion
         self.li_fixtures_to_delete.append(specification_new._id)
@@ -235,14 +231,10 @@ class TestSpecifications(unittest.TestCase):
 
         # check both exist
         self.assertTrue(
-            self.isogeo.specification.specification_exists(
-                specification_id_isogeo.get("_id")
-            )
+            self.isogeo.specification.exists(specification_id_isogeo.get("_id"))
         )
         self.assertTrue(
-            self.isogeo.specification.specification_exists(
-                specification_id_specific.get("_id")
-            )
+            self.isogeo.specification.exists(specification_id_specific.get("_id"))
         )
 
         # get and check both
@@ -278,9 +270,7 @@ class TestSpecifications(unittest.TestCase):
         # )
 
         # update the online specification
-        specification_fixture = self.isogeo.specification.specification_update(
-            specification_fixture
-        )
+        specification_fixture = self.isogeo.specification.update(specification_fixture)
 
         # check if the change is effective
         specification_fixture_updated = self.isogeo.specification.specification(

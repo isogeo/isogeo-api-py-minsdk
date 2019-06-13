@@ -112,7 +112,7 @@ class TestDatasources(unittest.TestCase):
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.datasource.datasource_delete(
+                cls.isogeo.datasource.delete(
                     workgroup_id=workgroup_test, datasource_id=i
                 )
                 pass
@@ -141,7 +141,7 @@ class TestDatasources(unittest.TestCase):
         # checks
         self.assertEqual(datasource_new.name, datasource_name)
         self.assertTrue(
-            self.isogeo.datasource.datasource_exists(workgroup_test, datasource_new._id)
+            self.isogeo.datasource.exists(workgroup_test, datasource_new._id)
         )
 
         # add created datasource to deletion
@@ -164,7 +164,7 @@ class TestDatasources(unittest.TestCase):
             datasource_new.name, "{} - {}".format(get_test_marker(), self.discriminator)
         )
         self.assertTrue(
-            self.isogeo.datasource.datasource_exists(workgroup_test, datasource_new._id)
+            self.isogeo.datasource.exists(workgroup_test, datasource_new._id)
         )
 
         # add created datasource to deletion
@@ -273,7 +273,7 @@ class TestDatasources(unittest.TestCase):
         datasource_fixture.location = "http://catalogue.geo-ide.developpement-durable.gouv.fr/catalogue/srv/eng/csw-moissonnable-dreal-npdc"
 
         # update the online datasource
-        datasource_fixture = self.isogeo.datasource.datasource_update(
+        datasource_fixture = self.isogeo.datasource.update(
             workgroup_id=workgroup_test, datasource=datasource_fixture
         )
 

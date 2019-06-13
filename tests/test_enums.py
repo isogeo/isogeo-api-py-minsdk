@@ -48,6 +48,7 @@ class TestEnums(unittest.TestCase):
         for role in ContactRoles:
             self.assertIsInstance(role.value, str)
 
+
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################

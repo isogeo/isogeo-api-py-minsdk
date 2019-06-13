@@ -132,7 +132,7 @@ class TestLicenses(unittest.TestCase):
 
         # checks
         self.assertEqual(license_new.name, license_name)
-        self.assertTrue(self.isogeo.license.license_exists(license_new._id))
+        self.assertTrue(self.isogeo.license.exists(license_new._id))
 
         # add created license to deletion
         self.li_fixtures_to_delete.append(license_new._id)
@@ -156,7 +156,7 @@ class TestLicenses(unittest.TestCase):
         self.assertEqual(
             license_new.name, "{} - {}".format(get_test_marker(), self.discriminator)
         )
-        self.assertTrue(self.isogeo.license.license_exists(license_new._id))
+        self.assertTrue(self.isogeo.license.exists(license_new._id))
 
         # add created license to deletion
         self.li_fixtures_to_delete.append(license_new._id)
@@ -228,12 +228,8 @@ class TestLicenses(unittest.TestCase):
         )[0]
 
         # check both exist
-        self.assertTrue(
-            self.isogeo.license.license_exists(license_id_isogeo.get("_id"))
-        )
-        self.assertTrue(
-            self.isogeo.license.license_exists(license_id_specific.get("_id"))
-        )
+        self.assertTrue(self.isogeo.license.exists(license_id_isogeo.get("_id")))
+        self.assertTrue(self.isogeo.license.exists(license_id_specific.get("_id")))
 
         # get and check both
         license_isogeo = self.isogeo.license.license(license_id_isogeo.get("_id"))
@@ -260,7 +256,7 @@ class TestLicenses(unittest.TestCase):
         license_fixture.link = "https://github.com/isogeo/isogeo-api-py-minsdk"
 
         # update the online license
-        license_fixture = self.isogeo.license.license_update(license_fixture)
+        license_fixture = self.isogeo.license.update(license_fixture)
 
         # check if the change is effective
         license_fixture_updated = self.isogeo.license.license(license_fixture._id)

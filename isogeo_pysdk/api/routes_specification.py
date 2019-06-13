@@ -251,7 +251,7 @@ class ApiSpecification:
         return req_specification_deletion
 
     @ApiDecorators._check_bearer_validity
-    def specification_exists(self, specification_id: str) -> bool:
+    def exists(self, specification_id: str) -> bool:
         """Check if the specified specification exists and is available for the authenticated user.
 
         :param str specification_id: identifier of the specification to verify
@@ -286,9 +286,7 @@ class ApiSpecification:
         return req_specification_exists
 
     @ApiDecorators._check_bearer_validity
-    def specification_update(
-        self, specification: Specification, caching: bool = 1
-    ) -> Specification:
+    def update(self, specification: Specification, caching: bool = 1) -> Specification:
         """Update a specification owned by a workgroup.
 
         :param class specification: Specification model object to update

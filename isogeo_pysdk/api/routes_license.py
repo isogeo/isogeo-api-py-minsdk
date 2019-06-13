@@ -242,7 +242,7 @@ class ApiLicense:
         return req_license_deletion
 
     @ApiDecorators._check_bearer_validity
-    def license_exists(self, license_id: str) -> bool:
+    def exists(self, license_id: str) -> bool:
         """Check if the specified license exists and is available for the authenticated user.
 
         :param str license_id: identifier of the license to verify
@@ -275,7 +275,7 @@ class ApiLicense:
         return req_license_exists
 
     @ApiDecorators._check_bearer_validity
-    def license_update(self, license: License, caching: bool = 1) -> License:
+    def update(self, license: License, caching: bool = 1) -> License:
         """Update a license owned by a workgroup.
 
         :param class license: License model object to update
