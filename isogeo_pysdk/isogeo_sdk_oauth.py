@@ -19,7 +19,6 @@
 import locale
 import logging
 from datetime import datetime
-from functools import wraps
 from sys import platform as opersys
 
 # 3rd party library
@@ -30,7 +29,7 @@ from requests_oauthlib import OAuth2Session
 from isogeo_pysdk import api, version
 from isogeo_pysdk.api_hooks import IsogeoHooks
 from isogeo_pysdk.checker import IsogeoChecker
-from isogeo_pysdk.models import Metadata, User
+from isogeo_pysdk.models import User
 from isogeo_pysdk.utils import IsogeoUtils
 
 # ##############################################################################
@@ -124,7 +123,7 @@ class IsogeoSession(OAuth2Session):
         if auth_mode not in self.AUTH_MODES:
             logger.error("Auth mode value is not good: {}".format(auth_mode))
             raise ValueError(
-                "Mode value must be one of: ".format(" | ".join(self.AUTH_MODES))
+                "Mode value must be one of: {}".format(" | ".join(self.AUTH_MODES))
             )
         else:
             self.auth_mode = auth_mode
