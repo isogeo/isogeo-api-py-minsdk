@@ -8,4 +8,5 @@ from .event_kinds import EventKinds  # noqa: F401
 from .keyword_casing import KeywordCasing  # noqa: F401
 from .link_actions import LinkActions  # noqa: F401
 from .link_kinds import LinkKinds  # noqa: F401
+from .link_types import LinkTypes  # noqa: F401
 from .metadata_types import MetadataTypes  # noqa: F401

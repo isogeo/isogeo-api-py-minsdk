@@ -28,6 +28,7 @@ from isogeo_pysdk.enums import (
     KeywordCasing,
     LinkActions,
     LinkKinds,
+    LinkTypes,
     MetadataTypes,
 )
 
@@ -98,12 +99,20 @@ class TestEnums(unittest.TestCase):
         for i in LinkActions:
             self.assertIsInstance(i.value, int)
 
-    def test_link_action(self):
-        """Check link actions values list"""
+    def test_link_kind(self):
+        """Check link kinds values list"""
         self.assertEqual(len(LinkKinds), 8)
         self.assertTrue("wms" in LinkKinds.__members__)
         self.assertFalse("EsriFeatureDataset" in LinkKinds.__members__)
         for i in LinkKinds:
+            self.assertIsInstance(i.value, int)
+
+    def test_link_type(self):
+        """Check link types values list"""
+        self.assertEqual(len(LinkTypes), 3)
+        self.assertTrue("hosted" in LinkTypes.__members__)
+        self.assertFalse("Link" in LinkTypes.__members__)
+        for i in LinkTypes:
             self.assertIsInstance(i.value, int)
 
     def test_metadata_types(self):
