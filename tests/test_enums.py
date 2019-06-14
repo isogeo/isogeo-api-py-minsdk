@@ -20,7 +20,7 @@
 import unittest
 
 # module target
-from isogeo_pysdk.enums import ContactRoles
+from isogeo_pysdk.enums import ApplicationKinds, ContactRoles, EventKinds, MetadataTypes
 
 
 # #############################################################################
@@ -54,8 +54,8 @@ class TestEnums(unittest.TestCase):
         self.assertEqual(len(ContactRoles), 11)
         self.assertTrue("author" in ContactRoles.__members__)
         self.assertFalse("Author" in ContactRoles.__members__)
-        for role in ContactRoles:
-            self.assertIsInstance(role.value, str)
+        for i in ContactRoles:
+            self.assertIsInstance(i.value, str)
 
     def test_event_kinds(self):
         """Check metadata's types list"""
@@ -65,6 +65,13 @@ class TestEnums(unittest.TestCase):
         for i in EventKinds:
             self.assertIsInstance(i.value, int)
 
+    def test_metadata_types(self):
+        """Check metadata's types list"""
+        self.assertEqual(len(MetadataTypes), 4)
+        self.assertTrue("rasterDataset" in MetadataTypes.__members__)
+        self.assertFalse("Service" in MetadataTypes.__members__)
+        for i in MetadataTypes:
+            self.assertIsInstance(i.value, str)
 
 
 # ##############################################################################
