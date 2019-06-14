@@ -6,4 +6,5 @@ from .contact_roles import ContactRoles  # noqa: F401
 from .contact_types import ContactTypes  # noqa: F401
 from .event_kinds import EventKinds  # noqa: F401
 from .keyword_casing import KeywordCasing  # noqa: F401
+from .link_actions import LinkActions  # noqa: F401
 from .metadata_types import MetadataTypes  # noqa: F401

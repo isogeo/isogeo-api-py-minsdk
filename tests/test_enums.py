@@ -26,6 +26,7 @@ from isogeo_pysdk.enums import (
     ContactTypes,
     EventKinds,
     KeywordCasing,
+    LinkActions,
     MetadataTypes,
 )
 
@@ -86,6 +87,14 @@ class TestEnums(unittest.TestCase):
         self.assertTrue("capitalized" in KeywordCasing.__members__)
         self.assertFalse("Uppercase" in KeywordCasing.__members__)
         for i in KeywordCasing:
+            self.assertIsInstance(i.value, int)
+
+    def test_link_action(self):
+        """Check link actions values list"""
+        self.assertEqual(len(LinkActions), 3)
+        self.assertTrue("download" in LinkActions.__members__)
+        self.assertFalse("Other" in LinkActions.__members__)
+        for i in LinkActions:
             self.assertIsInstance(i.value, int)
 
     def test_metadata_types(self):
