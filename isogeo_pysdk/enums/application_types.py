@@ -18,25 +18,25 @@ from enum import Enum, auto
 # #############################################################################
 # ########## Classes ###############
 # ##################################
-class ApplicationKinds(Enum):
+class ApplicationTypes(Enum):
     """Closed list of accepted Application (metadata subresource) kinds in Isogeo API.
 
     :Example:
 
         >>> # parse members and values
         >>> print("{0:<30} {1:>20}".format("Enum", "Value"))
-        >>> for md_kind in ApplicationKinds:
+        >>> for md_kind in ApplicationTypes:
         >>>     print("{0:<30} {1:>20}".format(md_kind, md_kind.value))
         Enum                                          Value
-        ApplicationKinds.group                            1
-        ApplicationKinds.user                             2
+        ApplicationTypes.group                            1
+        ApplicationTypes.user                             2
 
         >>> # check if a var is an accepted value
-        >>> print("group" in ApplicationKinds.__members__)
+        >>> print("group" in ApplicationTypes.__members__)
         True
-        >>> print("User" in ApplicationKinds.__members__)  # case sensitive
+        >>> print("User" in ApplicationTypes.__members__)  # case sensitive
         False
-        >>> print("confidential" in ApplicationKinds.__members__)
+        >>> print("confidential" in ApplicationTypes.__members__)
         False
 
     See: https://docs.python.org/3/library/enum.html
@@ -52,11 +52,11 @@ class ApplicationKinds(Enum):
 if __name__ == "__main__":
     """ standalone execution """
     print("{0:<30} {1:>20}".format("Enum", "Value"))
-    for md_kind in ApplicationKinds:
+    for md_kind in ApplicationTypes:
         print("{0:<30} {1:>20}".format(md_kind, md_kind.value))
 
-    print(len(ApplicationKinds))
+    print(len(ApplicationTypes))
 
-    print("group" in ApplicationKinds.__members__)
-    print("User" in ApplicationKinds.__members__)
-    print("confidential" in ApplicationKinds.__members__)
+    print("group" in ApplicationTypes.__members__)
+    print("User" in ApplicationTypes.__members__)
+    print("confidential" in ApplicationTypes.__members__)

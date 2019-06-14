@@ -1,7 +1,7 @@
 # coding: utf-8
 #! python3  # noqa: E265
 
-from .application_kinds import ApplicationKinds  # noqa: F401
+from .application_types import ApplicationTypes  # noqa: F401
 from .contact_roles import ContactRoles  # noqa: F401
 from .contact_types import ContactTypes  # noqa: F401
 from .edition_profiles import EditionProfiles  # noqa: F401

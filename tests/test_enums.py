@@ -21,7 +21,7 @@ import unittest
 
 # module target
 from isogeo_pysdk.enums import (
-    ApplicationKinds,
+    ApplicationTypes,
     ContactRoles,
     ContactTypes,
     EditionProfiles,
@@ -54,12 +54,12 @@ class TestEnums(unittest.TestCase):
 
     # -- TESTS ---------------------------------------------------------
 
-    def test_application_kinds(self):
+    def test_application_types(self):
         """Check metadata's types list"""
-        self.assertEqual(len(ApplicationKinds), 2)
-        self.assertTrue("group" in ApplicationKinds.__members__)
-        self.assertFalse("User" in ApplicationKinds.__members__)
-        for i in ApplicationKinds:
+        self.assertEqual(len(ApplicationTypes), 2)
+        self.assertTrue("group" in ApplicationTypes.__members__)
+        self.assertFalse("User" in ApplicationTypes.__members__)
+        for i in ApplicationTypes:
             self.assertIsInstance(i.value, int)
 
     def test_contact_roles(self):
@@ -149,6 +149,7 @@ class TestEnums(unittest.TestCase):
         self.assertFalse("Group" in ShareTypes.__members__)
         for i in ShareTypes:
             self.assertIsInstance(i.value, int)
+
 
 # ##############################################################################
 # ##### Stand alone program ########
