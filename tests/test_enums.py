@@ -24,6 +24,7 @@ from isogeo_pysdk.enums import (
     ApplicationKinds,
     ContactRoles,
     ContactTypes,
+    EditionProfiles,
     EventKinds,
     KeywordCasing,
     LinkActions,
@@ -73,6 +74,14 @@ class TestEnums(unittest.TestCase):
         self.assertTrue("group" in ContactTypes.__members__)
         self.assertFalse("Custom" in ContactTypes.__members__)
         for i in ContactTypes:
+            self.assertIsInstance(i.value, int)
+
+    def test_edition_profiles(self):
+        """Check edition profiles list"""
+        self.assertEqual(len(EditionProfiles), 2)
+        self.assertTrue("csw" in EditionProfiles.__members__)
+        self.assertFalse("Manual" in EditionProfiles.__members__)
+        for i in EditionProfiles:
             self.assertIsInstance(i.value, int)
 
     def test_event_kinds(self):
