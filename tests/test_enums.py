@@ -57,6 +57,15 @@ class TestEnums(unittest.TestCase):
         for role in ContactRoles:
             self.assertIsInstance(role.value, str)
 
+    def test_event_kinds(self):
+        """Check metadata's types list"""
+        self.assertEqual(len(EventKinds), 3)
+        self.assertTrue("creation" in EventKinds.__members__)
+        self.assertFalse("Update" in EventKinds.__members__)
+        for i in EventKinds:
+            self.assertIsInstance(i.value, int)
+
+
 
 # ##############################################################################
 # ##### Stand alone program ########
