@@ -32,6 +32,7 @@ from isogeo_pysdk.enums import (
     LinkTypes,
     MetadataTypes,
     SessionStatus,
+    ShareTypes,
 )
 
 
@@ -141,6 +142,13 @@ class TestEnums(unittest.TestCase):
         for i in SessionStatus:
             self.assertIsInstance(i.value, int)
 
+    def test_share_types(self):
+        """Check share types list"""
+        self.assertEqual(len(ShareTypes), 2)
+        self.assertTrue("application" in ShareTypes.__members__)
+        self.assertFalse("Group" in ShareTypes.__members__)
+        for i in ShareTypes:
+            self.assertIsInstance(i.value, int)
 
 # ##############################################################################
 # ##### Stand alone program ########
