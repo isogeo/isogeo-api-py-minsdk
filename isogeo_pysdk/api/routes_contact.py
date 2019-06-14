@@ -412,6 +412,51 @@ class ApiContact:
         # end of method
         return req_contact_association
 
+    @ApiDecorators._check_bearer_validity
+    def dissociate_metadata(self, metadata: Metadata, contact: Contact) -> Response:
+        """Removes the association between a metadata and a contact.
+
+        If the specified contact is not associated, the response is 404.
+
+        :param Metadata metadata: metadata object to update
+        :param Contact contact: contact model object to associate
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # check contact UUID
+        if not checker.check_is_uuid(contact._id):
+            raise ValueError("Contact ID is not a correct UUID: {}".format(contact._id))
+        else:
+            pass
+
+        # URL
+        url_contact_dissociation = utils.get_request_base_url(
+            route="resources/{}/contacts/{}".format(metadata._id, contact._id)
+        )
+
+        # request
+        req_contact_dissociation = self.api_client.delete(
+            url=url_contact_dissociation,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_contact_dissociation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_contact_dissociation
+
 
 # ##############################################################################
 # ##### Stand alone program ########
