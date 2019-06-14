@@ -40,6 +40,15 @@ class TestEnums(unittest.TestCase):
         pass
 
     # -- TESTS ---------------------------------------------------------
+
+    def test_application_kinds(self):
+        """Check metadata's types list"""
+        self.assertEqual(len(ApplicationKinds), 2)
+        self.assertTrue("group" in ApplicationKinds.__members__)
+        self.assertFalse("User" in ApplicationKinds.__members__)
+        for i in ApplicationKinds:
+            self.assertIsInstance(i.value, int)
+
     def test_contact_roles(self):
         """Check contact's roles list"""
         self.assertEqual(len(ContactRoles), 11)
