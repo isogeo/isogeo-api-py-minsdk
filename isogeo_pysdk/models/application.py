@@ -14,7 +14,8 @@
 # standard library
 import pprint
 
-# other model
+# package
+from isogeo_pysdk.enums import ApplicationTypes
 from isogeo_pysdk.models.workgroup import Workgroup
 
 
@@ -415,6 +416,14 @@ class Application(object):
         :type: str
         """
 
+        # check type value
+        if type not in ApplicationTypes.__members__:
+            raise ValueError(
+                "Application type '{}' is not an accepted value. Must be one of: {}.".format(
+                    type, " | ".join([e.name for e in ApplicationTypes])
+                )
+            )
+
         self._type = type
 
     # url
@@ -526,6 +535,4 @@ class Application(object):
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    cat = Application(name="youpi", staff=1)
-    to_crea = cat.to_dict_creation()
-    print(type(to_crea.get("IsScanSink")))
+    application = Application(name="My App to test")

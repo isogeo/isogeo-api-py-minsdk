@@ -120,6 +120,14 @@ class TestApplications(unittest.TestCase):
         cls.isogeo.close()
 
     # -- TESTS ---------------------------------------------------------
+    # -- MODEL --
+    def test_applications_model(self):
+        """Testing the model structure, properties and methods"""
+        # var
+        application = Application(name="My App to test")
+        with self.assertRaises(ValueError):
+            application.type = "random"
+
     # -- POST --
     def test_applications_create_basic(self):
         """POST :applications/}"""
