@@ -2,7 +2,6 @@
     "recommendations": [
       "davidanson.vscode-markdownlint",
       "eriklynd.json-tools",
-      "felixrieseberg.vsc-travis-ci-status",
       "lextudio.restructuredtext",
       "mikestead.dotenv",
       "ms-azure-devops.azure-pipelines",
