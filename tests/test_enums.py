@@ -31,6 +31,7 @@ from isogeo_pysdk.enums import (
     LinkKinds,
     LinkTypes,
     MetadataTypes,
+    SessionStatus,
 )
 
 
@@ -131,6 +132,14 @@ class TestEnums(unittest.TestCase):
         self.assertFalse("Service" in MetadataTypes.__members__)
         for i in MetadataTypes:
             self.assertIsInstance(i.value, str)
+
+    def test_session_status(self):
+        """Check session statuses list"""
+        self.assertEqual(len(SessionStatus), 4)
+        self.assertTrue("started" in SessionStatus.__members__)
+        self.assertFalse("Failed" in SessionStatus.__members__)
+        for i in SessionStatus:
+            self.assertIsInstance(i.value, int)
 
 
 # ##############################################################################
