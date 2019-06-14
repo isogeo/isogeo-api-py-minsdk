@@ -20,7 +20,14 @@
 import unittest
 
 # module target
-from isogeo_pysdk.enums import ApplicationKinds, ContactRoles, ContactTypes, EventKinds, MetadataTypes
+from isogeo_pysdk.enums import (
+    ApplicationKinds,
+    ContactRoles,
+    ContactTypes,
+    EventKinds,
+    KeywordCasing,
+    MetadataTypes,
+)
 
 
 # #############################################################################
@@ -71,6 +78,14 @@ class TestEnums(unittest.TestCase):
         self.assertTrue("creation" in EventKinds.__members__)
         self.assertFalse("Update" in EventKinds.__members__)
         for i in EventKinds:
+            self.assertIsInstance(i.value, int)
+
+    def test_keyword_casing(self):
+        """Check keyword casing values list"""
+        self.assertEqual(len(KeywordCasing), 4)
+        self.assertTrue("capitalized" in KeywordCasing.__members__)
+        self.assertFalse("Uppercase" in KeywordCasing.__members__)
+        for i in KeywordCasing:
             self.assertIsInstance(i.value, int)
 
     def test_metadata_types(self):
