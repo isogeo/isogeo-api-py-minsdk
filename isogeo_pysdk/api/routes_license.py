@@ -14,10 +14,13 @@
 # Standard library
 import logging
 
+# 3rd party
+from requests.models import Response
+
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import License
+from isogeo_pysdk.models import License, Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -314,6 +317,121 @@ class ApiLicense:
 
         # end of method
         return new_license
+
+    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def associate_metadata(
+        self, metadata: Metadata, license: License, description: str, force: bool = 0
+    ) -> Response:
+        """Associate a condition (license + specific description) to a metadata. Wehn a license is associated to a metadata, it become a condition.
+
+        By default, if the specified license is already associated, the method won't duplicate the association. Use `force` option to overpass this behavior.
+
+        :param Metadata metadata: metadata object to update
+        :param License license: license model object to associate
+        :param str description: additional description to add to the association. Optional.
+        :param bool force: force association even if the same license is already associated
+
+        :Example:
+
+        >>> # retrieve objects to be associated
+        >>> md = isogeo.metadata.metadata(
+                metadata_id="6b5cc93626634d0e9b0d2c48eff96bc3",
+                include=['conditions']
+            )
+        >>> lic = isogeo.license.license("f6e0c665905a4feab1e9c1d6359a225f")
+        >>> # associate them
+        >>> isogeo.license.associate_metadata(
+                metadata=md,
+                license=lic,
+                description="Specific description for this license when applied to this metadata."
+            )
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # check license UUID
+        if not checker.check_is_uuid(license._id):
+            raise ValueError("License ID is not a correct UUID: {}".format(license._id))
+        else:
+            pass
+
+        # check if the license is already associated
+        if metadata.conditions:
+            print(metadata.conditions)
+
+        # URL
+        url_license_association = utils.get_request_base_url(
+            route="resources/{}/conditions".format(metadata._id)
+        )
+
+        # request
+        req_license_association = self.api_client.post(
+            url=url_license_association,
+            json={"description": description, "license": license.to_dict()},
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_license_association)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_license_association
+
+    @ApiDecorators._check_bearer_validity
+    def dissociate_metadata(self, metadata: Metadata, license: License) -> Response:
+        """Removes the association between a metadata and a license.
+
+        If the specified license is not associated, the response is 404.
+
+        :param Metadata metadata: metadata object to update
+        :param License license: license model object to associate
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # check license UUID
+        if not checker.check_is_uuid(license._id):
+            raise ValueError("License ID is not a correct UUID: {}".format(license._id))
+        else:
+            pass
+
+        # URL
+        url_license_dissociation = utils.get_request_base_url(
+            route="resources/{}/licenses/{}".format(metadata._id, license._id)
+        )
+
+        # request
+        req_license_dissociation = self.api_client.delete(
+            url=url_license_dissociation,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_license_dissociation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_license_dissociation
 
 
 # ##############################################################################
