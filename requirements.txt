@@ -21,6 +21,7 @@ requests-oauthlib>=1.2.0
 
 # development
 black
+python-dotenv
 
 # proxy
 # pypac==0.2.*

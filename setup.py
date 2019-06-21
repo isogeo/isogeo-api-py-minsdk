@@ -44,17 +44,14 @@ setup(
         "Docs": "https://isogeo-api-pysdk.readthedocs.io/",
         "Bug Reports": "https://github.com/isogeo/isogeo-api-py-minsdk/issues/",
         "Source": "https://github.com/isogeo/isogeo-api-py-minsdk/",
-        "Isogeo API": "http://help.isogeo.com/api/"
+        "Isogeo API": "http://help.isogeo.com/api/",
     },
     # dependencies
-    install_requires=[
-        "requests>=2.20.0",
-        "requests-oauthlib>=1.2.0"
-        ],
+    install_requires=["requests>=2.20.0", "requests-oauthlib>=1.2.0"],
     extras_require={
-        "api-write": ["requests_oauthlib"],
-        "dev": ["configparser"],
-        "test": ["coverage", "pycodestyle", "python-dateutil"],
+        "api-write": ["requests-oauthlib"],
+        "dev": ["black", "python-dotenv"],
+        "test": ["codecov", "coverage", "pytest", "pytest-cov"],
     },
     python_requires=">=3.6, <4",
     # packaging

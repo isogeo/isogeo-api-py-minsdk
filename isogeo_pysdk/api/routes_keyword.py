@@ -14,6 +14,9 @@
 # Standard library
 import logging
 
+# 3rd party
+from requests.models import Response
+
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
