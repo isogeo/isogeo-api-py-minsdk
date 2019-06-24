@@ -157,7 +157,7 @@ class IsogeoChecker(object):
         # end of method
         return token
 
-    def check_api_response(self, response):
+    def check_api_response(self, response) -> tuple:
         """Check API response and raise exceptions if needed.
 
         :param requests.models.Response response: request response to check
