@@ -261,6 +261,7 @@ if __name__ == "__main__":
     """ standalone execution """
     # ------------ Specific imports ----------------
     from dotenv import load_dotenv
+    from logging.handlers import RotatingFileHandler
     from os import environ
     import pprint
     from time import sleep, gmtime, strftime
@@ -273,6 +274,25 @@ if __name__ == "__main__":
     logging.captureWarnings(True)
     logger.setLevel(logging.DEBUG)
     # logger.setLevel(logging.INFO)
+
+    log_format = logging.Formatter(
+        "%(asctime)s || %(levelname)s "
+        "|| %(module)s - %(lineno)d ||"
+        " %(funcName)s || %(message)s"
+    )
+
+    # debug to the file
+    log_file_handler = RotatingFileHandler("dev_debug.log", "a", 3000000, 1)
+    log_file_handler.setLevel(logging.DEBUG)
+    log_file_handler.setFormatter(log_format)
+
+    # info to the console
+    log_console_handler = logging.StreamHandler()
+    log_console_handler.setLevel(logging.INFO)
+    log_console_handler.setFormatter(log_format)
+
+    logger.addHandler(log_file_handler)
+    logger.addHandler(log_console_handler)
 
     # ------------ Real start ----------------
     # get user ID as environment variables
