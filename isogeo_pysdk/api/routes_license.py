@@ -429,7 +429,7 @@ class ApiLicense:
         return req_license_association
 
     @ApiDecorators._check_bearer_validity
-    def dissociate_metadata(self, metadata: Metadata, license: License) -> Response:
+    def dissociate_metadata(self, metadata: Metadata, condition_id: str) -> Response:
         """Removes the association between a metadata and a license.
 
         If the specified license is not associated, the response is 404.
@@ -446,14 +446,14 @@ class ApiLicense:
             pass
 
         # check license UUID
-        if not checker.check_is_uuid(license._id):
-            raise ValueError("License ID is not a correct UUID: {}".format(license._id))
+        if not checker.check_is_uuid(condition_id):
+            raise ValueError("Condition ID is not a correct UUID: {}".format(condition_id))
         else:
             pass
 
         # URL
         url_license_dissociation = utils.get_request_base_url(
-            route="resources/{}/licenses/{}".format(metadata._id, license._id)
+            route="resources/{}/conditions/{}".format(metadata._id, condition_id)
         )
 
         # request
