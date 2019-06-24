@@ -325,7 +325,8 @@ class ApiLicense:
     ) -> Response:
         """Associate a condition (license + specific description) to a metadata. Wehn a license is associated to a metadata, it become a condition.
 
-        By default, if the specified license is already associated, the method won't duplicate the association. Use `force` option to overpass this behavior.
+        By default, if the specified license is already associated, the method won't duplicate the association.
+        Use `force` option to overpass this behavior.
 
         :param Metadata metadata: metadata object to update
         :param License license: license model object to associate
@@ -362,8 +363,47 @@ class ApiLicense:
             pass
 
         # check if the license is already associated
-        if metadata.conditions:
-            print(metadata.conditions)
+        if not force:
+            if metadata.conditions:
+                # conditions have been included during request and contains conditions
+                logger.debug(
+                    "Conditions have been included during request and contains conditions. Lets' check if the asked license is already associated or not."
+                )
+                # list licenses uuids
+                if license._id in [
+                    condition.get("license").get("_id")
+                    for condition in metadata.conditions
+                ]:
+                    logger.info(
+                        "License ({} - {}) is already associated to this metadata ({} - {}).".format(
+                            license._id, license.name, metadata._id, metadata.name
+                        )
+                        + " If you still want to add a duplicate license, use the `force` option."
+                    )
+                    return False, 409
+            elif hasattr(metadata, "conditions") and metadata.conditions == []:
+                logger.debug(
+                    "Conditions have been included during request but are empty."
+                )
+            elif metadata.conditions is None:
+                logger.info(
+                    "Conditions have not been included during request. So, let's renew it!"
+                )
+                metadata_with_conditions = self.api_client.metadata.metadata(
+                    metadata_id=metadata._id, include=["conditions"]
+                )
+                return self.associate_metadata(
+                    metadata=metadata_with_conditions,
+                    license=license,
+                    description=description,
+                    force=force,
+                )
+            else:
+                pass
+        else:
+            logger.warning(
+                "Force option enabled. Ignoring existing associated licenses. Risk of duplicated association."
+            )
 
         # URL
         url_license_association = utils.get_request_base_url(
