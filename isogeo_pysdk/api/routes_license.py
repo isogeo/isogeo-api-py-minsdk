@@ -447,7 +447,9 @@ class ApiLicense:
 
         # check license UUID
         if not checker.check_is_uuid(condition_id):
-            raise ValueError("Condition ID is not a correct UUID: {}".format(condition_id))
+            raise ValueError(
+                "Condition ID is not a correct UUID: {}".format(condition_id)
+            )
         else:
             pass
 

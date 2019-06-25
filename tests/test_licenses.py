@@ -22,7 +22,7 @@ import logging
 from random import sample
 from socket import gethostname
 from sys import exit, _getframe
-from time import gmtime, strftime
+from time import gmtime, sleep, strftime
 import unittest
 
 # 3rd party
@@ -30,7 +30,7 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, License
+from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, License, Metadata
 
 
 # #############################################################################
@@ -48,7 +48,8 @@ app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
 platform = environ.get("ISOGEO_PLATFORM", "qa")
 user_email = environ.get("ISOGEO_USER_NAME")
 user_password = environ.get("ISOGEO_USER_PASSWORD")
-workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
+WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -93,6 +94,12 @@ class TestLicenses(unittest.TestCase):
         # getting a token
         cls.isogeo.connect(username=user_email, password=user_password)
 
+        # fixture metadata
+        md = Metadata(title=get_test_marker(), type="vectorDataset")
+        cls.fixture_metadata = cls.isogeo.metadata.create(
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+        )
+
     def setUp(self):
         """Executed before each test."""
         # tests stuff
@@ -102,6 +109,7 @@ class TestLicenses(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
+        sleep(0.5)
         pass
 
     @classmethod
@@ -110,7 +118,9 @@ class TestLicenses(unittest.TestCase):
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.license.delete(workgroup_id=workgroup_test, license_id=i)
+                cls.isogeo.license.delete(
+                    workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, license_id=i
+                )
         # close sessions
         cls.isogeo.close()
 
@@ -127,7 +137,9 @@ class TestLicenses(unittest.TestCase):
 
         # create it online
         license_new = self.isogeo.license.create(
-            workgroup_id=workgroup_test, license=license_new, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            license=license_new,
+            check_exists=0,
         )
 
         # checks
@@ -149,7 +161,9 @@ class TestLicenses(unittest.TestCase):
         )
         # create it online
         license_new = self.isogeo.license.create(
-            workgroup_id=workgroup_test, license=license_new, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            license=license_new,
+            check_exists=0,
         )
 
         # checks
@@ -171,12 +185,16 @@ class TestLicenses(unittest.TestCase):
 
         # create it online
         license_new_1 = self.isogeo.license.create(
-            workgroup_id=workgroup_test, license=license_local, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            license=license_local,
+            check_exists=0,
         )
 
         # try to create a license with the same name
         license_new_2 = self.isogeo.license.create(
-            workgroup_id=workgroup_test, license=license_local, check_exists=1
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            license=license_local,
+            check_exists=1,
         )
 
         # check if object has not been created
@@ -185,12 +203,69 @@ class TestLicenses(unittest.TestCase):
         # add created license to deletion
         self.li_fixtures_to_delete.append(license_new_1._id)
 
+    def test_licenses_association(self):
+        """POST :resources/{metadata_uuid}/conditions/"""
+        # create local object
+        license_new = License(
+            name="{} - {}".format(get_test_marker(), self.discriminator)
+        )
+
+        # create it online
+        license_new = self.isogeo.license.create(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            license=license_new,
+            check_exists=0,
+        )
+
+        # associate it
+        self.isogeo.license.associate_metadata(
+            metadata=self.fixture_metadata,
+            license=license_new,
+            description="Testing license association"
+        )
+
+        # refresh fixture metadata
+        self.fixture_metadata = self.isogeo.metadata.metadata(
+            metadata_id=self.fixture_metadata._id, include=["conditions"]
+        )
+
+        # try to associate the same license = error
+        asso_fail = self.isogeo.license.associate_metadata(
+            metadata=self.fixture_metadata,
+            license=license_new,
+            description="Testing license association"
+        )
+        self.assertIsInstance(asso_fail, tuple)
+        self.assertFalse(asso_fail[0])
+
+        # try to associate the same license with force option = ok
+        self.isogeo.license.associate_metadata(
+            metadata=self.fixture_metadata,
+            license=license_new,
+            description="Testing license association - forced",
+            force=1
+        )
+
+        # -- dissociate
+        # refresh fixture metadata
+        self.fixture_metadata = self.isogeo.metadata.metadata(
+            metadata_id=self.fixture_metadata._id, include=["conditions"]
+        )
+        for condition in self.fixture_metadata.conditions:
+            self.isogeo.license.dissociate_metadata(
+                metadata=self.fixture_metadata,
+                condition_id=condition.get("_id")
+            )        
+
+        # add created license to deletion
+        self.li_fixtures_to_delete.append(license_new._id)
+
     # -- GET --
     def test_licenses_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/licenses}"""
         # retrieve workgroup licenses
         wg_licenses = self.isogeo.license.listing(
-            workgroup_id=workgroup_test, caching=1
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
         )
         self.assertIsInstance(wg_licenses, list)
         # parse and test object loader
@@ -216,7 +291,7 @@ class TestLicenses(unittest.TestCase):
             wg_licenses = self.isogeo._wg_licenses_names
         else:
             wg_licenses = self.isogeo.license.listing(
-                workgroup_id=workgroup_test, caching=0
+                workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
             )
 
         # pick two licenses: one locked by Isogeo, one workgroup specific
@@ -239,13 +314,15 @@ class TestLicenses(unittest.TestCase):
 
     # -- PUT/PATCH --
     def test_licenses_update(self):
-        """PUT :groups/{workgroup_uuid}/licenses/{license_uuid}}"""
+        """PUT :groups/{workgroup_uuid}/licenses/{license_uuid}"""
         # create a new license
         license_fixture = License(
             name="{} - {}".format(get_test_marker(), self.discriminator)
         )
         license_fixture = self.isogeo.license.create(
-            workgroup_id=workgroup_test, license=license_fixture, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            license=license_fixture,
+            check_exists=0,
         )
 
         # modify local object
