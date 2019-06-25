@@ -14,6 +14,9 @@
 # Standard library
 import logging
 
+# 3rd party
+from requests.models import Response
+
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
@@ -172,6 +175,40 @@ class ApiResource:
 
         # end of method
         return new_metadata
+
+    @ApiDecorators._check_bearer_validity
+    def delete(self, metadata_id: str) -> Response:
+        """Delete a metadata from Isogeo database.
+
+        :param str metadata_id: identifier of the resource to delete
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata_id):
+            raise ValueError("Metadata ID is not a correct UUID: {}".format(metadata_id))
+        else:
+            pass
+
+        # request URL
+        url_metadata_delete = utils.get_request_base_url(
+            route="resources/{}".format(metadata_id)
+        )
+
+        # request
+        req_metadata_deletion = self.api_client.delete(
+            url_metadata_delete,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_metadata_deletion)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_metadata_deletion
+
 
     @ApiDecorators._check_bearer_validity
     def exists(self, resource_id: str) -> bool:
