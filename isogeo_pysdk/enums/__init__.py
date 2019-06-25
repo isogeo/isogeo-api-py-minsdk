@@ -10,6 +10,7 @@ from .keyword_casing import KeywordCasing  # noqa: F401
 from .link_actions import LinkActions  # noqa: F401
 from .link_kinds import LinkKinds  # noqa: F401
 from .link_types import LinkTypes  # noqa: F401
+from .metadata_subresources import MetadataSubresources  # noqa: F401
 from .metadata_types import MetadataTypes  # noqa: F401
 from .session_status import SessionStatus  # noqa: F401
 from .share_types import ShareTypes  # noqa: F401

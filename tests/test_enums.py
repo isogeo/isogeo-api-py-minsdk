@@ -31,6 +31,7 @@ from isogeo_pysdk.enums import (
     LinkKinds,
     LinkTypes,
     MetadataTypes,
+    MetadataSubresources,
     SessionStatus,
     ShareTypes,
 )
@@ -125,6 +126,15 @@ class TestEnums(unittest.TestCase):
         self.assertFalse("Link" in LinkTypes.__members__)
         for i in LinkTypes:
             self.assertIsInstance(i.value, int)
+
+    def test_metadata_subresources(self):
+        """Check metadata's subresources list"""
+        self.assertEqual(len(MetadataSubresources), 14)
+        self.assertTrue("tags" in MetadataSubresources.__members__)
+        self.assertTrue(MetadataSubresources.has_value("feature-attributes"))
+        self.assertFalse("Links" in MetadataSubresources.__members__)
+        for i in MetadataSubresources:
+            self.assertIsInstance(i.value, str)
 
     def test_metadata_types(self):
         """Check metadata's types list"""
