@@ -14,10 +14,13 @@
 # Standard library
 import logging
 
+# 3rd party
+from requests.models import Response
+
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Specification
+from isogeo_pysdk.models import Metadata, Specification
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -331,6 +334,126 @@ class ApiSpecification:
 
         # end of method
         return new_specification
+
+    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def associate_metadata(
+        self, metadata: Metadata, specification: Specification, conformity: bool = 0
+    ) -> Response:
+        """Associate a specification (specification + conformity) to a metadata. When a specification is associated to a metadata, it becomes a ResourceConformity object.
+
+        If the specified specification is already associated, the API responses is still a 200.
+
+        :param Metadata metadata: metadata object to update
+        :param Specification specification: specification model object to associate
+        :param bool conformity: indicates whether the dataset is compliant
+
+        :Example:
+
+        >>> # retrieve objects to be associated
+        >>> md = isogeo.metadata.metadata(
+                metadata_id=my_metadata_uuid,
+                include=['specifications']
+            )
+        >>> spec = isogeo.specification.specification(my_specification_uuid)
+        >>> # associate them
+        >>> isogeo.specification.associate_metadata(
+                metadata=md,
+                specification=spec,
+                conformity=1
+            )
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # check specification UUID
+        if not checker.check_is_uuid(specification._id):
+            raise ValueError(
+                "Specification ID is not a correct UUID: {}".format(specification._id)
+            )
+        else:
+            pass
+
+        # URL
+        url_specification_association = utils.get_request_base_url(
+            route="resources/{}/specifications/{}".format(
+                metadata._id, specification._id
+            )
+        )
+
+        # request
+        req_specification_association = self.api_client.put(
+            url=url_specification_association,
+            json={"conformant": conformity, "specification": specification.to_dict()},
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_specification_association)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_specification_association
+
+    @ApiDecorators._check_bearer_validity
+    def dissociate_metadata(
+        self, metadata: Metadata, specification_id: str
+    ) -> Response:
+        """Removes the association between a metadata and a specification.
+
+        If the specified specification is not associated, the response is 404.
+
+        :param Metadata metadata: metadata object to update
+        :param Specification specification: specification model object to associate
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # check specification UUID
+        if not checker.check_is_uuid(specification_id):
+            raise ValueError(
+                "Specification ID is not a correct UUID: {}".format(specification_id)
+            )
+        else:
+            pass
+
+        # URL
+        url_specification_dissociation = utils.get_request_base_url(
+            route="resources/{}/specifications/{}".format(
+                metadata._id, specification_id
+            )
+        )
+
+        # request
+        req_specification_dissociation = self.api_client.delete(
+            url=url_specification_dissociation,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_specification_dissociation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_specification_dissociation
 
 
 # ##############################################################################

@@ -22,15 +22,21 @@ import logging
 from random import sample
 from socket import gethostname
 from sys import exit, _getframe
-from time import gmtime, strftime
+from time import gmtime, sleep, strftime
 import unittest
+import urllib3
 
 # 3rd party
 from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Specification
+from isogeo_pysdk import (
+    IsogeoSession,
+    __version__ as pysdk_version,
+    Metadata,
+    Specification,
+)
 
 
 # #############################################################################
@@ -48,7 +54,8 @@ app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
 platform = environ.get("ISOGEO_PLATFORM", "qa")
 user_email = environ.get("ISOGEO_USER_NAME")
 user_password = environ.get("ISOGEO_USER_PASSWORD")
-workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
+WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -57,7 +64,9 @@ workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 def get_test_marker():
     """Returns the function name"""
-    return "TEST_UNIT_PythonSDK - {}".format(_getframe(1).f_code.co_name)
+    return "TEST_UNIT_PythonSDK - Specifications - {}".format(
+        _getframe(1).f_code.co_name
+    )
 
 
 # #############################################################################
@@ -83,6 +92,10 @@ class TestSpecifications(unittest.TestCase):
         # class vars and attributes
         cls.li_fixtures_to_delete = []
 
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
+
         # API connection
         cls.isogeo = IsogeoSession(
             client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
@@ -93,6 +106,12 @@ class TestSpecifications(unittest.TestCase):
         # getting a token
         cls.isogeo.connect(username=user_email, password=user_password)
 
+        # fixture metadata
+        md = Metadata(title=get_test_marker(), type="vectorDataset")
+        cls.fixture_metadata = cls.isogeo.metadata.create(
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+        )
+
     def setUp(self):
         """Executed before each test."""
         # tests stuff
@@ -102,16 +121,20 @@ class TestSpecifications(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
+        sleep(0.5)
         pass
 
     @classmethod
     def tearDownClass(cls):
         """Executed after the last test."""
+        # clean created metadata
+        # cls.isogeo.metadata.delete(cls.fixture_metadata._id)
+
         # clean created specifications
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
                 cls.isogeo.specification.delete(
-                    workgroup_id=workgroup_test, specification_id=i
+                    workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, specification_id=i
                 )
         # close sessions
         cls.isogeo.close()
@@ -128,7 +151,9 @@ class TestSpecifications(unittest.TestCase):
 
         # create it online
         specification_new = self.isogeo.specification.create(
-            workgroup_id=workgroup_test, specification=specification_new, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            specification=specification_new,
+            check_exists=0,
         )
 
         # checks
@@ -147,7 +172,9 @@ class TestSpecifications(unittest.TestCase):
         )
         # create it online
         specification_new = self.isogeo.specification.create(
-            workgroup_id=workgroup_test, specification=specification_new, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            specification=specification_new,
+            check_exists=0,
         )
 
         # checks
@@ -170,14 +197,14 @@ class TestSpecifications(unittest.TestCase):
 
         # create it online
         specification_new_1 = self.isogeo.specification.create(
-            workgroup_id=workgroup_test,
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
             specification=specification_local,
             check_exists=0,
         )
 
         # try to create a specification with the same name
         specification_new_2 = self.isogeo.specification.create(
-            workgroup_id=workgroup_test,
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
             specification=specification_local,
             check_exists=1,
         )
@@ -188,12 +215,59 @@ class TestSpecifications(unittest.TestCase):
         # add created specification to deletion
         self.li_fixtures_to_delete.append(specification_new_1._id)
 
+    def test_specifications_association(self):
+        """POST :resources/{metadata_uuid}/specifications/"""
+        # retrieve workgroup specifications
+        if self.isogeo._wg_specifications_names:
+            wg_specifications = self.isogeo._wg_specifications_names
+        else:
+            wg_specifications = self.isogeo.specification.listing(
+                workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
+            )
+        # pick an isogeo specification
+        specification_id_isogeo = sample(
+            list(filter(lambda d: "isogeo" in d.get("_tag"), wg_specifications)), 1
+        )[0]
+        specification_isogeo = self.isogeo.specification.specification(
+            specification_id_isogeo.get("_id")
+        )
+
+        # associate it
+        self.isogeo.specification.associate_metadata(
+            metadata=self.fixture_metadata,
+            specification=specification_isogeo,
+            conformity=1,
+        )
+
+        # refresh fixture metadata
+        self.fixture_metadata = self.isogeo.metadata.metadata(
+            metadata_id=self.fixture_metadata._id, include=["specifications"]
+        )
+
+        # try to associate the same specification = error
+        self.isogeo.specification.associate_metadata(
+            metadata=self.fixture_metadata,
+            specification=specification_isogeo,
+            conformity=1,
+        )
+
+        # # -- dissociate
+        # refresh fixture metadata
+        self.fixture_metadata = self.isogeo.metadata.metadata(
+            metadata_id=self.fixture_metadata._id, include=["specifications"]
+        )
+        for specification in self.fixture_metadata.specifications:
+            self.isogeo.specification.dissociate_metadata(
+                metadata=self.fixture_metadata,
+                specification_id=specification.get("specification").get("_id"),
+            )
+
     # -- GET --
     def test_specifications_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/specifications}"""
         # retrieve workgroup specifications
         wg_specifications = self.isogeo.specification.listing(
-            workgroup_id=workgroup_test, caching=1
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
         )
         self.assertIsInstance(wg_specifications, list)
         # parse and test object loader
@@ -218,7 +292,7 @@ class TestSpecifications(unittest.TestCase):
             wg_specifications = self.isogeo._wg_specifications_names
         else:
             wg_specifications = self.isogeo.specification.listing(
-                workgroup_id=workgroup_test, caching=0
+                workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
             )
 
         # pick two specifications: one locked by Isogeo, one workgroup specific
@@ -255,7 +329,7 @@ class TestSpecifications(unittest.TestCase):
             name="{} - {}".format(get_test_marker(), self.discriminator)
         )
         specification_fixture = self.isogeo.specification.create(
-            workgroup_id=workgroup_test,
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
             specification=specification_fixture,
             check_exists=0,
         )
