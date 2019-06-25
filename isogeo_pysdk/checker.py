@@ -22,6 +22,9 @@ from collections import Counter
 from datetime import datetime
 from uuid import UUID
 
+# modules
+from isogeo_pysdk.enums import MetadataSubresources
+
 # ##############################################################################
 # ########## Globals ###############
 # ##################################
@@ -396,7 +399,7 @@ class IsogeoChecker(object):
         """
         # check entity parameter
         if entity == "metadata":
-            ref_subresources = _SUBRESOURCES_MD
+            ref_subresources = [item.value for item in MetadataSubresources]
         elif entity == "keyword":
             ref_subresources = _SUBRESOURCES_KW
         elif entity == "contact":
@@ -408,7 +411,18 @@ class IsogeoChecker(object):
         if isinstance(includes, str) and includes.lower() == "all":
             includes = ",".join(ref_subresources)
         elif isinstance(includes, list):
-            if len(includes) > 0:
+            if len(includes):
+                for subresource in includes:
+                    if subresource not in ref_subresources:
+                        logger.warning(
+                            "'{}' is not a valid subresource to include. Must be one of: {}. It will be removed or ignored.".format(
+                                subresource, " | ".join(ref_subresources)
+                            )
+                        )
+                        includes.remove(subresource)  # removing bad subresource
+                    else:
+                        pass
+
                 includes = ",".join(includes)
             else:
                 includes = ""

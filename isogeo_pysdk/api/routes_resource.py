@@ -17,9 +17,10 @@ import logging
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.utils import IsogeoUtils
 from isogeo_pysdk.models import Metadata
+from isogeo_pysdk.utils import IsogeoUtils
 
+# other routes
 from .routes_event import ApiEvent
 
 # #############################################################################
@@ -58,11 +59,14 @@ class ApiResource:
         super(ApiResource, self).__init__()
 
     @ApiDecorators._check_bearer_validity
-    def metadata(self, metadata_id: str, include: list = []) -> Metadata:
-        """Get complete or partial metadata abou a specific metadata (= resource).
+    def metadata(self, metadata_id: str, include: list or str = []) -> Metadata:
+        """Get complete or partial metadata about a specific metadata (= resource).
 
         :param str metadata_id: metadata UUID to get
-        :param list include: subresources that should be included.
+        :param list include: subresources that should be included. Available values:
+
+          - one or various from MetadataSubresources (Enum)
+          - "all" to get complete metadata with every subresource included
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata_id):
@@ -73,7 +77,11 @@ class ApiResource:
             pass
 
         # request parameters
-        payload = {"_include": checker._check_filter_includes(include)}
+        payload = {
+            "_include": checker._check_filter_includes(
+                includes=include, entity="metadata"
+            )
+        }
 
         # URL
         url_resource = utils.get_request_base_url(
