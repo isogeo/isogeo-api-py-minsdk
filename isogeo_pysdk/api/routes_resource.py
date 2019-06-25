@@ -167,7 +167,7 @@ class ApiResource:
             return req_check
 
         # load new metadata and save it to the cache
-        new_metadata = Metadata(**req_new_metadata)
+        new_metadata = Metadata(**req_new_metadata.json())
         # self.api_client._wg_metadatas_names[new_metadata.name] = new_metadata._id
 
         # end of method
