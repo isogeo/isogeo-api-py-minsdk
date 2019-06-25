@@ -24,6 +24,7 @@ from socket import gethostname
 from sys import exit, _getframe
 from time import gmtime, sleep, strftime
 import unittest
+import urllib3
 
 # 3rd party
 from dotenv import load_dotenv
@@ -58,7 +59,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 def get_test_marker():
     """Returns the function name"""
-    return "TEST_UNIT_PythonSDK - {}".format(_getframe(1).f_code.co_name)
+    return "TEST_UNIT_PythonSDK - Licenses - {}".format(_getframe(1).f_code.co_name)
 
 
 # #############################################################################
@@ -83,6 +84,10 @@ class TestLicenses(unittest.TestCase):
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
+
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
 
         # API connection
         cls.isogeo = IsogeoSession(
@@ -224,7 +229,7 @@ class TestLicenses(unittest.TestCase):
         self.isogeo.license.associate_metadata(
             metadata=self.fixture_metadata,
             license=license_new,
-            description="Testing license association"
+            description="Testing license association",
         )
 
         # refresh fixture metadata
@@ -236,7 +241,7 @@ class TestLicenses(unittest.TestCase):
         asso_fail = self.isogeo.license.associate_metadata(
             metadata=self.fixture_metadata,
             license=license_new,
-            description="Testing license association"
+            description="Testing license association",
         )
         self.assertIsInstance(asso_fail, tuple)
         self.assertFalse(asso_fail[0])
@@ -246,7 +251,7 @@ class TestLicenses(unittest.TestCase):
             metadata=self.fixture_metadata,
             license=license_new,
             description="Testing license association - forced",
-            force=1
+            force=1,
         )
 
         # -- dissociate
@@ -256,9 +261,8 @@ class TestLicenses(unittest.TestCase):
         )
         for condition in self.fixture_metadata.conditions:
             self.isogeo.license.dissociate_metadata(
-                metadata=self.fixture_metadata,
-                condition_id=condition.get("_id")
-            )        
+                metadata=self.fixture_metadata, condition_id=condition.get("_id")
+            )
 
         # add created license to deletion
         self.li_fixtures_to_delete.append(license_new._id)

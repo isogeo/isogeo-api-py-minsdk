@@ -318,8 +318,8 @@ if __name__ == "__main__":
 
     # misc
     discriminator = strftime("%Y-%m-%d_%H%M%S", gmtime())
-    MD_TEST_FIXTURE = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
-    WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+    METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
+    WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
     # -- END -------
     isogeo.close()  # close session

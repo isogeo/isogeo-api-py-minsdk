@@ -184,7 +184,9 @@ class ApiResource:
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata_id):
-            raise ValueError("Metadata ID is not a correct UUID: {}".format(metadata_id))
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata_id)
+            )
         else:
             pass
 
@@ -208,7 +210,6 @@ class ApiResource:
             return req_check
 
         return req_metadata_deletion
-
 
     @ApiDecorators._check_bearer_validity
     def exists(self, resource_id: str) -> bool:
