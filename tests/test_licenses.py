@@ -115,6 +115,9 @@ class TestLicenses(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """Executed after the last test."""
+        # clean created metadata
+        cls.isogeo.metadata.delete(cls.fixture_metadata._id)
+
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
