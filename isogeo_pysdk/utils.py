@@ -16,6 +16,7 @@
 import base64
 import json
 import logging
+import math
 import quopri
 import re
 import uuid
@@ -158,6 +159,23 @@ class IsogeoUtils(object):
             self.OC_URLS.get(platform),
             self.ssl,
         )
+
+    def _convert_octets(self, octets: int) -> str:
+        """Convert a mount of octets in readable size.
+
+        :param int octets: mount of octets to convert
+        """
+        # check zero
+        if octets == 0:
+            return "0 octet"
+
+        # conversion
+        size_name = ("octets", "Ko", "Mo", "Go", "To", "Po")
+        i = int(math.floor(math.log(octets, 1024)))
+        p = math.pow(1024, i)
+        s = round(octets / p, 2)
+
+        return "%s %s" % (s, size_name[i])
 
     def convert_uuid(self, in_uuid: str = str, mode: bool = 0):
         """Convert a metadata UUID to its URI equivalent. And conversely.
