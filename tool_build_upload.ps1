@@ -15,8 +15,8 @@ py -3 -m venv .venv_packaging
 # dependencies
 "-- STEP -- Install and display dependencies within the virtualenv"
 python -m pip install -U pip
-pip install --upgrade -r ./requirements.txt
-pip install --upgrade black twine
+python -m pip install --upgrade -r ./requirements.txt
+python -m pip install --upgrade black twine
 
 # apply black linter
 python -m black --target-version=py36 .\isogeo_pysdk
