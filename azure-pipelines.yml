@@ -97,7 +97,7 @@ jobs:
 
   - script: |
       python -m pip install -U pip
-      pip install -U black
+      python -m pip install -U black
     displayName: 'Install black dependencies'
 
   - script: python -m black --target-version=py36 .\isogeo_pysdk
@@ -117,9 +117,9 @@ jobs:
       addToPath: true
 
   - script: |
-      python -m pip install -U pip
-      pip install -U -r requirements.txt
-      pip install -U twine
+      python -m pip install -U pip setuptools wheel
+      python -m pip install -U -r requirements.txt
+      python -m pip install -U twine
     displayName: 'Install dependencies'
 
   - script: python setup.py egg_info
@@ -130,6 +130,11 @@ jobs:
 
   - script: python setup.py bdist_wheel
     displayName: 'Build wheel'
+
+  - task: PublishPipelineArtifact@1
+    inputs:
+      path: $(System.DefaultWorkingDirectory)/dist
+      artifact: PythonPackage
 
   # - script: twine upload dist/* -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
   #   displayName: "Upload to PyPi"
