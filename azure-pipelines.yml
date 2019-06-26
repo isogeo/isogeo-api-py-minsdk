@@ -131,10 +131,23 @@ jobs:
   - script: python setup.py bdist_wheel
     displayName: 'Build wheel'
 
-  - task: PublishPipelineArtifact@1
+
+# PUBLISH
+- job: 'Publish'
+  dependsOn: 'Build'
+  pool:
+    vmImage: "vs2017-win2016"
+  condition:
+    contains(variables['Build.SourceBranch'], 'tags')
+
+  steps:
+  - task: UsePythonVersion@0
     inputs:
-      path: $(System.DefaultWorkingDirectory)/dist
-      artifact: PythonPackage
+      versionSpec: '3.x'
+      architecture: 'x64'
+      addToPath: true
+
+  - script: 'python -m pip install -U twine'
 
   # - script: twine upload dist/* -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
   #   displayName: "Upload to PyPi"
