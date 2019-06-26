@@ -353,7 +353,7 @@ class ApiResource:
             params=payload,
             proxies=self.api_client.proxies,
             verify=self.api_client.ssl,
-            timeout=self.api_client.timeout,
+            timeout=(5, 200),
         )
 
         # checking response
