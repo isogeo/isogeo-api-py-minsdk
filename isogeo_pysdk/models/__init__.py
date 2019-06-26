@@ -21,3 +21,4 @@ from .workgroup import Workgroup  # noqa: F401
 # shortcuts or confusion reducers
 Account = User
 Metadata = Resource
+MetadataSearch = ResourceSearch

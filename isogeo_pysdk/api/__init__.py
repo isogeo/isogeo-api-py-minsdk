@@ -13,3 +13,6 @@ from .routes_share import ApiShare  # noqa: F401
 from .routes_specification import ApiSpecification  # noqa: F401
 from .routes_thesaurus import ApiThesaurus  # noqa: F401
 from .routes_workgroup import ApiWorkgroup  # noqa: F401
+
+# shortcuts or confusion reducers
+ApiMetadata = ApiResource
