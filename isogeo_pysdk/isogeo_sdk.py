@@ -42,7 +42,7 @@ except (ImportError, ValueError, SystemError):
 
 checker = checker.IsogeoChecker()
 utils = utils.IsogeoUtils()
-version = "2.21.0"
+version = "2.21.1"
 
 # #############################################################################
 # ########## Classes ###############
@@ -96,7 +96,7 @@ class Isogeo(Session):
         self.token = {}
 
         # checking internet connection
-        if not checker.check_internet_connection():
+        if not checker.check_internet_connection(proxies=proxy):
             raise EnvironmentError("Internet connection issue.")
         else:
             pass
