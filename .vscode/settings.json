@@ -14,9 +14,9 @@
     ],
     "python.linting.pylintEnabled": true,
     "python.pythonPath": ".venv_tests\\Scripts\\python.exe",
-    "python.testing.pyTestArgs": [],
+    "python.testing.pytestArgs": [],
     "python.testing.nosetestsEnabled": false,
-    "python.testing.pyTestEnabled": true,
+    "python.testing.pytestEnabled": true,
     "python.testing.unittestArgs": [
         "-v",
         "-s",
