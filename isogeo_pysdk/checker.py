@@ -124,7 +124,7 @@ class IsogeoChecker(object):
             return True
         except Exception as e:
             logging.error(e)
-            if proxies:
+            if proxies is not None:
                 logging.debug("Proxy detected. Ignoring error...")
                 return True
             return False
