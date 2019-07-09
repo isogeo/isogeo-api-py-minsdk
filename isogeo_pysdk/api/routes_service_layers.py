@@ -60,7 +60,11 @@ class ApiServiceLayer:
         """
         # check metadata type
         if metadata.type != "service":
-            raise TypeError("Layers routes are only available for metadata of services, not: {}".format(metadata.type))
+            raise TypeError(
+                "Layers routes are only available for metadata of services, not: {}".format(
+                    metadata.type
+                )
+            )
         else:
             pass
 
@@ -103,7 +107,9 @@ class ApiServiceLayer:
 
         # check service_layer UUID
         if not checker.check_is_uuid(layer_id):
-            raise ValueError("ServiceLayer ID is not a correct UUID: {}".format(layer_id))
+            raise ValueError(
+                "ServiceLayer ID is not a correct UUID: {}".format(layer_id)
+            )
         else:
             pass
 
@@ -132,6 +138,96 @@ class ApiServiceLayer:
 
         # end of method
         return ServiceLayer(**service_layer_augmented)
+
+    @ApiDecorators._check_bearer_validity
+    def create(self, metadata: Metadata, layer: ServiceLayer) -> ServiceLayer:
+        """Add a new layer to a metadata (= resource).
+
+        :param Metadata metadata: metadata (resource) to edit. Must be a service.
+        :param ServiceLayer ServiceLayer: service_layer object to create
+        """
+        # check metadata type
+        if metadata.type != "service":
+            raise TypeError(
+                "Layers routes are only available for metadata of services, not: {}".format(
+                    metadata.type
+                )
+            )
+        else:
+            pass
+
+        # URL
+        url_service_layer_create = utils.get_request_base_url(
+            route="resources/{}/layers/".format(metadata._id)
+        )
+
+        # request
+        req_new_service_layer = self.api_client.post(
+            url=url_service_layer_create,
+            json=layer.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_new_service_layer)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # add parent resource id to keep tracking
+        service_layer_augmented = req_new_service_layer.json()
+        service_layer_augmented["parent_resource"] = metadata._id
+
+        # end of method
+        return ServiceLayer(**service_layer_augmented)
+
+    @ApiDecorators._check_bearer_validity
+    def delete(self, layer: ServiceLayer, metadata: Metadata = None):
+        """Delete a service layer from Isogeo database.
+
+        :param Metadata metadata: parent metadata (resource) containing the service_layer
+        :param ServiceLayer layer: ServiceLayer model object to delete
+        """
+        # check service_layer UUID
+        if not checker.check_is_uuid(layer._id):
+            raise ValueError(
+                "ServiceLayer ID is not a correct UUID: {}".format(layer._id)
+            )
+        else:
+            pass
+
+        # retrieve parent metadata
+        if not checker.check_is_uuid(layer.parent_resource) and not metadata:
+            raise ValueError(
+                "ServiceLayer parent metadata is required. Requesting it..."
+            )
+        elif not checker.check_is_uuid(layer.parent_resource) and metadata:
+            layer.parent_resource = metadata._id
+        else:
+            pass
+
+        # URL
+        url_service_layer_delete = utils.get_request_base_url(
+            route="resources/{}/layers/{}".format(layer.parent_resource, layer._id)
+        )
+
+        # request
+        req_service_layer_deletion = self.api_client.delete(
+            url=url_service_layer_delete,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_service_layer_deletion)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_service_layer_deletion
 
 
 # ##############################################################################

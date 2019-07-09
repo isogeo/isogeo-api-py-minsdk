@@ -107,10 +107,10 @@ class TestServiceLayers(unittest.TestCase):
         cls.isogeo.connect(username=user_email, password=user_password)
 
         # fixture metadata
-        md = Metadata(title=get_test_marker(), type="service")
-        cls.fixture_metadata = cls.isogeo.metadata.create(
-            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
-        )
+        # md = Metadata(title=get_test_marker(), type="service")
+        # cls.fixture_metadata = cls.isogeo.metadata.create(
+        #     WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+        # )
 
     def setUp(self):
         """Executed before each test."""
@@ -133,19 +133,42 @@ class TestServiceLayers(unittest.TestCase):
         # clean created service_layers
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.service_layer.delete(
-                    workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, service_layer_id=i
-                )
+                cls.isogeo.metadata.layers.delete(layer=i)
         # close sessions
         cls.isogeo.close()
 
     # -- TESTS ---------------------------------------------------------
     # -- POST --
+    def test_layers_create_basic(self):
+        """POST :groups/{metadata_uuid}/layers/}"""
+        # var
+        layer_name = strftime("%Y-%m-%d", gmtime())
+        layer_title = [
+            {
+                "lang": "fr",
+                "value": "{} - {}".format(get_test_marker(), self.discriminator),
+            }
+        ]
+
+        # create object locally
+        layer_new = ServiceLayer(name=layer_name, titles=layer_title)
+
+        # create it online
+        layer_new = self.isogeo.metadata.layers.create(
+            metadata=self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID),
+            layer=layer_new,
+        )
+
+        # add created layer to deletion
+        self.li_fixtures_to_delete.append(layer_new)
+
     # -- GET --
     def test_layers_listing(self):
         """GET :resources/{metadata_uuid}/layers/}"""
-        # retrieve workgroup layers
-        md_layers = self.isogeo.metadata.layers.listing(self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID))
+        # retrieve metadata layers
+        md_layers = self.isogeo.metadata.layers.listing(
+            self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID)
+        )
         # parse and test object loader
         for i in md_layers:
             # load it
@@ -165,7 +188,7 @@ class TestServiceLayers(unittest.TestCase):
         """GET :resources/{metadata_uuid}/layers/{layer_uuid}}"""
         self.isogeo.metadata.layers.layer(
             metadata_id=METADATA_TEST_FIXTURE_UUID,
-            layer_id="77659ebc532a4ed3a1ef326af18348f0"
+            layer_id="77659ebc532a4ed3a1ef326af18348f0",
         )
 
     # -- PUT/PATCH --

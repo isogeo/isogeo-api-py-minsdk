@@ -51,7 +51,7 @@ class ServiceLayer(object):
     """
     attr_types = {"_id": str, "name": str, "mimeTypes": str, "titles": list}
 
-    attr_crea = {"id": str, "titles": list}
+    attr_crea = {"name": str, "titles": list}
 
     attr_map = {"name": "id"}
 
@@ -59,7 +59,7 @@ class ServiceLayer(object):
         self,
         _id: str = None,
         id: str = None,
-        name: str = None,   # = id in API model but it's a reserved keyword in Python
+        name: str = None,  # = id in API model but it's a reserved keyword in Python
         mimeTypes: str = None,
         titles: list = None,
         # additional parameters
