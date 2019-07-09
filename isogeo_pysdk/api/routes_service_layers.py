@@ -54,7 +54,7 @@ class ApiServiceLayer:
 
     @ApiDecorators._check_bearer_validity
     def listing(self, metadata: Metadata) -> list:
-        """Get all service_layers of a metadata.
+        """Get all service layers of a metadata.
 
         :param Metadata metadata: metadata (resource) to edit
         """
@@ -85,6 +85,53 @@ class ApiServiceLayer:
 
         # end of method
         return req_service_layers.json()
+
+    @ApiDecorators._check_bearer_validity
+    def layer(self, metadata_id: str, layer_id: str) -> ServiceLayer:
+        """Get details about a specific service_layer.
+
+        :param str metadata_id: metadata with layers
+        :param str layer_id: service layer UUID
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata_id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata_id)
+            )
+        else:
+            pass
+
+        # check service_layer UUID
+        if not checker.check_is_uuid(layer_id):
+            raise ValueError("ServiceLayer ID is not a correct UUID: {}".format(layer_id))
+        else:
+            pass
+
+        # URL
+        url_service_layer = utils.get_request_base_url(
+            route="resources/{}/layers/{}".format(metadata_id, layer_id)
+        )
+
+        # request
+        req_service_layer = self.api_client.get(
+            url=url_service_layer,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_service_layer)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # add parent resource id to keep tracking
+        service_layer_augmented = req_service_layer.json()
+        service_layer_augmented["parent_resource"] = metadata_id
+
+        # end of method
+        return ServiceLayer(**service_layer_augmented)
 
 
 # ##############################################################################

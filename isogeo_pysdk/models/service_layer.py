@@ -62,6 +62,8 @@ class ServiceLayer(object):
         name: str = None,   # = id in API model but it's a reserved keyword in Python
         mimeTypes: str = None,
         titles: list = None,
+        # additional parameters
+        parent_resource: str = None,
     ):
         """ServiceLayer model"""
 
@@ -70,6 +72,8 @@ class ServiceLayer(object):
         self._name = None
         self._mimeTypes = None
         self._titles = None
+        # additional parameters
+        self.parent_resource = parent_resource
 
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
@@ -83,6 +87,9 @@ class ServiceLayer(object):
             self._mimeTypes = mimeTypes
         if titles is not None:
             self._titles = titles
+        # additional parameters
+        if parent_resource is not None:
+            self._parent_resource = parent_resource
 
     # -- PROPERTIES --------------------------------------------------------------------
     # service layer UUID

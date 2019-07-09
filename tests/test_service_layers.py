@@ -161,6 +161,13 @@ class TestServiceLayers(unittest.TestCase):
             self.assertEqual(layer.name, i.get("id"))
             self.assertEqual(layer.titles, i.get("titles"))
 
+    def test_layers_detailed(self):
+        """GET :resources/{metadata_uuid}/layers/{layer_uuid}}"""
+        self.isogeo.metadata.layers.layer(
+            metadata_id=METADATA_TEST_FIXTURE_UUID,
+            layer_id="77659ebc532a4ed3a1ef326af18348f0"
+        )
+
     # -- PUT/PATCH --
 
 
