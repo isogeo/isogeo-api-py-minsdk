@@ -25,6 +25,7 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 # other routes
 from .routes_event import ApiEvent
+from .routes_service_layers import ApiServiceLayer
 
 # #############################################################################
 # ########## Libraries #############
@@ -57,6 +58,7 @@ class ApiResource:
 
         # sub routes
         self.events = ApiEvent(self.api_client)
+        self.layers = ApiServiceLayer(self.api_client)
 
         # initialize
         super(ApiResource, self).__init__()
