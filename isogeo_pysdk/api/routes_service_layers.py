@@ -401,6 +401,91 @@ class ApiServiceLayer:
         # end of method
         return req_layer_association
 
+    @ApiDecorators._check_bearer_validity
+    def dissociate_metadata(
+        self, service: Metadata, layer: ServiceLayer, dataset: Metadata
+    ) -> Response:
+        """Removes the association between a a service layer with a dataset metadata.
+
+        If the association doesn't exist, the response is 404.
+
+        :param Metadata service: metadata of the service which contains the layer
+        :param ServiceLayer layer: layer model object to associate
+        :param Metadata dataset: metadata of the dataset to associate with
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(service._id):
+            raise ValueError(
+                "Service metadata ID is not a correct UUID: {}".format(service._id)
+            )
+        else:
+            pass
+
+        # check layer UUID
+        if not checker.check_is_uuid(layer._id):
+            raise ValueError(
+                "ServiceLayer ID is not a correct UUID: {}".format(layer._id)
+            )
+        else:
+            pass
+
+        # check dataset UUID
+        if not checker.check_is_uuid(dataset._id):
+            raise ValueError(
+                "Dataset metadata ID is not a correct UUID: {}".format(dataset._id)
+            )
+        else:
+            pass
+
+        # check service metadata type
+        if service.type != "service":
+            raise TypeError(
+                "Layers routes are only available for metadata of services, not: {}".format(
+                    service.type
+                )
+            )
+        else:
+            pass
+
+        # check dataset metadata type
+        if dataset.type not in (
+            "rasterDataset",
+            "vectorDataset",
+            "raster-dataset",
+            "vector-dataset",
+        ):
+            raise TypeError(
+                "Datasets association with layers routes are only available for metadata of datasets, not: {}".format(
+                    dataset.type
+                )
+            )
+        else:
+            pass
+
+        # URL
+        url_layer_dissociation = utils.get_request_base_url(
+            route="resources/{}/layers/{}/dataset/{}".format(
+                service._id, layer._id, dataset._id
+            )
+        )
+
+        # request
+        req_layer_dissociation = self.api_client.delete(
+            url=url_layer_dissociation,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_layer_dissociation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_layer_dissociation
+
 
 # ##############################################################################
 # ##### Stand alone program ########

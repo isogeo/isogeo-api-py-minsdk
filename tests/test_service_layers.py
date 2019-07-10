@@ -200,16 +200,11 @@ class TestServiceLayers(unittest.TestCase):
         self.assertIsInstance(li_layers_datasets[0].get("dataset"), dict)
 
         # -- dissociate
-        # refresh fixture metadata
-        # self.fixture_metadata = self.isogeo.metadata.metadata(
-        #     metadata_id=self.fixture_metadata._id, include=["conditions"]
-        # )
-        # for condition in self.fixture_metadata.conditions:
-        #     self.isogeo.license.dissociate_metadata(
-        #         metadata=self.fixture_metadata, condition_id=condition.get("_id")
-        #     )
+        self.isogeo.metadata.layers.dissociate_metadata(
+            service=metadata_service, layer=layer_created, dataset=metadata_dataset
+        )
 
-        # add created license to deletion
+        # add created layer to deletion
         self.li_fixtures_to_delete.append(layer_created)
 
     # -- GET --
