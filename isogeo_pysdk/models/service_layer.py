@@ -15,7 +15,7 @@
 import pprint
 
 # submodels
-
+from isogeo_pysdk.models.resource import Resource as Metadata
 
 # #############################################################################
 # ########## Classes ###############
@@ -49,7 +49,13 @@ class ServiceLayer(object):
       attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
       attr_map (dict): mapping between read and write attributes. {"attribute name - GET": "attribute type - POST"}
     """
-    attr_types = {"_id": str, "name": str, "mimeTypes": str, "titles": list}
+    attr_types = {
+        "_id": str,
+        "dataset": dict,
+        "name": str,
+        "mimeTypes": str,
+        "titles": list,
+    }
 
     attr_crea = {"name": str, "titles": list}
 
@@ -58,6 +64,7 @@ class ServiceLayer(object):
     def __init__(
         self,
         _id: str = None,
+        dataset: dict = None,
         id: str = None,
         name: str = None,  # = id in API model but it's a reserved keyword in Python
         mimeTypes: str = None,
@@ -69,6 +76,7 @@ class ServiceLayer(object):
 
         # default values for the object attributes/properties
         self.__id = None
+        self._dataset = None
         self._name = None
         self._mimeTypes = None
         self._titles = None
@@ -77,10 +85,12 @@ class ServiceLayer(object):
 
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
-        if id is not None:
-            self._name = id
         if _id is not None:
             self.__id = _id
+        if id is not None:
+            self._name = id
+        if dataset is not None:
+            self._dataset = dataset
         if name is not None:
             self._name = name
         if mimeTypes is not None:
@@ -102,14 +112,24 @@ class ServiceLayer(object):
         """
         return self.__id
 
-    @_id.setter
-    def _id(self, _id: str):
-        """Sets the id of this ServiceLayer.
+    # service layer associated dataset
+    @property
+    def dataset(self) -> dict:
+        """Gets the dataset used for Isogeo filters of this ServiceLayer.
 
-        :param str id: The id of this ServiceLayer.
+        :return: The dataset of this ServiceLayer.
+        :rtype: dict
+        """
+        return self._dataset
+
+    @dataset.setter
+    def dataset(self, dataset: dict):
+        """Sets the dataset used into Isogeo filters of this ServiceLayer.
+
+        :param dict dataset: the dataset of this ServiceLayer.
         """
 
-        self.__id = _id
+        self._dataset = dataset
 
     # service layer name
     @property

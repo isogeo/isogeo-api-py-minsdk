@@ -461,6 +461,7 @@ class Resource(object):
         "geometry": str,
         "keywords": list,
         "language": str,
+        "layers": list,
         "limitations": list,
         "links": list,
         "modified": str,
@@ -545,6 +546,7 @@ class Resource(object):
         geometry: str = None,
         keywords: list = None,
         language: str = None,
+        layers: list = None,
         limitations: list = None,
         links: list = None,
         modified: str = None,
@@ -592,6 +594,7 @@ class Resource(object):
         self._geometry = None
         self._keywords = None
         self._language = None
+        self._layers = None
         self._limitations = None
         self._links = None
         self._modified = None
@@ -660,6 +663,8 @@ class Resource(object):
             self._keywords = keywords
         if language is not None:
             self._language = language
+        if layers is not None:
+            self._layers = layers
         if limitations is not None:
             self._limitations = limitations
         if links is not None:
@@ -1097,6 +1102,25 @@ class Resource(object):
         """
 
         self._language = language
+
+    # layers
+    @property
+    def layers(self) -> str:
+        """Gets the layers of this Resource.
+
+        :return: The layers of this Resource.
+        :rtype: str
+        """
+        return self._layers
+
+    @layers.setter
+    def layers(self, layers: str):
+        """Sets the first line of the address of this Resource.
+
+        :param str layers: The first address line of this Resource.
+        """
+
+        self._layers = layers
 
     # limitations
     @property

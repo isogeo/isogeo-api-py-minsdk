@@ -386,7 +386,17 @@ class ApiServiceLayer:
         # checking response
         req_check = checker.check_api_response(req_layer_association)
         if isinstance(req_check, tuple):
-            return req_check
+            # handle conflict (see: https://developer.mozilla.org/fr/docs/Web/HTTP/Status/409)
+            if req_check[1] == 409:
+                # log conflict
+                logger.info(
+                    "Layer is already associated with a dataset: '{}'. Isogeo API doesn't allow to create duplicates (HTTP {} - {}).".format(
+                        layer.name, req_check[1], req_layer_association.reason
+                    )
+                )
+            else:
+                # if other error, then return it
+                return req_check
 
         # end of method
         return req_layer_association

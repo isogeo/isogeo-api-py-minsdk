@@ -31,7 +31,12 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Metadata, MetadataSearch
+from isogeo_pysdk import (
+    IsogeoSession,
+    __version__ as pysdk_version,
+    Metadata,
+    MetadataSearch,
+)
 
 
 # #############################################################################
@@ -126,8 +131,7 @@ class TestMetadatas(unittest.TestCase):
         # clean created metadatas
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.metadata.delete(metadata_id=i
-                )
+                cls.isogeo.metadata.delete(metadata_id=i)
         # close sessions
         cls.isogeo.close()
 
@@ -137,4 +141,3 @@ class TestMetadatas(unittest.TestCase):
         """GET :resources/search"""
         basic_search = self.isogeo.metadata.search()
         self.assertIsInstance(basic_search.total, int)
-

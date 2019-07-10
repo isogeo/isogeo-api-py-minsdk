@@ -169,7 +169,7 @@ class TestServiceLayers(unittest.TestCase):
         metadata_dataset = self.isogeo.metadata.metadata(
             "6b5cc93626634d0e9b0d2c48eff96bc3"
         )
-        layer_name = self.discriminator
+        layer_name = "{} - {}".format(get_test_marker(), self.discriminator)
         layer_title = [
             {
                 "lang": "fr",
@@ -189,8 +189,18 @@ class TestServiceLayers(unittest.TestCase):
             service=metadata_service, layer=layer_created, dataset=metadata_dataset
         )
 
-        # # -- dissociate
-        # # refresh fixture metadata
+        # check association result
+        service_updated = self.isogeo.metadata.metadata(
+            metadata_id=metadata_service._id, include=["layers"]
+        )
+
+        li_layers_datasets = list(
+            filter(lambda d: d.get("_id") == layer_created._id, service_updated.layers)
+        )
+        self.assertIsInstance(li_layers_datasets[0].get("dataset"), dict)
+
+        # -- dissociate
+        # refresh fixture metadata
         # self.fixture_metadata = self.isogeo.metadata.metadata(
         #     metadata_id=self.fixture_metadata._id, include=["conditions"]
         # )
@@ -215,6 +225,7 @@ class TestServiceLayers(unittest.TestCase):
             layer = ServiceLayer(**i)
             # tests attributes structure
             self.assertTrue(hasattr(layer, "_id"))
+            self.assertTrue(hasattr(layer, "dataset"))
             self.assertTrue(hasattr(layer, "mimeTypes"))
             self.assertTrue(hasattr(layer, "name"))
             self.assertTrue(hasattr(layer, "titles"))
