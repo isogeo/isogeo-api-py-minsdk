@@ -8,7 +8,7 @@
     # for whole test
     python -m unittest tests.test_service_layers
     # for specific
-    python -m unittest tests.test_service_layers.TestServiceLayers.test_service_layers_create
+    python -m unittest tests.test_service_layers.TestServiceLayers.test_layers_create
     ```
 """
 
@@ -162,6 +162,46 @@ class TestServiceLayers(unittest.TestCase):
         # add created layer to deletion
         self.li_fixtures_to_delete.append(layer_new)
 
+    def test_layers_association(self):
+        """POST :resources/{service_uuid}/layers/{layer_uuid}/dataset/{dataset_uuid}"""
+        # var
+        metadata_service = self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID)
+        metadata_dataset = self.isogeo.metadata.metadata(
+            "6b5cc93626634d0e9b0d2c48eff96bc3"
+        )
+        layer_name = self.discriminator
+        layer_title = [
+            {
+                "lang": "fr",
+                "value": "{} - {}".format(get_test_marker(), self.discriminator),
+            }
+        ]
+
+        # create object locally
+        layer_new = ServiceLayer(name=layer_name, titles=layer_title)
+
+        # create it online
+        layer_created = self.isogeo.metadata.layers.create(
+            metadata=metadata_service, layer=layer_new
+        )
+        # associate it
+        self.isogeo.metadata.layers.associate_metadata(
+            service=metadata_service, layer=layer_created, dataset=metadata_dataset
+        )
+
+        # # -- dissociate
+        # # refresh fixture metadata
+        # self.fixture_metadata = self.isogeo.metadata.metadata(
+        #     metadata_id=self.fixture_metadata._id, include=["conditions"]
+        # )
+        # for condition in self.fixture_metadata.conditions:
+        #     self.isogeo.license.dissociate_metadata(
+        #         metadata=self.fixture_metadata, condition_id=condition.get("_id")
+        #     )
+
+        # add created license to deletion
+        self.li_fixtures_to_delete.append(layer_created)
+
     # -- GET --
     def test_layers_listing(self):
         """GET :resources/{metadata_uuid}/layers/}"""
@@ -217,24 +257,16 @@ class TestServiceLayers(unittest.TestCase):
 
         # update the online layer
         layer_updated = self.isogeo.metadata.layers.update(layer_created)
+        self.assertEqual(layer_updated.name, "{} - UPDATED".format(layer_name))
 
-        # # check if the change is effective
-        # layer_fixture_updated = self.isogeo.layer.layer(layer_fixture._id)
-        # self.assertEqual(
-        #     layer_fixture_updated.name,
-        #     "{} - {}".format(get_test_marker(), self.discriminator),
-        # )
-        # self.assertEqual(
-        #     layer_fixture_updated.content,
-        #     "{} content - {}".format(get_test_marker(), self.discriminator),
-        # )
-        # self.assertEqual(
-        #     layer_fixture_updated.link,
-        #     "https://github.com/isogeo/isogeo-api-py-minsdk",
-        # )
+        # check if the change is effective
+        layer_to_check = self.isogeo.metadata.layers.layer(
+            metadata_id=METADATA_TEST_FIXTURE_UUID, layer_id=layer_created._id
+        )
+        self.assertEqual(layer_to_check.name, "{} - UPDATED".format(layer_name))
 
         # add created layer to deletion
-        # self.li_fixtures_to_delete.append(layer_fixture_updated._id)
+        self.li_fixtures_to_delete.append(layer_to_check)
 
 
 # ##############################################################################

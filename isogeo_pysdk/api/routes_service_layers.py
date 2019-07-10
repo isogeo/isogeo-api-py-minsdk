@@ -13,7 +13,9 @@
 
 # Standard library
 import logging
-from datetime import datetime
+
+# 3rd party
+from requests.models import Response
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
@@ -280,6 +282,114 @@ class ApiServiceLayer:
 
         # end of method
         return ServiceLayer(**service_layer_augmented)
+
+    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def associate_metadata(
+        self, service: Metadata, layer: ServiceLayer, dataset: Metadata
+    ) -> Response:
+        """Associate a service layer with a dataset metadata.
+
+        If the specified layer is already associated, the response is 409.
+
+        :param Metadata service: metadata of the service which contains the layer
+        :param ServiceLayer layer: layer model object to associate
+        :param Metadata dataset: metadata of the dataset to associate with
+
+        :Example:
+
+        >>> # retrieve objects to be associated. First: the metadata of the service.
+        >>> service = isogeo.metadata.metadata(
+                metadata_id=str,
+            )
+        >>> # second: the layer of the service you want to associate
+        >>> layer = isogeo.metadata.layers.layer(
+                metadata_id=service._id,
+                layer_id=str,
+            )
+        >>> # third: the dataset to be associated with the service layer
+        >>> dataset = isogeo.metadata.metadata(
+                metadata_id=str,
+            )
+        >>> # associate them
+        >>> isogeo.metadata.layers.associate_metadata(
+                service=service,
+                layer=layer,
+                dataset=metadata
+            )
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(service._id):
+            raise ValueError(
+                "Service metadata ID is not a correct UUID: {}".format(service._id)
+            )
+        else:
+            pass
+
+        # check layer UUID
+        if not checker.check_is_uuid(layer._id):
+            raise ValueError(
+                "ServiceLayer ID is not a correct UUID: {}".format(layer._id)
+            )
+        else:
+            pass
+
+        # check dataset UUID
+        if not checker.check_is_uuid(dataset._id):
+            raise ValueError(
+                "Dataset metadata ID is not a correct UUID: {}".format(dataset._id)
+            )
+        else:
+            pass
+
+        # check service metadata type
+        if service.type != "service":
+            raise TypeError(
+                "Layers routes are only available for metadata of services, not: {}".format(
+                    service.type
+                )
+            )
+        else:
+            pass
+
+        # check dataset metadata type
+        if dataset.type not in (
+            "rasterDataset",
+            "vectorDataset",
+            "raster-dataset",
+            "vector-dataset",
+        ):
+            raise TypeError(
+                "Datasets association with layers routes are only available for metadata of datasets, not: {}".format(
+                    dataset.type
+                )
+            )
+        else:
+            pass
+
+        # URL
+        url_layer_association = utils.get_request_base_url(
+            route="resources/{}/layers/{}/dataset/{}".format(
+                service._id, layer._id, dataset._id
+            )
+        )
+
+        # request
+        req_layer_association = self.api_client.post(
+            url=url_layer_association,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_layer_association)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_layer_association
 
 
 # ##############################################################################
