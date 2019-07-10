@@ -192,6 +192,49 @@ class TestServiceLayers(unittest.TestCase):
         )
 
     # -- PUT/PATCH --
+    def test_layers_update(self):
+        """PUT :groups/{workgroup_uuid}/layers/{layer_uuid}"""
+        # var
+        layer_name = self.discriminator
+        layer_title = [
+            {
+                "lang": "fr",
+                "value": "{} - {}".format(get_test_marker(), self.discriminator),
+            }
+        ]
+
+        # create object locally
+        layer_new = ServiceLayer(name=layer_name, titles=layer_title)
+
+        # create it online
+        layer_created = self.isogeo.metadata.layers.create(
+            metadata=self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID),
+            layer=layer_new,
+        )
+
+        # modify local object
+        layer_created.name = "{} - UPDATED".format(layer_name)
+
+        # update the online layer
+        layer_updated = self.isogeo.metadata.layers.update(layer_created)
+
+        # # check if the change is effective
+        # layer_fixture_updated = self.isogeo.layer.layer(layer_fixture._id)
+        # self.assertEqual(
+        #     layer_fixture_updated.name,
+        #     "{} - {}".format(get_test_marker(), self.discriminator),
+        # )
+        # self.assertEqual(
+        #     layer_fixture_updated.content,
+        #     "{} content - {}".format(get_test_marker(), self.discriminator),
+        # )
+        # self.assertEqual(
+        #     layer_fixture_updated.link,
+        #     "https://github.com/isogeo/isogeo-api-py-minsdk",
+        # )
+
+        # add created layer to deletion
+        # self.li_fixtures_to_delete.append(layer_fixture_updated._id)
 
 
 # ##############################################################################

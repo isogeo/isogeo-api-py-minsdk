@@ -187,8 +187,8 @@ class ApiServiceLayer:
     def delete(self, layer: ServiceLayer, metadata: Metadata = None):
         """Delete a service layer from Isogeo database.
 
-        :param Metadata metadata: parent metadata (resource) containing the service_layer
         :param ServiceLayer layer: ServiceLayer model object to delete
+        :param Metadata metadata: parent metadata (resource) containing the service_layer
         """
         # check service_layer UUID
         if not checker.check_is_uuid(layer._id):
@@ -228,6 +228,58 @@ class ApiServiceLayer:
             return req_check
 
         return req_service_layer_deletion
+
+    @ApiDecorators._check_bearer_validity
+    def update(self, layer: ServiceLayer, metadata: Metadata = None) -> ServiceLayer:
+        """Update a service layer.
+
+        :param ServiceLayer layer: ServiceLayer model object to update
+        :param Metadata metadata: parent metadata (resource) containing the service_layer
+        """
+        # check service_layer UUID
+        if not checker.check_is_uuid(layer._id):
+            raise ValueError(
+                "ServiceLayer ID is not a correct UUID: {}".format(layer._id)
+            )
+        else:
+            pass
+
+        # retrieve parent metadata
+        if not checker.check_is_uuid(layer.parent_resource) and not metadata:
+            raise ValueError(
+                "ServiceLayer parent metadata is required. Requesting it..."
+            )
+        elif not checker.check_is_uuid(layer.parent_resource) and metadata:
+            layer.parent_resource = metadata._id
+        else:
+            pass
+
+        # URL
+        url_service_layer_update = utils.get_request_base_url(
+            route="resources/{}/layers/{}".format(layer.parent_resource, layer._id)
+        )
+
+        # request
+        req_service_layer_update = self.api_client.put(
+            url=url_service_layer_update,
+            json=layer.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_service_layer_update)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # add parent resource id to keep tracking
+        service_layer_augmented = req_service_layer_update.json()
+        service_layer_augmented["parent_resource"] = layer.parent_resource
+
+        # end of method
+        return ServiceLayer(**service_layer_augmented)
 
 
 # ##############################################################################
