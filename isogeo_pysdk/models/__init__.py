@@ -14,6 +14,7 @@ from .resource import Resource  # noqa: F401
 from .resource_search import ResourceSearch  # noqa: F401
 from .share import Share  # noqa: F401
 from .service_layer import ServiceLayer  # noqa: F401
+from .service_operation import ServiceOperation  # noqa: F401
 from .specification import Specification  # noqa: F401
 from .thesaurus import Thesaurus  # noqa: F401
 from .user import User  # noqa: F401

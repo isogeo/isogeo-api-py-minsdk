@@ -2,9 +2,9 @@
 #! python3
 
 """
-    Isogeo API v1 - Model of ServiceLayer entity
+    Isogeo API v1 - Model of ServiceOperation entity
 
-    See: http://help.isogeo.com/api/complete/index.html#definition-serviceLayer
+    See: http://help.isogeo.com/api/complete/index.html#definition-serviceOperation
 """
 
 # #############################################################################
@@ -21,8 +21,8 @@ import pprint
 # #############################################################################
 # ########## Classes ###############
 # ##################################
-class ServiceLayer(object):
-    """ServiceLayers are entities defining rules of data creation.
+class ServiceOperation(object):
+    """ServiceOperations are entities defining rules of data creation.
 
 
     Sample:
@@ -30,16 +30,15 @@ class ServiceLayer(object):
     ```json
     {
     "_id": "string (uuid)",
-    "id": "string",
-    "mimeTypes": [
+    "mimeTypesOutIn": [
         "string"
     ],
-    "titles": [
-        {
-        "lang": "string",
-        "value": "string"
-        }
-    ]
+    "mimeTypesOutOut": [
+        "string"
+    ],
+    "name": "string",
+    "url": "string",
+    "verb": "string"
     }
     ```
     """
@@ -52,35 +51,35 @@ class ServiceLayer(object):
     """
     attr_types = {
         "_id": str,
-        "dataset": dict,
+        "mimeTypesOutIn": list,
+        "mimeTypesOutOut": list,
         "name": str,
-        "mimeTypes": str,
-        "titles": list,
+        "url": str,
+        "verb": str,
     }
 
-    attr_crea = {"name": str, "titles": list}
+    attr_crea = {"name": str, "verb": str}
 
-    attr_map = {"name": "id"}
+    attr_map = {}
 
     def __init__(
         self,
         _id: str = None,
-        dataset: dict = None,
-        id: str = None,
-        name: str = None,  # = id in API model but it's a reserved keyword in Python
-        mimeTypes: str = None,
-        titles: list = None,
+        mimeTypesOutIn: str = None,
+        mimeTypesOutOut: str = None,
+        name: str = None,
+        verb: str = None,
         # additional parameters
         parent_resource: str = None,
     ):
-        """ServiceLayer model"""
+        """ServiceOperation model"""
 
         # default values for the object attributes/properties
         self.__id = None
-        self._dataset = None
+        self._mimeTypesOutIn = None
+        self._mimeTypesOutOut = None
         self._name = None
-        self._mimeTypes = None
-        self._titles = None
+        self._verb = None
         # additional parameters
         self.parent_resource = parent_resource
 
@@ -88,16 +87,14 @@ class ServiceLayer(object):
         # attributes are prefixed by an underscore '_'
         if _id is not None:
             self.__id = _id
-        if id is not None:
-            self._name = id
-        if dataset is not None:
-            self._dataset = dataset
+        if mimeTypesOutIn is not None:
+            self._mimeTypesOutIn = mimeTypesOutIn
+        if mimeTypesOutOut is not None:
+            self._mimeTypesOutOut = mimeTypesOutOut
         if name is not None:
             self._name = name
-        if mimeTypes is not None:
-            self._mimeTypes = mimeTypes
-        if titles is not None:
-            self._titles = titles
+        if verb is not None:
+            self._verb = verb
         # additional parameters
         if parent_resource is not None:
             self._parent_resource = parent_resource
@@ -106,88 +103,88 @@ class ServiceLayer(object):
     # service layer UUID
     @property
     def _id(self) -> str:
-        """Gets the id of this ServiceLayer.
+        """Gets the id of this ServiceOperation.
 
-        :return: The id of this ServiceLayer.
+        :return: The id of this ServiceOperation.
         :rtype: str
         """
         return self.__id
 
-    # service layer associated dataset
+    # service layer associated mimeTypesOutIn
     @property
-    def dataset(self) -> dict:
-        """Gets the dataset used for Isogeo filters of this ServiceLayer.
+    def mimeTypesOutIn(self) -> dict:
+        """Gets the mimeTypesOutIn used for Isogeo filters of this ServiceOperation.
 
-        :return: The dataset of this ServiceLayer.
+        :return: The mimeTypesOutIn of this ServiceOperation.
         :rtype: dict
         """
-        return self._dataset
+        return self._mimeTypesOutIn
 
-    @dataset.setter
-    def dataset(self, dataset: dict):
-        """Sets the dataset used into Isogeo filters of this ServiceLayer.
+    @mimeTypesOutIn.setter
+    def mimeTypesOutIn(self, mimeTypesOutIn: dict):
+        """Sets the mimeTypesOutIn used into Isogeo filters of this ServiceOperation.
 
-        :param dict dataset: the dataset of this ServiceLayer.
+        :param dict mimeTypesOutIn: the mimeTypesOutIn of this ServiceOperation.
         """
 
-        self._dataset = dataset
+        self._mimeTypesOutIn = mimeTypesOutIn
+
+    # mimeTypesOut
+    @property
+    def mimeTypesOut(self) -> str:
+        """Gets the mimeTypesOut of this ServiceOperation.
+
+        :return: The mimeTypesOut of this ServiceOperation.
+        :rtype: str
+        """
+        return self._mimeTypesOut
+
+    @mimeTypesOut.setter
+    def mimeTypesOut(self, mimeTypesOut: str):
+        """Sets the mimeTypesOut of this ServiceOperation.
+
+        :param str mimeTypesOut: The mimeTypesOut of this ServiceOperation.
+        """
+
+        self._mimeTypesOut = mimeTypesOut
 
     # service layer name
     @property
     def name(self) -> str:
-        """Gets the name used for Isogeo filters of this ServiceLayer.
+        """Gets the name used for Isogeo filters of this ServiceOperation.
 
-        :return: The name of this ServiceLayer.
+        :return: The name of this ServiceOperation.
         :rtype: str
         """
         return self._name
 
     @name.setter
     def name(self, name: str):
-        """Sets the name used into Isogeo filters of this ServiceLayer.
+        """Sets the name used into Isogeo filters of this ServiceOperation.
 
-        :param str name: the name of this ServiceLayer.
+        :param str name: the name of this ServiceOperation.
         """
 
         self._name = name
 
-    # mimeTypes
+    # verb
     @property
-    def mimeTypes(self) -> str:
-        """Gets the mimeTypes of this ServiceLayer.
+    def verb(self) -> list:
+        """Gets the verb of this ServiceOperation.
 
-        :return: The mimeTypes of this ServiceLayer.
-        :rtype: str
-        """
-        return self._mimeTypes
-
-    @mimeTypes.setter
-    def mimeTypes(self, mimeTypes: str):
-        """Sets the mimeTypes of this ServiceLayer.
-
-        :param str mimeTypes: The mimeTypes of this ServiceLayer.
-        """
-
-        self._mimeTypes = mimeTypes
-
-    # titles
-    @property
-    def titles(self) -> list:
-        """Gets the titles of this ServiceLayer.
-
-        :return: The titles of this ServiceLayer.
+        :return: The verb of this ServiceOperation.
         :rtype: list
         """
-        return self._titles
+        return self._verb
 
-    @titles.setter
-    def titles(self, titles: list):
-        """Sets the titles of this ServiceLayer.
+    @verb.setter
+    def verb(self, verb: list):
+        """Sets the verb of this ServiceOperation.
 
-        :param list titles: The titles of this ServiceLayer.
+        :param list verb: The verb of this ServiceOperation.
         """
 
-        self._titles = titles
+        self._verb = verb
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
@@ -213,7 +210,7 @@ class ServiceLayer(object):
                 )
             else:
                 result[attr] = value
-        if issubclass(ServiceLayer, dict):
+        if issubclass(ServiceOperation, dict):
             for key, value in self.items():
                 result[key] = value
 
@@ -246,7 +243,7 @@ class ServiceLayer(object):
                 )
             else:
                 result[attr] = value
-        if issubclass(ServiceLayer, dict):
+        if issubclass(ServiceOperation, dict):
             for key, value in self.items():
                 result[key] = value
 
@@ -262,7 +259,7 @@ class ServiceLayer(object):
 
     def __eq__(self, other) -> bool:
         """Returns true if both objects are equal"""
-        if not isinstance(other, ServiceLayer):
+        if not isinstance(other, ServiceOperation):
             return False
 
         return self.__dict__ == other.__dict__
@@ -277,7 +274,7 @@ class ServiceLayer(object):
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    test_model = ServiceLayer()
+    test_model = ServiceOperation()
     print(test_model.__dict__)
     print(test_model._id)
     print(test_model.__dict__.get("_id"))
