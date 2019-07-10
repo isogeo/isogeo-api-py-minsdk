@@ -14,9 +14,13 @@
     ],
     "python.linting.pylintEnabled": true,
     "python.pythonPath": ".venv_tests\\Scripts\\python.exe",
-    "python.testing.pytestArgs": [],
-    "python.testing.nosetestsEnabled": false,
     "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+        "-c",
+        "setup.cfg"
+    ],
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.unittestEnabled": false,
     "python.testing.unittestArgs": [
         "-v",
         "-s",
@@ -24,7 +28,6 @@
         "-p",
         "test_*.py"
     ],
-    "python.testing.unittestEnabled": false,
     "restructuredtext.confPath": "${workspaceFolder}\\docs",
     "travis.username": "isogeo",
     "travis.repository": "isogeo-api-py-minsdk",
