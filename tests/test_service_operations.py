@@ -162,3 +162,27 @@ class TestServiceOperations(unittest.TestCase):
             self.assertEqual(operation.name, i.get("name"))
             self.assertEqual(operation.verb, i.get("verb"))
 
+    def test_operations_detailed(self):
+        """GET :resources/{metadata_uuid}/operations/{operation_uuid}}"""
+        # get operations
+        md_operations = self.isogeo.metadata.operations.listing(
+            self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID)
+        )
+        # pick one
+        operation_id = sample(md_operations, 1)[0].get("_id")
+        # get it with a direct request
+        operation = self.isogeo.metadata.operations.operation(
+            metadata_id=METADATA_TEST_FIXTURE_UUID,
+            operation_id=operation_id
+        )
+
+        # checks
+        self.assertIsInstance(operation, ServiceOperation)
+
+
+
+# ##############################################################################
+# ##### Stand alone program ########
+# ##################################
+if __name__ == "__main__":
+    unittest.main()
