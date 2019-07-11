@@ -30,10 +30,10 @@ class ServiceOperation(object):
     ```json
     {
     "_id": "string (uuid)",
-    "mimeTypesOutIn": [
+    "mimeTypesIn": [
         "string"
     ],
-    "mimeTypesOutOut": [
+    "mimeTypesOut": [
         "string"
     ],
     "name": "string",
@@ -51,8 +51,8 @@ class ServiceOperation(object):
     """
     attr_types = {
         "_id": str,
-        "mimeTypesOutIn": list,
-        "mimeTypesOutOut": list,
+        "mimeTypesIn": list,
+        "mimeTypesOut": list,
         "name": str,
         "url": str,
         "verb": str,
@@ -65,9 +65,10 @@ class ServiceOperation(object):
     def __init__(
         self,
         _id: str = None,
-        mimeTypesOutIn: str = None,
-        mimeTypesOutOut: str = None,
+        mimeTypesIn: str = None,
+        mimeTypesOut: str = None,
         name: str = None,
+        url: str = None,
         verb: str = None,
         # additional parameters
         parent_resource: str = None,
@@ -76,9 +77,10 @@ class ServiceOperation(object):
 
         # default values for the object attributes/properties
         self.__id = None
-        self._mimeTypesOutIn = None
-        self._mimeTypesOutOut = None
+        self._mimeTypesIn = None
+        self._mimeTypesOut = None
         self._name = None
+        self._url = None
         self._verb = None
         # additional parameters
         self.parent_resource = parent_resource
@@ -87,12 +89,14 @@ class ServiceOperation(object):
         # attributes are prefixed by an underscore '_'
         if _id is not None:
             self.__id = _id
-        if mimeTypesOutIn is not None:
-            self._mimeTypesOutIn = mimeTypesOutIn
-        if mimeTypesOutOut is not None:
-            self._mimeTypesOutOut = mimeTypesOutOut
+        if mimeTypesIn is not None:
+            self._mimeTypesIn = mimeTypesIn
+        if mimeTypesOut is not None:
+            self._mimeTypesOut = mimeTypesOut
         if name is not None:
             self._name = name
+        if url is not None:
+            self._url = url
         if verb is not None:
             self._verb = verb
         # additional parameters
@@ -110,24 +114,24 @@ class ServiceOperation(object):
         """
         return self.__id
 
-    # service layer associated mimeTypesOutIn
+    # service layer associated mimeTypesIn
     @property
-    def mimeTypesOutIn(self) -> dict:
-        """Gets the mimeTypesOutIn used for Isogeo filters of this ServiceOperation.
+    def mimeTypesIn(self) -> dict:
+        """Gets the mimeTypesIn used for Isogeo filters of this ServiceOperation.
 
-        :return: The mimeTypesOutIn of this ServiceOperation.
+        :return: The mimeTypesIn of this ServiceOperation.
         :rtype: dict
         """
-        return self._mimeTypesOutIn
+        return self._mimeTypesIn
 
-    @mimeTypesOutIn.setter
-    def mimeTypesOutIn(self, mimeTypesOutIn: dict):
-        """Sets the mimeTypesOutIn used into Isogeo filters of this ServiceOperation.
+    @mimeTypesIn.setter
+    def mimeTypesIn(self, mimeTypesIn: dict):
+        """Sets the mimeTypesIn used into Isogeo filters of this ServiceOperation.
 
-        :param dict mimeTypesOutIn: the mimeTypesOutIn of this ServiceOperation.
+        :param dict mimeTypesIn: the mimeTypesIn of this ServiceOperation.
         """
 
-        self._mimeTypesOutIn = mimeTypesOutIn
+        self._mimeTypesIn = mimeTypesIn
 
     # mimeTypesOut
     @property
@@ -166,6 +170,25 @@ class ServiceOperation(object):
         """
 
         self._name = name
+
+    # url
+    @property
+    def url(self) -> list:
+        """Gets the url of this ServiceOperation.
+
+        :return: The url of this ServiceOperation.
+        :rtype: list
+        """
+        return self._url
+
+    @url.setter
+    def url(self, url: list):
+        """Sets the url of this ServiceOperation.
+
+        :param list url: The url of this ServiceOperation.
+        """
+
+        self._url = url
 
     # verb
     @property
