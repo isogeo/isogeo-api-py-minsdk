@@ -28,40 +28,36 @@ class User(object):
 
     ```json
     {
-        '_created': '2014-03-14T14:11:40.6815298+00:00',
-        '_id': '89ee0eb3a15046a28886033b27f1d882',
-        '_modified': '2018-06-07T08:13:32.0826782+00:00',
-        'contact': {
-            '_deleted': False,
-            '_id': '647ce48061a64faf9f75577a41a63229',
-            '_tag': 'contact:user:647ce48061a64faf9f75577a41a63229',
-            'addressLine1': '26 rue du faubourg Saint-Antoine',
-            'available': False,
-            'city': 'Paris',
-            'countryCode': 'FR',
-            'email': 'julien.moura@isogeo.com',
-            'hash': '23bc09e00e945c3c2cc0d13f7448c261',
-            'name': 'Julien MOURA',
-            'phone': '+33 6 58 00 30 64',
-            'type': 'user',
-            'zipCode': '75012'
-            },
-    'language': '',
-    'mailchimp': {
-        'subscriptions': [
-            {
-                'isInterested': False,
-                'name': 'NewReleases'
-            },
-            {
-                'isInterested': False,
-                'name': 'TipsAndTricks'
-            }
-            ]
-            },
-    'staff': True,
-    'timezone': 'Romance Standard Time'
-    }
+        "_abilities": [
+            "string"
+        ],
+        "_created": "string (date-time)",
+        "_id": "string (uuid)",
+        "_modified": "string (date-time)",
+        "contact": {
+            "_created": "string (date-time)",
+            "_id": "string (uuid)",
+            "_modified": "string (date-time)",
+            "addressLine1": "string",
+            "addressLine2": "string",
+            "addressLine3": "string",
+            "available": "string",
+            "city": "string",
+            "count": "integer (int32)",
+            "countryCode": "string",
+            "email": "string",
+            "fax": "string",
+            "hash": "string",
+            "name": "string",
+            "organization": "string",
+            "phone": "string",
+            "type": "string",
+            "zipCode": "string"
+        },
+        "language": "string",
+        "staff": "boolean",
+        "timezone": "string"
+        }
     ```
     """
 
@@ -84,14 +80,16 @@ class User(object):
     }
 
     attr_crea = {
-        "contact": Contact,
+        # "contact": Contact,
         "language": str,
         "mailchimp": str,
         "staff": bool,
         "timezone": str,
     }
 
-    attr_map = {}
+    attr_map = {
+        # "staff": "IsOgeo"
+    }
 
     def __init__(
         self,
@@ -102,6 +100,7 @@ class User(object):
         contact: Contact = None,
         language: str = None,
         mailchimp: dict = None,
+        memberships: dict = None,
         staff: bool = None,
         timezone: str = None,
     ):
@@ -115,6 +114,7 @@ class User(object):
         self._contact = Contact
         self._language = None
         self._mailchimp = None
+        self._memberships = None
         self._staff = None
         self._timezone = None
 
@@ -162,15 +162,6 @@ class User(object):
         """
         return self.__created
 
-    @_created.setter
-    def _created(self, _created: str):
-        """Sets the created used into Isogeo filters of this User.
-
-        :param str _created: the created of this User.
-        """
-
-        self.__created = _created
-
     # user UUID
     @property
     def _id(self) -> str:
@@ -181,15 +172,6 @@ class User(object):
         """
         return self.__id
 
-    @_id.setter
-    def _id(self, _id: str):
-        """Sets the id of this User.
-
-        :param str id: The id of this User.
-        """
-
-        self.__id = _id
-
     # last update
     @property
     def _modified(self) -> str:
@@ -199,15 +181,6 @@ class User(object):
         :rtype: str
         """
         return self.__modified
-
-    @_modified.setter
-    def _modified(self, _modified: str):
-        """Sets the modified used into Isogeo filters of this User.
-
-        :param str _modified: the modified of this User.
-        """
-
-        self.__modified = _modified
 
     # contact
     @property
@@ -271,19 +244,19 @@ class User(object):
 
     # staff status
     @property
-    def staff(self) -> str:
-        """Gets the third address line of this User.
+    def staff(self) -> bool:
+        """Staff status for the User.
 
-        :return: The The third address line of this User.
-        :rtype: str
+        :return: the staff status of the User
+        :rtype: bool
         """
         return self._staff
 
     @staff.setter
-    def staff(self, staff: str):
-        """Sets the third address line of this User.
+    def staff(self, staff: bool):
+        """Sets the staff status of this User.
 
-        :param str staff: The The third address line of this User.
+        :param bool staff: The new staff status for the User.
         """
 
         self._staff = staff

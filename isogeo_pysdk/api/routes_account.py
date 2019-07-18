@@ -124,6 +124,45 @@ class ApiAccount:
         # end of method
         return User(**req_account_update.json())
 
+    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def memberships(self) -> list:
+        """Returns memberships for the authenticated user.
+
+        :Example:
+
+        >>> my_groups = isogeo.account.memberships()
+        >>> print(len(my_groups))
+        10
+        >>> groups_where_iam_admin = list(filter(lambda d: d.get("role") == "admin", my_groups))
+        >>> print(len(groups_where_iam_admin))
+        5
+        >>> groups_where_iam_editor = list(filter(lambda d: d.get("role") == "editor", my_groups))
+        >>> print(len(groups_where_iam_editor))
+        4
+        >>> groups_where_iam_reader = list(filter(lambda d: d.get("role") == "reader", my_groups))
+        >>> print(len(groups_where_iam_reader))
+        1
+        """
+        # URL builder
+        url_user_memberships = utils.get_request_base_url(route="account/memberships")
+
+        # request
+        req_user_memberships = self.api_client.get(
+            url=url_user_memberships,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_user_memberships)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_user_memberships.json()
+
 
 # ##############################################################################
 # ##### Stand alone program ########

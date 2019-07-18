@@ -19,7 +19,6 @@
 # Standard library
 from os import environ
 import logging
-from random import sample
 from pathlib import Path
 from socket import gethostname
 from sys import exit, _getframe
@@ -121,6 +120,10 @@ class TestAccount(unittest.TestCase):
         # compare account objects
         me = self.isogeo.account.account(caching=0)  # Account route
         self.assertTrue(me.__eq__(self.isogeo._user))  # account stored during auth step
+
+    def test_account_memberships(self):
+        """GET :/account/memberships}"""
+        me = self.isogeo.account.memberships()
 
     # -- PUT/PATCH --
     def test_update(self):
