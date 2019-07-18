@@ -18,36 +18,37 @@ from enum import Enum
 # #############################################################################
 # ########## Classes ###############
 # ##################################
-class StatisticsTags(Enum):
+class WorkgroupStatisticsTags(Enum):
     """Closed list of accepted tags for workgroup statistics in Isogeo API (used by the dashboard).
 
     :Example:
 
         >>> # parse members and values
         >>> print("{0:<30} {1:>20}".format("Enum", "Value"))
-        >>> for tag in StatisticsTags:
+        >>> for tag in WorkgroupStatisticsTags:
         >>>     print("{0:<30} {1:>20}".format(tag, tag.value))
         Enum                                                    Value
-        StatisticsTags.catalog                                catalog
-        StatisticsTags.coordinateSystem             coordinate-system
-        StatisticsTags.format                                  format
-        StatisticsTags.inspireTheme             keyword:inspire-theme
-        StatisticsTags.owner                                    owner
+        WorkgroupStatisticsTags.catalog                                catalog
+        WorkgroupStatisticsTags.coordinateSystem             coordinate-system
+        WorkgroupStatisticsTags.format                                  format
+        WorkgroupStatisticsTags.inspireTheme             keyword:inspire-theme
+        WorkgroupStatisticsTags.owner                                    owner
 
         >>> # check if a var is an accepted value
-        >>> print("catalog" in StatisticsTags.__members__)
+        >>> print("catalog" in WorkgroupStatisticsTags.__members__)
         True
-        >>> print("Catalog" in StatisticsTags.__members__)  # case sensitive
+        >>> print("Catalog" in WorkgroupStatisticsTags.__members__)  # case sensitive
         False
-        >>> print("coordinate-system" in StatisticsTags.__members__)
+        >>> print("coordinate-system" in WorkgroupStatisticsTags.__members__)
         False
-        >>> print("coordinateSystem" in StatisticsTags.__members__)
+        >>> print("coordinateSystem" in WorkgroupStatisticsTags.__members__)
         True
 
     See: https://docs.python.org/3/library/enum.html
     """
 
     catalog = "catalog"
+    contact = "contact"
     coordinateSystem = "coordinate-system"
     format = "format"
     inspireTheme = "keyword:inspire-theme"
@@ -65,12 +66,15 @@ class StatisticsTags(Enum):
 if __name__ == "__main__":
     """ standalone execution """
     print("{0:<30} {1:>30}".format("Enum", "Value"))
-    for tag in StatisticsTags:
+    for tag in WorkgroupStatisticsTags:
         print("{0:<30} {1:>30}".format(tag, tag.value))
 
-    print(len(StatisticsTags))
+    print(len(WorkgroupStatisticsTags))
 
-    print("catalog" in StatisticsTags.__members__)
-    print("Catalog" in StatisticsTags.__members__)
-    print("coordinate-system" in StatisticsTags.__members__)
-    print("coordinateSystem" in StatisticsTags.__members__)
+    print("catalog" in WorkgroupStatisticsTags.__members__)
+    print("Catalog" in WorkgroupStatisticsTags.__members__)
+    print("coordinate-system" in WorkgroupStatisticsTags.__members__)
+    print("coordinateSystem" in WorkgroupStatisticsTags.__members__)
+
+    values = set(item.value for item in WorkgroupStatisticsTags)
+    print("feature-attributes" in values)

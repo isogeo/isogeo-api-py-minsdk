@@ -14,10 +14,13 @@
 # Standard library
 import logging
 
+# 3rd party
+from requests.exceptions import Timeout
+
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.enums import StatisticsTags
+from isogeo_pysdk.enums import WorkgroupStatisticsTags
 from isogeo_pysdk.models import Contact, Workgroup
 from isogeo_pysdk.utils import IsogeoUtils
 
@@ -438,7 +441,7 @@ class ApiWorkgroup:
 
         # URL builder
         url_workgroup_statistics = utils.get_request_base_url(
-            route="/groups/{}/statistics".format(workgroup_id)
+            route="groups/{}/statistics".format(workgroup_id)
         )
 
         # request
@@ -462,8 +465,10 @@ class ApiWorkgroup:
         """Returns statistics for the specified workgroup.
         See: http://help.isogeo.com/api/complete/index.html#operation--groups--gid--statistics-tag--tag--get
 
+        Be careful: if an invalid character is present into the response (e.g. contact.name = 'bureau GF-3A'), a ConnectionError / ReadTimeout will be raised.
+
         :param str workgroup_id: workgroup UUID
-        :param str tag: tag name. Must be one of: catalog, coordinate-system, format, keyword:inspire-theme, keyword, owner
+        :param str tag: tag name. Must be one of: catalog, contact, coordinate-system, format, keyword:inspire-theme, keyword, owner
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -474,26 +479,33 @@ class ApiWorkgroup:
             pass
 
         # check tag
-        if not StatisticsTags.has_value(tag):
+        if not WorkgroupStatisticsTags.has_value(tag):
             raise ValueError(
                 "Tag name '{}' is not one of accepted values: {}".format(
-                    tag, StatisticsTags
+                    tag, list(WorkgroupStatisticsTags)
                 )
             )
 
         # URL builder
         url_workgroup_statistics = utils.get_request_base_url(
-            route="/groups/{}/statistics/tag/{}".format(workgroup_id, tag)
+            route="groups/{}/statistics/tag/{}".format(workgroup_id, tag)
         )
 
         # request
-        req_workgroup_statistics = self.api_client.get(
-            url=url_workgroup_statistics,
-            headers=self.api_client.header,
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-            timeout=self.api_client.timeout,
-        )
+        try:
+            req_workgroup_statistics = self.api_client.get(
+                url=url_workgroup_statistics,
+                # headers=self.api_client.header,
+                proxies=self.api_client.proxies,
+                verify=self.api_client.ssl,
+                timeout=self.api_client.timeout,
+            )
+        except Timeout as e:
+            logger.error(
+                "Request failed (timeout) but maybe (probably) it occurred because of a special "
+                "character in an entity string. Exception: {}".format(e)
+            )
+            return False, 500
 
         # checking response
         req_check = checker.check_api_response(req_workgroup_statistics)

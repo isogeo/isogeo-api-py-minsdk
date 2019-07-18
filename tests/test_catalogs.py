@@ -17,22 +17,23 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
+import unittest
+import urllib3
+from os import environ
 from pathlib import Path
 from random import sample
 from socket import gethostname
-from sys import exit, _getframe
-from time import gmtime, strftime
-import unittest
+from sys import _getframe, exit
+from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
 
-
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Catalog
-
+from isogeo_pysdk import Catalog, IsogeoSession
+from isogeo_pysdk import __version__ as pysdk_version
+from isogeo_pysdk.enums import CatalogStatisticsTags
 
 # #############################################################################
 # ######## Globals #################
@@ -46,7 +47,7 @@ if Path("dev.env").exists():
 hostname = gethostname()
 
 # API access
-workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -83,6 +84,10 @@ class TestCatalogs(unittest.TestCase):
         # class vars and attributes
         cls.li_fixtures_to_delete = []
 
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
+
         # API connection
         cls.isogeo = IsogeoSession(
             client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
@@ -105,6 +110,7 @@ class TestCatalogs(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
+        sleep(0.5)
         pass
 
     @classmethod
@@ -113,7 +119,9 @@ class TestCatalogs(unittest.TestCase):
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.catalog.delete(workgroup_id=workgroup_test, catalog_id=i)
+                cls.isogeo.catalog.delete(
+                    workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, catalog_id=i
+                )
                 pass
         # close sessions
         cls.isogeo.close()
@@ -131,7 +139,9 @@ class TestCatalogs(unittest.TestCase):
 
         # create it online
         catalog_new = self.isogeo.catalog.create(
-            workgroup_id=workgroup_test, catalog=catalog_new, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            catalog=catalog_new,
+            check_exists=0,
         )
 
         # checks
@@ -151,7 +161,9 @@ class TestCatalogs(unittest.TestCase):
         )
         # create it online
         catalog_new = self.isogeo.catalog.create(
-            workgroup_id=workgroup_test, catalog=catalog_new, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            catalog=catalog_new,
+            check_exists=0,
         )
 
         # checks
@@ -175,12 +187,16 @@ class TestCatalogs(unittest.TestCase):
 
         # create it online
         catalog_new_1 = self.isogeo.catalog.create(
-            workgroup_id=workgroup_test, catalog=catalog_local, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            catalog=catalog_local,
+            check_exists=0,
         )
 
         # try to create a catalog with the same name
         catalog_new_2 = self.isogeo.catalog.create(
-            workgroup_id=workgroup_test, catalog=catalog_local, check_exists=1
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            catalog=catalog_local,
+            check_exists=1,
         )
 
         # check if object has not been created
@@ -194,7 +210,7 @@ class TestCatalogs(unittest.TestCase):
         """GET :groups/{workgroup_uuid}/catalogs}"""
         # retrieve workgroup catalogs
         wg_catalogs = self.isogeo.catalog.catalogs(
-            workgroup_id=workgroup_test, caching=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
         )
         # parse and test object loader
         for i in wg_catalogs:
@@ -222,13 +238,45 @@ class TestCatalogs(unittest.TestCase):
             self.assertEqual(catalog.count, i.get("count"))
             self.assertEqual(catalog.name, i.get("name"))
 
+    def test_catalog_statistics(self):
+        """GET :catalogs/{catalog_uuid}/statistics"""
+        wg_catalogs = self.isogeo.catalog.catalogs(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
+        )
+        catalog_id = sample(wg_catalogs, 1)[0].get("_id")
+        # get
+        catalog_statistics = self.isogeo.catalog.statistics(catalog_id)
+        # check
+        self.assertIsInstance(catalog_statistics, dict)
+
+    def test_catalog_statistics_tag(self):
+        """GET :catalogs/{catalog_uuid}/statistics/tag/{tag_name}"""
+        wg_catalogs = self.isogeo.catalog.catalogs(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
+        )
+        catalog_id = sample(wg_catalogs, 1)[0].get("_id")
+        # get
+        for i in CatalogStatisticsTags:
+            catalog_statistics_tag = self.isogeo.catalog.statistics_by_tag(
+                catalog_id, i.value
+            )
+            # check
+            self.assertIsInstance(catalog_statistics_tag, (list, tuple))
+
+        # test bad tag
+        with self.assertRaises(ValueError):
+            self.isogeo.catalog.statistics_by_tag(catalog_id, "coordinateSystem")
+            self.isogeo.catalog.statistics_by_tag(catalog_id, "catalog")
+
     # -- PUT/PATCH --
     def test_catalogs_update(self):
         """PUT :groups/{workgroup_uuid}/catalogs/{catalog_uuid}}"""
         # create a new catalog
         catalog_fixture = Catalog(name="{}".format(get_test_marker()))
         catalog_fixture = self.isogeo.catalog.create(
-            workgroup_id=workgroup_test, catalog=catalog_fixture, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            catalog=catalog_fixture,
+            check_exists=0,
         )
 
         # modify local object

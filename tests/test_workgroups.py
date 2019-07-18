@@ -33,7 +33,7 @@ from dotenv import load_dotenv
 # module target
 from isogeo_pysdk import Contact, IsogeoSession, Workgroup
 from isogeo_pysdk import __version__ as pysdk_version
-from isogeo_pysdk.enums import StatisticsTags
+from isogeo_pysdk.enums import WorkgroupStatisticsTags
 
 # #############################################################################
 # ######## Globals #################
@@ -46,11 +46,6 @@ if Path("dev.env").exists():
 hostname = gethostname()
 
 # API access
-app_script_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
-app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
-platform = environ.get("ISOGEO_PLATFORM", "qa")
-user_email = environ.get("ISOGEO_USER_NAME")
-user_password = environ.get("ISOGEO_USER_PASSWORD")
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
@@ -99,7 +94,10 @@ class TestWorkgroups(unittest.TestCase):
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
         # getting a token
-        cls.isogeo.connect(username=user_email, password=user_password)
+        cls.isogeo.connect(
+            username=environ.get("ISOGEO_USER_NAME"),
+            password=environ.get("ISOGEO_USER_PASSWORD"),
+        )
 
     def setUp(self):
         """Executed before each test."""
@@ -272,12 +270,12 @@ class TestWorkgroups(unittest.TestCase):
     def test_workgroup_statistics_tag(self):
         """GET :groups/{workgroup_uuid}/statistics/tag/{tag_name}"""
         # get
-        for i in StatisticsTags:
+        for i in WorkgroupStatisticsTags:
             workgroup_statistics_tag = self.isogeo.workgroup.statistics_by_tag(
                 WORKGROUP_TEST_FIXTURE_UUID, i.value
             )
             # check
-            self.assertIsInstance(workgroup_statistics_tag, list)
+            self.assertIsInstance(workgroup_statistics_tag, (list, tuple))
 
         # test bad tag
         with self.assertRaises(ValueError):

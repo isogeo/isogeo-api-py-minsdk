@@ -14,9 +14,13 @@
 # Standard library
 import logging
 
+# 3rd party
+from requests.exceptions import Timeout
+
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
+from isogeo_pysdk.enums import CatalogStatisticsTags
 from isogeo_pysdk.models import Catalog
 from isogeo_pysdk.utils import IsogeoUtils
 
@@ -354,6 +358,91 @@ class ApiCatalog:
 
         # end of method
         return new_catalog
+
+    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def statistics(self, catalog_id: str) -> dict:
+        """Returns statistics for the specified catalog.
+
+        :param str catalog_id: catalog UUID
+        """
+        # check catalog UUID
+        if not checker.check_is_uuid(catalog_id):
+            raise ValueError("Catalog ID is not a correct UUID: {}".format(catalog_id))
+        else:
+            pass
+
+        # URL builder
+        url_catalog_statistics = utils.get_request_base_url(
+            route="catalogs/{}/statistics".format(catalog_id)
+        )
+
+        # request
+        req_catalog_statistics = self.api_client.get(
+            url=url_catalog_statistics,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_catalog_statistics)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_catalog_statistics.json()
+
+    @ApiDecorators._check_bearer_validity
+    def statistics_by_tag(self, catalog_id: str, tag: str) -> dict:
+        """Returns statistics on a specific tag for the specified catalog.
+
+        Be careful: if an invalid character is present into the response (e.g. contact.name = 'bureau GF-3A'), a ConnectionError / ReadTimeout will be raised.
+
+        :param str catalog_id: catalog UUID
+        :param str tag: tag name. Must be one of: catalog, coordinate-system, format, keyword:inspire-theme, keyword, owner
+        """
+        # check catalog UUID
+        if not checker.check_is_uuid(catalog_id):
+            raise ValueError("Catalog ID is not a correct UUID: {}".format(catalog_id))
+        else:
+            pass
+
+        # check tag
+        if not CatalogStatisticsTags.has_value(tag) or tag == "catalog":
+            raise ValueError(
+                "Tag name '{}' is not one of accepted values: {} (except 'catalog')".format(
+                    tag, CatalogStatisticsTags
+                )
+            )
+
+        # URL builder
+        url_catalog_statistics = utils.get_request_base_url(
+            route="catalogs/{}/statistics/tag/{}".format(catalog_id, tag)
+        )
+
+        # request
+        try:
+            req_catalog_statistics = self.api_client.get(
+                url=url_catalog_statistics,
+                headers=self.api_client.header,
+                proxies=self.api_client.proxies,
+                verify=self.api_client.ssl,
+                timeout=self.api_client.timeout,
+            )
+        except Timeout as e:
+            logger.error(
+                "Request failed (timeout) but maybe (probably) it occurred because of a special "
+                "character in an entity string. Exception: {}".format(e)
+            )
+            return False, 500
+
+        # checking response
+        req_check = checker.check_api_response(req_catalog_statistics)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_catalog_statistics.json()
 
 
 # ##############################################################################
