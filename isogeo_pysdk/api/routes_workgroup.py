@@ -17,6 +17,7 @@ import logging
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
+from isogeo_pysdk.enums import StatisticsTags
 from isogeo_pysdk.models import Contact, Workgroup
 from isogeo_pysdk.utils import IsogeoUtils
 
@@ -350,6 +351,84 @@ class ApiWorkgroup:
             return req_check
 
         return req_workgroup_statistics.json()
+
+    @ApiDecorators._check_bearer_validity
+    def statistics_by_tag(self, workgroup_id: str, tag: str) -> dict:
+        """Returns statistics for the specified workgroup.
+        See: http://help.isogeo.com/api/complete/index.html#operation--groups--gid--statistics-tag--tag--get
+
+        :param str workgroup_id: workgroup UUID
+        :param str tag: tag name. Must be one of: catalog, coordinate-system, format, keyword:inspire-theme, keyword, owner
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # check tag
+        if not StatisticsTags.has_value(tag):
+            raise ValueError(
+                "Tag name '{}' is not one of accepted values: {}".format(
+                    tag, StatisticsTags
+                )
+            )
+
+        # URL builder
+        url_workgroup_statistics = utils.get_request_base_url(
+            route="/groups/{}/statistics/tag/{}".format(workgroup_id, tag)
+        )
+
+        # request
+        req_workgroup_statistics = self.api_client.get(
+            url=url_workgroup_statistics,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_workgroup_statistics)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_workgroup_statistics.json()
+
+    @ApiDecorators._check_bearer_validity
+    def users(self, workgroup_id: str) -> dict:
+        """Returns users for the specified workgroup.
+
+        :param str workgroup_id: workgroup UUID
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # URL builder
+        url_workgroup_users = utils.get_request_base_url(route="/users")
+
+        # request
+        req_workgroup_users = self.api_client.get(
+            url=url_workgroup_users,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_workgroup_users)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_workgroup_users.json()
 
 
 # ##############################################################################

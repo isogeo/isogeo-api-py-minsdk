@@ -34,6 +34,7 @@ from isogeo_pysdk.enums import (
     MetadataSubresources,
     SessionStatus,
     ShareTypes,
+    StatisticsTags,
 )
 
 
@@ -159,6 +160,15 @@ class TestEnums(unittest.TestCase):
         self.assertFalse("Group" in ShareTypes.__members__)
         for i in ShareTypes:
             self.assertIsInstance(i.value, int)
+
+    def test_statistics_tags(self):
+        """Check workgroup statistics tags names"""
+        self.assertEqual(len(StatisticsTags), 6)
+        self.assertTrue("catalog" in StatisticsTags.__members__)
+        self.assertFalse("Catalog" in StatisticsTags.__members__)  # case sensitive
+        self.assertTrue(StatisticsTags.has_value("coordinate-system"))
+        for i in StatisticsTags:
+            self.assertIsInstance(i.value, str)
 
 
 # ##############################################################################

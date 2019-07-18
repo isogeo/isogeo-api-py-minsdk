@@ -14,3 +14,4 @@ from .metadata_subresources import MetadataSubresources  # noqa: F401
 from .metadata_types import MetadataTypes  # noqa: F401
 from .session_status import SessionStatus  # noqa: F401
 from .share_types import ShareTypes  # noqa: F401
+from .statistics_tags import StatisticsTags  # noqa: F401

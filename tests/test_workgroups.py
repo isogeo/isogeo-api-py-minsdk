@@ -25,13 +25,14 @@ from socket import gethostname
 from sys import exit, _getframe
 from time import gmtime, strftime
 import unittest
+import urllib3
 
 # 3rd party
 from dotenv import load_dotenv
 
 # module target
 from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Contact, Workgroup
-
+from isogeo_pysdk.enums import StatisticsTags
 
 # #############################################################################
 # ######## Globals #################
@@ -49,7 +50,8 @@ app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
 platform = environ.get("ISOGEO_PLATFORM", "qa")
 user_email = environ.get("ISOGEO_USER_NAME")
 user_password = environ.get("ISOGEO_USER_PASSWORD")
-workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
+WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -83,6 +85,10 @@ class TestWorkgroups(unittest.TestCase):
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
+
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
 
         # API connection
         cls.isogeo = IsogeoSession(
@@ -141,7 +147,7 @@ class TestWorkgroups(unittest.TestCase):
     # def test_workgroups_create_complete(self):
     #     """POST :groups/}"""
     #     # to create a workgroup, a contact is required
-    #     existing_wg = Workgroup(self.isogeo.workgroup(workgroup_id=workgroup_test))
+    #     existing_wg = Workgroup(self.isogeo.workgroup(workgroup_id=WORKGROUP_TEST_FIXTURE_UUID))
     #     new_wg = self.isogeo.create(workgroup=existing_wg)
 
     #     # checks
@@ -229,10 +235,22 @@ class TestWorkgroups(unittest.TestCase):
     def test_workgroup_statistics(self):
         """GET :groups/{workgroup_uuid}/statistics"""
         # get
-        workgroup_statistics = self.isogeo.workgroup.statistics(workgroup_test)
+        workgroup_statistics = self.isogeo.workgroup.statistics(
+            WORKGROUP_TEST_FIXTURE_UUID
+        )
         # check
         self.assertIsInstance(workgroup_statistics, dict)
         self.assertEqual(len(workgroup_statistics), 12)
+
+    def test_workgroup_statistics_tag(self):
+        """GET :groups/{workgroup_uuid}/statistics/tag/{tag_name}"""
+        # get
+        for i in StatisticsTags:
+            workgroup_statistics_tag = self.isogeo.workgroup.statistics_by_tag(
+                WORKGROUP_TEST_FIXTURE_UUID, i.value
+            )
+            # check
+            self.assertIsInstance(workgroup_statistics_tag, list)
 
     # -- PUT/PATCH --
     # def test_workgroups_update(self):
