@@ -66,7 +66,7 @@ class IsogeoSession(OAuth2Session):
         lang: str = "en",
         platform: str = "qa",
         proxy: dict = None,
-        timeout: tuple = (5, 30),
+        timeout: tuple = (15, 45),
         # additional
         **kwargs,
     ):
@@ -203,10 +203,6 @@ class IsogeoSession(OAuth2Session):
         self.thesaurus = api.ApiThesaurus(self)
         self.workgroup = api.ApiWorkgroup(self)
 
-        # get API version
-        logger.debug("Isogeo API version: {}".format(utils.get_isogeo_version()))
-        logger.debug("Isogeo DB version: {}".format(utils.get_isogeo_version("db")))
-
         return super().__init__(
             client_id=client_id,
             client=self.client,
@@ -251,7 +247,12 @@ class IsogeoSession(OAuth2Session):
                 "user-agent": self.app_name,
             }
         elif self.auth_mode == "user_private":
-            return {"Accept-Encoding": "gzip, deflate", "User-Agent": self.app_name}
+            return {
+                "Accept-Encoding": "gzip, deflate, br",
+                "User-Agent": self.app_name,
+                # "Content-Type": "application/json; charset=utf-8",
+                # "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8"
+            }
         else:
             pass
 
