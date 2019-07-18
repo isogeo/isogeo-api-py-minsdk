@@ -123,7 +123,7 @@ class TestAccount(unittest.TestCase):
 
     def test_account_memberships(self):
         """GET :/account/memberships}"""
-        me = self.isogeo.account.memberships()
+        self.isogeo.account.memberships()
 
     # -- PUT/PATCH --
     def test_update(self):
