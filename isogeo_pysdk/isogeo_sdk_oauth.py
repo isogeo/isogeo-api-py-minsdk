@@ -83,6 +83,7 @@ class IsogeoSession(OAuth2Session):
         # -- CACHE
         # platform
         self._applications_names = {}  # Isogeo applications by names
+        self._directives = {}  # EU environment directives used as INSPIRE limitations
         self._shares_names = {}  # Isogeo applications by names
         self._thesauri_codes = {}  # Isogeo thesauri by names
         self._workgroups_names = {}  # Isogeo workgroups by names
@@ -193,6 +194,7 @@ class IsogeoSession(OAuth2Session):
         self.catalog = api.ApiCatalog(self)
         self.contact = api.ApiContact(self)
         self.datasource = api.ApiDatasource(self)
+        self.directive = api.ApiDirective(self)
         self.keyword = api.ApiKeyword(self)
         self.license = api.ApiLicense(self)
         self.metadata = api.ApiResource(self)
