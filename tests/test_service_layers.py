@@ -231,15 +231,20 @@ class TestServiceLayers(unittest.TestCase):
             self.assertEqual(layer.titles, i.get("titles"))
 
     def test_layers_detailed(self):
-        """GET :resources/{metadata_uuid}/layers/{layer_uuid}}"""
+        """GET :resources/{metadata_uuid}/layers/{layer_uuid}"""
+        # get layers
+        md_layers = self.isogeo.metadata.layers.listing(
+            self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID)
+        )
+        # pick one
+        layer_id = sample(md_layers, 1)[0].get("_id")
         self.isogeo.metadata.layers.layer(
-            metadata_id=METADATA_TEST_FIXTURE_UUID,
-            layer_id="77659ebc532a4ed3a1ef326af18348f0",
+            metadata_id=METADATA_TEST_FIXTURE_UUID, layer_id=layer_id
         )
 
     # -- PUT/PATCH --
     def test_layers_update(self):
-        """PUT :groups/{workgroup_uuid}/layers/{layer_uuid}"""
+        """PUT :resources/{metadata_uuid}/layers/{layer_uuid}"""
         # var
         layer_name = self.discriminator
         layer_title = [

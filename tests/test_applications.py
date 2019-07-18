@@ -17,32 +17,29 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
+import unittest
+import urllib3
+from os import environ
+from pathlib import Path
 from random import sample
 from socket import gethostname
-from sys import exit, _getframe
-from time import gmtime, strftime
-import unittest
+from sys import _getframe, exit
+from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
 
-
 # module target
-from isogeo_pysdk import (
-    IsogeoSession,
-    __version__ as pysdk_version,
-    Application,
-    Workgroup,
-)
-
+from isogeo_pysdk import Application, IsogeoSession, Workgroup
+from isogeo_pysdk import __version__ as pysdk_version
 
 # #############################################################################
 # ######## Globals #################
 # ##################################
 
-load_dotenv("dev.env", override=True)
+if Path("dev.env").exists():
+    load_dotenv("dev.env", override=True)
 
 # host machine name - used as discriminator
 hostname = gethostname()
@@ -53,7 +50,7 @@ app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
 platform = environ.get("ISOGEO_PLATFORM", "qa")
 user_email = environ.get("ISOGEO_USER_NAME")
 user_password = environ.get("ISOGEO_USER_PASSWORD")
-workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -88,6 +85,10 @@ class TestApplications(unittest.TestCase):
         # class vars and attributes
         cls.li_fixtures_to_delete = []
 
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
+
         # API connection
         cls.isogeo = IsogeoSession(
             client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
@@ -107,6 +108,7 @@ class TestApplications(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
+        sleep(0.5)
         pass
 
     @classmethod
@@ -225,7 +227,7 @@ class TestApplications(unittest.TestCase):
         """GET :/groups/{workgroup_uiid}/applications}"""
         # retrieve workgroup applications
         wg_applications = self.isogeo.application.applications(
-            workgroup_id=workgroup_test, caching=1
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
         )
         self.assertIsInstance(wg_applications, list)
         # parse and test object loader

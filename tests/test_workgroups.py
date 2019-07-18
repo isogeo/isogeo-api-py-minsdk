@@ -17,21 +17,22 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
+import unittest
+import urllib3
+from os import environ
 from pathlib import Path
 from random import sample
 from socket import gethostname
-from sys import exit, _getframe
-from time import gmtime, strftime
-import unittest
-import urllib3
+from sys import _getframe, exit
+from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Contact, Workgroup
+from isogeo_pysdk import Contact, IsogeoSession, Workgroup
+from isogeo_pysdk import __version__ as pysdk_version
 from isogeo_pysdk.enums import StatisticsTags
 
 # #############################################################################
@@ -109,6 +110,7 @@ class TestWorkgroups(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
+        sleep(0.5)
         pass
 
     @classmethod
@@ -244,9 +246,7 @@ class TestWorkgroups(unittest.TestCase):
     def test_workgroup_limits(self):
         """GET :groups/{workgroup_uuid}/limits"""
         # get
-        workgroup_limits = self.isogeo.workgroup.limits(
-            WORKGROUP_TEST_FIXTURE_UUID
-        )
+        workgroup_limits = self.isogeo.workgroup.limits(WORKGROUP_TEST_FIXTURE_UUID)
         # check
         self.assertIsInstance(workgroup_limits, dict)
 
