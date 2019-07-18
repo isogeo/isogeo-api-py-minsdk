@@ -318,6 +318,111 @@ class ApiWorkgroup:
 
     # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity
+    def invitations(self, workgroup_id: str) -> dict:
+        """Returns active invitations (including expired) for the specified workgroup.
+
+        :param str workgroup_id: workgroup UUID
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # URL builder
+        url_workgroup_invitations = utils.get_request_base_url(
+            route="/groups/{}/invitations".format(workgroup_id)
+        )
+
+        # request
+        req_workgroup_invitations = self.api_client.get(
+            url=url_workgroup_invitations,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_workgroup_invitations)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_workgroup_invitations.json()
+
+    @ApiDecorators._check_bearer_validity
+    def limits(self, workgroup_id: str) -> dict:
+        """Returns limits for the specified workgroup.
+
+        :param str workgroup_id: workgroup UUID
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # URL builder
+        url_workgroup_limits = utils.get_request_base_url(
+            route="/groups/{}/limits".format(workgroup_id)
+        )
+
+        # request
+        req_workgroup_limits = self.api_client.get(
+            url=url_workgroup_limits,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_workgroup_limits)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_workgroup_limits.json()
+
+    @ApiDecorators._check_bearer_validity
+    def memberships(self, workgroup_id: str) -> dict:
+        """Returns memberships for the specified workgroup.
+
+        :param str workgroup_id: workgroup UUID
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # URL builder
+        url_workgroup_memberships = utils.get_request_base_url(
+            route="/groups/{}/memberships".format(workgroup_id)
+        )
+
+        # request
+        req_workgroup_memberships = self.api_client.get(
+            url=url_workgroup_memberships,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_workgroup_memberships)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_workgroup_memberships.json()
+
+    @ApiDecorators._check_bearer_validity
     def statistics(self, workgroup_id: str) -> dict:
         """Returns statistics for the specified workgroup.
 
@@ -396,39 +501,6 @@ class ApiWorkgroup:
             return req_check
 
         return req_workgroup_statistics.json()
-
-    @ApiDecorators._check_bearer_validity
-    def users(self, workgroup_id: str) -> dict:
-        """Returns users for the specified workgroup.
-
-        :param str workgroup_id: workgroup UUID
-        """
-        # check workgroup UUID
-        if not checker.check_is_uuid(workgroup_id):
-            raise ValueError(
-                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
-            )
-        else:
-            pass
-
-        # URL builder
-        url_workgroup_users = utils.get_request_base_url(route="/users")
-
-        # request
-        req_workgroup_users = self.api_client.get(
-            url=url_workgroup_users,
-            headers=self.api_client.header,
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-            timeout=self.api_client.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_workgroup_users)
-        if isinstance(req_check, tuple):
-            return req_check
-
-        return req_workgroup_users.json()
 
 
 # ##############################################################################

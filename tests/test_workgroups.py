@@ -232,6 +232,33 @@ class TestWorkgroups(unittest.TestCase):
 
         self.assertIsInstance(workgroup, Workgroup)
 
+    def test_workgroup_invitations(self):
+        """GET :groups/{workgroup_uuid}/invitations"""
+        # get
+        workgroup_invitations = self.isogeo.workgroup.invitations(
+            WORKGROUP_TEST_FIXTURE_UUID
+        )
+        # check
+        self.assertIsInstance(workgroup_invitations, list)
+
+    def test_workgroup_limits(self):
+        """GET :groups/{workgroup_uuid}/limits"""
+        # get
+        workgroup_limits = self.isogeo.workgroup.limits(
+            WORKGROUP_TEST_FIXTURE_UUID
+        )
+        # check
+        self.assertIsInstance(workgroup_limits, dict)
+
+    def test_workgroup_memberships(self):
+        """GET :groups/{workgroup_uuid}/memberships"""
+        # get
+        workgroup_memberships = self.isogeo.workgroup.memberships(
+            WORKGROUP_TEST_FIXTURE_UUID
+        )
+        # check
+        self.assertIsInstance(workgroup_memberships, list)
+
     def test_workgroup_statistics(self):
         """GET :groups/{workgroup_uuid}/statistics"""
         # get
@@ -251,6 +278,12 @@ class TestWorkgroups(unittest.TestCase):
             )
             # check
             self.assertIsInstance(workgroup_statistics_tag, list)
+
+        # test bad tag
+        with self.assertRaises(ValueError):
+            self.isogeo.workgroup.statistics_by_tag(
+                WORKGROUP_TEST_FIXTURE_UUID, "coordinateSystem"
+            )
 
     # -- PUT/PATCH --
     # def test_workgroups_update(self):
