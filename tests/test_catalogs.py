@@ -31,7 +31,7 @@ from time import gmtime, sleep, strftime
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import Catalog, IsogeoSession
+from isogeo_pysdk import Catalog, IsogeoSession, Share
 from isogeo_pysdk import __version__ as pysdk_version
 from isogeo_pysdk.enums import CatalogStatisticsTags
 
@@ -237,6 +237,22 @@ class TestCatalogs(unittest.TestCase):
             self.assertEqual(catalog.code, i.get("code"))
             self.assertEqual(catalog.count, i.get("count"))
             self.assertEqual(catalog.name, i.get("name"))
+
+    def test_catalog_shares(self):
+        """GET :catalogs/{catalog_uuid}/shares"""
+        # pick a random catalog
+        wg_catalogs = self.isogeo.catalog.catalogs(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
+        )
+        catalog_id = sample(wg_catalogs, 1)[0].get("_id")
+        # retrieve shares
+        catalog_shares = self.isogeo.catalog.shares(catalog_id)
+        # check container
+        self.assertIsInstance(catalog_shares, list)
+        # check content
+        if len(catalog_shares):
+            for i in catalog_shares:
+                Share(**i)
 
     def test_catalog_statistics(self):
         """GET :catalogs/{catalog_uuid}/statistics"""

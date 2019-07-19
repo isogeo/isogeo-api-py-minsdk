@@ -362,9 +362,7 @@ class ApiCatalog:
 
     # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity
-    def associate_metadata(
-        self, metadata: Metadata, catalog: Catalog
-    ) -> Response:
+    def associate_metadata(self, metadata: Metadata, catalog: Catalog) -> Response:
         """Associate a metadata with a catalog.
 
         If the specified catalog is already associated, the response is still 204.
@@ -461,6 +459,41 @@ class ApiCatalog:
         # end of method
         return req_catalog_dissociation
 
+    @ApiDecorators._check_bearer_validity
+    def shares(self, catalog_id: str) -> list:
+        """Returns shares for the specified catalog.
+
+        :param str catalog_id: catalog UUID
+
+        :return: list of Shares containgin the catalog
+        :rtype: list
+        """
+        # check catalog UUID
+        if not checker.check_is_uuid(catalog_id):
+            raise ValueError("Catalog ID is not a correct UUID: {}".format(catalog_id))
+        else:
+            pass
+
+        # URL builder
+        url_catalog_shares = utils.get_request_base_url(
+            route="catalogs/{}/shares".format(catalog_id)
+        )
+
+        # request
+        req_catalog_shares = self.api_client.get(
+            url=url_catalog_shares,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_catalog_shares)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_catalog_shares.json()
 
     @ApiDecorators._check_bearer_validity
     def statistics(self, catalog_id: str) -> dict:
