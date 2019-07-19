@@ -21,6 +21,7 @@ requests-oauthlib>=1.2.0
 
 # development
 black
+pre-commit
 python-dotenv
 
 # proxy
