@@ -1,14 +1,13 @@
+exclude: ^(.venv_packaging/|.venv*/|tests/dev/|tests/fixtures/)
 repos:
 -   repo: https://github.com/python/black
-    rev: master
+    rev: 19.3b0
     hooks:
     - id: black
-      exclude: .venv*
+      name: black
+      description: 'Formatting code using Black'
       exclude_types: [directory,]
-      language_version: python3.6
-      log_file: precommit.log
+      language_version: python3
+      log_file: dev_precommit.log
       types: [file, python]
-      args: [
-            "--target-version=py36",
-            "--exclude .venv*"
-      ]
+      verbose: true
