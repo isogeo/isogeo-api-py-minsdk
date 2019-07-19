@@ -10,4 +10,3 @@ repos:
       language_version: python3
       log_file: dev_precommit.log
       types: [file, python]
-      verbose: true
