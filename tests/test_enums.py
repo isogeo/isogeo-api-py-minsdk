@@ -165,7 +165,9 @@ class TestEnums(unittest.TestCase):
         """Check workgroup statistics tags names"""
         self.assertEqual(len(WorkgroupStatisticsTags), 7)
         self.assertTrue("catalog" in WorkgroupStatisticsTags.__members__)
-        self.assertFalse("Catalog" in WorkgroupStatisticsTags.__members__)  # case sensitive
+        self.assertFalse(
+            "Catalog" in WorkgroupStatisticsTags.__members__
+        )  # case sensitive
         self.assertTrue(WorkgroupStatisticsTags.has_value("coordinate-system"))
         for i in WorkgroupStatisticsTags:
             self.assertIsInstance(i.value, str)

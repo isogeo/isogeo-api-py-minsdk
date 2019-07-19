@@ -465,7 +465,7 @@ class ApiCatalog:
 
         :param str catalog_id: catalog UUID
 
-        :return: list of Shares containgin the catalog
+        :return: list of Shares containing the catalog
         :rtype: list
         """
         # check catalog UUID

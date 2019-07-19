@@ -124,7 +124,7 @@ class ApiLicense:
 
         # request
         req_license = self.api_client.get(
-            url_license,
+            url=url_license,
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
             verify=self.api_client.ssl,
