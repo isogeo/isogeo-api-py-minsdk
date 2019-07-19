@@ -28,7 +28,7 @@ class CoordinateSystem(object):
         '_tag': 'coordinate-system:31154',
         'code': 31154,
         'name': 'Zanderij / TM 54 NW'
-    },
+    }
     ```
     """
 
@@ -38,17 +38,20 @@ class CoordinateSystem(object):
       attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
     """
 
-    attr_types = {"_tag": str, "code": str, "name": str}
+    attr_types = {"_tag": str, "alias": str, "code": str, "name": str}
 
     attr_crea = {}
 
     attr_map = {}
 
-    def __init__(self, _tag: str = None, code: str = None, name: str = None):
+    def __init__(
+        self, _tag: str = None, alias: str = None, code: str = None, name: str = None
+    ):
         """CoordinateSystem model"""
 
         # default values for the object attributes/properties
         self.__tag = None
+        self._alias = None
         self._code = None
         self._name = None
 
@@ -56,6 +59,8 @@ class CoordinateSystem(object):
         # attributes are prefixed by an underscore '_'
         if _tag is not None:
             self.__tag = _tag
+        if alias is not None:
+            self._alias = alias
         if code is not None:
             self._code = code
         if name is not None:
@@ -72,6 +77,16 @@ class CoordinateSystem(object):
         """
         return self.__tag
 
+    # alias
+    @property
+    def alias(self) -> str:
+        """Gets the custom alias of this CoordinateSystem in a workgroup.
+
+        :return: The alias of this CoordinateSystem in a workgroup.
+        :rtype: str
+        """
+        return self._alias
+
     # EPSG code
     @property
     def code(self) -> str:
@@ -82,15 +97,6 @@ class CoordinateSystem(object):
         """
         return self._code
 
-    @code.setter
-    def code(self, code: str):
-        """Sets the code of this CoordinateSystem.
-
-        :param str code: The code of this CoordinateSystem.
-        """
-
-        self._code = code
-
     # name
     @property
     def name(self) -> str:
@@ -100,15 +106,6 @@ class CoordinateSystem(object):
         :rtype: str
         """
         return self._name
-
-    @name.setter
-    def name(self, name: str):
-        """Sets the name of this CoordinateSystem.
-
-        :param str name: The name of this CoordinateSystem.
-        """
-
-        self._name = name
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:

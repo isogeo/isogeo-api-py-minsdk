@@ -122,7 +122,7 @@ class TestCoordinateSystems(unittest.TestCase):
 
     # -- TESTS ---------------------------------------------------------
     # -- GET --
-    def test_coordinate_systems_listing(self):
+    def test_coordinate_systems_listing_global(self):
         """GET :/coordinate-systems/}"""
         # retrieve metadata coordinate_systems
         coordinate_systems = self.isogeo.coordinate_system.listing()
@@ -141,7 +141,30 @@ class TestCoordinateSystems(unittest.TestCase):
             self.assertEqual(coordinate_system.code, i.get("code"))
             self.assertEqual(coordinate_system.name, i.get("name"))
 
-    def test_coordinate_systems_detailed(self):
+    def test_coordinate_systems_listing_workgroup(self):
+        """GET :/groups/{workgroup_id}/coordinate-systems/}"""
+        # retrieve metadata coordinate_systems
+        coordinate_systems = self.isogeo.coordinate_system.listing(
+            WORKGROUP_TEST_FIXTURE_UUID
+        )
+        # check result
+        self.assertIsInstance(coordinate_systems, list)
+        # parse and test object loader
+        for i in coordinate_systems:
+            # load it
+            coordinate_system = CoordinateSystem(**i)
+            # tests attributes structure
+            self.assertTrue(hasattr(coordinate_system, "_tag"))
+            self.assertTrue(hasattr(coordinate_system, "alias"))
+            self.assertTrue(hasattr(coordinate_system, "code"))
+            self.assertTrue(hasattr(coordinate_system, "name"))
+            # tests attributes value
+            self.assertEqual(coordinate_system._tag, i.get("_tag"))
+            self.assertEqual(coordinate_system.alias, i.get("alias"))
+            self.assertEqual(coordinate_system.code, i.get("code"))
+            self.assertEqual(coordinate_system.name, i.get("name"))
+
+    def test_coordinate_systems_detailed_global(self):
         """GET :/coordinate-systems/{epsg_code}"""
         # pick a random srs
         if len(self.isogeo._coordinate_systems):
@@ -150,6 +173,22 @@ class TestCoordinateSystems(unittest.TestCase):
             coordinate_systems = self.isogeo.coordinate_system.listing()
 
         srs_code = sample(coordinate_systems, 1)[0].get("code")
+        # retrieve coordinate system with his EPSG code
+        srs_detailed = self.isogeo.srs.coordinate_system(srs_code)
+        # check result
+        self.assertIsInstance(srs_detailed, CoordinateSystem)
+
+    def test_coordinate_systems_detailed_workgroup(self):
+        """GET :/groups/{workgroup_id}/coordinate-systems/{epsg_code}"""
+        # pick a random srs
+        if len(self.isogeo._wg_coordinate_systems):
+            wg_coordinate_systems = self.isogeo._wg_coordinate_systems
+        else:
+            wg_coordinate_systems = self.isogeo.coordinate_system.listing(
+                WORKGROUP_TEST_FIXTURE_UUID
+            )
+
+        srs_code = sample(wg_coordinate_systems, 1)[0].get("code")
         # retrieve coordinate system with his EPSG code
         srs_detailed = self.isogeo.srs.coordinate_system(srs_code)
         # check result

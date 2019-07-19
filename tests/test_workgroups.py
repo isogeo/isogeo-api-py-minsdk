@@ -232,6 +232,16 @@ class TestWorkgroups(unittest.TestCase):
 
         self.assertIsInstance(workgroup, Workgroup)
 
+    def test_workgroup_coordinate_systems(self):
+        """GET :groups/{workgroup_uuid}/coordinate-systems"""
+        # get
+        workgroup_coordinate_systems = self.isogeo.workgroup.coordinate_systems(
+            WORKGROUP_TEST_FIXTURE_UUID
+        )
+
+        # check
+        self.assertIsInstance(workgroup_coordinate_systems, list)
+
     def test_workgroup_invitations(self):
         """GET :groups/{workgroup_uuid}/invitations"""
         # get

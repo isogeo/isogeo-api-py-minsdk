@@ -4,7 +4,7 @@
 """
     Isogeo API v1 - API Routes for Workgroups entities
 
-    See: http://help.isogeo.com/api/complete/index.html
+    See: http://help.isogeo.com/api/complete/index.html#tag-workgroup
 """
 
 # #############################################################################
@@ -23,6 +23,9 @@ from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.enums import WorkgroupStatisticsTags
 from isogeo_pysdk.models import Contact, Workgroup
 from isogeo_pysdk.utils import IsogeoUtils
+
+# other routes
+from .routes_coordinate_systems import ApiCoordinateSystem
 
 # #############################################################################
 # ########## Global #############
@@ -52,6 +55,10 @@ class ApiWorkgroup:
         self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
             self.api_client.platform
         )
+
+        # sub routes
+        self.srs = ApiCoordinateSystem(self.api_client)
+
         # initialize
         super(ApiWorkgroup, self).__init__()
 
@@ -513,6 +520,19 @@ class ApiWorkgroup:
             return req_check
 
         return req_workgroup_statistics.json()
+
+    # -- Aliased methods ------------------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def coordinate_systems(self, workgroup_id: str, caching: bool = 1) -> list:
+        """Returns selected coordinate-systems for the specified workgroup.
+        It's just an alias for the ApiCoordinateSystem.listing method.
+
+        :param str workgroup_id: workgroup UUID
+        :param bool caching: option to cache the response
+
+        :rtype: list
+        """
+        return self.srs.listing(workgroup_id=workgroup_id, caching=caching)
 
 
 # ##############################################################################

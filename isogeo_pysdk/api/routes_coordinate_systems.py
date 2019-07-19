@@ -28,7 +28,6 @@ logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
 utils = IsogeoUtils()
 
-
 # #############################################################################
 # ########## Classes ###############
 # ##################################
@@ -52,13 +51,41 @@ class ApiCoordinateSystem:
         super(ApiCoordinateSystem, self).__init__()
 
     @ApiDecorators._check_bearer_validity
-    def listing(self, caching: bool = 1) -> list:
-        """Get coordinate-systems.
+    def listing(self, workgroup_id: str = None, caching: bool = 1) -> list:
+        """Get coordinate-systems in the whole Isogeo database or into a specific workgroup.
 
+        :param str workgroup_id: identifier of the owner workgroup. OPTIONNAL: if present, list SRS slected into the workgroup.
         :param bool caching: option to cache the response
+
+        :rtype: list
+
+        :Example:
+
+        >>> # list all coordinate-systems in the whole Isogeo database
+        >>> srs = isogeo.srs.listing()
+        >>> print(len(srs))
+        4301
+        >>> # list coordinate-systems which have been selected in a specific workgroup
+        >>> srs = isogeo.srs.listing(workgroup_id=WORKGROUP_UUID)
+        >>> print(len(srs))
+        5
         """
-        # request URL
-        url_coordinate_systems = utils.get_request_base_url(route="coordinate-systems")
+        # check if workgroup or global
+        if workgroup_id is None:
+            # request URL
+            url_coordinate_systems = utils.get_request_base_url(
+                route="coordinate-systems"
+            )
+        else:
+            # check workgroup UUID
+            if not checker.check_is_uuid(workgroup_id):
+                raise ValueError(
+                    "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+                )
+            # request URL
+            url_coordinate_systems = utils.get_request_base_url(
+                route="groups/{}/coordinate-systems".format(workgroup_id)
+            )
 
         # request
         req_coordinate_systems = self.api_client.get(
@@ -77,23 +104,33 @@ class ApiCoordinateSystem:
         coordinate_systems = req_coordinate_systems.json()
 
         # if caching use or store the workgroup coordinate_systems
-        if caching and not self.api_client._coordinate_systems:
+        if caching and workgroup_id is None:
             self.api_client._coordinate_systems = coordinate_systems
+        elif caching:
+            self.api_client._wg_coordinate_systems = coordinate_systems
+        else:
+            pass
 
         # end of method
         return coordinate_systems
 
     @ApiDecorators._check_bearer_validity
-    def coordinate_system(self, coordinate_system_code: str) -> CoordinateSystem:
-        """Get details about a specific coordinate_system.
+    def coordinate_system(
+        self, coordinate_system_code: str, workgroup_id: str = None
+    ) -> CoordinateSystem:
+        """Get details about a specific coordinate_system, from the whole Isogeo database or
+        into a specific workgroup (to get the SRS alias for example).
 
+        :param str workgroup_id: identifier of the owner workgroup. OPTIONNAL: if present, list SRS slected into the workgroup.
         :param str coordinate_system_id: EPSG code of the coordinate system
 
         :rtype: CoordinateSystem
 
         :Example:
 
+        >>> # list all coordinate-systems in the whole Isogeo database
         >>> srs = isogeo.srs.listing()
+        >>> # print details about the first SRS found
         >>> pprint.pprint(isogeo.srs.coordinate_system(srs[0].get("code")))
         {
             '_tag': 'coordinate-system:4143',
@@ -101,10 +138,24 @@ class ApiCoordinateSystem:
             'name': 'Abidjan 1987'
         }
         """
-        # coordinate_system route
-        url_coordinate_system = utils.get_request_base_url(
-            route="coordinate-systems/{}".format(coordinate_system_code)
-        )
+        # check if workgroup or global
+        if workgroup_id is None:
+            # request URL
+            url_coordinate_system = utils.get_request_base_url(
+                route="coordinate-systems/{}".format(coordinate_system_code)
+            )
+        else:
+            # check workgroup UUID
+            if not checker.check_is_uuid(workgroup_id):
+                raise ValueError(
+                    "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+                )
+            # request URL
+            url_coordinate_systems = utils.get_request_base_url(
+                route="groups/{}/coordinate-systems/{}".format(
+                    workgroup_id, coordinate_system_code
+                )
+            )
 
         # request
         req_coordinate_system = self.api_client.get(
