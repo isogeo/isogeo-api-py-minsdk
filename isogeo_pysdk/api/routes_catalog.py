@@ -16,12 +16,13 @@ import logging
 
 # 3rd party
 from requests.exceptions import Timeout
+from requests.models import Response
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.enums import CatalogStatisticsTags
-from isogeo_pysdk.models import Catalog
+from isogeo_pysdk.models import Catalog, Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -360,6 +361,107 @@ class ApiCatalog:
         return new_catalog
 
     # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def associate_metadata(
+        self, metadata: Metadata, catalog: Catalog
+    ) -> Response:
+        """Associate a metadata with a catalog.
+
+        If the specified catalog is already associated, the response is still 204.
+
+        :param Metadata metadata: metadata object to update
+        :param Catalog catalog: catalog model object to associate
+
+        :Example:
+
+        >>> isogeo.catalog.associate_metadata(
+            isogeo.metadata.metadata(METADATA_UUID),
+            isogeo.catalog.catalog(WORKGROUP_UUID, CATALOG_UUID)
+            ))
+        <Response [204]>
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # check catalog UUID
+        if not checker.check_is_uuid(catalog._id):
+            raise ValueError("Catalog ID is not a correct UUID: {}".format(catalog._id))
+        else:
+            pass
+
+        # URL
+        url_catalog_association = utils.get_request_base_url(
+            route="catalogs/{}/resources/{}".format(catalog._id, metadata._id)
+        )
+
+        # request
+        req_catalog_association = self.api_client.put(
+            url=url_catalog_association,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_catalog_association)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_catalog_association
+
+    @ApiDecorators._check_bearer_validity
+    def dissociate_metadata(self, metadata: Metadata, catalog: Catalog) -> Response:
+        """Removes the association between a metadata and a catalog.
+
+        If the specified catalog is not associated, the response is 404.
+
+        :param Metadata metadata: metadata object to update
+        :param Catalog catalog: catalog model object to associate
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # check catalog UUID
+        if not checker.check_is_uuid(catalog._id):
+            raise ValueError("Catalog ID is not a correct UUID: {}".format(catalog._id))
+        else:
+            pass
+
+        # URL
+        url_catalog_dissociation = utils.get_request_base_url(
+            route="catalogs/{}/resources/{}".format(catalog._id, metadata._id)
+        )
+
+        # request
+        req_catalog_dissociation = self.api_client.delete(
+            url=url_catalog_dissociation,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_catalog_dissociation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_catalog_dissociation
+
+
     @ApiDecorators._check_bearer_validity
     def statistics(self, catalog_id: str) -> dict:
         """Returns statistics for the specified catalog.
