@@ -94,7 +94,7 @@ class ApiServiceOperation:
 
     @ApiDecorators._check_bearer_validity
     def operation(self, metadata_id: str, operation_id: str) -> ServiceOperation:
-        """Get details about a specific service operation and 
+        """Get details about a specific service operation and
         expand the model with the parent service metadata '_id' reference.
 
         :param str metadata_id: metadata with operations
@@ -142,6 +142,51 @@ class ApiServiceOperation:
         # end of method
         return ServiceOperation(**service_operation_augmented)
 
+    @ApiDecorators._check_bearer_validity
+    def create(
+        self, metadata: Metadata, operation: ServiceOperation
+    ) -> ServiceOperation:
+        """Add a new operation to a metadata (= resource).
+
+        :param Metadata metadata: metadata (resource) to edit. Must be a service.
+        :param ServiceOperation ServiceOperation: service_operation object to create
+        """
+        # check metadata type
+        if metadata.type != "service":
+            raise TypeError(
+                "Operations routes are only available for metadata of services, not: {}".format(
+                    metadata.type
+                )
+            )
+        else:
+            pass
+
+        # URL
+        url_service_operation_create = utils.get_request_base_url(
+            route="resources/{}/operations/".format(metadata._id)
+        )
+
+        # request
+        req_new_service_operation = self.api_client.post(
+            url=url_service_operation_create,
+            json=operation.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_new_service_operation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # add parent resource id to keep tracking
+        service_operation_augmented = req_new_service_operation.json()
+        service_operation_augmented["parent_resource"] = metadata._id
+
+        # end of method
+        return ServiceOperation(**service_operation_augmented)
 
 # ##############################################################################
 # ##### Stand alone program ########
