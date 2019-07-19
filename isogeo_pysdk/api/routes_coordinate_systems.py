@@ -17,7 +17,7 @@ import logging
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import CoordinateSystem
+from isogeo_pysdk.models import CoordinateSystem, Workgroup
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -122,7 +122,7 @@ class ApiCoordinateSystem:
         into a specific workgroup (to get the SRS alias for example).
 
         :param str workgroup_id: identifier of the owner workgroup. OPTIONNAL: if present, list SRS slected into the workgroup.
-        :param str coordinate_system_id: EPSG code of the coordinate system
+        :param str coordinate_system_code: EPSG code of the coordinate system
 
         :rtype: CoordinateSystem
 
@@ -151,7 +151,7 @@ class ApiCoordinateSystem:
                     "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
                 )
             # request URL
-            url_coordinate_systems = utils.get_request_base_url(
+            url_coordinate_system = utils.get_request_base_url(
                 route="groups/{}/coordinate-systems/{}".format(
                     workgroup_id, coordinate_system_code
                 )
@@ -173,6 +173,113 @@ class ApiCoordinateSystem:
 
         # end of method
         return CoordinateSystem(**req_coordinate_system.json())
+
+    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def associate_workgroup(
+        self, coordinate_system: CoordinateSystem, workgroup: Workgroup = None
+    ) -> CoordinateSystem:
+        """Add a coordinate system to the workgroup selection or/adn edit the SRS custom alias.
+
+        :param CoordinateSystem coordinate_system: EPSG code of the coordinate system to add to the workgroup selection
+        :param Workgroup workgroup: identifier of the owner workgroup.
+
+        :rtype: CoordinateSystem
+
+        :Example:
+
+        >>> # retrieve the SRS
+        >>> coordsys = isogeo.srs.coordinate_system("4326")
+        >>> # add a custom alias
+        >>> coordsys.alias = "World SRS"
+        >>> # add it to the workgroup selection
+        >>> isogeo.srs.associate_workgroup(
+            workgroup=isogeo.workgroup.workgroup(WORKGROUP_UUID),
+            coordinate_system_code=coordsys
+            )
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup._id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup._id)
+            )
+        else:
+            pass
+
+        # request URL
+        url_coordinate_system_association = utils.get_request_base_url(
+            route="groups/{}/coordinate-systems/{}".format(
+                workgroup._id, coordinate_system.code
+            )
+        )
+
+        # request
+        req_coordinate_system = self.api_client.put(
+            url=url_coordinate_system_association,
+            json={"alias": coordinate_system.alias},
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_coordinate_system)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return CoordinateSystem(**req_coordinate_system.json())
+
+    @ApiDecorators._check_bearer_validity
+    def dissociate_workgroup(
+        self, coordinate_system_code: str, workgroup_id: str = None
+    ) -> CoordinateSystem:
+        """Remove a coordinate system from the workgroup selection.
+
+        :param str coordinate_system_code: EPSG code of the coordinate system to reomve from the workgroup selection
+        :param str workgroup_id: identifier of the owner workgroup.
+
+        :rtype: CoordinateSystem
+
+        :Example:
+
+        >>> isogeo.srs.dissociate_workgroup(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            coordinate_system_code="2154"
+            )
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
+        else:
+            pass
+
+        # request URL
+        url_coordinate_system_dissociation = utils.get_request_base_url(
+            route="groups/{}/coordinate-systems/{}".format(
+                workgroup_id, coordinate_system_code
+            )
+        )
+
+        # request
+        req_coordinate_system_dissociation = self.api_client.delete(
+            url=url_coordinate_system_dissociation,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_coordinate_system_dissociation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_coordinate_system_dissociation
 
 
 # ##############################################################################

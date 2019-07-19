@@ -87,6 +87,15 @@ class CoordinateSystem(object):
         """
         return self._alias
 
+    @alias.setter
+    def alias(self, alias: int):
+        """Sets the alias of this CoordinateSystem.
+
+        :param int alias: alias of associated resources to the CoordinateSystem
+        """
+
+        self._alias = alias
+
     # EPSG code
     @property
     def code(self) -> str:
