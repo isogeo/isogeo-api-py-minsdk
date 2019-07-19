@@ -139,80 +139,80 @@ class TestServiceOperations(unittest.TestCase):
 
     # -- TESTS ---------------------------------------------------------
     # -- POST --
-    def test_operations_create_basic(self):
-        """POST :resources/{metadata_uuid}/operations/}"""
-        # var
-        operation_name = strftime("%Y-%m-%d", gmtime())
-        operation_title = [
-            {
-                "lang": "fr",
-                "value": "{} - {}".format(get_test_marker(), self.discriminator),
-            }
-        ]
+    # def test_operations_create_basic(self):
+    #     """POST :resources/{metadata_uuid}/operations/}"""
+    #     # var
+    #     operation_name = strftime("%Y-%m-%d", gmtime())
+    #     operation_title = [
+    #         {
+    #             "lang": "fr",
+    #             "value": "{} - {}".format(get_test_marker(), self.discriminator),
+    #         }
+    #     ]
 
-        # create object locally
-        operation_new = ServiceOperation(name=operation_name, titles=operation_title)
+    #     # create object locally
+    #     operation_new = ServiceOperation(name=operation_name, titles=operation_title)
 
-        # create it online
-        operation_new = self.isogeo.metadata.operations.create(
-            metadata=self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID),
-            operation=operation_new,
-        )
+    #     # create it online
+    #     operation_new = self.isogeo.metadata.operations.create(
+    #         metadata=self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID),
+    #         operation=operation_new,
+    #     )
 
-        # add created operation to deletion
-        self.li_fixtures_to_delete.append(operation_new)
+    #     # add created operation to deletion
+    #     self.li_fixtures_to_delete.append(operation_new)
 
-    def test_operations_association(self):
-        """POST :resources/{service_uuid}/operations/{operation_uuid}/dataset/{dataset_uuid}"""
-        # var
-        metadata_service = self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID)
-        metadata_dataset = self.isogeo.metadata.metadata(
-            "6b5cc93626634d0e9b0d2c48eff96bc3"
-        )
-        operation_name = "{} - {}".format(get_test_marker(), self.discriminator)
-        operation_title = [
-            {
-                "lang": "fr",
-                "value": "{} - {}".format(get_test_marker(), self.discriminator),
-            }
-        ]
+    # def test_operations_association(self):
+    #     """POST :resources/{service_uuid}/operations/{operation_uuid}/dataset/{dataset_uuid}"""
+    #     # var
+    #     metadata_service = self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID)
+    #     metadata_dataset = self.isogeo.metadata.metadata(
+    #         "6b5cc93626634d0e9b0d2c48eff96bc3"
+    #     )
+    #     operation_name = "{} - {}".format(get_test_marker(), self.discriminator)
+    #     operation_title = [
+    #         {
+    #             "lang": "fr",
+    #             "value": "{} - {}".format(get_test_marker(), self.discriminator),
+    #         }
+    #     ]
 
-        # create object locally
-        operation_new = ServiceOperation(name=operation_name, titles=operation_title)
+    #     # create object locally
+    #     operation_new = ServiceOperation(name=operation_name, titles=operation_title)
 
-        # create it online
-        operation_created = self.isogeo.metadata.operations.create(
-            metadata=metadata_service, operation=operation_new
-        )
-        # associate it
-        self.isogeo.metadata.operations.associate_metadata(
-            service=metadata_service,
-            operation=operation_created,
-            dataset=metadata_dataset,
-        )
+    #     # create it online
+    #     operation_created = self.isogeo.metadata.operations.create(
+    #         metadata=metadata_service, operation=operation_new
+    #     )
+    #     # associate it
+    #     self.isogeo.metadata.operations.associate_metadata(
+    #         service=metadata_service,
+    #         operation=operation_created,
+    #         dataset=metadata_dataset,
+    #     )
 
-        # check association result
-        service_updated = self.isogeo.metadata.metadata(
-            metadata_id=metadata_service._id, include=["operations"]
-        )
+    #     # check association result
+    #     service_updated = self.isogeo.metadata.metadata(
+    #         metadata_id=metadata_service._id, include=["operations"]
+    #     )
 
-        li_operations_datasets = list(
-            filter(
-                lambda d: d.get("_id") == operation_created._id,
-                service_updated.operations,
-            )
-        )
-        self.assertIsInstance(li_operations_datasets[0].get("dataset"), dict)
+    #     li_operations_datasets = list(
+    #         filter(
+    #             lambda d: d.get("_id") == operation_created._id,
+    #             service_updated.operations,
+    #         )
+    #     )
+    #     self.assertIsInstance(li_operations_datasets[0].get("dataset"), dict)
 
-        # -- dissociate
-        self.isogeo.metadata.operations.dissociate_metadata(
-            service=metadata_service,
-            operation=operation_created,
-            dataset=metadata_dataset,
-        )
+    #     # -- dissociate
+    #     self.isogeo.metadata.operations.dissociate_metadata(
+    #         service=metadata_service,
+    #         operation=operation_created,
+    #         dataset=metadata_dataset,
+    #     )
 
-        # add created operation to deletion
-        self.li_fixtures_to_delete.append(operation_created)
+    #     # add created operation to deletion
+    #     self.li_fixtures_to_delete.append(operation_created)
 
     # -- GET --
     def test_operations_listing(self):
@@ -255,41 +255,41 @@ class TestServiceOperations(unittest.TestCase):
         self.assertIsInstance(operation, ServiceOperation)
 
     # -- PUT/PATCH --
-    def test_operations_update(self):
-        """PUT :resources/{metadata_uuid}/operations/{operation_uuid}"""
-        # var
-        operation_name = self.discriminator
-        operation_title = [
-            {
-                "lang": "fr",
-                "value": "{} - {}".format(get_test_marker(), self.discriminator),
-            }
-        ]
+    # def test_operations_update(self):
+    #     """PUT :resources/{metadata_uuid}/operations/{operation_uuid}"""
+    #     # var
+    #     operation_name = self.discriminator
+    #     operation_title = [
+    #         {
+    #             "lang": "fr",
+    #             "value": "{} - {}".format(get_test_marker(), self.discriminator),
+    #         }
+    #     ]
 
-        # create object locally
-        operation_new = ServiceOperation(name=operation_name, titles=operation_title)
+    #     # create object locally
+    #     operation_new = ServiceOperation(name=operation_name, titles=operation_title)
 
-        # create it online
-        operation_created = self.isogeo.metadata.operations.create(
-            metadata=self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID),
-            operation=operation_new,
-        )
+    #     # create it online
+    #     operation_created = self.isogeo.metadata.operations.create(
+    #         metadata=self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID),
+    #         operation=operation_new,
+    #     )
 
-        # modify local object
-        operation_created.name = "{} - UPDATED".format(operation_name)
+    #     # modify local object
+    #     operation_created.name = "{} - UPDATED".format(operation_name)
 
-        # update the online operation
-        operation_updated = self.isogeo.metadata.operations.update(operation_created)
-        self.assertEqual(operation_updated.name, "{} - UPDATED".format(operation_name))
+    #     # update the online operation
+    #     operation_updated = self.isogeo.metadata.operations.update(operation_created)
+    #     self.assertEqual(operation_updated.name, "{} - UPDATED".format(operation_name))
 
-        # check if the change is effective
-        operation_to_check = self.isogeo.metadata.operations.operation(
-            metadata_id=METADATA_TEST_FIXTURE_UUID, operation_id=operation_created._id
-        )
-        self.assertEqual(operation_to_check.name, "{} - UPDATED".format(operation_name))
+    #     # check if the change is effective
+    #     operation_to_check = self.isogeo.metadata.operations.operation(
+    #         metadata_id=METADATA_TEST_FIXTURE_UUID, operation_id=operation_created._id
+    #     )
+    #     self.assertEqual(operation_to_check.name, "{} - UPDATED".format(operation_name))
 
-        # add created operation to deletion
-        self.li_fixtures_to_delete.append(operation_to_check)
+    #     # add created operation to deletion
+    #     self.li_fixtures_to_delete.append(operation_to_check)
 
 
 # ##############################################################################
