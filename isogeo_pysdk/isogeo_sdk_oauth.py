@@ -95,6 +95,7 @@ class IsogeoSession(OAuth2Session):
         self._wg_catalogs_names = {}  # workgroup catalogs by names
         self._wg_contacts_emails = {}  # workgroup contacts by emails
         self._wg_contacts_names = {}  # workgroup contacts by names
+        self._wg_coordinate_systems = []  # workgroup coordinate-systems
         self._wg_datasources_names = {}  # workgroup datasources by names
         self._wg_datasources_urls = {}  # workgroup datasources by urls (location)
         self._wg_licenses_names = {}  # workgroup licenses by names
