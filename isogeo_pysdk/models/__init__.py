@@ -4,6 +4,7 @@
 from .application import Application  # noqa: F401
 from .catalog import Catalog  # noqa: F401
 from .contact import Contact  # noqa: F401
+from .coordinates_system import CoordinateSystem  # noqa: F401
 from .event import Event  # noqa: F401
 from .datasource import Datasource  # noqa: F401
 from .directive import Directive  # noqa: F401
