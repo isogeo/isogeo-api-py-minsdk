@@ -165,10 +165,16 @@ class IsogeoChecker(object):
         # end of method
         return token
 
-    def check_api_response(self, response) -> tuple:
+    def check_api_response(self, response) -> True or tuple:
         """Check API response and raise exceptions if needed.
 
         :param requests.models.Response response: request response to check
+
+        :rtype: True or tuple
+
+        :Example:
+        >>> checker.check_api_response(<Response [500]>)
+        (False, 500)
         """
         # check response
         if response.status_code == 200:
