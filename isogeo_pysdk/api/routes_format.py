@@ -18,12 +18,10 @@
 # Standard library
 import logging
 
-# 3rd party
-from requests.models import Response
-
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
+from isogeo_pysdk.enums import MetadataTypes
 from isogeo_pysdk.models import Format
 from isogeo_pysdk.utils import IsogeoUtils
 
@@ -58,89 +56,12 @@ class ApiFormat:
         # initialize
         super(ApiFormat, self).__init__()
 
-    # @ApiDecorators._check_bearer_validity
-    # def search(
-    #     self,
-    #     formats_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
-    #     query: str = "",
-    #     offset: int = 0,
-    #     order_by: str = "text",  # available values : count.group, count.isogeo, text
-    #     order_dir: str = "desc",
-    #     page_size: int = 20,
-    #     specific_md: list = [],
-    #     specific_tag: list = [],
-    #     include: list = ["_abilities", "count"],
-    #     caching: bool = 1,
-    # ) -> FormatSearch:
-    #     """Search for formats within a specific formats or a specific group.
-
-    #     :param str formats_id: formats UUID
-    #     :param str query: search terms, equivalent of **q** parameter in API.
-    #     :param int offset: offset to start page size from a specific results index
-    #     :param str order_by: sorting results. Available values:
-
-    #       * 'count.isogeo': count of associated resources within Isogeo
-    #       * 'text': alphabetical order  [DEFAULT if relevance is null]
-
-    #     :param str order_dir: sorting direction. Available values:
-
-    #       * 'desc': descending [DEFAULT]
-    #       * 'asc': ascending
-
-    #     :param int page_size: limits the number of results. Default: 20.
-    #     :param list specific_md: list of metadata UUIDs to filter on
-    #     :param list specific_tag: list of tags UUIDs to filter on
-    #     :param list include: subresources that should be returned. Available values:
-
-    #       * '_abilities'
-    #       * 'count'
-    #       * 'formats'
-    #     """
-    #     # specific resources specific parsing
-    #     specific_md = checker._check_filter_specific_md(specific_md)
-    #     # sub resources specific parsing
-    #     include = checker._check_filter_includes(include, "format")
-    #     # specific tag specific parsing
-    #     specific_tag = checker._check_filter_specific_tag(specific_tag)
-
-    #     # handling request parameters
-    #     payload = {
-    #         "_id": specific_md,
-    #         "_include": include,
-    #         "_limit": page_size,
-    #         "_offset": offset,
-    #         "_tag": specific_tag,
-    #         "ob": order_by,
-    #         "od": order_dir,
-    #         "q": query,
-    #     }
-
-    #     # URL
-    #     url_format_formats = utils.get_request_base_url(
-    #         route="format/{}/formats/search".format(formats_id)
-    #     )
-
-    #     # request
-    #     req_formats_formats = self.api_client.get(
-    #         url=url_format_formats,
-    #         headers=self.api_client.header,
-    #         params=payload,
-    #         proxies=self.api_client.proxies,
-    #         verify=self.api_client.ssl,
-    #         timeout=self.api_client.timeout,
-    #     )
-
-    #     # checking response
-    #     req_check = checker.check_api_response(req_formats_formats)
-    #     if isinstance(req_check, tuple):
-    #         return req_check
-
-    #     # end of method
-    #     return FormatSearch(**req_formats_formats.json())
-
     @ApiDecorators._check_bearer_validity
-    def listing(self, caching: bool = 1) -> list:
+    def listing(self, data_type: str = None, caching: bool = 1) -> list:
         """List formats available in Isogeo API.
+
+        :param str data_type: type of metadata to filter on
+        :param bool caching: option to cache the response
 
         :returns: list of dicts
         :rtype: list
@@ -150,6 +71,9 @@ class ApiFormat:
         >>> # count all formats
         >>> print(len(formats))
         32
+        >>> # count formats which are only for vector dataset
+        >>> print(len(isogeo.format.listing(data_type="vector-dataset")))
+        21
         >>> # list all unique codes
         >>> formats_codes = [i.get("code") for i in formats]
         >>> pprint.pprint(formats_codes)
@@ -163,7 +87,25 @@ class ApiFormat:
         ]
         """
         # URL
-        url_formats = utils.get_request_base_url(route="formats")
+        if data_type:
+            if MetadataTypes.has_value(data_type):
+                url_formats = utils.get_request_base_url(
+                    route="formats/{}".format(data_type)
+                )
+                logger.debug(
+                    "Listing available geographic formats for {} metadata...".format(
+                        data_type
+                    )
+                )
+            else:
+                raise ValueError(
+                    "Metadata type name '{}' is not one of accepted values: {}".format(
+                        data_type, " | ".join(i.value for i in MetadataTypes)
+                    )
+                )
+        else:
+            url_formats = utils.get_request_base_url(route="formats/")
+            logger.debug("Listing all available geographic formats...")
 
         # request
         req_formats = self.api_client.get(
@@ -181,7 +123,7 @@ class ApiFormat:
 
         # cache
         if caching:
-            self.api_client._formats = req_formats.json()
+            self.api_client._formats_geo = req_formats.json()
 
         # end of method
         return req_formats.json()
@@ -277,8 +219,8 @@ class ApiFormat:
         # check if format code doesn't exist
         if check_exists:
             # use cache if possible to retrive formats codes
-            if self.api_client._formats:
-                formats_codes = [i.get("code") for i in self.api_client._formats]
+            if self.api_client._formats_geo:
+                formats_codes = [i.get("code") for i in self.api_client._formats_geo]
             else:
                 formats_codes = [i.get("code") for i in self.listing()]
             # check if new code already exists
@@ -311,7 +253,7 @@ class ApiFormat:
             return req_check
 
         # update cache
-        self.api_client._formats.append(req_new_format.json())
+        self.api_client._formats_geo.append(req_new_format.json())
 
         # end of method
         return Format(**req_new_format.json())
@@ -398,6 +340,62 @@ class ApiFormat:
 
         # end of method
         return Format(**req_format_update.json())
+
+    # -- Routes to manage the formats for non geographic dataset ------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def nogeo_search(
+        self, query: str = None, page_size: int = 10, offset: int = 0
+    ) -> list:
+        """Search within data formats available in Isogeo API for NON GEOGRAPHICAL DATA ONLY.
+
+        :param str query: search terms. Equivalent of **q** parameter in Isogeo API.
+        :param int page_size: limits the number of results. Useful to paginate results display. Default value: 10. Max value: 100.
+        :param int offset: offset to start page size from a specific results index
+
+        :returns: list of dicts
+        :rtype: list
+
+        :Example:
+        >>> isogeo.format.search(query="a", page_size=1, offset=0)
+        [
+            {
+                'aliases': [],
+                'name': 'Adobe PDF',
+                'versions':
+                [
+                    '7',
+                    '1.7',
+                    None,
+                    None
+                ]
+            }
+        ]
+        """
+        # handling request parameters
+        payload = {"q": query, "_limit": page_size, "_offset": offset}
+
+        # URL
+        url_formats_search_nogeo = utils.get_request_base_url(
+            route="formats/resource/search"
+        )
+
+        # request
+        req_formats_search_nogeo = self.api_client.get(
+            url=url_formats_search_nogeo,
+            headers=self.api_client.header,
+            params=payload,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_formats_search_nogeo)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_formats_search_nogeo.json()
 
 
 # ##############################################################################

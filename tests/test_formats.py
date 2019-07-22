@@ -116,10 +116,32 @@ class TestFormats(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """Executed after the last test."""
+        # clean created licenses
+        if len(cls.li_fixtures_to_delete):
+            for i in cls.li_fixtures_to_delete:
+                cls.isogeo.format.delete(frmt=i)
+                pass
         # close sessions
         cls.isogeo.close()
 
     # -- TESTS ---------------------------------------------------------
+    # -- POST --
+    def test_formats_create_basic(self):
+        """POST :/formats/}"""
+        # create local object
+        format_new = Format(
+            code="testpysdk", name=get_test_marker(), type="vectorDataset"
+        )
+
+        # create it online
+        format_new = self.isogeo.format.create(frmt=format_new)
+
+        # checks
+        self.assertEqual(format_new.name, get_test_marker())
+
+        # add created format to deletion
+        self.li_fixtures_to_delete.append(format_new)
+
     # -- GET --
     def test_formats_listing(self):
         """GET :/formats/}"""
@@ -149,8 +171,8 @@ class TestFormats(unittest.TestCase):
     def test_formats_detailed(self):
         """GET :/formats/{code}"""
         # pick a random srs
-        if len(self.isogeo._formats):
-            formats = self.isogeo._formats
+        if len(self.isogeo._formats_geo):
+            formats = self.isogeo._formats_geo
         else:
             formats = self.isogeo.format.listing()
 

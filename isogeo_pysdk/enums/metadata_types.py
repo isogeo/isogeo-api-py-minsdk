@@ -44,10 +44,15 @@ class MetadataTypes(Enum):
     See: https://docs.python.org/3/library/enum.html
     """
 
+    dataset = "dataset"
     rasterDataset = "raster-dataset"
     resource = "resource"
     service = "service"
     vectorDataset = "vector-dataset"
+
+    @classmethod
+    def has_value(cls, value):
+        return any(value == item.value for item in cls)
 
 
 # ##############################################################################
