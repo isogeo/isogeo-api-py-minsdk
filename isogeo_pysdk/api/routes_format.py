@@ -307,45 +307,53 @@ class ApiFormat:
             return req_check
 
         # update cache
-        self.api_client._formats_codes.append(req_new_format.json())
+        self.api_client._formats.append(req_new_format.json())
 
         # end of method
         return Format(**req_new_format.json())
 
-    # @ApiDecorators._check_bearer_validity
-    # def delete(self, format: Format):
-    #     """Delete a format from Isogeo database.
+    @ApiDecorators._check_bearer_validity
+    def delete(self, format_to_delete: Format):
+        """Delete a format from Isogeo database.
 
-    #     :param Format format: Format model object to create
-    #     """
-    #     # check format UUID
-    #     if not checker.check_is_uuid(format._id):
-    #         raise ValueError("Format ID is not a correct UUID: {}".format(format._id))
-    #     else:
-    #         pass
+        :param Format format_to_delete: Format model object to delete
+        """
+        # check format UUID
+        if not checker.check_is_uuid(format_to_delete._id):
+            raise ValueError(
+                "Format ID is not a correct UUID: {}".format(format_to_delete._id)
+            )
+        else:
+            pass
 
-    #     # URL
-    #     url_format_delete = utils.get_request_base_url(
-    #         route="format/1616597fbc4348c8b11ef9d59cf594c8/formats/{}".format(
-    #             format._id
-    #         )
-    #     )
+        if not format_to_delete.code:
+            raise ValueError("Format code is required")
+        else:
+            pass
 
-    #     # request
-    #     req_format_deletion = self.api_client.delete(
-    #         url=url_format_delete,
-    #         headers=self.api_client.header,
-    #         proxies=self.api_client.proxies,
-    #         timeout=self.api_client.timeout,
-    #         verify=self.api_client.ssl,
-    #     )
+        # URL
+        url_format_delete = utils.get_request_base_url(
+            route="formats/{}".format(format_to_delete.code)
+        )
 
-    #     # checking response
-    #     req_check = checker.check_api_response(req_format_deletion)
-    #     if isinstance(req_check, tuple):
-    #         return req_check
+        # request
+        req_format_deletion = self.api_client.delete(
+            url=url_format_delete,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
 
-    #     return req_format_deletion
+        # checking response
+        req_check = checker.check_api_response(req_format_deletion)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # update cache
+        self.listing()
+
+        return req_format_deletion
 
 
 # ##############################################################################
