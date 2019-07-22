@@ -5,6 +5,10 @@
     Isogeo API v1 - API Routes for Formats entities
 
     See: http://help.isogeo.com/api/complete/index.html
+
+    NOTE TO DEV: `format` being the name of a Python built-in function
+    (see: https://docs.python.org/3/library/functions.html#format),
+    we use the `frmt` shorter as replacement.
 """
 
 # #############################################################################
@@ -354,7 +358,7 @@ class ApiFormat:
         >>> # retrieve format to update
         >>> fmt_postgis = isogeo.format.get("postgis")
         >>> # add new versions locally
-        >>> fmt_postgis.versions.extend(["3.0", "3.1])
+        >>> fmt_postgis.versions.extend(["3.0", "3.1"])
         >>> # update online
         >>> fmt_postgis_updted = isogeo.format.update(fmt_pgis)
         """
