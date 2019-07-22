@@ -85,8 +85,9 @@ class IsogeoSession(OAuth2Session):
         self._applications_names = {}  # Isogeo applications by names
         self._coordinate_systems = []  # Isogeo coordinate-systems
         self._directives = {}  # EU environment directives used as INSPIRE limitations
+        self._formats = []  # Isogeo formats
         self._shares_names = {}  # Isogeo applications by names
-        self._thesauri_codes = {}  # Isogeo thesauri by names
+        self._thesauri_codes = {}  # Isogeo thesauri by codes
         self._workgroups_names = {}  # Isogeo workgroups by names
         # user
         self._user = User()  # authenticated user profile

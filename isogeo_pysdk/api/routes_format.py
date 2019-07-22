@@ -112,13 +112,13 @@ class ApiFormat:
     #     }
 
     #     # URL
-    #     url_thesauri_formats = utils.get_request_base_url(
-    #         route="thesauri/{}/formats/search".format(formats_id)
+    #     url_format_formats = utils.get_request_base_url(
+    #         route="format/{}/formats/search".format(formats_id)
     #     )
 
     #     # request
     #     req_formats_formats = self.api_client.get(
-    #         url=url_thesauri_formats,
+    #         url=url_format_formats,
     #         headers=self.api_client.header,
     #         params=payload,
     #         proxies=self.api_client.proxies,
@@ -138,8 +138,25 @@ class ApiFormat:
     def listing(self, caching: bool = 1) -> list:
         """List formats available in Isogeo API.
 
-        >>> print(len(isogeo.format.listing()))
+        :returns: list of dicts
+        :rtype: list
+
+        :Example:
+        >>> formats = isogeo.format.listing()
+        >>> # count all formats
+        >>> print(len(formats))
         32
+        >>> # list all unique codes
+        >>> formats_codes = [i.get("code") for i in formats]
+        >>> pprint.pprint(formats_codes)
+        [
+            'apic',
+            'arcsde',
+            'dgn',
+            'dwg',
+            'dxf',
+            ...
+        ]
         """
         # URL
         url_formats = utils.get_request_base_url(route="formats")
@@ -158,119 +175,142 @@ class ApiFormat:
         if isinstance(req_check, tuple):
             return req_check
 
+        # cache
+        if caching:
+            self.api_client._formats = req_formats.json()
+
         # end of method
         return req_formats.json()
 
-    # @ApiDecorators._check_bearer_validity
-    # def format(
-    #     self, format_id: str, include: list = ["_abilities", "count", "formats"]
-    # ) -> Format:
-    #     """Get details about a specific format.
+    @ApiDecorators._check_bearer_validity
+    def format(self, format_code: str) -> Format:
+        """Get details about a specific format.
 
-    #     :param str workgroup_id: identifier of the owner workgroup
-    #     :param str format_id: format UUID
-    #     :param list include: additionnal subresource to include in the response
-    #     """
-    #     # check workgroup UUID
-    #     # if not checker.check_is_uuid(workgroup_id):
-    #     #     raise ValueError(
-    #     #         "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
-    #     #     )
-    #     # else:
-    #     #     pass
+        :param str format_code: format code
 
-    #     # check format UUID
-    #     if not checker.check_is_uuid(format_id):
-    #         raise ValueError("Format ID is not a correct UUID.")
-    #     else:
-    #         pass
+        :rtype: Format
 
-    #     # request parameter
-    #     payload = {"_include": include}
+        :Example:
+        >>> pprint.pprint(isogeo.format.format("postgis"))
+        {
+            '_id': string (uuid),
+            '_tag': 'format:postgis',
+            'aliases': [],
+            'code': 'postgis',
+            'name': 'PostGIS',
+            'type': 'dataset',
+            'versions': [
+                '2.2',
+                '2.1',
+                '2.0',
+                '1.5',
+                '1.4',
+                '1.3',
+                '1.2',
+                '1.1',
+                '1.0',
+                '0.9',
+                None
+                ]
+        }
+        """
 
-    #     # format route
-    #     url_format = utils.get_request_base_url(route="formats/{}".format(format_id))
+        # format route
+        url_format = utils.get_request_base_url(route="formats/{}".format(format_code))
 
-    #     # request
-    #     req_format = self.api_client.get(
-    #         url=url_format,
-    #         headers=self.api_client.header,
-    #         params=payload,
-    #         proxies=self.api_client.proxies,
-    #         verify=self.api_client.ssl,
-    #         timeout=self.api_client.timeout,
-    #     )
+        # request
+        req_format = self.api_client.get(
+            url=url_format,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
 
-    #     # checking response
-    #     req_check = checker.check_api_response(req_format)
-    #     if isinstance(req_check, tuple):
-    #         return req_check
+        # checking response
+        req_check = checker.check_api_response(req_format)
+        if isinstance(req_check, tuple):
+            return req_check
 
-    #     # end of method
-    #     return Format(**req_format.json())
+        # end of method
+        return Format(**req_format.json())
 
-    # @ApiDecorators._check_bearer_validity
-    # def create(self, format: Format) -> Format:
-    #     """Add a new format to the Isogeo formats.
+    @ApiDecorators._check_bearer_validity
+    def create(self, format_new: Format, check_exists: bool = 1) -> Format:
+        """Add a new format to the Isogeo formats database.
 
-    #     If a format with the same text already exists, the Isogeo API returns a 409 HTTP code.
-    #     Then this method will try to get the closest matching format and return it.
+        If a format with the same code already exists, the Isogeo API returns a 500 HTTP code.
+        To prevent this error, use the check_exists option or check by yourself before.
 
-    #     :param Format format: Format model object to create
-    #     """
-    #     # URL
-    #     url_format_create = utils.get_request_base_url(
-    #         route="thesauri/1616597fbc4348c8b11ef9d59cf594c8/formats"
-    #     )
+        :param Format format_new: Format model object to create
+        :param bool check_exists: check if a format with the same code exists before
 
-    #     # request
-    #     req_new_format = self.api_client.post(
-    #         url=url_format_create,
-    #         json=format.to_dict_creation(),
-    #         headers=self.api_client.header,
-    #         proxies=self.api_client.proxies,
-    #         timeout=self.api_client.timeout,
-    #         verify=self.api_client.ssl,
-    #     )
+        :rtype: Format or tuple
 
-    #     # checking response
-    #     req_check = checker.check_api_response(req_new_format)
-    #     if isinstance(req_check, tuple):
-    #         # handle conflict (see: https://developer.mozilla.org/fr/docs/Web/HTTP/Status/409)
-    #         if req_check[1] == 409:
-    #             # log conflict
-    #             logger.info(
-    #                 "A format with the same text already exists: '{}'. Isogeo API doesn't allow to create duplicates (HTTP {} - {}). Let's try to get the closes matching format...".format(
-    #                     format.text, req_check[1], req_new_format.reason
-    #                 )
-    #             )
-    #             # try to return the most probably matching format
-    #             search_for_closest_format = self.formats(
-    #                 caching=0,
-    #                 include=[],
-    #                 order_dir="asc",
-    #                 page_size=1,
-    #                 query=format.text,
-    #             )
-    #             if search_for_closest_format.results:
-    #                 logger.info(
-    #                     "Returning the closest matching format for: 'thesauri/formats/search?query={}'".format(
-    #                         format.text
-    #                     )
-    #                 )
-    #                 return Format(**search_for_closest_format.results[0])
-    #             else:
-    #                 logger.info(
-    #                     "No match for: 'thesauri/formats/search?query={}'".format(
-    #                         format.text
-    #                     )
-    #                 )
+        :Example:
+        >>> format_to_add = Format(
+            code="geojson",
+            name="GeoJSON",
+            type="vectorDataset"
+        )
+        >>> print(isogeo.format.create(format_to_add))
+        {
+            '_id': string (uuid),
+            '_tag': 'format:geojson',
+            'aliases': [],
+            'code': 'geojson',
+            'name': 'GeoJSON',
+            'type': 'vectorDataset',
+            'versions': []
+        }
+        """
+        # check format code
+        if not format_new.code:
+            raise ValueError("Format code is required: {}".format(format_new.code))
+        else:
+            pass
 
-    #         # if other error, then return it
-    #         return req_check
+        # check if format code doesn't exist
+        if check_exists:
+            # use cache if possible to retrive formats codes
+            if self.api_client._formats:
+                formats_codes = [i.get("code") for i in self.api_client._formats]
+            else:
+                formats_codes = [i.get("code") for i in self.listing()]
+            # check if new code already exists
+            if format_new.code in formats_codes:
+                raise ValueError(
+                    "Format code already exists: {}. Consider using 'format.update' instead.".format(
+                        format_new.code
+                    )
+                )
+        else:
+            pass
 
-    #     # end of method
-    #     return Format(**req_new_format.json())
+        # URL
+        url_format_create = utils.get_request_base_url(route="formats")
+
+        # request
+        req_new_format = self.api_client.post(
+            url=url_format_create,
+            json=format_new.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
+
+        # checking response
+        print(req_new_format)
+        req_check = checker.check_api_response(req_new_format)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # update cache
+        self.api_client._formats_codes.append(req_new_format.json())
+
+        # end of method
+        return Format(**req_new_format.json())
 
     # @ApiDecorators._check_bearer_validity
     # def delete(self, format: Format):
@@ -286,7 +326,7 @@ class ApiFormat:
 
     #     # URL
     #     url_format_delete = utils.get_request_base_url(
-    #         route="thesauri/1616597fbc4348c8b11ef9d59cf594c8/formats/{}".format(
+    #         route="format/1616597fbc4348c8b11ef9d59cf594c8/formats/{}".format(
     #             format._id
     #         )
     #     )
