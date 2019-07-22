@@ -183,7 +183,7 @@ class ApiFormat:
         return req_formats.json()
 
     @ApiDecorators._check_bearer_validity
-    def format(self, format_code: str) -> Format:
+    def get(self, format_code: str) -> Format:
         """Get details about a specific format.
 
         :param str format_code: format code
@@ -191,7 +191,7 @@ class ApiFormat:
         :rtype: Format
 
         :Example:
-        >>> pprint.pprint(isogeo.format.format("postgis"))
+        >>> pprint.pprint(isogeo.format.get("postgis"))
         {
             '_id': string (uuid),
             '_tag': 'format:postgis',
@@ -236,13 +236,13 @@ class ApiFormat:
         return Format(**req_format.json())
 
     @ApiDecorators._check_bearer_validity
-    def create(self, format_new: Format, check_exists: bool = 1) -> Format:
+    def create(self, frmt: Format, check_exists: bool = 1) -> Format:
         """Add a new format to the Isogeo formats database.
 
         If a format with the same code already exists, the Isogeo API returns a 500 HTTP code.
         To prevent this error, use the check_exists option or check by yourself before.
 
-        :param Format format_new: Format model object to create
+        :param Format frmt: Format model object to create
         :param bool check_exists: check if a format with the same code exists before
 
         :rtype: Format or tuple
@@ -265,8 +265,8 @@ class ApiFormat:
         }
         """
         # check format code
-        if not format_new.code:
-            raise ValueError("Format code is required: {}".format(format_new.code))
+        if not frmt.code:
+            raise ValueError("Format code is required: {}".format(frmt.code))
         else:
             pass
 
@@ -278,10 +278,10 @@ class ApiFormat:
             else:
                 formats_codes = [i.get("code") for i in self.listing()]
             # check if new code already exists
-            if format_new.code in formats_codes:
+            if frmt.code in formats_codes:
                 raise ValueError(
                     "Format code already exists: {}. Consider using 'format.update' instead.".format(
-                        format_new.code
+                        frmt.code
                     )
                 )
         else:
@@ -293,7 +293,7 @@ class ApiFormat:
         # request
         req_new_format = self.api_client.post(
             url=url_format_create,
-            json=format_new.to_dict_creation(),
+            json=frmt.to_dict_creation(),
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
             timeout=self.api_client.timeout,
@@ -313,27 +313,14 @@ class ApiFormat:
         return Format(**req_new_format.json())
 
     @ApiDecorators._check_bearer_validity
-    def delete(self, format_to_delete: Format):
+    def delete(self, frmt: Format):
         """Delete a format from Isogeo database.
 
-        :param Format format_to_delete: Format model object to delete
+        :param Format frmt: Format model object to delete
         """
-        # check format UUID
-        if not checker.check_is_uuid(format_to_delete._id):
-            raise ValueError(
-                "Format ID is not a correct UUID: {}".format(format_to_delete._id)
-            )
-        else:
-            pass
-
-        if not format_to_delete.code:
-            raise ValueError("Format code is required")
-        else:
-            pass
-
         # URL
         url_format_delete = utils.get_request_base_url(
-            route="formats/{}".format(format_to_delete.code)
+            route="formats/{}".format(frmt.code)
         )
 
         # request
@@ -354,6 +341,59 @@ class ApiFormat:
         self.listing()
 
         return req_format_deletion
+
+    @ApiDecorators._check_bearer_validity
+    def update(self, frmt: Format) -> Format:
+        """Update a format in Isogeo database.
+
+        :param Format frmt: Format model object to update
+
+        :rtype: Format
+
+        :Example:
+        >>> # retrieve format to update
+        >>> fmt_postgis = isogeo.format.get("postgis")
+        >>> # add new versions locally
+        >>> fmt_postgis.versions.extend(["3.0", "3.1])
+        >>> # update online
+        >>> fmt_postgis_updted = isogeo.format.update(fmt_pgis)
+        """
+        # check format UUID
+        if not checker.check_is_uuid(frmt._id):
+            raise ValueError("Format ID is not a correct UUID: {}".format(frmt._id))
+        else:
+            pass
+        # check format required code
+        if not frmt.code:
+            raise ValueError("Format code is required")
+        else:
+            pass
+
+        # URL
+        url_format_update = utils.get_request_base_url(
+            route="formats/{}".format(frmt.code)
+        )
+
+        # request
+        req_format_update = self.api_client.put(
+            url=url_format_update,
+            json=frmt.to_dict(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_format_update)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # update cache
+        self.listing()
+
+        # end of method
+        return Format(**req_format_update.json())
 
 
 # ##############################################################################
