@@ -499,6 +499,7 @@ class Resource(object):
         # "geometry": str,
         # "keywords": list,
         "language": str,
+        "layers": list,
         # "modified": str,
         "name": str,
         "path": str,
@@ -506,6 +507,7 @@ class Resource(object):
         # "published": str,
         "scale": int,
         "series": bool,
+        "serviceLayers": list,
         "title": str,
         "topologicalConsistency": str,
         "type": str,
@@ -551,6 +553,7 @@ class Resource(object):
         links: list = None,
         modified: str = None,
         name: str = None,
+        operations: list = None,
         path: str = None,
         precision: str = None,
         published: str = None,
@@ -599,6 +602,7 @@ class Resource(object):
         self._links = None
         self._modified = None
         self._name = None
+        self._operations = None
         self._path = None
         self._precision = None
         self._published = None
@@ -673,6 +677,8 @@ class Resource(object):
             self._modified = modified
         if name is not None:
             self._name = name
+        if operations is not None:
+            self._operations = operations
         if path is not None:
             self._path = path
         if precision is not None:
@@ -1105,19 +1111,19 @@ class Resource(object):
 
     # layers
     @property
-    def layers(self) -> str:
+    def layers(self) -> list:
         """Gets the layers of this Resource.
 
         :return: The layers of this Resource.
-        :rtype: str
+        :rtype: list
         """
         return self._layers
 
     @layers.setter
-    def layers(self, layers: str):
+    def layers(self, layers: list):
         """Sets the first line of the address of this Resource.
 
-        :param str layers: The first address line of this Resource.
+        :param list layers: The first address line of this Resource.
         """
 
         self._layers = layers
@@ -1197,6 +1203,25 @@ class Resource(object):
         """
 
         self._name = name
+
+    # operations
+    @property
+    def operations(self) -> list:
+        """Gets the operations of this Resource.
+
+        :return: The operations of this Resource.
+        :rtype: list
+        """
+        return self._operations
+
+    @operations.setter
+    def operations(self, operations: list):
+        """Sets the first line of the address of this Resource.
+
+        :param list operations: The first address line of this Resource.
+        """
+
+        self._operations = operations
 
     # path
     @property
@@ -1295,19 +1320,19 @@ class Resource(object):
 
     # serviceLayers
     @property
-    def serviceLayers(self) -> str:
+    def serviceLayers(self) -> list:
         """Gets the serviceLayers of this Resource.
 
         :return: The serviceLayers of this Resource.
-        :rtype: str
+        :rtype: list
         """
         return self._serviceLayers
 
     @serviceLayers.setter
-    def serviceLayers(self, serviceLayers: str):
+    def serviceLayers(self, serviceLayers: list):
         """Sets the first line of the address of this Resource.
 
-        :param str serviceLayers: The first address line of this Resource.
+        :param list serviceLayers: The first address line of this Resource.
         """
 
         self._serviceLayers = serviceLayers

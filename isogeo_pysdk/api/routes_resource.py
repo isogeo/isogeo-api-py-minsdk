@@ -13,8 +13,11 @@
 
 # Standard library
 import logging
+from urllib.parse import urlparse, parse_qs, urlunparse
 
 # 3rd party
+import requests
+from requests.adapters import HTTPAdapter
 from requests.models import Response
 
 # submodules
@@ -250,6 +253,42 @@ class ApiResource:
 
         return True
 
+    @ApiDecorators._check_bearer_validity
+    def update(self, metadata: Metadata) -> Metadata:
+        """Check if the specified resource exists and is available for the authenticated user.
+
+        :param Metadata metadata: identifier of the resource to verify
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Resource ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # URL builder
+        url_metadata_exists = utils.get_request_base_url(
+            route="resources/{}".format(metadata._id)
+        )
+
+        # request
+        req_metadata_exists = self.api_client.patch(
+            url=url_metadata_exists,
+            json=metadata.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_metadata_exists)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return True
+
     # -- Routes to search --------------------------------------------------------------
     @ApiDecorators._check_bearer_validity
     def search(
@@ -420,7 +459,204 @@ class ApiResource:
 
     #     return wg_metadata
 
-    # -- Routes to manage the related objects ------------------------------------------
+    # -- Helpers for services ---------------------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def service_create(
+        self,
+        workgroup_id: str,
+        service_url: str,
+        service_type: str = "guess",
+        service_format: str = None,
+        service_title: str = None,
+        check_exists: bool = 1,
+        http_verb: str = "head",
+    ) -> Metadata:
+        """Add a new metadata of a geographic webservice to a workgroup.
+        It's just a helper to make it easy to create a metadata of a service with autofill for service layers.
+
+        This is a two-steps process:
+        1. create the metadata with the format (wms, wfs...)
+        2. patch it with the service base URL
+
+        :param str workgroup_id: identifier of the owner workgroup
+        :param str service_url: URL of the service
+        :param str service_type: type of service. Must be one of: 'esri', 'esri_ogc', 'ogc', 'guess'
+        :param str service_format: format of the web service. Must be one of the accepted codes in API (Non exhaustive list: 'efs', 'ems', 'wfs', 'wms', 'wmts'). If is None, so the it'll try to guess it from the URL.
+        :param str service_title: title for the metadata service in case of analisis fail. OPTIONNAL.
+        :param bool check_exists: check if a metadata with the same service base URL and format alerady exists
+        :param str http_verb: HTTP verb to use to check the if the service is available. Must be one of: GET, HEAD
+
+        :rtype: Resource
+
+        :Example:
+
+        >>> isogeo.metadata.service_create(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            serice_type="ogc",
+            service_format="wms",
+            service_url="https://magosm.magellium.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities",
+    )
+        """
+        # CHECKS PARAMS
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID.")
+        else:
+            pass
+
+        # check http_verb
+        http_verb = http_verb.upper()
+        if http_verb not in ("GET", "HEAD"):
+            raise ValueError(
+                "HTTP VERB is not one of accepted valued: GET | HEAD. "
+                "Furthermore it's recommended to leave the default value."
+            )
+
+        # check service type value
+        service_type = service_type.lower()
+        if service_type not in ("esri", "esri_ogc", "ogc", "guess"):
+            raise ValueError(
+                "Service type is not one of accepted valued: esri | esri_ogc | ogc | guess"
+            )
+
+        # check if service is available
+        # do not use Isogeo Api client to make requests because of tokens, use a 'fresh' requests session
+        # TO DO: improve http handler isogeo_adapter = HTTPAdapter(max_retries=3)
+        req_check_reachable = requests.request(method=http_verb, url=service_url)
+        if req_check_reachable.status_code >= 400 and http_verb == "HEAD":
+            logger.debug(
+                "HEAD failed. It can occur because of an Esri server... Retrying one again with a GET..."
+            )
+            return self.service_create(
+                workgroup_id=workgroup_id,
+                service_url=service_url,
+                service_format=service_format,
+                http_verb="GET",
+            )
+        elif req_check_reachable.status_code >= 400 and http_verb == "GET":
+            logger.debug("GET failed. Geographic server seems to be out of service")
+            return (False, req_check_reachable)
+        else:
+            logger.debug(
+                "{} successed. Service {} is reachable.".format(http_verb, service_url)
+            )
+            pass
+
+        # -- SERVICE URL
+        url_parsed = urlparse(service_url)  # parsing the given URL
+        url_query = parse_qs(
+            url_parsed.query
+        )  # extracting the query string (after the '?')
+        url_clean = urlunparse(
+            url_parsed._replace(query=None)
+        )  # removing the query string to keep only the base URL
+        logger.debug(
+            "Service URL has been cleaned: {} from query parameters {}".format(
+                url_clean, url_query
+            )
+        )
+
+        # -- SERVICE TYPE
+        if service_type == "guess":
+            logger.debug("Let's try to guess the service type...")
+
+        # -- SERVICE FORMAT
+        # retrieve service format if it's not given
+        if service_format is None:
+            logger.debug("No format passed. Trying to extract one from the URL...")
+            if service_type in ("esri_ogc", "ogc", "guess"):
+                if "service" in set(k.lower() for k in url_query):
+                    service_format = url_query.get("service")[0]
+                    logger.debug(
+                        "Service format extracted from the query parameters: {}".format(
+                            service_format
+                        )
+                    )
+                else:
+                    raise Exception(
+                        "Service format passed was {} could not be extracted from URL query: {}".format(
+                            service_format, url_query
+                        )
+                    )
+            else:
+                pass
+        else:
+            # let's use the passed service format
+            pass
+
+        # retrive available formats for services within Isogeo API
+        if len(self.api_client._formats_geo):  # using the cache if exists
+            formats = self.api_client._formats_geo
+        else:
+            formats = self.api_client.formats.listing(data_type="service")
+        srv_formats_codes = [
+            i.get("code") for i in formats if i.get("type") == "service"
+        ]
+
+        # compare
+        if service_format not in srv_formats_codes:
+            raise Warning(
+                "Service format '{}' is not an accepted one: {}".format(
+                    " | ".join(srv_formats_codes)
+                )
+            )
+
+        ## -- SERVICE TITLE
+        # check service title
+        if service_title is None:
+            service_title = "{} - {}".format(url_parsed.netloc, service_format)
+            logger.warning(
+                "No temporary title given but it's a required attribute to create metadata, "
+                "so a generic one based on service URL is added: {}".format(
+                    service_title
+                )
+            )
+        else:
+            pass
+
+        # # check if metadata already exists in workgroup
+        # if check_exists == 1:
+        #     # retrieve workgroup metadatas
+        #     if not self.api_client._wg_metadatas_names:
+        #         self.metadatas(workgroup_id=workgroup_id, include=[])
+        #     # check
+        #     if metadata.name in self.api_client._wg_metadatas_names:
+        #         logger.debug(
+        #             "Metadata with the same name already exists: {}. Use 'metadata_update' instead.".format(
+        #                 metadata.name
+        #             )
+        #         )
+        #         return False
+        # else:
+        #     pass
+
+        # instanciate new service metadata locally
+        new_metadata_service = Metadata(
+            series=0,
+            format=service_format,
+            type="service",
+            path=url_clean,
+            title=service_title,
+        )
+
+        # checking response
+        if isinstance(new_metadata_service, tuple):
+            return new_metadata_service
+
+        # create it online
+        new_metadata_service = self.create(
+            workgroup_id=workgroup_id, metadata=new_metadata_service
+        )
+
+        # update it (patch) to trigger the layers autofill
+        self.update(new_metadata_service)
+
+        new_md = self.metadata(
+            metadata_id=new_metadata_service._id,
+            include=["layers", "serviceLayers", "operations"],
+        )
+
+        return new_md
 
 
 # ##############################################################################

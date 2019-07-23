@@ -188,6 +188,308 @@ class ApiServiceOperation:
         # end of method
         return ServiceOperation(**service_operation_augmented)
 
+    # @ApiDecorators._check_bearer_validity
+    # def delete(self, operation: ServiceOperation, metadata: Metadata = None):
+    #     """Delete a service operation from Isogeo database.
+
+    #     :param ServiceOperation operation: ServiceOperation model object to delete
+    #     :param Metadata metadata: parent metadata (resource) containing the service_operation
+    #     """
+    #     # check service_operation UUID
+    #     if not checker.check_is_uuid(operation._id):
+    #         raise ValueError(
+    #             "ServiceOperation ID is not a correct UUID: {}".format(operation._id)
+    #         )
+    #     else:
+    #         pass
+
+    #     # retrieve parent metadata
+    #     if not checker.check_is_uuid(operation.parent_resource) and not metadata:
+    #         raise ValueError(
+    #             "ServiceOperation parent metadata is required. Requesting it..."
+    #         )
+    #     elif not checker.check_is_uuid(operation.parent_resource) and metadata:
+    #         operation.parent_resource = metadata._id
+    #     else:
+    #         pass
+
+    #     # URL
+    #     url_service_operation_delete = utils.get_request_base_url(
+    #         route="resources/{}/operations/{}".format(operation.parent_resource, operation._id)
+    #     )
+
+    #     # request
+    #     req_service_operation_deletion = self.api_client.delete(
+    #         url=url_service_operation_delete,
+    #         headers=self.api_client.header,
+    #         proxies=self.api_client.proxies,
+    #         timeout=self.api_client.timeout,
+    #         verify=self.api_client.ssl,
+    #     )
+
+    #     # checking response
+    #     req_check = checker.check_api_response(req_service_operation_deletion)
+    #     if isinstance(req_check, tuple):
+    #         return req_check
+
+    #     return req_service_operation_deletion
+
+    # @ApiDecorators._check_bearer_validity
+    # def update(self, operation: ServiceOperation, metadata: Metadata = None) -> ServiceOperation:
+    #     """Update a service operation.
+
+    #     :param ServiceOperation operation: ServiceOperation model object to update
+    #     :param Metadata metadata: parent metadata (resource) containing the service_operation
+    #     """
+    #     # check service_operation UUID
+    #     if not checker.check_is_uuid(operation._id):
+    #         raise ValueError(
+    #             "ServiceOperation ID is not a correct UUID: {}".format(operation._id)
+    #         )
+    #     else:
+    #         pass
+
+    #     # retrieve parent metadata
+    #     if not checker.check_is_uuid(operation.parent_resource) and not metadata:
+    #         raise ValueError(
+    #             "ServiceOperation parent metadata is required. Requesting it..."
+    #         )
+    #     elif not checker.check_is_uuid(operation.parent_resource) and metadata:
+    #         operation.parent_resource = metadata._id
+    #     else:
+    #         pass
+
+    #     # URL
+    #     url_service_operation_update = utils.get_request_base_url(
+    #         route="resources/{}/operations/{}".format(operation.parent_resource, operation._id)
+    #     )
+
+    #     # request
+    #     req_service_operation_update = self.api_client.put(
+    #         url=url_service_operation_update,
+    #         json=operation.to_dict_creation(),
+    #         headers=self.api_client.header,
+    #         proxies=self.api_client.proxies,
+    #         verify=self.api_client.ssl,
+    #         timeout=self.api_client.timeout,
+    #     )
+
+    #     # checking response
+    #     req_check = checker.check_api_response(req_service_operation_update)
+    #     if isinstance(req_check, tuple):
+    #         return req_check
+
+    #     # add parent resource id to keep tracking
+    #     service_operation_augmented = req_service_operation_update.json()
+    #     service_operation_augmented["parent_resource"] = operation.parent_resource
+
+    #     # end of method
+    #     return ServiceOperation(**service_operation_augmented)
+
+    # # -- Routes to manage the related objects ------------------------------------------
+    # @ApiDecorators._check_bearer_validity
+    # def associate_metadata(
+    #     self, service: Metadata, operation: ServiceOperation, dataset: Metadata
+    # ) -> Response:
+    #     """Associate a service operation with a dataset metadata.
+
+    #     If the specified operation is already associated, the response is 409.
+
+    #     :param Metadata service: metadata of the service which contains the operation
+    #     :param ServiceOperation operation: operation model object to associate
+    #     :param Metadata dataset: metadata of the dataset to associate with
+
+    #     :Example:
+
+    #     >>> # retrieve objects to be associated. First: the metadata of the service.
+    #     >>> service = isogeo.metadata.metadata(
+    #             metadata_id=str,
+    #         )
+    #     >>> # second: the operation of the service you want to associate
+    #     >>> operation = isogeo.metadata.operations.operation(
+    #             metadata_id=service._id,
+    #             operation_id=str,
+    #         )
+    #     >>> # third: the dataset to be associated with the service operation
+    #     >>> dataset = isogeo.metadata.metadata(
+    #             metadata_id=str,
+    #         )
+    #     >>> # associate them
+    #     >>> isogeo.metadata.operations.associate_metadata(
+    #             service=service,
+    #             operation=operation,
+    #             dataset=metadata
+    #         )
+    #     """
+    #     # check metadata UUID
+    #     if not checker.check_is_uuid(service._id):
+    #         raise ValueError(
+    #             "Service metadata ID is not a correct UUID: {}".format(service._id)
+    #         )
+    #     else:
+    #         pass
+
+    #     # check operation UUID
+    #     if not checker.check_is_uuid(operation._id):
+    #         raise ValueError(
+    #             "ServiceOperation ID is not a correct UUID: {}".format(operation._id)
+    #         )
+    #     else:
+    #         pass
+
+    #     # check dataset UUID
+    #     if not checker.check_is_uuid(dataset._id):
+    #         raise ValueError(
+    #             "Dataset metadata ID is not a correct UUID: {}".format(dataset._id)
+    #         )
+    #     else:
+    #         pass
+
+    #     # check service metadata type
+    #     if service.type != "service":
+    #         raise TypeError(
+    #             "Operations routes are only available for metadata of services, not: {}".format(
+    #                 service.type
+    #             )
+    #         )
+    #     else:
+    #         pass
+
+    #     # check dataset metadata type
+    #     if dataset.type not in (
+    #         "rasterDataset",
+    #         "vectorDataset",
+    #         "raster-dataset",
+    #         "vector-dataset",
+    #     ):
+    #         raise TypeError(
+    #             "Datasets association with operations routes are only available for metadata of datasets, not: {}".format(
+    #                 dataset.type
+    #             )
+    #         )
+    #     else:
+    #         pass
+
+    #     # URL
+    #     url_operation_association = utils.get_request_base_url(
+    #         route="resources/{}/operations/{}/dataset/{}".format(
+    #             service._id, operation._id, dataset._id
+    #         )
+    #     )
+
+    #     # request
+    #     req_operation_association = self.api_client.post(
+    #         url=url_operation_association,
+    #         headers=self.api_client.header,
+    #         proxies=self.api_client.proxies,
+    #         verify=self.api_client.ssl,
+    #         timeout=self.api_client.timeout,
+    #     )
+
+    #     # checking response
+    #     req_check = checker.check_api_response(req_operation_association)
+    #     if isinstance(req_check, tuple):
+    #         # handle conflict (see: https://developer.mozilla.org/fr/docs/Web/HTTP/Status/409)
+    #         if req_check[1] == 409:
+    #             # log conflict
+    #             logger.info(
+    #                 "Operation is already associated with a dataset: '{}'. Isogeo API doesn't allow to create duplicates (HTTP {} - {}).".format(
+    #                     operation.name, req_check[1], req_operation_association.reason
+    #                 )
+    #             )
+    #         else:
+    #             # if other error, then return it
+    #             return req_check
+
+    #     # end of method
+    #     return req_operation_association
+
+    # @ApiDecorators._check_bearer_validity
+    # def dissociate_metadata(
+    #     self, service: Metadata, operation: ServiceOperation, dataset: Metadata
+    # ) -> Response:
+    #     """Removes the association between a a service operation with a dataset metadata.
+
+    #     If the association doesn't exist, the response is 404.
+
+    #     :param Metadata service: metadata of the service which contains the operation
+    #     :param ServiceOperation operation: operation model object to associate
+    #     :param Metadata dataset: metadata of the dataset to associate with
+    #     """
+    #     # check metadata UUID
+    #     if not checker.check_is_uuid(service._id):
+    #         raise ValueError(
+    #             "Service metadata ID is not a correct UUID: {}".format(service._id)
+    #         )
+    #     else:
+    #         pass
+
+    #     # check operation UUID
+    #     if not checker.check_is_uuid(operation._id):
+    #         raise ValueError(
+    #             "ServiceOperation ID is not a correct UUID: {}".format(operation._id)
+    #         )
+    #     else:
+    #         pass
+
+    #     # check dataset UUID
+    #     if not checker.check_is_uuid(dataset._id):
+    #         raise ValueError(
+    #             "Dataset metadata ID is not a correct UUID: {}".format(dataset._id)
+    #         )
+    #     else:
+    #         pass
+
+    #     # check service metadata type
+    #     if service.type != "service":
+    #         raise TypeError(
+    #             "Operations routes are only available for metadata of services, not: {}".format(
+    #                 service.type
+    #             )
+    #         )
+    #     else:
+    #         pass
+
+    #     # check dataset metadata type
+    #     if dataset.type not in (
+    #         "rasterDataset",
+    #         "vectorDataset",
+    #         "raster-dataset",
+    #         "vector-dataset",
+    #     ):
+    #         raise TypeError(
+    #             "Datasets association with operations routes are only available for metadata of datasets, not: {}".format(
+    #                 dataset.type
+    #             )
+    #         )
+    #     else:
+    #         pass
+
+    #     # URL
+    #     url_operation_dissociation = utils.get_request_base_url(
+    #         route="resources/{}/operations/{}/dataset/{}".format(
+    #             service._id, operation._id, dataset._id
+    #         )
+    #     )
+
+    #     # request
+    #     req_operation_dissociation = self.api_client.delete(
+    #         url=url_operation_dissociation,
+    #         headers=self.api_client.header,
+    #         proxies=self.api_client.proxies,
+    #         verify=self.api_client.ssl,
+    #         timeout=self.api_client.timeout,
+    #     )
+
+    #     # checking response
+    #     req_check = checker.check_api_response(req_operation_dissociation)
+    #     if isinstance(req_check, tuple):
+    #         return req_check
+
+    #     # end of method
+    #     return req_operation_dissociation
+
+
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
