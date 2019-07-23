@@ -544,12 +544,11 @@ class ApiResource:
 
         # -- SERVICE URL
         url_parsed = urlparse(service_url)  # parsing the given URL
-        url_query = parse_qs(
-            url_parsed.query
-        )  # extracting the query string (after the '?')
-        url_clean = urlunparse(
-            url_parsed._replace(query=None)
-        )  # removing the query string to keep only the base URL
+        # extracting the query string (after the '?') and lowering keys
+        url_query = parse_qs(url_parsed.query)
+        url_query = {k.lower(): v for k, v in url_query.items()}
+        # get the base url cleaned
+        url_clean = urlunparse(url_parsed._replace(query=None))
         logger.debug(
             "Service URL has been cleaned: {} from query parameters {}".format(
                 url_clean, url_query
@@ -558,15 +557,35 @@ class ApiResource:
 
         # -- SERVICE TYPE
         if service_type == "guess":
-            logger.debug("Let's try to guess the service type...")
+            logger.debug(
+                "Let's try to guess the service type from the URL path: {}".format(
+                    url_parsed.path
+                )
+            )
+            if "FeatureServer" in url_parsed.path:
+                service_type = "esri"
+            elif "MapServer" in url_clean and not (
+                "WMSServer" in url_parsed.path or "WFSServer" in url_parsed.path
+            ):
+                service_type = "esri"
+            else:
+                service_type = "ogc"
+                pass
+            logger.debug("Service type guessed: {}".format(service_type))
+        else:
+            pass
 
         # -- SERVICE FORMAT
         # retrieve service format if it's not given
         if service_format is None:
             logger.debug("No format passed. Trying to extract one from the URL...")
             if service_type in ("esri_ogc", "ogc", "guess"):
-                if "service" in set(k.lower() for k in url_query):
-                    service_format = url_query.get("service")[0]
+                if not url_query:
+                    raise ValueError(
+                        "Service format can't be deduced without query parameters or specified format"
+                    )
+                elif "service" in set(k.lower() for k in url_query):
+                    service_format = url_query.get("service")[0].lower()
                     logger.debug(
                         "Service format extracted from the query parameters: {}".format(
                             service_format
@@ -579,6 +598,10 @@ class ApiResource:
                         )
                     )
             else:
+                if "FeatureServer" in url_clean:
+                    service_format = "efs"
+                elif "MapServer" in url_clean:
+                    service_format = "ems"
                 pass
         else:
             # let's use the passed service format
