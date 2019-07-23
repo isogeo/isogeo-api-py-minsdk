@@ -200,7 +200,7 @@ class IsogeoSession(OAuth2Session):
         self.coordinate_system = self.srs = api.ApiCoordinateSystem(self)
         self.datasource = api.ApiDatasource(self)
         self.directive = api.ApiDirective(self)
-        self.format = api.ApiFormat(self)
+        self.formats = api.ApiFormat(self)
         self.keyword = api.ApiKeyword(self)
         self.license = api.ApiLicense(self)
         self.metadata = api.ApiResource(self)

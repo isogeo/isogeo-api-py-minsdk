@@ -67,12 +67,12 @@ class ApiFormat:
         :rtype: list
 
         :Example:
-        >>> formats = isogeo.format.listing()
+        >>> formats = isogeo.formats.listing()
         >>> # count all formats
         >>> print(len(formats))
         32
         >>> # count formats which are only for vector dataset
-        >>> print(len(isogeo.format.listing(data_type="vector-dataset")))
+        >>> print(len(isogeo.formats.listing(data_type="vector-dataset")))
         21
         >>> # list all unique codes
         >>> formats_codes = [i.get("code") for i in formats]
@@ -137,7 +137,7 @@ class ApiFormat:
         :rtype: Format
 
         :Example:
-        >>> pprint.pprint(isogeo.format.get("postgis"))
+        >>> pprint.pprint(isogeo.formats.get("postgis"))
         {
             '_id': string (uuid),
             '_tag': 'format:postgis',
@@ -199,7 +199,7 @@ class ApiFormat:
             name="GeoJSON",
             type="vectorDataset"
         )
-        >>> print(isogeo.format.create(format_to_add))
+        >>> print(isogeo.formats.create(format_to_add))
         {
             '_id': string (uuid),
             '_tag': 'format:geojson',
@@ -247,7 +247,6 @@ class ApiFormat:
         )
 
         # checking response
-        print(req_new_format)
         req_check = checker.check_api_response(req_new_format)
         if isinstance(req_check, tuple):
             return req_check
@@ -298,11 +297,11 @@ class ApiFormat:
 
         :Example:
         >>> # retrieve format to update
-        >>> fmt_postgis = isogeo.format.get("postgis")
+        >>> fmt_postgis = isogeo.formats.get("postgis")
         >>> # add new versions locally
         >>> fmt_postgis.versions.extend(["3.0", "3.1"])
         >>> # update online
-        >>> fmt_postgis_updted = isogeo.format.update(fmt_pgis)
+        >>> fmt_postgis_updted = isogeo.formats.update(fmt_pgis)
         """
         # check format UUID
         if not checker.check_is_uuid(frmt._id):
@@ -356,7 +355,7 @@ class ApiFormat:
         :rtype: list
 
         :Example:
-        >>> isogeo.format.search(query="a", page_size=1, offset=0)
+        >>> isogeo.formats.search(query="a", page_size=1, offset=0)
         [
             {
                 'aliases': [],

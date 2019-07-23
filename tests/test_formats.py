@@ -119,7 +119,7 @@ class TestFormats(unittest.TestCase):
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.format.delete(frmt=i)
+                cls.isogeo.formats.delete(frmt=i)
                 pass
         # close sessions
         cls.isogeo.close()
@@ -134,7 +134,7 @@ class TestFormats(unittest.TestCase):
         )
 
         # create it online
-        format_new = self.isogeo.format.create(frmt=format_new)
+        format_new = self.isogeo.formats.create(frmt=format_new)
 
         # checks
         self.assertEqual(format_new.name, get_test_marker())
@@ -146,7 +146,7 @@ class TestFormats(unittest.TestCase):
     def test_formats_listing(self):
         """GET :/formats/}"""
         # retrieve metadata formats
-        formats = self.isogeo.format.listing()
+        formats = self.isogeo.formats.listing()
         # parse and test object loader
         for i in formats:
             # load it
@@ -174,11 +174,11 @@ class TestFormats(unittest.TestCase):
         if len(self.isogeo._formats_geo):
             formats = self.isogeo._formats_geo
         else:
-            formats = self.isogeo.format.listing()
+            formats = self.isogeo.formats.listing()
 
         frmt_code = sample(formats, 1)[0].get("code")
         # retrieve coordinate system with his EPSG code
-        frmt_detailed = self.isogeo.format.get(frmt_code)
+        frmt_detailed = self.isogeo.formats.get(frmt_code)
         # check result
         self.assertIsInstance(frmt_detailed, Format)
 
