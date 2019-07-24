@@ -13,6 +13,7 @@ from .routes_keyword import ApiKeyword  # noqa: F401
 from .routes_license import ApiLicense  # noqa: F401
 from .routes_resource import ApiResource  # noqa: F401
 from .routes_share import ApiShare  # noqa: F401
+from .routes_service import ApiService  # noqa: F401
 from .routes_service_layers import ApiServiceLayer  # noqa: F401
 from .routes_service_operations import ApiServiceOperation  # noqa: F401
 from .routes_specification import ApiSpecification  # noqa: F401
