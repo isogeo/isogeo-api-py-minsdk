@@ -203,7 +203,7 @@ class IsogeoSession(OAuth2Session):
         self.formats = api.ApiFormat(self)
         self.keyword = api.ApiKeyword(self)
         self.license = api.ApiLicense(self)
-        self.metadata = api.ApiResource(self)
+        self.metadata = api.ApiMetadata(self)
         self.services = api.ApiService(self)
         self.share = api.ApiShare(self)
         self.specification = api.ApiSpecification(self)

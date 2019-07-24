@@ -2,7 +2,7 @@
 #! python3
 
 """
-    Isogeo API v1 - Model of Resource search entity
+    Isogeo API v1 - Model of Metadata search entity
 
     See: http://help.isogeo.com/api/complete/index.html#definition-search
 """
@@ -15,14 +15,14 @@
 import pprint
 
 # other model
-# from isogeo_pysdk.models.resource import Resource
+# from isogeo_pysdk.models.resource import Metadata
 # from isogeo_pysdk.models.tag import Tag
 
 # #############################################################################
 # ########## Classes ###############
 # ##################################
-class ResourceSearch(object):
-    """Resource searchs are entities used to organize and shares metadata of a workgroup.
+class MetadataSearch(object):
+    """Metadata searchs are entities used to organize and shares metadata of a workgroup.
 
     ```json
 
@@ -85,9 +85,9 @@ class ResourceSearch(object):
     # search results envelope
     @property
     def envelope(self) -> dict:
-        """Gets the abilities of this Resource search.
+        """Gets the abilities of this Metadata search.
 
-        :return: The abilities of this Resource search.
+        :return: The abilities of this Metadata search.
         :rtype: str
         """
         return self._envelope
@@ -107,9 +107,9 @@ class ResourceSearch(object):
     # search creation date
     @property
     def limit(self) -> int:
-        """Gets the created of this Resource search.
+        """Gets the created of this Metadata search.
 
-        :return: The created of this Resource search.
+        :return: The created of this Metadata search.
         :rtype: str
         """
         return self._limit
@@ -119,26 +119,26 @@ class ResourceSearch(object):
         """Sets the limit of this InlineResponse2001.
 
 
-        :param int limit: The limit of this Resource Search
+        :param int limit: The limit of this Metadata Search
         """
 
         self._limit = limit
 
     # offset UUID
     @property
-    def offset(self) -> str:
-        """Gets the id of this Resource search.
+    def offset(self) -> int:
+        """Gets the offset of this Metadata search.
 
-        :return: The id of this Resource search.
-        :rtype: str
+        :return: The offset of this Metadata search.
+        :rtype: int
         """
         return self._offset
 
     @offset.setter
-    def offset(self, offset: str):
-        """Sets the id of this Resource search.
+    def offset(self, offset: int):
+        """Sets the offset of this Metadata search.
 
-        :param str id: The id of this Resource search.
+        :param int offset: The offset of this Metadata search.
         """
 
         self._offset = offset
@@ -146,9 +146,9 @@ class ResourceSearch(object):
     # search last modification date
     @property
     def query(self) -> str:
-        """Gets the modified of this Resource search.
+        """Gets the modified of this Metadata search.
 
-        :return: The modified of this Resource search.
+        :return: The modified of this Metadata search.
         :rtype: str
         """
         return self._query
@@ -167,9 +167,9 @@ class ResourceSearch(object):
     # search results tags
     @property
     def results(self) -> list:
-        """Gets the tag of this Resource search.
+        """Gets the tag of this Metadata search.
 
-        :return: The tag of this Resource search.
+        :return: The tag of this Metadata search.
         :rtype: list
         """
         return self._results
@@ -180,7 +180,7 @@ class ResourceSearch(object):
 
 
         :param results: The results of this InlineResponse2001.  # noqa: E501
-        :type: list[Resource]
+        :type: list[Metadata]
         """
 
         self._results = results
@@ -188,9 +188,9 @@ class ResourceSearch(object):
     # tags
     @property
     def tags(self) -> list:
-        """Gets the tags of this Resource search.
+        """Gets the tags of this Metadata search.
 
-        :return: The tags of this Resource search.
+        :return: The tags of this Metadata search.
         :rtype: str
         """
         return self._tags
@@ -210,18 +210,18 @@ class ResourceSearch(object):
     # total
     @property
     def total(self) -> int:
-        """Gets the total of this Resource search.
+        """Gets the total of this Metadata search.
 
-        :return: The total of this Resource search.
+        :return: The total of this Metadata search.
         :rtype: int
         """
         return self._total
 
     @total.setter
     def total(self, total: int):
-        """Sets the total of this Resource search.
+        """Sets the total of this Metadata search.
 
-        :param int total: The total of this Resource search.
+        :param int total: The total of this Metadata search.
         """
 
         self._total = total
@@ -250,7 +250,7 @@ class ResourceSearch(object):
                 )
             else:
                 result[attr] = value
-        if issubclass(ResourceSearch, dict):
+        if issubclass(MetadataSearch, dict):
             for key, value in self.items():
                 result[key] = value
 
@@ -266,7 +266,7 @@ class ResourceSearch(object):
 
     def __eq__(self, other) -> bool:
         """Returns true if both objects are equal"""
-        if not isinstance(other, ResourceSearch):
+        if not isinstance(other, MetadataSearch):
             return False
 
         return self.__dict__ == other.__dict__
@@ -281,4 +281,4 @@ class ResourceSearch(object):
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    search = ResourceSearch()
+    search = MetadataSearch()

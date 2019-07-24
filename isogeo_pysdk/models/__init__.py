@@ -13,8 +13,8 @@ from .keyword import Keyword  # noqa: F401
 from .keyword_search import KeywordSearch  # noqa: F401
 from .license import License  # noqa: F401
 from .link import Link  # noqa: F401
-from .resource import Resource  # noqa: F401
-from .resource_search import ResourceSearch  # noqa: F401
+from .metadata import Metadata  # noqa: F401
+from .metadata_search import MetadataSearch  # noqa: F401
 from .share import Share  # noqa: F401
 from .service_layer import ServiceLayer  # noqa: F401
 from .service_operation import ServiceOperation  # noqa: F401
@@ -25,5 +25,5 @@ from .workgroup import Workgroup  # noqa: F401
 
 # shortcuts or confusion reducers
 Account = User
-Metadata = Resource
-MetadataSearch = ResourceSearch
+Resource = Metadata
+ResourceSearch = MetadataSearch

@@ -44,7 +44,7 @@ utils = IsogeoUtils()
 # #############################################################################
 # ########## Classes ###############
 # ##################################
-class ApiResource:
+class ApiMetadata:
     """Routes as methods of Isogeo API used to manipulate metadatas (resources).
     """
 
@@ -67,7 +67,7 @@ class ApiResource:
         self.operations = ApiServiceOperation(self.api_client)
 
         # initialize
-        super(ApiResource, self).__init__()
+        super(ApiMetadata, self).__init__()
 
     @ApiDecorators._check_bearer_validity
     def metadata(self, metadata_id: str, include: list or str = []) -> Metadata:
@@ -258,7 +258,7 @@ class ApiResource:
     def update(self, metadata: Metadata) -> Metadata:
         """Check if the specified resource exists and is available for the authenticated user.
 
-        :param Metadata metadata: identifier of the resource to verify
+        :param Metadata metadata: metadata object to update
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):
@@ -468,5 +468,5 @@ class ApiResource:
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    api_resource = ApiResource()
-    print(api_resource)
+    api_metadata = ApiMetadata()
+    print(api_metadata)

@@ -11,7 +11,7 @@ from .routes_directives import ApiDirective  # noqa: F401
 from .routes_format import ApiFormat  # noqa: F401
 from .routes_keyword import ApiKeyword  # noqa: F401
 from .routes_license import ApiLicense  # noqa: F401
-from .routes_resource import ApiResource  # noqa: F401
+from .routes_metadata import ApiMetadata  # noqa: F401
 from .routes_share import ApiShare  # noqa: F401
 from .routes_service import ApiService  # noqa: F401
 from .routes_service_layers import ApiServiceLayer  # noqa: F401
@@ -21,4 +21,4 @@ from .routes_thesaurus import ApiThesaurus  # noqa: F401
 from .routes_workgroup import ApiWorkgroup  # noqa: F401
 
 # shortcuts or confusion reducers
-ApiMetadata = ApiResource
+ApiMetadata = ApiMetadata
