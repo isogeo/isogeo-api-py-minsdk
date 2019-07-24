@@ -21,6 +21,7 @@ from requests.adapters import HTTPAdapter
 from requests.models import Response
 
 # submodules
+from isogeo_pysdk.exceptions import AlreadyExistError
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Metadata, ResourceSearch
@@ -32,7 +33,7 @@ from .routes_service_layers import ApiServiceLayer
 from .routes_service_operations import ApiServiceOperation
 
 # #############################################################################
-# ########## Libraries #############
+# ########## Globals ###############
 # ##################################
 
 logger = logging.getLogger(__name__)
@@ -469,7 +470,7 @@ class ApiResource:
         service_format: str = None,
         service_title: str = None,
         check_exists: bool = 1,
-        http_verb: str = "head",
+        http_verb: str = "HEAD",
     ) -> Metadata:
         """Add a new metadata of a geographic webservice to a workgroup.
         It's just a helper to make it easy to create a metadata of a service with autofill for service layers.
@@ -637,22 +638,31 @@ class ApiResource:
         else:
             pass
 
-        # # check if metadata already exists in workgroup
-        # if check_exists == 1:
-        #     # retrieve workgroup metadatas
-        #     if not self.api_client._wg_metadatas_names:
-        #         self.metadatas(workgroup_id=workgroup_id, include=[])
-        #     # check
-        #     if metadata.name in self.api_client._wg_metadatas_names:
-        #         logger.debug(
-        #             "Metadata with the same name already exists: {}. Use 'metadata_update' instead.".format(
-        #                 metadata.name
-        #             )
-        #         )
-        #         return False
-        # else:
-        #     pass
+        # check if metadata already exists in workgroup
+        # based on the format and base URL (cleaned)
+        if check_exists == 1:
+            # retrieve workgroup metadatas
+            md_services = self.search(
+                query="type:service format:{} owner:{}".format(
+                    service_format, workgroup_id
+                ),
+                page_size=100,
+            )
+            for md_service in md_services.results:
+                if md_service.get("path") == url_clean:
+                    msg_error = (
+                        "Service metadata with the same base URL already exists: {} ({}). "
+                        "Use 'update' instead or disable 'check_exists' option if you still "
+                        "want to create duplicated service metadata.".format(
+                            md_service.get("_id"), md_service.get("path")
+                        )
+                    )
+                    logger.error(msg_error)
+                    raise AlreadyExistError(msg_error)
+        else:
+            pass
 
+        # -- CREATION
         # instanciate new service metadata locally
         new_metadata_service = Metadata(
             series=0,
