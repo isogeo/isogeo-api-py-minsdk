@@ -22,9 +22,14 @@ from collections import Counter
 from datetime import datetime
 from uuid import UUID
 
+# modules
+from isogeo_pysdk.enums import MetadataSubresources
+
 # ##############################################################################
 # ########## Globals ###############
 # ##################################
+
+logger = logging.getLogger(__name__)
 
 FILTER_KEYS = {
     "action": [],
@@ -93,6 +98,8 @@ _SUBRESOURCES_MD = (
 
 _SUBRESOURCES_KW = ("_abilities", "count", "thesaurus")
 
+_SUBRESOURCES_CT = ("count",)
+
 # ##############################################################################
 # ########## Classes ###############
 # ##################################
@@ -158,10 +165,16 @@ class IsogeoChecker(object):
         # end of method
         return token
 
-    def check_api_response(self, response):
+    def check_api_response(self, response) -> True or tuple:
         """Check API response and raise exceptions if needed.
 
         :param requests.models.Response response: request response to check
+
+        :rtype: True or tuple
+
+        :Example:
+        >>> checker.check_api_response(<Response [500]>)
+        (False, 500)
         """
         # check response
         if response.status_code == 200:
@@ -292,7 +305,7 @@ class IsogeoChecker(object):
         """
         # check uuid type
         if not isinstance(uuid_str, str):
-            raise TypeError("'uuid_str' expected a str value.")
+            raise TypeError("'uuid_str' expected a str value. Got: {}".format(uuid_str))
         else:
             pass
         # handle Isogeo specific UUID in XML exports
@@ -388,26 +401,39 @@ class IsogeoChecker(object):
             raise TypeError("'specific_tag' expects a list")
         return specific_tag
 
-    def _check_filter_includes(self, includes: list, resource: str = "metadata"):
+    def _check_filter_includes(self, includes: list, entity: str = "metadata"):
         """Check if specific_resources parameter is valid.
 
         :param list includes: sub resources to check
-        :param str resource: resource type to check sub resources.
-         Must be one of: metadata | keyword.
+        :param str entity: entity type to check sub resources.
+         Must be one of: contact | metadata | keyword.
         """
-        # check resource parameter
-        if resource == "metadata":
-            ref_subresources = _SUBRESOURCES_MD
-        elif resource == "keyword":
+        # check entity parameter
+        if entity == "metadata":
+            ref_subresources = [item.value for item in MetadataSubresources]
+        elif entity == "keyword":
             ref_subresources = _SUBRESOURCES_KW
+        elif entity == "contact":
+            ref_subresources = _SUBRESOURCES_CT
         else:
-            raise ValueError("Must be one of: metadata | keyword.")
+            raise ValueError("Must be one of: contact | metadata | keyword.")
 
         # sub resources manager
         if isinstance(includes, str) and includes.lower() == "all":
             includes = ",".join(ref_subresources)
         elif isinstance(includes, list):
-            if len(includes) > 0:
+            if len(includes):
+                for subresource in includes:
+                    if subresource not in ref_subresources:
+                        logger.warning(
+                            "'{}' is not a valid subresource to include. Must be one of: {}. It will be removed or ignored.".format(
+                                subresource, " | ".join(ref_subresources)
+                            )
+                        )
+                        includes.remove(subresource)  # removing bad subresource
+                    else:
+                        pass
+
                 includes = ",".join(includes)
             else:
                 includes = ""

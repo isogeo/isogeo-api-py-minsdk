@@ -44,16 +44,16 @@ setup(
         "Docs": "https://isogeo-api-pysdk.readthedocs.io/",
         "Bug Reports": "https://github.com/isogeo/isogeo-api-py-minsdk/issues/",
         "Source": "https://github.com/isogeo/isogeo-api-py-minsdk/",
-        "Isogeo API": "http://help.isogeo.com/api/"
+        "Isogeo API": "http://help.isogeo.com/api/",
     },
     # dependencies
-    install_requires=["requests>=2.20.0"],
+    install_requires=["requests>=2.20.0", "requests-oauthlib>=1.2.0"],
     extras_require={
-        "api-write": ["requests_oauthlib"],
-        "dev": ["configparser"],
-        "test": ["coverage", "pycodestyle", "python-dateutil"],
+        "api-write": ["requests-oauthlib"],
+        "dev": ["black", "python-dotenv"],
+        "test": ["codecov", "coverage", "pytest", "pytest-cov"],
     },
-    python_requires=">=3.5, <4",
+    python_requires=">=3.6, <4",
     # packaging
     packages=find_packages(
         exclude=["contrib", "docs", "*.tests", "*.tests.*", "tests.*", "tests"]
@@ -63,7 +63,6 @@ setup(
         "Intended Audience :: Developers",
         "Intended Audience :: Information Technology",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.5",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Development Status :: 5 - Production/Stable",

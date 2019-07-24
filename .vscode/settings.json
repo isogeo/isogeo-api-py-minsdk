@@ -9,22 +9,25 @@
     "python.jediEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.flake8Args": [
-        "--ignore=E24,E501,W504",
+        "--ignore=E24,E265,E501,W504",
         "--verbose"
     ],
     "python.linting.pylintEnabled": true,
     "python.pythonPath": ".venv_tests\\Scripts\\python.exe",
-    "python.unitTest.pyTestArgs": [],
-    "python.unitTest.nosetestsEnabled": false,
-    "python.unitTest.pyTestEnabled": true,
-    "python.unitTest.unittestArgs": [
+    "python.testing.pytestEnabled": true,
+    "python.testing.pytestArgs": [
+        "-c",
+        "setup.cfg"
+    ],
+    "python.testing.nosetestsEnabled": false,
+    "python.testing.unittestEnabled": false,
+    "python.testing.unittestArgs": [
         "-v",
         "-s",
         "./tests",
         "-p",
         "test_*.py"
     ],
-    "python.unitTest.unittestEnabled": false,
     "restructuredtext.confPath": "${workspaceFolder}\\docs",
     "travis.username": "isogeo",
     "travis.repository": "isogeo-api-py-minsdk",

@@ -15,8 +15,8 @@ py -3 -m venv .venv_packaging
 # dependencies
 "-- STEP -- Install and display dependencies within the virtualenv"
 python -m pip install -U pip
-pip install --upgrade -r ./requirements.txt
-pip install --upgrade black twine
+python -m pip install --upgrade -r ./requirements.txt
+python -m pip install --upgrade black twine
 
 # apply black linter
 python -m black --target-version=py36 .\isogeo_pysdk
@@ -39,7 +39,7 @@ python setup.py bdist_wheel
 
 # upload
 "-- STEP -- Upload it to pypi"
-twine upload dist/* --config-file .\.pypirc
+# twine upload dist/* --config-file .\.pypirc
 
 # remove virtualenv
 "-- STEP -- Get out the virtualenv then remove it"

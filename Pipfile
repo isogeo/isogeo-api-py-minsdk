@@ -8,18 +8,20 @@ black = "==19.3b0"
 codecov = "*"
 flake8 = "*"
 pip = "*"
+pre-commit = "*"
 pycodestyle = "*"
+pylint = "*"
 pytest= "*"
 pytest-cov="*"
 python-dateutil = "*"
 python-dotenv = "*"
-requests-oauthlib = "*"
 setuptools = "*"
 twine = "*"
 wheel = "*"
 
 [packages]
 requests = ">=2.20.0"
+requests-oauthlib = ">=1.2.0"
 
 [requires]
 python_version = "3.6"

@@ -6,6 +6,9 @@
         {
             "label": "Tests and coverage",
             "type": "shell",
+            "dependsOn": [
+                "Format tests"
+            ],
             "command": "./tool_test_coverage.ps1",
             "group": {
                 "kind": "test",
@@ -15,6 +18,9 @@
         {
             "label": "Build package and upload",
             "type": "shell",
+            "dependsOn": [
+                "Format code"
+            ],
             "command": "./tool_build_upload.ps1",
             "group": {
                 "kind": "build",
@@ -26,6 +32,40 @@
             "label": "Build package documentation",
             "type": "shell",
             "command": "./tool_docs_build.ps1",
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Format code and tests",
+            "dependsOn": [
+                "Format code",
+                "Format tests"
+            ],
+            "problemMatcher": []
+        },
+        {
+            "label": "Format code",
+            "type": "shell",
+            "command": "${config:python.pythonPath}",
+            "args": [
+                "-m",
+                "black",
+                "--target-version=py36",
+                "./isogeo_pysdk"
+            ],
+            "group": "build",
+            "problemMatcher": []
+        },
+        {
+            "label": "Format tests",
+            "type": "shell",
+            "command": "${config:python.pythonPath}",
+            "args": [
+                "-m",
+                "black",
+                "--target-version=py36",
+                "./tests"
+            ],
             "group": "build",
             "problemMatcher": []
         }

@@ -85,6 +85,7 @@ virtenv*/
 virtualenv/
 *.pypirc
 *env*
+!.env.example
 
 # tests
 junit/*
@@ -93,3 +94,6 @@ junit/*
 # PTVS
 *.ptvs
 *.vs
+
+*_wip*
+*.xlsx

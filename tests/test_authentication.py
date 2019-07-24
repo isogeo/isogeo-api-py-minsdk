@@ -79,6 +79,9 @@ class TestAuthentication(unittest.TestCase):
         # if other language passed the English is applied
         self.assertEqual(isogeo.lang, "en")
 
+        # close
+        isogeo.close()
+
     def test_bad_platform(self):
         """Bad platform value."""
         with self.assertRaises(ValueError):
@@ -98,7 +101,7 @@ class TestAuthentication(unittest.TestCase):
     # Proxy management
     def test_proxy(self):
         """Simulate proxy settings assignment."""
-        Isogeo(
+        isogeo = Isogeo(
             client_id=app_id,
             client_secret=app_token,
             proxy={
@@ -106,6 +109,9 @@ class TestAuthentication(unittest.TestCase):
                 "https": "http://proxy.localhost:8888",
             },
         )
+
+        # close
+        isogeo.close()
 
     def test_bad_proxy(self):
         """Bad proxy settings."""
@@ -123,12 +129,18 @@ class TestAuthentication(unittest.TestCase):
         self.assertIsInstance(bearer, dict)
         self.assertEqual(len(bearer), 4)
 
+        # close
+        isogeo.close()
+
     def test_successed_auth_qa(self):
         """Try to connect to QA platform."""
         isogeo = Isogeo(client_id=app_id, client_secret=app_token, platform="qa")
         bearer = isogeo.connect()
         self.assertIsInstance(bearer, dict)
         self.assertEqual(len(bearer), 4)
+
+        # close
+        isogeo.close()
 
 
 # #############################################################################

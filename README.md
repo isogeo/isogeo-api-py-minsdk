@@ -4,7 +4,7 @@
 
 [![Build Status](https://travis-ci.org/isogeo/isogeo-api-py-minsdk.svg?branch=master)](https://travis-ci.org/isogeo/isogeo-api-py-minsdk) [![Build Status](https://dev.azure.com/isogeo/Python%20SDK/_apis/build/status/isogeo.isogeo-api-py-minsdk?branchName=master)](https://dev.azure.com/isogeo/Python%20SDK/_build/latest?definitionId=3&branchName=master) [![codecov](https://codecov.io/gh/isogeo/isogeo-api-py-minsdk/branch/master/graph/badge.svg)](https://codecov.io/gh/isogeo/isogeo-api-py-minsdk)
 
-[![Documentation Status](https://readthedocs.org/projects/isogeo-api-pysdk/badge/?version=latest)](https://isogeo-api-pysdk.readthedocs.io/en/latest/?badge=latest)
+[![Documentation Status](https://readthedocs.org/projects/isogeo-api-pysdk/badge/?version=latest)](https://isogeo-api-pysdk.readthedocs.io/en/latest/?badge=latest) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
 A Python package to use Isogeo REST API.
 
@@ -48,6 +48,9 @@ print("Search __dict__ keys: ", search.keys())  # search response basic structur
 print("Search query parameters: ", search.get('query'))  # search response query passed
 print("Total count of metadatas shared: ", search.get("total"))  # total of available resources
 print("Count of resources got by request: {}\n".format(len(search.get("results"))))  # total of resources returned by search request
+
+# close the session when you finish
+isogeo.close()
 ```
 
 Samples are available in `the source repository <https://github.com/isogeo/isogeo-api-py-minsdk/tree/master/isogeo_pysdk/samples>`_.

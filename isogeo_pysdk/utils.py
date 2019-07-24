@@ -16,6 +16,7 @@
 import base64
 import json
 import logging
+import math
 import quopri
 import re
 import uuid
@@ -37,6 +38,7 @@ except (ImportError, ValueError, SystemError):
 # ##################################
 
 checker = checker.IsogeoChecker()
+logger = logging.getLogger(__name__)
 
 # ##############################################################################
 # ########## Classes ###############
@@ -56,7 +58,7 @@ class IsogeoUtils(object):
     }
 
     CSW_URLS = {
-        "prod": "https://app.isogeo.com",
+        "prod": "https://services.api.isogeo.com/",
         "qa": "http://services.api.qa.isogeo.com",
     }
 
@@ -130,11 +132,11 @@ class IsogeoUtils(object):
         platform = platform.lower()
         self.platform = platform
         if platform == "prod":
-            ssl = True
-            logging.debug("Using production platform.")
+            self.ssl = True
+            logger.debug("Using production platform.")
         elif platform == "qa":
-            ssl = False
-            logging.debug("Using Quality Assurance platform (reduced perfs).")
+            self.ssl = False
+            logger.debug("Using Quality Assurance platform (reduced perfs).")
         else:
             logging.error(
                 "Platform must be one of: {}".format(" | ".join(self.API_URLS.keys()))
@@ -143,6 +145,10 @@ class IsogeoUtils(object):
                 3,
                 "Platform must be one of: {}".format(" | ".join(self.API_URLS.keys())),
             )
+        # set values
+        self.api_url = self.API_URLS.get(platform)
+        self.app_url = self.APP_URLS.get(platform)
+
         # method ending
         return (
             platform.lower(),
@@ -151,8 +157,25 @@ class IsogeoUtils(object):
             self.CSW_URLS.get(platform),
             self.MNG_URLS.get(platform),
             self.OC_URLS.get(platform),
-            ssl,
+            self.ssl,
         )
+
+    def _convert_octets(self, octets: int) -> str:
+        """Convert a mount of octets in readable size.
+
+        :param int octets: mount of octets to convert
+        """
+        # check zero
+        if octets == 0:
+            return "0 octet"
+
+        # conversion
+        size_name = ("octets", "Ko", "Mo", "Go", "To", "Po")
+        i = int(math.floor(math.log(octets, 1024)))
+        p = math.pow(1024, i)
+        s = round(octets / p, 2)
+
+        return "%s %s" % (s, size_name[i])
 
     def convert_uuid(self, in_uuid: str = str, mode: bool = 0):
         """Convert a metadata UUID to its URI equivalent. And conversely.
@@ -266,6 +289,14 @@ class IsogeoUtils(object):
         return version_req.json().get("version")
 
     # -- URLs builders -------------------------------------------------------
+    def get_request_base_url(self, route: str, prot: str = "https") -> str:
+        """Build the request url for the specified route.
+
+        :param str route: route to format
+        :param str prot: https [DEFAULT] or http
+        """
+        return "{}://{}.isogeo.com/{}/".format(prot, self.api_url, route)
+
     def get_edit_url(
         self,
         md_id: str = None,
@@ -757,9 +788,3 @@ class IsogeoUtils(object):
 if __name__ == "__main__":
     """Standalone execution."""
     utils = IsogeoUtils()
-    print(utils.get_view_url(
-            webapp="csw_getrecords",
-            share_id="1e07910d365449b59b6596a9b428ecd9",
-            share_token="TokenOhDearToken")
-    )
-    

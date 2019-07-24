@@ -14,12 +14,14 @@
 autopep8
 codecov
 coverage
-requests==2.21.*
+flake8
+requests==2.22.*
 pycodestyle
 python-dateutil
 python-dotenv
 pytest
 pytest-cov
+requests-oauthlib
 
 # then it's possible to install from the repo:
 # https://github.com/Isogeo/isogeo-api-py-minsdk/archive/master.zip

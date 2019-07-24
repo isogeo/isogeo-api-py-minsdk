@@ -26,7 +26,7 @@ app_token = environ.get("ISOGEO_API_DEV_SECRET")
 isogeo = Isogeo(client_id=app_id, client_secret=app_token)
 
 # getting a token
-token = isogeo.connect()
+isogeo.connect()
 
 
 # #############################################################################

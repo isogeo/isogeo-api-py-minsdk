@@ -71,6 +71,8 @@ class TestIsogeoChecker(unittest.TestCase):
         self.assertEqual(
             len(checker.check_bearer_validity(isogeo.token, isogeo.connect())), 4
         )
+        # close
+        isogeo.close()
 
     def test_checker_validity_bearer_expired(self):
         """When a search works, check the response structure."""
@@ -84,6 +86,8 @@ class TestIsogeoChecker(unittest.TestCase):
         self.assertEqual(
             len(checker.check_bearer_validity(isogeo.token, isogeo.connect())), 4
         )
+        # close
+        isogeo.close()
 
     # UUID
     def test_checker_uuid_valid(self):
@@ -249,35 +253,31 @@ class TestIsogeoChecker(unittest.TestCase):
     def test_check_filter_includes_ok(self):
         """Check sub resources"""
         # metadata sub resources - empty
-        subresources = checker._check_filter_includes(includes=[], resource="metadata")
+        subresources = checker._check_filter_includes(includes=[], entity="metadata")
         self.assertIsInstance(subresources, str)
         # metadata sub resources - 1
         subresources = checker._check_filter_includes(
-            includes=["links"], resource="metadata"
+            includes=["links"], entity="metadata"
         )
         self.assertIsInstance(subresources, str)
         # metadata sub resources - >1
         subresources = checker._check_filter_includes(
-            includes=["contacts", "links"], resource="metadata"
+            includes=["contacts", "links"], entity="metadata"
         )
         self.assertIsInstance(subresources, str)
         # metadata sub resources - all
-        subresources = checker._check_filter_includes(
-            includes="all", resource="metadata"
-        )
+        subresources = checker._check_filter_includes(includes="all", entity="metadata")
         self.assertIsInstance(subresources, str)
         # keyword sub resources
-        subresources = checker._check_filter_includes(
-            includes="all", resource="keyword"
-        )
+        subresources = checker._check_filter_includes(includes="all", entity="keyword")
         self.assertIsInstance(subresources, str)
 
     def test_check_filter_includes_bad(self):
         """Raise errors"""
         with self.assertRaises(ValueError):
-            checker._check_filter_includes(includes="all", resource="Metadata")
+            checker._check_filter_includes(includes="all", entity="Metadata")
         with self.assertRaises(TypeError):
-            checker._check_filter_includes(includes="layers", resource="metadata")
+            checker._check_filter_includes(includes="layers", entity="metadata")
 
     def test_check_filter_specific_md_ok(self):
         """Check specific md"""

@@ -3,21 +3,25 @@
 # Add steps that analyze code, save the dist with the build record, publish to a PyPI-compatible index, and more:
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
+trigger:
+- master
+
+pr:
+- master
+
 jobs:
 
 # UNIT TESTS
 - job: 'Test'
   pool:
-    vmImage: 'Ubuntu 16.04'
+    vmImage: "windows-2019"
   strategy:
     matrix:
-      Python35:
-        python.version: '3.5'
       Python36:
         python.version: '3.6'
       Python37:
         python.version: '3.7'
-    maxParallel: 3
+    maxParallel: 2
 
   steps:
   - task: UsePythonVersion@0
@@ -33,11 +37,35 @@ jobs:
     displayName: 'Install dependencies'
 
   - script: |
-      pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html --cov-append tests
+      python -m pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html --cov-append tests
     env:
+      # platform
+      ISOGEO_PLATFORM: $(ISOGEO_PLATFORM)
+      OAUTHLIB_INSECURE_TRANSPORT: $(OAUTHLIB_INSECURE_TRANSPORT)
+      # URLs
+      ISOGEO_API_URL: $(ISOGEO_API_URL)
+      ISOGEO_ID_URL: $(ISOGEO_ID_URL)
+      # oAuth2 Client Credentials Grant
       ISOGEO_API_DEV_ID: $(ISOGEO_API_DEV_ID)
       ISOGEO_API_DEV_SECRET: $(ISOGEO_API_DEV_SECRET)
-    displayName: 'Tests and coverage'
+      # oAuth2 Legacy Application Client
+      ISOGEO_API_USER_CLIENT_ID: $(ISOGEO_API_USER_CLIENT_ID)
+      ISOGEO_API_USER_CLIENT_SECRET: $(ISOGEO_API_USER_CLIENT_SECRET)
+      ISOGEO_USER_NAME: $(ISOGEO_USER_NAME)
+      ISOGEO_USER_PASSWORD: $(ISOGEO_USER_PASSWORD)
+      # static fixtures
+      ISOGEO_FIXTURES_METADATA_COMPLETE: $(ISOGEO_FIXTURES_METADATA_COMPLETE)
+      ISOGEO_WORKGROUP_TEST_UUID: $(ISOGEO_WORKGROUP_TEST_UUID)
+    displayName: 'Tests and coverage - Pytest'
+
+  # # Codecov. Inspired from: https://github.com/codecov/example-azure-pipelines
+  # - task: Bash@3
+  #   displayName: "Publish coverage results to Codecov"
+  #   condition: succeededOrFailed()
+  #   continueOnError: true
+  #   inputs:
+  #     targetType: 'inline'
+  #     script: <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f coverage.xml
 
   - task: PublishTestResults@2
     displayName: "Publish unit test results"
@@ -47,11 +75,12 @@ jobs:
       testRunTitle: 'Publish test results for Python $(python.version)'
 
   - task: PublishCodeCoverageResults@1
-    displayName: "Publish coverage results"
+    displayName: "Publish coverage results to Azure Pipelines"
     inputs:
       codeCoverageTool: Cobertura
       summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
       reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
+
 
 # LINT AND FORMATTING CODE
 - job: 'Lint'
@@ -68,7 +97,7 @@ jobs:
 
   - script: |
       python -m pip install -U pip
-      pip install -U black
+      python -m pip install -U black
     displayName: 'Install black dependencies'
 
   - script: python -m black --target-version=py36 .\isogeo_pysdk
@@ -88,9 +117,9 @@ jobs:
       addToPath: true
 
   - script: |
-      python -m pip install -U pip
-      pip install -U -r requirements.txt
-      pip install -U twine
+      python -m pip install -U pip setuptools wheel
+      python -m pip install -U -r requirements.txt
+      python -m pip install -U twine
     displayName: 'Install dependencies'
 
   - script: python setup.py egg_info
@@ -102,5 +131,31 @@ jobs:
   - script: python setup.py bdist_wheel
     displayName: 'Build wheel'
 
+
+# PUBLISH
+- job: 'Publish'
+  dependsOn: 'Build'
+  pool:
+    vmImage: "vs2017-win2016"
+  condition:
+    contains(variables['Build.SourceBranch'], 'tags')
+
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.x'
+      architecture: 'x64'
+      addToPath: true
+
+  - script: 'python -m pip install -U twine'
+
   # - script: twine upload dist/* -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
   #   displayName: "Upload to PyPi"
+
+  - task: GitHubRelease@0
+    inputs:
+      gitHubConnection: 'Azure DevOps'
+      repositoryName: 'isogeo/isogeo-api-py-minsdk'
+      action: 'create'
+      target: '$(Build.SourceVersion)'
+      tagSource: 'auto'

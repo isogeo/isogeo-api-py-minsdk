@@ -1,24 +1,21 @@
 language: python
+dist: xenial  # required for Python >= 3.7
 
 git:
   depth: false
   submodules: false
 
-# https://docs.travis-ci.com/user/languages/python/#specifying-python-versions
-python:
-  - "3.5"
-  - "3.6"
-
 matrix:
   include:
+    - python: 3.6
     - python: 3.7
-      dist: xenial  # required for Python >= 3.7 (travis-ci/travis-ci#9069)
 
 cache: pip
 
 # dependencies
 install:
   - "pip install --upgrade -r tests/requirements_test.txt"
+  - pip install -e .
 
 # run tests
 script:

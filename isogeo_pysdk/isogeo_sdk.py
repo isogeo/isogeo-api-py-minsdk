@@ -7,7 +7,7 @@
 #
 # Author:       Julien Moura @Isogeo
 #
-# Python:       3.5+
+# Python:       3.6+
 # Created:      22/12/2015
 # Updated:      10/04/2019
 # -----------------------------------------------------------------------------
@@ -29,19 +29,15 @@ from sys import platform as opersys
 from requests import ConnectionError, Session
 
 # modules
-try:
-    from . import checker
-    from . import utils
-except (ImportError, ValueError, SystemError):
-    import checker
-    import utils
+from isogeo_pysdk.checker import IsogeoChecker
+from isogeo_pysdk.utils import IsogeoUtils
 
 # ##############################################################################
 # ########## Globals ###############
 # ##################################
 
-checker = checker.IsogeoChecker()
-utils = utils.IsogeoUtils()
+checker = IsogeoChecker()
+utils = IsogeoUtils()
 version = "2.21.2"
 
 # #############################################################################
@@ -251,7 +247,7 @@ class Isogeo(Session):
         Isogeo ID delivers authentication bearers which are valid during
         a certain time. So this decorator checks the validity of the token
         comparing with actual datetime (UTC) and renews it if necessary.
-        See: http://tools.ietf.org/html/rfc6750#section-2
+        See: https://tools.ietf.org/html/rfc6750#section-2
 
         :param decorated_func token: original function to execute after check
         """
@@ -700,7 +696,7 @@ class Isogeo(Session):
         :param str query: search terms
         :param int offset: pagination start
         :param str order_by: sort criteria. Available values :
-        
+
             - count.group,
             - count.isogeo,
             - text

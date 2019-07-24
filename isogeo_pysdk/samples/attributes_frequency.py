@@ -17,9 +17,7 @@ from __future__ import absolute_import, print_function, unicode_literals
 # ##################################
 
 # Standard library
-import configparser  # to manage options.ini
 from collections import Counter
-from os import path
 
 # Isogeo
 from isogeo_pysdk import Isogeo
@@ -109,7 +107,7 @@ if __name__ == "__main__":
     alias_top10 = alias_frequency.most_common(10)
     print("\nTop 10 attributes aliases: ", alias_top10)
 
-    # attributes aliases
+    # attributes descriptions
     description_frequency = Counter(attributes_description)
     description_top10 = description_frequency.most_common(10)
     print("\nTop 10 attributes descriptions: ", description_top10)
