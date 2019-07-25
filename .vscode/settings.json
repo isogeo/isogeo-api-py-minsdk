@@ -1,7 +1,6 @@
 {
     "editor.rulers": [88],
     "editor.wordWrapColumn": 88,
-    "python.autoComplete.addBrackets": true,
     "python.dataScience.enabled": false,
     "python.envFile": "${workspaceFolder}/dev.env",
     "python.formatting.provider": "black",
