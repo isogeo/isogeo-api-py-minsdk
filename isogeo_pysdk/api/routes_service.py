@@ -92,8 +92,7 @@ class ApiService:
 
         :rtype: Service
 
-        :raises ValueError: if workgroup_id is not a correct UUID
-        :raises TypeError: if the message_body is not a basestring
+        :raises ValueError: if workgroup_id is not a correct UUID | if http_verb or service_type is not a correct value
         :raises AlreadyExistError: if a metadata service with the same base URL already exists in the workgroup
 
         :Example:
@@ -109,6 +108,11 @@ class ApiService:
         >>> new_srv = isogeo.metadata.service_create(
             workgroup_id=WORKGROUP_UUID,
             service_url="https://ligeo.paysdelaloire.fr/server/services/Le_Mans/Le_Mans_service/MapServer/WFSServer?request=GetCapabilities&service=WFS",
+            )
+        >>> # for an Esri FeatureServer
+        >>> new_srv = isogeo.metadata.service_create(
+            workgroup_id=WORKGROUP_UUID,
+            service_url="https://api-carto.dijon.fr/arcgis/rest/services/SIGNALISATION/signalisation_MAJ/FeatureServer?f=pjson",
             )
         """
         # CHECKS PARAMS
@@ -304,11 +308,80 @@ class ApiService:
 
         return new_md
 
+    def update(self, service: Metadata, check_only: bool = 0) -> Metadata:
+        """Update a metadata of service while keeping the associations of the layers.
+
+        :param Metadata metadata: identifier of the resource to verify
+        :param bool check_only: option to only get the diff
+
+        :rtype: Metadata
+        """
+        # check metadata type
+        if service.type != "service":
+            raise TypeError(
+                "This method applies only to metadata of web geo service. Use 'metadata.update instead'."
+            )
+
+        # check if layers and operations are present. If not, get it.
+        if service.layers is None or service.operations is None:
+            logger.debug(
+                "Suresources 'layers' and 'operations' are required to properly update metadata of service. "
+                "Let's retrieve these subresources..."
+            )
+            service = self.api_client.metadata.get(
+                metadata_id=service._id, include=["layers", "operations"]
+            )
+
+        # list all layers which have been associated
+        li_associated_layers = [
+            layer for layer in service.layers if layer.get("dataset") is not None
+        ]
+
+        # check only differences between layers
+        if check_only:
+            logger.error(
+                NotImplementedError("It'll be implemented in a future version")
+            )
+            return service
+
+        # or update the metadata
+        if not len(li_associated_layers):
+            logger.info(
+                "Service has no layers associated with datasets. It could be updated without precaution."
+            )
+            service.layers = None
+            # patch
+            patch_srv = self.api_client.metadata.update(service)
+        else:
+            logger.info(
+                "Service has {} layers associated with datasets. Updating metadata with precaution.".format(
+                    len(li_associated_layers)
+                )
+            )
+            # patch
+            patch_srv = self.api_client.metadata.update(service)
+            if isinstance(patch_srv, tuple):
+                logger.error(
+                    "Previous error 500 maybe occurred during PATCH because of a manual layer added to the service. "
+                    "See: https://github.com/isogeo/isogeo-api/issues/5"
+                )
+
+        # check patching
+        if isinstance(patch_srv, tuple):
+            logger.error(
+                "Previous error 500 maybe occurred during PATCH because of a manual layer added to the service. "
+                "See: https://github.com/isogeo/isogeo-api/issues/5"
+            )
+
+        return self.api_client.metadata.get(
+            metadata_id=service._id, include=["layers", "operations"]
+        )
+
 
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    api_resource = ApiService()
-    print(api_resource)
+    api_metadata = ApiService()
+    print(api_metadata)
