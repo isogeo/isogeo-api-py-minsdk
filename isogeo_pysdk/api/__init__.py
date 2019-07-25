@@ -10,6 +10,7 @@ from .routes_datasource import ApiDatasource  # noqa: F401
 from .routes_directives import ApiDirective  # noqa: F401
 from .routes_format import ApiFormat  # noqa: F401
 from .routes_keyword import ApiKeyword  # noqa: F401
+from .routes_invitation import ApiInvitation  # noqa: F401
 from .routes_license import ApiLicense  # noqa: F401
 from .routes_metadata import ApiMetadata  # noqa: F401
 from .routes_share import ApiShare  # noqa: F401

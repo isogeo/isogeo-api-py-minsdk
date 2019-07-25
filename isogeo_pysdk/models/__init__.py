@@ -11,6 +11,7 @@ from .datasource import Datasource  # noqa: F401
 from .directive import Directive  # noqa: F401
 from .keyword import Keyword  # noqa: F401
 from .keyword_search import KeywordSearch  # noqa: F401
+from .invitation import Invitation  # noqa: F401
 from .license import License  # noqa: F401
 from .link import Link  # noqa: F401
 from .metadata import Metadata  # noqa: F401

@@ -21,7 +21,7 @@ from requests.exceptions import Timeout
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.enums import WorkgroupStatisticsTags
-from isogeo_pysdk.models import Contact, Workgroup
+from isogeo_pysdk.models import Contact, Invitation, Workgroup
 from isogeo_pysdk.utils import IsogeoUtils
 
 # other routes
@@ -327,40 +327,24 @@ class ApiWorkgroup:
         return workgroup_updated
 
     # -- Routes to manage the related objects ------------------------------------------
-    @ApiDecorators._check_bearer_validity
+    def invite(self, workgroup_id: str, invitation: Invitation) -> dict:
+        """Invite new user to a workgroup.
+        Just a shortcut.
+
+        :param str workgroup_id: workgroup UUID
+        :param Invitation invitation: Invitation object to send
+        """
+        return self.api_client.invitation.create(
+            workgroup_id=workgroup_id, invitation=invitation
+        )
+
     def invitations(self, workgroup_id: str) -> dict:
         """Returns active invitations (including expired) for the specified workgroup.
+        Just a shortcut.
 
         :param str workgroup_id: workgroup UUID
         """
-        # check workgroup UUID
-        if not checker.check_is_uuid(workgroup_id):
-            raise ValueError(
-                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
-            )
-        else:
-            pass
-
-        # URL builder
-        url_workgroup_invitations = utils.get_request_base_url(
-            route="/groups/{}/invitations".format(workgroup_id)
-        )
-
-        # request
-        req_workgroup_invitations = self.api_client.get(
-            url=url_workgroup_invitations,
-            headers=self.api_client.header,
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-            timeout=self.api_client.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_workgroup_invitations)
-        if isinstance(req_check, tuple):
-            return req_check
-
-        return req_workgroup_invitations.json()
+        return self.api_client.invitation.listing(workgroup_id=workgroup_id)
 
     @ApiDecorators._check_bearer_validity
     def limits(self, workgroup_id: str) -> dict:
