@@ -96,7 +96,7 @@ class TestEvents(unittest.TestCase):
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
-        cls.metadata_fixture = cls.isogeo.metadata.metadata(metadata_id=MD_TEST_FIXTURE)
+        cls.metadata_fixture = cls.isogeo.metadata.get(metadata_id=MD_TEST_FIXTURE)
 
     def setUp(self):
         """Executed before each test."""

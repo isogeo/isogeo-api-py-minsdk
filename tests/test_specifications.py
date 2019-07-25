@@ -240,7 +240,7 @@ class TestSpecifications(unittest.TestCase):
         )
 
         # refresh fixture metadata
-        self.fixture_metadata = self.isogeo.metadata.metadata(
+        self.fixture_metadata = self.isogeo.metadata.get(
             metadata_id=self.fixture_metadata._id, include=["specifications"]
         )
 
@@ -253,7 +253,7 @@ class TestSpecifications(unittest.TestCase):
 
         # # -- dissociate
         # refresh fixture metadata
-        self.fixture_metadata = self.isogeo.metadata.metadata(
+        self.fixture_metadata = self.isogeo.metadata.get(
             metadata_id=self.fixture_metadata._id, include=["specifications"]
         )
         for specification in self.fixture_metadata.specifications:

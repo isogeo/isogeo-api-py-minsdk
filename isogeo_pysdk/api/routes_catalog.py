@@ -373,7 +373,7 @@ class ApiCatalog:
         :Example:
 
         >>> isogeo.catalog.associate_metadata(
-            isogeo.metadata.metadata(METADATA_UUID),
+            isogeo.metadata.get(METADATA_UUID),
             isogeo.catalog.catalog(WORKGROUP_UUID, CATALOG_UUID)
             ))
         <Response [204]>

@@ -351,7 +351,7 @@ class ApiSpecification:
         :Example:
 
         >>> # retrieve objects to be associated
-        >>> md = isogeo.metadata.metadata(
+        >>> md = isogeo.metadata.get(
                 metadata_id=my_metadata_uuid,
                 include=['specifications']
             )

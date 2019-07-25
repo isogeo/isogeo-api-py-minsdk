@@ -297,9 +297,8 @@ class ApiService:
         # update it (patch) to trigger the layers autofill
         self.api_client.metadata.update(new_metadata_service)
 
-        new_md = self.api_client.metadata.metadata(
-            metadata_id=new_metadata_service._id,
-            include=["layers", "serviceLayers", "operations"],
+        new_md = self.api_client.metadata.get(
+            metadata_id=new_metadata_service._id, include=["layers", "operations"]
         )
 
         return new_md

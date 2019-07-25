@@ -302,7 +302,7 @@ class ApiServiceOperation:
     #     :Example:
 
     #     >>> # retrieve objects to be associated. First: the metadata of the service.
-    #     >>> service = isogeo.metadata.metadata(
+    #     >>> service = isogeo.metadata.get(
     #             metadata_id=str,
     #         )
     #     >>> # second: the operation of the service you want to associate
@@ -311,7 +311,7 @@ class ApiServiceOperation:
     #             operation_id=str,
     #         )
     #     >>> # third: the dataset to be associated with the service operation
-    #     >>> dataset = isogeo.metadata.metadata(
+    #     >>> dataset = isogeo.metadata.get(
     #             metadata_id=str,
     #         )
     #     >>> # associate them

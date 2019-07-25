@@ -299,7 +299,7 @@ class ApiServiceLayer:
         :Example:
 
         >>> # retrieve objects to be associated. First: the metadata of the service.
-        >>> service = isogeo.metadata.metadata(
+        >>> service = isogeo.metadata.get(
                 metadata_id=str,
             )
         >>> # second: the layer of the service you want to associate
@@ -308,7 +308,7 @@ class ApiServiceLayer:
                 layer_id=str,
             )
         >>> # third: the dataset to be associated with the service layer
-        >>> dataset = isogeo.metadata.metadata(
+        >>> dataset = isogeo.metadata.get(
                 metadata_id=str,
             )
         >>> # associate them

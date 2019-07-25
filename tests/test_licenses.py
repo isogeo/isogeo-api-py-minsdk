@@ -233,7 +233,7 @@ class TestLicenses(unittest.TestCase):
         )
 
         # refresh fixture metadata
-        self.fixture_metadata = self.isogeo.metadata.metadata(
+        self.fixture_metadata = self.isogeo.metadata.get(
             metadata_id=self.fixture_metadata._id, include=["conditions"]
         )
 
@@ -256,7 +256,7 @@ class TestLicenses(unittest.TestCase):
 
         # -- dissociate
         # refresh fixture metadata
-        self.fixture_metadata = self.isogeo.metadata.metadata(
+        self.fixture_metadata = self.isogeo.metadata.get(
             metadata_id=self.fixture_metadata._id, include=["conditions"]
         )
         for condition in self.fixture_metadata.conditions:
