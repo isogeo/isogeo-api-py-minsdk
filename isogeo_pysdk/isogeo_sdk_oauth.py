@@ -202,6 +202,7 @@ class IsogeoSession(OAuth2Session):
         self.directive = api.ApiDirective(self)
         self.formats = api.ApiFormat(self)
         self.keyword = api.ApiKeyword(self)
+        self.invitation = api.ApiInvitation(self)
         self.license = api.ApiLicense(self)
         self.metadata = api.ApiMetadata(self)
         self.services = api.ApiService(self)
