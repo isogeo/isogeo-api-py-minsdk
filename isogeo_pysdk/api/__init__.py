@@ -18,6 +18,7 @@ from .routes_service_layers import ApiServiceLayer  # noqa: F401
 from .routes_service_operations import ApiServiceOperation  # noqa: F401
 from .routes_specification import ApiSpecification  # noqa: F401
 from .routes_thesaurus import ApiThesaurus  # noqa: F401
+from .routes_user import ApiUser  # noqa: F401
 from .routes_workgroup import ApiWorkgroup  # noqa: F401
 
 # shortcuts or confusion reducers

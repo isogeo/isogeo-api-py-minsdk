@@ -192,7 +192,6 @@ class IsogeoSession(OAuth2Session):
         self.client = LegacyApplicationClient(client_id=client_id)
 
         # load routes as subclass
-        # self.api = api
         self.account = api.ApiAccount(self)
         self.application = api.ApiApplication(self)
         self.catalog = api.ApiCatalog(self)
@@ -208,6 +207,7 @@ class IsogeoSession(OAuth2Session):
         self.share = api.ApiShare(self)
         self.specification = api.ApiSpecification(self)
         self.thesaurus = api.ApiThesaurus(self)
+        self.user = api.ApiUser(self)
         self.workgroup = api.ApiWorkgroup(self)
 
         return super().__init__(
