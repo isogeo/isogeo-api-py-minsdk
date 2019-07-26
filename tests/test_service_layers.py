@@ -155,7 +155,7 @@ class TestServiceLayers(unittest.TestCase):
 
         # create it online
         layer_new = self.isogeo.metadata.layers.create(
-            metadata=self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID),
+            metadata=self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID),
             layer=layer_new,
         )
 
@@ -165,10 +165,8 @@ class TestServiceLayers(unittest.TestCase):
     def test_layers_association(self):
         """POST :resources/{service_uuid}/layers/{layer_uuid}/dataset/{dataset_uuid}"""
         # var
-        metadata_service = self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID)
-        metadata_dataset = self.isogeo.metadata.metadata(
-            "6b5cc93626634d0e9b0d2c48eff96bc3"
-        )
+        metadata_service = self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID)
+        metadata_dataset = self.isogeo.metadata.get("6b5cc93626634d0e9b0d2c48eff96bc3")
         layer_name = "{} - {}".format(get_test_marker(), self.discriminator)
         layer_title = [
             {
@@ -190,7 +188,7 @@ class TestServiceLayers(unittest.TestCase):
         )
 
         # check association result
-        service_updated = self.isogeo.metadata.metadata(
+        service_updated = self.isogeo.metadata.get(
             metadata_id=metadata_service._id, include=["layers"]
         )
 
@@ -212,7 +210,7 @@ class TestServiceLayers(unittest.TestCase):
         """GET :resources/{metadata_uuid}/layers/}"""
         # retrieve metadata layers
         md_layers = self.isogeo.metadata.layers.listing(
-            self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID)
+            self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID)
         )
         # parse and test object loader
         for i in md_layers:
@@ -234,7 +232,7 @@ class TestServiceLayers(unittest.TestCase):
         """GET :resources/{metadata_uuid}/layers/{layer_uuid}"""
         # get layers
         md_layers = self.isogeo.metadata.layers.listing(
-            self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID)
+            self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID)
         )
         # pick one
         layer_id = sample(md_layers, 1)[0].get("_id")
@@ -259,7 +257,7 @@ class TestServiceLayers(unittest.TestCase):
 
         # create it online
         layer_created = self.isogeo.metadata.layers.create(
-            metadata=self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID),
+            metadata=self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID),
             layer=layer_new,
         )
 

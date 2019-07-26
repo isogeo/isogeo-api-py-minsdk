@@ -155,7 +155,7 @@ class TestServiceOperations(unittest.TestCase):
 
     #     # create it online
     #     operation_new = self.isogeo.metadata.operations.create(
-    #         metadata=self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID),
+    #         metadata=self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID),
     #         operation=operation_new,
     #     )
 
@@ -165,8 +165,8 @@ class TestServiceOperations(unittest.TestCase):
     # def test_operations_association(self):
     #     """POST :resources/{service_uuid}/operations/{operation_uuid}/dataset/{dataset_uuid}"""
     #     # var
-    #     metadata_service = self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID)
-    #     metadata_dataset = self.isogeo.metadata.metadata(
+    #     metadata_service = self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID)
+    #     metadata_dataset = self.isogeo.metadata.get(
     #         "6b5cc93626634d0e9b0d2c48eff96bc3"
     #     )
     #     operation_name = "{} - {}".format(get_test_marker(), self.discriminator)
@@ -192,7 +192,7 @@ class TestServiceOperations(unittest.TestCase):
     #     )
 
     #     # check association result
-    #     service_updated = self.isogeo.metadata.metadata(
+    #     service_updated = self.isogeo.metadata.get(
     #         metadata_id=metadata_service._id, include=["operations"]
     #     )
 
@@ -219,7 +219,7 @@ class TestServiceOperations(unittest.TestCase):
         """GET :resources/{metadata_uuid}/operations/}"""
         # retrieve metadata operations
         md_operations = self.isogeo.metadata.operations.listing(
-            self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID)
+            self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID)
         )
         # parse and test object loader
         for i in md_operations:
@@ -242,7 +242,7 @@ class TestServiceOperations(unittest.TestCase):
         """GET :resources/{metadata_uuid}/operations/{operation_uuid}}"""
         # get operations
         md_operations = self.isogeo.metadata.operations.listing(
-            self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID)
+            self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID)
         )
         # pick one
         operation_id = sample(md_operations, 1)[0].get("_id")
@@ -271,7 +271,7 @@ class TestServiceOperations(unittest.TestCase):
 
     #     # create it online
     #     operation_created = self.isogeo.metadata.operations.create(
-    #         metadata=self.isogeo.metadata.metadata(METADATA_TEST_FIXTURE_UUID),
+    #         metadata=self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID),
     #         operation=operation_new,
     #     )
 

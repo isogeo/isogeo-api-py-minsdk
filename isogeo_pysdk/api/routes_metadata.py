@@ -70,7 +70,7 @@ class ApiMetadata:
         super(ApiMetadata, self).__init__()
 
     @ApiDecorators._check_bearer_validity
-    def metadata(self, metadata_id: str, include: list or str = []) -> Metadata:
+    def get(self, metadata_id: str, include: list or str = []) -> Metadata:
         """Get complete or partial metadata about a specific metadata (= resource).
 
         :param str metadata_id: metadata UUID to get

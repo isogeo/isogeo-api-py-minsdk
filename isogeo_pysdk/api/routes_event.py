@@ -150,7 +150,7 @@ class ApiEvent:
         # ensure that a creation date doesn't already exist
         if event.kind == "creation":
             # retrieve metadata events
-            metadata_events = self.api_client.metadata.metadata(
+            metadata_events = self.api_client.metadata.get(
                 metadata._id, include=["events"]
             )
             # filter on creation events

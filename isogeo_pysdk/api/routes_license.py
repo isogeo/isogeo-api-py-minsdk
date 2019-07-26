@@ -336,7 +336,7 @@ class ApiLicense:
         :Example:
 
         >>> # retrieve objects to be associated
-        >>> md = isogeo.metadata.metadata(
+        >>> md = isogeo.metadata.get(
                 metadata_id="6b5cc93626634d0e9b0d2c48eff96bc3",
                 include=['conditions']
             )
@@ -389,7 +389,7 @@ class ApiLicense:
                 logger.info(
                     "Conditions have not been included during request. So, let's renew it!"
                 )
-                metadata_with_conditions = self.api_client.metadata.metadata(
+                metadata_with_conditions = self.api_client.metadata.get(
                     metadata_id=metadata._id, include=["conditions"]
                 )
                 return self.associate_metadata(
