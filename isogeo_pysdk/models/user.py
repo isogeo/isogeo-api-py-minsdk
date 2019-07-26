@@ -128,6 +128,8 @@ class User(object):
             self.__id = _id
         if _modified is not None:
             self.__modified = _modified
+        if contact is not None:
+            self._contact = Contact(**contact)
         if language is not None:
             self._language = language
         if mailchimp is not None:
@@ -136,9 +138,6 @@ class User(object):
             self._staff = staff
         if timezone is not None:
             self._timezone = timezone
-
-        # required
-        self._contact = contact
 
     # -- PROPERTIES --------------------------------------------------------------------
     # abilities
@@ -188,7 +187,7 @@ class User(object):
         """Gets the contact of this user.
 
         :return: The contact of this user.
-        :rtype: dict
+        :rtype: Contact
         """
         return self._contact
 
@@ -202,7 +201,7 @@ class User(object):
         if contact is None:
             raise ValueError("Invalid value for `contact`, must not be `None`")
 
-        self._contact = contact
+        self._contact = Contact(**contact)
 
     # language
     @property

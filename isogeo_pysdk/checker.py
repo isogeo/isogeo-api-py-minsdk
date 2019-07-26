@@ -401,12 +401,16 @@ class IsogeoChecker(object):
             raise TypeError("'specific_tag' expects a list")
         return specific_tag
 
-    def _check_filter_includes(self, includes: list, entity: str = "metadata"):
+    def _check_filter_includes(self, includes: list, entity: str = "metadata") -> list:
         """Check if specific_resources parameter is valid.
 
         :param list includes: sub resources to check
-        :param str entity: entity type to check sub resources.
-         Must be one of: contact | metadata | keyword.
+        :param str entity: entity type to check sub resources. Must be one of: contact | metadata | keyword.
+
+        :rtype: list
+
+        :raises: ValueError if entity is not an accepted value
+        :raises: TypeError if includes is not a list
         """
         # check entity parameter
         if entity == "metadata":
