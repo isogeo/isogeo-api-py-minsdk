@@ -1,5 +1,5 @@
 # coding: utf-8
-#! python3  # noqa: E265
+#! python3  # noqa: E265 F401
 
 from .routes_application import ApiApplication  # noqa: F401
 from .routes_account import ApiAccount  # noqa: F401
@@ -8,6 +8,7 @@ from .routes_contact import ApiContact  # noqa: F401
 from .routes_coordinate_systems import ApiCoordinateSystem  # noqa: F401
 from .routes_datasource import ApiDatasource  # noqa: F401
 from .routes_directives import ApiDirective  # noqa: F401
+from .routes_feature_attributes import ApiFeatureAttribute
 from .routes_format import ApiFormat  # noqa: F401
 from .routes_keyword import ApiKeyword  # noqa: F401
 from .routes_invitation import ApiInvitation  # noqa: F401
