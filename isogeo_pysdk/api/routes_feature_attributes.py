@@ -95,6 +95,17 @@ class ApiFeatureAttribute:
 
         :param str metadata_id: metadata UUID
         :param str attribute_id: feature-attribute UUID
+
+        :Example:
+        >>> # get a metadata
+        >>> md = isogeo.metadata.get(METADATA_UUID)
+        >>> # list all og its attributes
+        >>> md_attributes = isogeo.metadata.attributes.listing(md)
+        >>> # get the first attribute
+        >>> attribute = isogeo.metadata.attributes.get(
+            metadata_id=md._id,
+            attribute_id=md_attributes[0].get("_id")
+            )
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata_id):
