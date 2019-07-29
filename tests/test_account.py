@@ -17,20 +17,22 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
-from pathlib import Path
-from socket import gethostname
-from sys import exit, _getframe
-from time import gmtime, strftime
 import unittest
+import urllib3
+from os import environ
+from pathlib import Path
+from random import sample
+from socket import gethostname
+from sys import _getframe, exit
+from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, User
-
+from isogeo_pysdk import IsogeoSession, User
+from isogeo_pysdk import __version__ as pysdk_version
 
 # #############################################################################
 # ######## Globals #################
@@ -41,14 +43,6 @@ if Path("dev.env").exists():
 
 # host machine name - used as discriminator
 hostname = gethostname()
-
-# API access
-app_script_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
-app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
-platform = environ.get("ISOGEO_PLATFORM", "qa")
-user_email = environ.get("ISOGEO_USER_NAME")
-user_password = environ.get("ISOGEO_USER_PASSWORD")
-workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -80,7 +74,10 @@ class TestAccount(unittest.TestCase):
             exit()
         else:
             pass
-        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
+
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
 
         # API connection
         cls.isogeo = IsogeoSession(
@@ -104,7 +101,7 @@ class TestAccount(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
-        pass
+        sleep(0.5)
 
     @classmethod
     def tearDownClass(cls):
@@ -126,20 +123,16 @@ class TestAccount(unittest.TestCase):
         self.isogeo.account.memberships()
 
     # -- PUT/PATCH --
-    def test_update(self):
+    def test_account_update(self):
         """PUT :/account/}"""
         # get account
         me = self.isogeo._user
-        prev_language = me.language
         # modify language
         me.language = "en"
         # update it
         self.isogeo.account.update(me)
-        # confirm
-        self.assertTrue(self.isogeo.account.account().language == "en")
-
         # restablish previous language
-        me.language = prev_language
+        me.language = "fr"
         # restore it
         self.isogeo.account.update(me)
 
