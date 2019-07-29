@@ -52,7 +52,7 @@ class ApiApplication:
         super(ApiApplication, self).__init__()
 
     @ApiDecorators._check_bearer_validity
-    def applications(
+    def listing(
         self,
         workgroup_id: str = None,
         include: list = ["_abilities"],
