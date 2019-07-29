@@ -17,14 +17,15 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
-from random import sample
-from socket import gethostname
-from sys import exit, _getframe
-from time import gmtime, sleep, strftime
 import unittest
 import urllib3
+from os import environ
+from pathlib import Path
+from random import sample
+from socket import gethostname
+from sys import _getframe, exit
+from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
@@ -43,17 +44,13 @@ from isogeo_pysdk import (
 # ######## Globals #################
 # ##################################
 
-load_dotenv("dev.env", override=True)
+if Path("dev.env").exists():
+    load_dotenv("dev.env", override=True)
 
 # host machine name - used as discriminator
 hostname = gethostname()
 
 # API access
-app_script_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
-app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
-platform = environ.get("ISOGEO_PLATFORM", "qa")
-user_email = environ.get("ISOGEO_USER_NAME")
-user_password = environ.get("ISOGEO_USER_PASSWORD")
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
@@ -82,12 +79,13 @@ class TestSpecifications(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not app_script_id or not app_script_secret:
+        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_CLIENT_SECRET"
+        ):
             logging.critical("No API credentials set as env variables.")
             exit()
         else:
             pass
-        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
@@ -103,8 +101,12 @@ class TestSpecifications(unittest.TestCase):
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
+
         # getting a token
-        cls.isogeo.connect(username=user_email, password=user_password)
+        cls.isogeo.connect(
+            username=environ.get("ISOGEO_USER_NAME"),
+            password=environ.get("ISOGEO_USER_PASSWORD"),
+        )
 
         # fixture metadata
         md = Metadata(title=get_test_marker(), type="vectorDataset")
@@ -122,13 +124,12 @@ class TestSpecifications(unittest.TestCase):
     def tearDown(self):
         """Executed after each test."""
         sleep(0.5)
-        pass
 
     @classmethod
     def tearDownClass(cls):
         """Executed after the last test."""
         # clean created metadata
-        # cls.isogeo.metadata.delete(cls.fixture_metadata._id)
+        cls.isogeo.metadata.delete(cls.fixture_metadata._id)
 
         # clean created specifications
         if len(cls.li_fixtures_to_delete):
@@ -218,19 +219,12 @@ class TestSpecifications(unittest.TestCase):
     def test_specifications_association(self):
         """POST :resources/{metadata_uuid}/specifications/"""
         # retrieve workgroup specifications
-        if self.isogeo._wg_specifications_names:
-            wg_specifications = self.isogeo._wg_specifications_names
-        else:
-            wg_specifications = self.isogeo.specification.listing(
-                workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
-            )
-        # pick an isogeo specification
-        specification_id_isogeo = sample(
-            list(filter(lambda d: "isogeo" in d.get("_tag"), wg_specifications)), 1
-        )[0]
-        specification_isogeo = self.isogeo.specification.specification(
-            specification_id_isogeo.get("_id")
+        wg_specifications = self.isogeo.specification.listing(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
         )
+
+        # pick one
+        specification_isogeo = Specification(**sample(wg_specifications, 1)[0])
 
         # associate it
         self.isogeo.specification.associate_metadata(
@@ -288,35 +282,40 @@ class TestSpecifications(unittest.TestCase):
     def test_specification_detailed(self):
         """GET :specifications/{specification_uuid}"""
         # retrieve workgroup specifications
-        if self.isogeo._wg_specifications_names:
-            wg_specifications = self.isogeo._wg_specifications_names
-        else:
-            wg_specifications = self.isogeo.specification.listing(
-                workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
-            )
+        wg_specifications = self.isogeo.specification.listing(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
+        )
 
-        # pick two specifications: one locked by Isogeo, one workgroup specific
-        specification_id_isogeo = sample(
-            list(filter(lambda d: "isogeo" in d.get("_tag"), wg_specifications)), 1
-        )[0]
-        specification_id_specific = sample(
-            list(filter(lambda d: "isogeo" not in d.get("_tag"), wg_specifications)), 1
-        )[0]
+        # split 'isogeo' specifications from workgroup specifications
+        li_specifications_isogeo = [
+            specification
+            for specification in wg_specifications
+            if "isogeo" in specification.get("_tag")
+        ]
+        li_specifications_workgroup = [
+            specification
+            for specification in wg_specifications
+            if "isogeo" not in specification.get("_tag")
+        ]
+
+        # pick two licenses: one locked by Isogeo, one workgroup specific
+        specification_isogeo = sample(li_specifications_isogeo, 1)[0]
+        specification_specific = sample(li_specifications_workgroup, 1)[0]
 
         # check both exist
         self.assertTrue(
-            self.isogeo.specification.exists(specification_id_isogeo.get("_id"))
+            self.isogeo.specification.exists(specification_isogeo.get("_id"))
         )
         self.assertTrue(
-            self.isogeo.specification.exists(specification_id_specific.get("_id"))
+            self.isogeo.specification.exists(specification_specific.get("_id"))
         )
 
         # get and check both
         specification_isogeo = self.isogeo.specification.specification(
-            specification_id_isogeo.get("_id")
+            specification_isogeo.get("_id")
         )
         specification_specific = self.isogeo.specification.specification(
-            specification_id_specific.get("_id")
+            specification_specific.get("_id")
         )
         self.assertIsInstance(specification_isogeo, Specification)
         self.assertIsInstance(specification_specific, Specification)
