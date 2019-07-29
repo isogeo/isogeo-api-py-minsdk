@@ -149,8 +149,12 @@ jobs:
 
   - script: 'python -m pip install -U twine'
 
-  # - script: twine upload dist/* -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
-  #   displayName: "Upload to PyPi"
+  - task: TwineAuthenticate@0
+    inputs:
+      externalFeeds: 'Python Package Index (PyPi)'  # see: https://dev.azure.com/isogeo/Python%20SDK/_settings/adminservices?resourceId=7650b333-6c8a-4c56-a839-a33242255c16&resource=%5Bobject%20Object%5D&_a=resources
+
+  - script: twine upload dist/* -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
+    displayName: "Upload to PyPi"
 
   - task: GitHubRelease@0
     inputs:
