@@ -2,9 +2,9 @@
 #! python3
 
 """
-    Isogeo API v1 - Model of Event entity
+    Isogeo API v1 - Model of FeatureAttributes entity
 
-    See: http://help.isogeo.com/api/complete/index.html#definition-event
+    See: http://help.isogeo.com/api/complete/index.html
 """
 
 # #############################################################################
@@ -13,26 +13,26 @@
 
 # standard library
 import pprint
-from datetime import datetime
-
-# submodules
-from isogeo_pysdk.enums import EventKinds
+from uuid import UUID
 
 # #############################################################################
 # ########## Classes ###############
 # ##################################
-class Event(object):
-    """Events are entities included as subresource into metadata for data history description.
+class FeatureAttribute(object):
+    """
+    FeatureAttributes are entities included as subresource into metadata.
 
 
-    Sample:
+    :Example:
 
     ```json
     {
-        '_id': string (uuid),
-        'date': string (datetime),
-        'description': string,
-        'kind': string
+        "_id": string (uuid),
+        "alias": string,
+        "dataType": string,
+        "description": string,
+        "language": string
+        "name": string,
     }
     ```
     """
@@ -44,131 +44,175 @@ class Event(object):
     """
     attr_types = {
         "_id": str,
-        "date": str,
+        "alias": str,
+        "dataType": str,
         "description": str,
-        "kind": str,
+        "language": str,
+        "name": str,
         "parent_resource": str,
     }
 
-    attr_crea = {"date": str, "description": str, "kind": str, "waitForSync": bool}
+    attr_crea = {
+        "alias": str,
+        "dataType": str,
+        "description": str,
+        "language": str,
+        "name": str,
+    }
 
     attr_map = {}
 
     def __init__(
         self,
         _id: str = None,
-        date: str = None,
+        alias: str = None,
+        dataType: str = None,
         description: str = None,
-        kind: str = None,
+        language: str = None,
+        name: str = None,
+        # specific to implementation
         parent_resource: str = None,
-        waitForSync: bool = 1,
     ):
-        """Event model"""
+        """Metadata Feature Attribute model.
+        
+        :param str _id: UUID, defaults to None
+        :param str alias: [description], defaults to None
+        :param str dataType: [description], defaults to None
+        :param str description: [description], defaults to None
+        :param str language: [description], defaults to None
+        :param str name: [description], defaults to None
+        """
 
         # default values for the object attributes/properties
         self.__id = None
-        self._date = None
+        self._alias = None
+        self._dataType = None
         self._description = None
-        self._kind = None
         # additional parameters
         self.parent_resource = parent_resource
-        self.waitForSync = waitForSync
 
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
         if _id is not None:
             self.__id = _id
-        if date is not None:
-            self._date = date
+        if alias is not None:
+            self._alias = alias
+        if dataType is not None:
+            self._dataType = dataType
         if description is not None:
             self._description = description
-        if kind is not None:
-            self._kind = kind
+        if language is not None:
+            self._language = language
+        if name is not None:
+            self._name = name
         if parent_resource is not None:
             self._parent_resource = parent_resource
-        if waitForSync is not None:
-            self._waitForSync = waitForSync
 
     # -- PROPERTIES --------------------------------------------------------------------
     # event UUID
     @property
     def _id(self) -> str:
-        """Gets the id of this Event.
+        """Gets the id of this FeatureAttribute.
 
-        :return: The id of this Event.
+        :return: The id of this FeatureAttribute.
         :rtype: str
         """
         return self.__id
 
-    # date
+    # alias
     @property
-    def date(self) -> str:
-        """Gets the date of this Event.
+    def alias(self) -> str:
+        """Gets the alias of this FeatureAttribute.
 
-        :return: The date of this Event.
+        :return: The alias of this FeatureAttribute.
         :rtype: str
         """
-        return self._date
+        return self._alias
 
-    @date.setter
-    def date(self, date: str):
-        """Sets the date of this Event.
+    @alias.setter
+    def alias(self, alias: str):
+        """Sets the alias of this FeatureAttribute.
 
-        :param str date: The date of this Event.
+        :param str alias: The alias of this FeatureAttribute.
         """
 
-        self._date = date
+        self._alias = alias
+
+    # dataType
+    @property
+    def dataType(self) -> str:
+        """Gets the dataType of this FeatureAttribute.
+
+        :return: The dataType of this FeatureAttribute.
+        :rtype: str
+        """
+        return self._dataType
+
+    @dataType.setter
+    def dataType(self, dataType: str):
+        """Sets the dataType of this FeatureAttribute.
+
+        :param str dataType: The dataType of this FeatureAttribute.
+        """
+
+        self._dataType = dataType
 
     # description
     @property
     def description(self) -> str:
-        """Gets the description of this Event.
+        """Gets the description of this FeatureAttribute.
 
-        :return: The description of this Event.
+        :return: The description of this FeatureAttribute.
         :rtype: str
         """
         return self._description
 
     @description.setter
     def description(self, description: str):
-        """Sets the description of this Event.
+        """Sets the description of this FeatureAttribute.
 
-        :param str description: The description of this Event. Accept markdown syntax.
+        :param str description: The description of this FeatureAttribute. Accept markdown syntax.
         """
 
         self._description = description
 
-    # kind
+    # language
     @property
-    def kind(self) -> str:
-        """Gets the kind of this Event.
+    def language(self) -> str:
+        """Gets the language of this FeatureAttribute.
 
-        :return: The kind of this Event.
+        :return: The language of this FeatureAttribute.
         :rtype: str
         """
-        return self._kind
+        return self._language
 
-    @kind.setter
-    def kind(self, kind: str):
-        """Sets the kind of this Event.
+    @language.setter
+    def language(self, language: str):
+        """Sets the language of this FeatureAttribute.
 
-        :param str kind: The kind of this Event. Must be one of:
-
-        - creation
-        - publication
-        - update
-
+        :param str language: The language of this FeatureAttribute.
         """
 
-        # check type value
-        if kind not in EventKinds.__members__:
-            raise ValueError(
-                "Event kind '{}' is not an accepted value. Must be one of: {}.".format(
-                    kind, " | ".join([e.name for e in EventKinds])
-                )
-            )
+        self._language = language
 
-        self._kind = kind
+    # name
+    @property
+    def name(self) -> str:
+        """Gets the name of this FeatureAttribute.
+
+        :return: The name of this FeatureAttribute.
+        :rtype: str
+        """
+        return self._name
+
+    @name.setter
+    def name(self, name: str):
+        """Sets the name of this FeatureAttribute.
+
+        :param str name: The name of this FeatureAttribute.
+        """
+
+        self._name = name
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
@@ -194,7 +238,7 @@ class Event(object):
                 )
             else:
                 result[attr] = value
-        if issubclass(Event, dict):
+        if issubclass(FeatureAttribute, dict):
             for key, value in self.items():
                 result[key] = value
 
@@ -227,7 +271,7 @@ class Event(object):
                 )
             else:
                 result[attr] = value
-        if issubclass(Event, dict):
+        if issubclass(FeatureAttribute, dict):
             for key, value in self.items():
                 result[key] = value
 
@@ -243,7 +287,7 @@ class Event(object):
 
     def __eq__(self, other) -> bool:
         """Returns true if both objects are equal"""
-        if not isinstance(other, Event):
+        if not isinstance(other, FeatureAttribute):
             return False
 
         return self.__dict__ == other.__dict__
@@ -258,4 +302,4 @@ class Event(object):
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    ct = Event()
+    ct = FeatureAttribute()
