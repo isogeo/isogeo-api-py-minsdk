@@ -109,7 +109,6 @@ class TestApplications(unittest.TestCase):
     def tearDown(self):
         """Executed after each test."""
         sleep(0.5)
-        pass
 
     @classmethod
     def tearDownClass(cls):
@@ -197,7 +196,7 @@ class TestApplications(unittest.TestCase):
     def test_applications(self):
         """GET :/applications}"""
         # retrieve user applications
-        user_applications = self.isogeo.application.applications(caching=1)
+        user_applications = self.isogeo.application.listing(caching=1)
         self.assertIsInstance(user_applications, list)
         # parse and test object loader
         for i in user_applications:
@@ -226,7 +225,7 @@ class TestApplications(unittest.TestCase):
     def test_applications_workgroup(self):
         """GET :/groups/{workgroup_uiid}/applications}"""
         # retrieve workgroup applications
-        wg_applications = self.isogeo.application.applications(
+        wg_applications = self.isogeo.application.listing(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
         )
         self.assertIsInstance(wg_applications, list)
@@ -260,7 +259,7 @@ class TestApplications(unittest.TestCase):
         if self.isogeo._applications_names:
             applications = self.isogeo._applications_names
         else:
-            applications = self.isogeo.application.applications(caching=0)
+            applications = self.isogeo.application.listing(caching=0)
         # pick a random application
         application_id_group = sample(
             list(filter(lambda d: d.get("type") == "group", applications)), 1
@@ -277,7 +276,7 @@ class TestApplications(unittest.TestCase):
         if self.isogeo._applications_names:
             wg_applications = self.isogeo._applications_names
         else:
-            wg_applications = self.isogeo.application.applications(caching=0)
+            wg_applications = self.isogeo.application.listing(caching=0)
 
         # pick three applications: user public, user confidential, group
         application_id_user_confidential = sample(

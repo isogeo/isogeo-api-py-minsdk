@@ -111,7 +111,6 @@ class TestCatalogs(unittest.TestCase):
     def tearDown(self):
         """Executed after each test."""
         sleep(0.5)
-        pass
 
     @classmethod
     def tearDownClass(cls):

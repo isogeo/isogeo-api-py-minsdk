@@ -17,14 +17,15 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
+import urllib3
+import unittest
+from os import environ
 from pathlib import Path
 from random import sample
 from socket import gethostname
-from sys import exit, _getframe
-from time import gmtime, strftime
-import unittest
+from sys import _getframe, exit
+from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
@@ -46,7 +47,7 @@ if Path("dev.env").exists():
 hostname = gethostname()
 
 # API access
-WG_TEST_FIXTURE = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 MD_TEST_FIXTURE = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 
 # #############################################################################
@@ -81,6 +82,10 @@ class TestEvents(unittest.TestCase):
             pass
         logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
+
         # API connection
         cls.isogeo = IsogeoSession(
             client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
@@ -107,7 +112,7 @@ class TestEvents(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
-        pass
+        sleep(0.5)
 
     @classmethod
     def tearDownClass(cls):
@@ -160,12 +165,12 @@ class TestEvents(unittest.TestCase):
 
     #     # create it online
     #     event_new_1 = self.isogeo.event.event_create(
-    #         workgroup_id=WG_TEST_FIXTURE, event=event_local, check_exists=0
+    #         workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, event=event_local, check_exists=0
     #     )
 
     #     # try to create a event with the same name
     #     event_new_2 = self.isogeo.event.event_create(
-    #         workgroup_id=WG_TEST_FIXTURE, event=event_local, check_exists=1
+    #         workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, event=event_local, check_exists=1
     #     )
 
     #     # check if object has not been created
@@ -214,7 +219,7 @@ class TestEvents(unittest.TestCase):
     #     # create a new event
     #     event_fixture = Event(name="{}".format(get_test_marker()))
     #     event_fixture = self.isogeo.event.event_create(
-    #         workgroup_id=WG_TEST_FIXTURE, event=event_fixture, check_exists=0
+    #         workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, event=event_fixture, check_exists=0
     #     )
 
     #     # modify local object

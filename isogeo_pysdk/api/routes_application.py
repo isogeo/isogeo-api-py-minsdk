@@ -81,7 +81,7 @@ class ApiApplication:
         else:
             logger.debug(
                 "Listing applications for the authenticated user: {}".format(
-                    self.api_client._user.contact.get("name")
+                    self.api_client._user.contact.name
                 )
             )
             url_applications = utils.get_request_base_url(route="applications")
