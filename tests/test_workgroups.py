@@ -216,10 +216,7 @@ class TestWorkgroups(unittest.TestCase):
     def test_workgroup_detailed(self):
         """GET :groups/{workgroup_uuid}"""
         # retrieve workgroups
-        if self.isogeo._workgroups_names:
-            workgroups = self.isogeo._workgroups_names
-        else:
-            workgroups = self.isogeo.workgroup.listing(caching=0)
+        workgroups = self.isogeo.workgroup.listing(caching=0)
 
         # pick one workgroup
         workgroup_id = sample(workgroups, 1)[0]
