@@ -91,6 +91,9 @@ virtualenv/
 junit/*
 .pytest_cache/
 
+# logs
+*.log.*
+
 # PTVS
 *.ptvs
 *.vs
