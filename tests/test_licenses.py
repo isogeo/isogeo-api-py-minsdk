@@ -45,11 +45,6 @@ if Path("dev.env").exists():
 hostname = gethostname()
 
 # API access
-app_script_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
-app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
-platform = environ.get("ISOGEO_PLATFORM", "qa")
-user_email = environ.get("ISOGEO_USER_NAME")
-user_password = environ.get("ISOGEO_USER_PASSWORD")
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
@@ -121,7 +116,6 @@ class TestLicenses(unittest.TestCase):
     def tearDown(self):
         """Executed after each test."""
         sleep(0.5)
-        pass
 
     @classmethod
     def tearDownClass(cls):
@@ -304,7 +298,7 @@ class TestLicenses(unittest.TestCase):
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
         )
 
-        # split 'isogeo' licences from workgroup licenceses
+        # split 'isogeo' licences from workgroup licenses
         li_licenses_isogeo = [
             licence for licence in wg_licenses if "isogeo" in licence.get("_tag")
         ]
