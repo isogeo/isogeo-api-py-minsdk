@@ -9,6 +9,7 @@ from .event import Event  # noqa: F401
 from .format import Format  # noqa: F401
 from .datasource import Datasource  # noqa: F401
 from .directive import Directive  # noqa: F401
+from .feature_attributes import FeatureAttribute  # noqa: F401
 from .keyword import Keyword  # noqa: F401
 from .keyword_search import KeywordSearch  # noqa: F401
 from .invitation import Invitation  # noqa: F401
