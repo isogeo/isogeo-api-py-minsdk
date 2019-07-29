@@ -23,6 +23,7 @@ from os import environ
 from pathlib import Path
 from random import sample
 from socket import gethostname
+from string import ascii_lowercase
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
 
@@ -128,9 +129,11 @@ class TestFormats(unittest.TestCase):
     # -- POST --
     def test_formats_create_basic(self):
         """POST :/formats/}"""
+        # get a random string
+        frmt_code = "".join(sample(ascii_lowercase, 10))
         # create local object
         format_new = Format(
-            code="testpysdk", name=get_test_marker(), type="vectorDataset"
+            code=frmt_code, name=get_test_marker(), type="vectorDataset"
         )
 
         # create it online
