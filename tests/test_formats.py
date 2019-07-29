@@ -131,16 +131,15 @@ class TestFormats(unittest.TestCase):
         """POST :/formats/}"""
         # get a random string
         frmt_code = "".join(sample(ascii_lowercase, 10))
+        frmt_name = "Format created by an unit"
         # create local object
-        format_new = Format(
-            code=frmt_code, name=get_test_marker(), type="vectorDataset"
-        )
+        format_new = Format(code=frmt_code, name=frmt_name, type="vectorDataset")
 
         # create it online
         format_new = self.isogeo.formats.create(frmt=format_new)
 
         # checks
-        self.assertEqual(format_new.name, get_test_marker())
+        self.assertEqual(format_new.name, frmt_name)
 
         # add created format to deletion
         self.li_fixtures_to_delete.append(format_new)
