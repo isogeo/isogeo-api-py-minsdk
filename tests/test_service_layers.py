@@ -216,7 +216,8 @@ class TestServiceLayers(unittest.TestCase):
         )
 
         # add created layer to deletion
-        self.li_fixtures_to_delete.append(layer_created)
+        self.isogeo.metadata.delete(metadata_service._id)
+        self.isogeo.metadata.delete(metadata_dataset._id)
 
     # -- GET --
     def test_layers_listing(self):
