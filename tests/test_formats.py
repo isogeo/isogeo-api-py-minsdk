@@ -57,7 +57,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 def get_test_marker():
     """Returns the function name"""
-    return "TEST_UNIT_PythonSDK - Formats - {}".format(_getframe(1).f_code.co_name)
+    return "TEST_UNIT_PySDK_Formats_{}".format(_getframe(1).f_code.co_name)
 
 
 # #############################################################################

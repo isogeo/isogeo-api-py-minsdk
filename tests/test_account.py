@@ -116,7 +116,7 @@ class TestAccount(unittest.TestCase):
         """GET :/account/}"""
         # compare account objects
         me = self.isogeo.account.account(caching=0)  # Account route
-        self.assertTrue(me.__eq__(self.isogeo._user))  # account stored during auth step
+        self.assertIsInstance(me, User)
 
     def test_account_memberships(self):
         """GET :/account/memberships}"""
@@ -128,12 +128,8 @@ class TestAccount(unittest.TestCase):
         # get account
         me = self.isogeo._user
         # modify language
-        me.language = "en"
+        me.language = None
         # update it
-        self.isogeo.account.update(me)
-        # restablish previous language
-        me.language = "fr"
-        # restore it
         self.isogeo.account.update(me)
 
 
