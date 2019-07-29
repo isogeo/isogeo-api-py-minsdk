@@ -17,13 +17,16 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
+import unittest
+import urllib3
+from os import environ
+from pathlib import Path
 from random import sample
 from socket import gethostname
-from sys import exit, _getframe
-from time import gmtime, strftime
-import unittest
+from sys import _getframe, exit
+from time import gmtime, sleep, strftime
+
 
 # 3rd party
 from dotenv import load_dotenv
@@ -37,18 +40,15 @@ from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Contact
 # ######## Globals #################
 # ##################################
 
-load_dotenv("dev.env", override=True)
+if Path("dev.env").exists():
+    load_dotenv("dev.env", override=True)
 
 # host machine name - used as discriminator
 hostname = gethostname()
 
 # API access
-app_script_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
-app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
-platform = environ.get("ISOGEO_PLATFORM", "qa")
-user_email = environ.get("ISOGEO_USER_NAME")
-user_password = environ.get("ISOGEO_USER_PASSWORD")
-workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
+WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -57,7 +57,7 @@ workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 def get_test_marker():
     """Returns the function name"""
-    return "TEST_UNIT_PythonSDK - {}".format(_getframe(1).f_code.co_name)
+    return "TEST_PySDK - Contacts - {}".format(_getframe(1).f_code.co_name)
 
 
 # #############################################################################
@@ -73,15 +73,20 @@ class TestContacts(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not app_script_id or not app_script_secret:
+        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_CLIENT_SECRET"
+        ):
             logging.critical("No API credentials set as env variables.")
             exit()
         else:
             pass
-        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
+
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
 
         # API connection
         cls.isogeo = IsogeoSession(
@@ -90,8 +95,12 @@ class TestContacts(unittest.TestCase):
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
+
         # getting a token
-        cls.isogeo.connect(username=user_email, password=user_password)
+        cls.isogeo.connect(
+            username=environ.get("ISOGEO_USER_NAME"),
+            password=environ.get("ISOGEO_USER_PASSWORD"),
+        )
 
     def setUp(self):
         """Executed before each test."""
@@ -102,7 +111,7 @@ class TestContacts(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
-        pass
+        sleep(0.5)
 
     @classmethod
     def tearDownClass(cls):
@@ -110,7 +119,9 @@ class TestContacts(unittest.TestCase):
         # clean created contacts
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
-                cls.isogeo.contact.delete(workgroup_id=workgroup_test, contact_id=i)
+                cls.isogeo.contact.delete(
+                    workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, contact_id=i
+                )
         # close sessions
         cls.isogeo.close()
 
@@ -126,7 +137,9 @@ class TestContacts(unittest.TestCase):
 
         # create it online
         contact_new = self.isogeo.contact.create(
-            workgroup_id=workgroup_test, contact=contact_new, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            contact=contact_new,
+            check_exists=0,
         )
 
         # checks
@@ -156,7 +169,7 @@ class TestContacts(unittest.TestCase):
             zipCode="75012",
         )
         contact_new = self.isogeo.contact.create(
-            workgroup_id=workgroup_test, contact=contact_new
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, contact=contact_new
         )
 
         # checks
@@ -177,12 +190,16 @@ class TestContacts(unittest.TestCase):
 
         # create it online
         contact_new_1 = self.isogeo.contact.create(
-            workgroup_id=workgroup_test, contact=contact_local, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            contact=contact_local,
+            check_exists=0,
         )
 
         # try to create a contact with the same name
         contact_new_2 = self.isogeo.contact.create(
-            workgroup_id=workgroup_test, contact=contact_local, check_exists=1
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            contact=contact_local,
+            check_exists=1,
         )
 
         # check if object has not been created
@@ -202,12 +219,16 @@ class TestContacts(unittest.TestCase):
 
         # create it online
         contact_new_1 = self.isogeo.contact.create(
-            workgroup_id=workgroup_test, contact=contact_local, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            contact=contact_local,
+            check_exists=0,
         )
 
         # try to create a contact with the same email
         contact_new_2 = self.isogeo.contact.create(
-            workgroup_id=workgroup_test, contact=contact_local, check_exists=2
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            contact=contact_local,
+            check_exists=2,
         )
 
         # check if object has not been created
@@ -221,7 +242,7 @@ class TestContacts(unittest.TestCase):
         """GET :groups/{workgroup_uuid}/contacts}"""
         # retrieve workgroup contacts
         wg_contacts = self.isogeo.contact.listing(
-            workgroup_id=workgroup_test, caching=1
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
         )
         self.assertIsInstance(wg_contacts, list)
         # parse and test object loader
@@ -246,44 +267,33 @@ class TestContacts(unittest.TestCase):
 
     def test_contact_detailed(self):
         """GET :contacts/{contact_uuid}"""
-        # retrieve workgroup contacts
-        if self.isogeo._wg_contacts_names:
-            wg_contacts = self.isogeo._wg_contacts_names
-        else:
-            wg_contacts = self.isogeo.contact.listing(
-                workgroup_id=workgroup_test, caching=0
-            )
+        # ensure the workgroup has got a contact
+        contact_name = "{} - {}".format(get_test_marker(), self.discriminator)
+        contact_new = Contact(name=contact_name)
+        contact_new = self.isogeo.contact.create(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            contact=contact_new,
+            check_exists=0,
+        )
 
-        # pick three contacts: one locked by Isogeo, one workgroup specific, on user (deprecated)
-        contact_id_isogeo = sample(
-            list(filter(lambda d: "group" in d.get("_tag"), wg_contacts)), 1
-        )[0]
-        contact_id_specific = sample(
-            list(filter(lambda d: workgroup_test in d.get("_tag"), wg_contacts)), 1
-        )[0]
-        # contact_id_user = sample(
-        #     list(filter(lambda d: "user" in d.get("_tag"), wg_contacts)), 1
-        # )[0]
+        # retrieve workgroup contacts
+        wg_contacts = self.isogeo.contact.listing(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
+        )
+
+        # pick one contact
+        contact_workgroup = sample(wg_contacts, 1)[0]
 
         # check both exist
-        self.assertTrue(self.isogeo.contact.exists(contact_id_isogeo.get("_id")))
-        self.assertTrue(self.isogeo.contact.exists(contact_id_specific.get("_id")))
-        # self.assertTrue(
-        #     self.isogeo.contact.exists(
-        #         contact_id_user.get("_id")
-        #     )
-        # )
+        self.assertTrue(self.isogeo.contact.exists(contact_workgroup.get("_id")))
 
         # get and check
-        contact_isogeo = self.isogeo.contact.contact(contact_id_isogeo.get("_id"))
-        contact_specific = self.isogeo.contact.contact(contact_id_specific.get("_id"))
-        # contact_user = self.isogeo.contact.contact(
-        #     contact_id_user.get("_id")
-        # )
+        contact_workgroup = self.isogeo.contact.contact(contact_workgroup.get("_id"))
 
-        self.assertIsInstance(contact_isogeo, Contact)
-        self.assertIsInstance(contact_specific, Contact)
-        # self.assertIsInstance(contact_user, Contact)
+        self.assertIsInstance(contact_workgroup, Contact)
+
+        # add created contact to deletion
+        self.li_fixtures_to_delete.append(contact_new._id)
 
     # -- PUT/PATCH --
     def test_contacts_update(self):
@@ -293,7 +303,9 @@ class TestContacts(unittest.TestCase):
             name="{} - {}".format(get_test_marker(), self.discriminator)
         )
         contact_fixture = self.isogeo.contact.create(
-            workgroup_id=workgroup_test, contact=contact_fixture, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            contact=contact_fixture,
+            check_exists=0,
         )
 
         # modify local object

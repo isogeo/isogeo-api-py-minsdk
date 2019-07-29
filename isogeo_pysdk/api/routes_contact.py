@@ -57,10 +57,7 @@ class ApiContact:
 
     @ApiDecorators._check_bearer_validity
     def listing(
-        self,
-        workgroup_id: str = None,
-        include: list = ["_abilities", "count"],
-        caching: bool = 1,
+        self, workgroup_id: str = None, include: list = ["count"], caching: bool = 1
     ) -> list:
         """Get workgroup contacts.
 

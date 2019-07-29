@@ -21,6 +21,7 @@ python-dateutil
 python-dotenv
 pytest
 pytest-cov
+pytest-random-order
 requests-oauthlib
 
 # then it's possible to install from the repo:

@@ -74,7 +74,7 @@ class ApiShare:
         else:
             logger.debug(
                 "Listing shares for the authenticated user: {}".format(
-                    self.api_client._user.contact.get("name")
+                    self.api_client._user.contact.name
                 )
             )
             url_shares = utils.get_request_base_url(route="shares")

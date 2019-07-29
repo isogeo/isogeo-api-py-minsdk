@@ -23,6 +23,7 @@ from os import environ
 from pathlib import Path
 from random import sample
 from socket import gethostname
+from string import ascii_lowercase
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
 
@@ -56,7 +57,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 def get_test_marker():
     """Returns the function name"""
-    return "TEST_UNIT_PythonSDK - Formats - {}".format(_getframe(1).f_code.co_name)
+    return "TEST_UNIT_PySDK_Formats_{}".format(_getframe(1).f_code.co_name)
 
 
 # #############################################################################
@@ -128,16 +129,17 @@ class TestFormats(unittest.TestCase):
     # -- POST --
     def test_formats_create_basic(self):
         """POST :/formats/}"""
+        # get a random string
+        frmt_code = "".join(sample(ascii_lowercase, 10))
+        frmt_name = "Format created by an unit"
         # create local object
-        format_new = Format(
-            code="testpysdk", name=get_test_marker(), type="vectorDataset"
-        )
+        format_new = Format(code=frmt_code, name=frmt_name, type="vectorDataset")
 
         # create it online
         format_new = self.isogeo.formats.create(frmt=format_new)
 
         # checks
-        self.assertEqual(format_new.name, get_test_marker())
+        self.assertEqual(format_new.name, frmt_name)
 
         # add created format to deletion
         self.li_fixtures_to_delete.append(format_new)

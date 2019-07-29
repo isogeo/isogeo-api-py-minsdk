@@ -37,7 +37,7 @@ jobs:
     displayName: 'Install dependencies'
 
   - script: |
-      python -m pytest --doctest-modules --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html --cov-append tests
+      python -m pytest --random-order --maxfail=3 --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html --cov-append tests
     env:
       # platform
       ISOGEO_PLATFORM: $(ISOGEO_PLATFORM)
@@ -86,7 +86,7 @@ jobs:
 - job: 'Lint'
   dependsOn: 'Test'
   pool:
-    vmImage: "vs2017-win2016"
+    vmImage: "windows-2019"
 
   steps:
   - task: UsePythonVersion@0
@@ -107,7 +107,7 @@ jobs:
 - job: 'Build'
   dependsOn: 'Lint'
   pool:
-    vmImage: "vs2017-win2016"
+    vmImage: "windows-2019"
 
   steps:
   - task: UsePythonVersion@0
@@ -136,7 +136,7 @@ jobs:
 - job: 'Publish'
   dependsOn: 'Build'
   pool:
-    vmImage: "vs2017-win2016"
+    vmImage: "windows-2019"
   condition:
     contains(variables['Build.SourceBranch'], 'tags')
 

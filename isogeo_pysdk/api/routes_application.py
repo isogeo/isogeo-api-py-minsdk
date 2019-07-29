@@ -52,7 +52,7 @@ class ApiApplication:
         super(ApiApplication, self).__init__()
 
     @ApiDecorators._check_bearer_validity
-    def applications(
+    def listing(
         self,
         workgroup_id: str = None,
         include: list = ["_abilities"],
@@ -81,7 +81,7 @@ class ApiApplication:
         else:
             logger.debug(
                 "Listing applications for the authenticated user: {}".format(
-                    self.api_client._user.contact.get("name")
+                    self.api_client._user.contact.name
                 )
             )
             url_applications = utils.get_request_base_url(route="applications")

@@ -17,38 +17,34 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
-from random import sample
-from socket import gethostname
-from sys import exit, _getframe
-from time import gmtime, sleep, strftime
 import unittest
 import urllib3
+from os import environ
+from pathlib import Path
+from random import sample
+from socket import gethostname
+from sys import _getframe, exit
+from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
 
-
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, License, Metadata
-
+from isogeo_pysdk import IsogeoSession, License, Metadata
+from isogeo_pysdk import __version__ as pysdk_version
 
 # #############################################################################
 # ######## Globals #################
 # ##################################
 
-load_dotenv("dev.env", override=True)
+if Path("dev.env").exists():
+    load_dotenv("dev.env", override=True)
 
 # host machine name - used as discriminator
 hostname = gethostname()
 
 # API access
-app_script_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
-app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
-platform = environ.get("ISOGEO_PLATFORM", "qa")
-user_email = environ.get("ISOGEO_USER_NAME")
-user_password = environ.get("ISOGEO_USER_PASSWORD")
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
@@ -59,7 +55,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 def get_test_marker():
     """Returns the function name"""
-    return "TEST_UNIT_PythonSDK - Licenses - {}".format(_getframe(1).f_code.co_name)
+    return "TEST_PySDK - Licenses - {}".format(_getframe(1).f_code.co_name)
 
 
 # #############################################################################
@@ -75,12 +71,13 @@ class TestLicenses(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not app_script_id or not app_script_secret:
+        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_CLIENT_SECRET"
+        ):
             logging.critical("No API credentials set as env variables.")
             exit()
         else:
             pass
-        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
@@ -96,8 +93,12 @@ class TestLicenses(unittest.TestCase):
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
+
         # getting a token
-        cls.isogeo.connect(username=user_email, password=user_password)
+        cls.isogeo.connect(
+            username=environ.get("ISOGEO_USER_NAME"),
+            password=environ.get("ISOGEO_USER_PASSWORD"),
+        )
 
         # fixture metadata
         md = Metadata(title=get_test_marker(), type="vectorDataset")
@@ -115,7 +116,6 @@ class TestLicenses(unittest.TestCase):
     def tearDown(self):
         """Executed after each test."""
         sleep(0.5)
-        pass
 
     @classmethod
     def tearDownClass(cls):
@@ -294,28 +294,29 @@ class TestLicenses(unittest.TestCase):
     def test_license_detailed(self):
         """GET :licenses/{license_uuid}"""
         # retrieve workgroup licenses
-        if self.isogeo._wg_licenses_names:
-            wg_licenses = self.isogeo._wg_licenses_names
-        else:
-            wg_licenses = self.isogeo.license.listing(
-                workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
-            )
+        wg_licenses = self.isogeo.license.listing(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
+        )
+
+        # split 'isogeo' licences from workgroup licenses
+        li_licenses_isogeo = [
+            licence for licence in wg_licenses if "isogeo" in licence.get("_tag")
+        ]
+        li_licenses_workgroup = [
+            licence for licence in wg_licenses if "isogeo" not in licence.get("_tag")
+        ]
 
         # pick two licenses: one locked by Isogeo, one workgroup specific
-        license_id_isogeo = sample(
-            list(filter(lambda d: "isogeo" in d.get("_tag"), wg_licenses)), 1
-        )[0]
-        license_id_specific = sample(
-            list(filter(lambda d: "isogeo" not in d.get("_tag"), wg_licenses)), 1
-        )[0]
+        license_isogeo = sample(li_licenses_isogeo, 1)[0]
+        license_specific = sample(li_licenses_workgroup, 1)[0]
 
         # check both exist
-        self.assertTrue(self.isogeo.license.exists(license_id_isogeo.get("_id")))
-        self.assertTrue(self.isogeo.license.exists(license_id_specific.get("_id")))
+        self.assertTrue(self.isogeo.license.exists(license_isogeo.get("_id")))
+        self.assertTrue(self.isogeo.license.exists(license_specific.get("_id")))
 
         # get and check both
-        license_isogeo = self.isogeo.license.license(license_id_isogeo.get("_id"))
-        license_specific = self.isogeo.license.license(license_id_specific.get("_id"))
+        license_isogeo = self.isogeo.license.license(license_isogeo.get("_id"))
+        license_specific = self.isogeo.license.license(license_specific.get("_id"))
         self.assertIsInstance(license_isogeo, License)
         self.assertIsInstance(license_specific, License)
 

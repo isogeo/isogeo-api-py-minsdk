@@ -98,19 +98,19 @@ class ApiService:
         :Example:
 
         >>> # for an OGC WMS by GeoServer, passing type and format
-        >>> isogeo.metadata.service_create(
+        >>> isogeo.services.create(
             workgroup_id=WORKGROUP_UUID,
-            serice_type="ogc",
+            service_type="ogc",
             service_format="wms",
             service_url="https://magosm.magellium.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities"
             )
         >>> # for an OGC WFS by ArcGIS Server, passing only the service URL with query parameters
-        >>> new_srv = isogeo.metadata.service_create(
+        >>> new_srv = isogeo.services.create(
             workgroup_id=WORKGROUP_UUID,
             service_url="https://ligeo.paysdelaloire.fr/server/services/Le_Mans/Le_Mans_service/MapServer/WFSServer?request=GetCapabilities&service=WFS",
             )
         >>> # for an Esri FeatureServer
-        >>> new_srv = isogeo.metadata.service_create(
+        >>> new_srv = isogeo.services.create(
             workgroup_id=WORKGROUP_UUID,
             service_url="https://api-carto.dijon.fr/arcgis/rest/services/SIGNALISATION/signalisation_MAJ/FeatureServer?f=pjson",
             )

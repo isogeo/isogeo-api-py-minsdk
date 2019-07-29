@@ -56,7 +56,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 def get_test_marker():
     """Returns the function name"""
-    return "TEST_UNIT_PythonSDK - {}".format(_getframe(1).f_code.co_name)
+    return "TEST_PySDK - {}".format(_getframe(1).f_code.co_name)
 
 
 # #############################################################################
@@ -111,7 +111,6 @@ class TestCatalogs(unittest.TestCase):
     def tearDown(self):
         """Executed after each test."""
         sleep(0.5)
-        pass
 
     @classmethod
     def tearDownClass(cls):
