@@ -256,70 +256,63 @@ class TestApplications(unittest.TestCase):
     def test_application_workgroups(self):
         """GET :/applications/{application_uiid}/groups}"""
         # retrieve applications
-        if self.isogeo._applications_names:
-            applications = self.isogeo._applications_names
-        else:
-            applications = self.isogeo.application.listing(caching=0)
+        applications = self.isogeo.application.listing(caching=0)
+
+        # filter on 'groups' applications
+        applications = [app for app in applications if app.get("type") == "group"]
+
         # pick a random application
-        application_id_group = sample(
-            list(filter(lambda d: d.get("type") == "group", applications)), 1
-        )[0]
+        application = sample(applications, 1)[0]
+
         # retrieve workgroup applications
         app_workgroups = self.isogeo.application.workgroups(
-            application_id=application_id_group.get("_id")
+            application_id=application.get("_id")
         )
         self.assertIsInstance(app_workgroups, list)
 
     def test_application_detailed(self):
         """GET :applications/{application_uuid}"""
         # retrieve workgroup applications
-        if self.isogeo._applications_names:
-            wg_applications = self.isogeo._applications_names
-        else:
-            wg_applications = self.isogeo.application.listing(caching=0)
+        applications = self.isogeo.application.listing(caching=0)
 
         # pick three applications: user public, user confidential, group
-        application_id_user_confidential = sample(
-            list(
-                filter(
-                    lambda d: d.get("type") == "user"
-                    and d.get("kind") == "confidential",
-                    wg_applications,
-                )
-            ),
-            1,
-        )[0]
-        application_id_user_public = sample(
-            list(
-                filter(
-                    lambda d: d.get("type") == "user" and d.get("kind") == "public",
-                    wg_applications,
-                )
-            ),
-            1,
-        )[0]
-        application_id_group = sample(
-            list(filter(lambda d: d.get("type") == "group", wg_applications)), 1
-        )[0]
+        li_applications_user_confidential = [
+            app
+            for app in applications
+            if app.get("type") == "user" and app.get("kind") == "confidential"
+        ]
+        li_applications_user_public = [
+            app
+            for app in applications
+            if app.get("type") == "user" and app.get("kind") == "public"
+        ]
+        li_applications_groups = [
+            app for app in applications if app.get("type") == "group"
+        ]
+
+        # pick 3 random apps
+        application_user_confidential = sample(li_applications_user_confidential, 1)[0]
+        application_user_public = sample(li_applications_user_public, 1)[0]
+        application_group = sample(li_applications_groups, 1)[0]
 
         # check exist
         self.assertTrue(
-            self.isogeo.application.exists(application_id_user_confidential.get("_id"))
+            self.isogeo.application.exists(application_user_confidential.get("_id"))
         )
         self.assertTrue(
-            self.isogeo.application.exists(application_id_user_public.get("_id"))
+            self.isogeo.application.exists(application_user_public.get("_id"))
         )
-        self.assertTrue(self.isogeo.application.exists(application_id_group.get("_id")))
+        self.assertTrue(self.isogeo.application.exists(application_group.get("_id")))
 
         # get and check
         application_user_confidential = self.isogeo.application.application(
-            application_id_user_confidential.get("_id")
+            application_user_confidential.get("_id")
         )
         application_user_public = self.isogeo.application.application(
-            application_id_user_public.get("_id")
+            application_user_public.get("_id")
         )
         application_group = self.isogeo.application.application(
-            application_id_group.get("_id")
+            application_group.get("_id")
         )
         self.assertIsInstance(application_user_confidential, Application)
         self.assertIsInstance(application_user_public, Application)
