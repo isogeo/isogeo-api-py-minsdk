@@ -57,7 +57,7 @@ class ApiCatalog:
         super(ApiCatalog, self).__init__()
 
     @ApiDecorators._check_bearer_validity
-    def catalogs(
+    def listing(
         self,
         workgroup_id: str = None,
         include: list = ["_abilities", "count"],
@@ -110,7 +110,7 @@ class ApiCatalog:
         return wg_catalogs
 
     @ApiDecorators._check_bearer_validity
-    def catalog(
+    def get(
         self,
         workgroup_id: str,
         catalog_id: str,
@@ -189,7 +189,7 @@ class ApiCatalog:
         if check_exists == 1:
             # retrieve workgroup catalogs
             if not self.api_client._wg_catalogs_names:
-                self.catalogs(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=[])
             # check
             if catalog.name in self.api_client._wg_catalogs_names:
                 logger.debug(
@@ -374,7 +374,7 @@ class ApiCatalog:
 
         >>> isogeo.catalog.associate_metadata(
             isogeo.metadata.get(METADATA_UUID),
-            isogeo.catalog.catalog(WORKGROUP_UUID, CATALOG_UUID)
+            isogeo.catalog.get(WORKGROUP_UUID, CATALOG_UUID)
             ))
         <Response [204]>
         """
