@@ -88,6 +88,8 @@ class FeatureAttribute(object):
         self._alias = None
         self._dataType = None
         self._description = None
+        self._language = None
+        self._name = None
         # additional parameters
         self.parent_resource = parent_resource
 
