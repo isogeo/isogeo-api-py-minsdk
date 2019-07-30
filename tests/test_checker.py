@@ -48,7 +48,6 @@ class TestIsogeoChecker(unittest.TestCase):
     if not app_id or not app_token:
         logging.critical("No API credentials set as env variables.")
         exit()
-    logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
     # standard methods
     def setUp(self):

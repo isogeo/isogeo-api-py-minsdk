@@ -32,7 +32,7 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Event
+from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Event, Metadata
 
 
 # #############################################################################
@@ -57,7 +57,7 @@ MD_TEST_FIXTURE = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 
 def get_test_marker():
     """Returns the function name"""
-    return "TEST_PySDK - {}".format(_getframe(1).f_code.co_name)
+    return "TEST_PySDK - Events {}".format(_getframe(1).f_code.co_name)
 
 
 # #############################################################################
@@ -80,7 +80,6 @@ class TestEvents(unittest.TestCase):
             exit()
         else:
             pass
-        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
         # ignore warnings related to the QA self-signed cert
         if environ.get("ISOGEO_PLATFORM").lower() == "qa":
@@ -101,7 +100,14 @@ class TestEvents(unittest.TestCase):
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
-        cls.metadata_fixture = cls.isogeo.metadata.get(metadata_id=MD_TEST_FIXTURE)
+
+        md = Metadata(title=get_test_marker(), type="vectorDataset")
+        cls.metadata_fixture_created = cls.isogeo.metadata.create(
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+        )
+        cls.metadata_fixture_existing = cls.isogeo.metadata.get(
+            metadata_id=MD_TEST_FIXTURE
+        )
 
     def setUp(self):
         """Executed before each test."""
@@ -117,6 +123,8 @@ class TestEvents(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """Executed after the last test."""
+        # clean created metadata
+        cls.isogeo.metadata.delete(cls.metadata_fixture_created._id)
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
@@ -132,28 +140,37 @@ class TestEvents(unittest.TestCase):
         """POST :groups/{workgroup_uuid}/events/}"""
         # var
         event_date = strftime("%Y-%m-%d", gmtime())
-        event_kind = "update"
+        event_kind_creation = "creation"
+        event_kind_update = "update"
         event_description = "{} - {}".format(get_test_marker(), self.discriminator)
 
         # create object locally
-        event_new = Event(
+        event_new_creation = Event(
             date=event_date,
-            kind=event_kind,
+            kind=event_kind_creation,
             description=event_description,
-            parent_resource=self.metadata_fixture._id,
+            parent_resource=self.metadata_fixture_created._id,
+        )
+        event_new_update = Event(
+            date=event_date,
+            kind=event_kind_update,
+            description=event_description,
+            parent_resource=self.metadata_fixture_created._id,
         )
 
         # create it online
-        event_new = self.isogeo.metadata.events.create(
-            metadata=self.metadata_fixture, event=event_new
+        event_new_creation = self.isogeo.metadata.events.create(
+            metadata=self.metadata_fixture_created, event=event_new_creation
+        )
+        event_new_update = self.isogeo.metadata.events.create(
+            metadata=self.metadata_fixture_created, event=event_new_update
         )
 
         # checks
-        self.assertEqual(event_new.kind, event_kind)
-        self.assertEqual(event_new.description, event_description)
-
-        # add created event to deletion
-        self.li_fixtures_to_delete.append(event_new)
+        self.assertEqual(event_new_creation.kind, event_kind_creation)
+        self.assertEqual(event_new_update.kind, event_kind_update)
+        self.assertEqual(event_new_creation.description, None)
+        self.assertEqual(event_new_update.description, event_description)
 
     # def test_events_create_checking_name(self):
     #     """POST :groups/{workgroup_uuid}/events/}"""
@@ -183,7 +200,7 @@ class TestEvents(unittest.TestCase):
     def test_events_listing(self):
         """GET :resources/{metadata_uuid}/events/}"""
         # retrieve workgroup events
-        md_events = self.isogeo.metadata.events.listing(self.metadata_fixture)
+        md_events = self.isogeo.metadata.events.listing(self.metadata_fixture_existing)
         # parse and test object loader
         for i in md_events:
             # load it
@@ -203,12 +220,13 @@ class TestEvents(unittest.TestCase):
     def test_event_detailed(self):
         """GET :resources/{metadata_uuid}/events/{event_uuid}"""
         # retrieve event
-        md_events = self.isogeo.metadata.events.listing(self.metadata_fixture)
+        md_events = self.isogeo.metadata.events.listing(self.metadata_fixture_existing)
         # pick one randomly
         random_event = sample(md_events, 1)[0]
         # get
         online_event = self.isogeo.metadata.events.event(
-            metadata_id=self.metadata_fixture._id, event_id=random_event.get("_id")
+            metadata_id=self.metadata_fixture_existing._id,
+            event_id=random_event.get("_id"),
         )
         # check
         self.assertIsInstance(online_event, Event)

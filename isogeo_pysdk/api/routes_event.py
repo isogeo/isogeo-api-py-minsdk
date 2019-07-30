@@ -162,13 +162,13 @@ class ApiEvent:
             )
             # filter on creation events
             events_creation = [
-                event for evt in metadata_events.events if evt.kind == "creation"
+                event for evt in metadata_events.events if evt.get("kind") == "creation"
             ]
             if events_creation:
                 logger.warning(
                     "A creation event already exist. A metadata can only have one creation event. Use event_update instead."
                 )
-                return self.event(metadata._id, events_creation[0].get("_id"))
+                return events_creation[0]
 
         # ensure removing event.description for creation dates
         if event.kind == "creation" and event.description:

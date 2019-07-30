@@ -85,7 +85,6 @@ class TestMetadatas(unittest.TestCase):
             exit()
         else:
             pass
-        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
@@ -102,7 +101,10 @@ class TestMetadatas(unittest.TestCase):
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
         # getting a token
-        cls.isogeo.connect(username=user_email, password=user_password)
+        cls.isogeo.connect(
+            username=environ.get("ISOGEO_USER_NAME"),
+            password=environ.get("ISOGEO_USER_PASSWORD"),
+        )
 
         # fixture metadata
         md = Metadata(title=get_test_marker(), type="vectorDataset")

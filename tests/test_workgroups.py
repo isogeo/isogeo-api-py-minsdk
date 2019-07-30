@@ -77,7 +77,6 @@ class TestWorkgroups(unittest.TestCase):
             exit()
         else:
             pass
-        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
