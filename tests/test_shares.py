@@ -174,7 +174,7 @@ class TestShares(unittest.TestCase):
     #         name="{} - {}".format(get_test_marker(), self.discriminator),
     #         type="application",
     #         catalogs= [
-    #             isogeo.catalog.catalog(workgroup_id=workgroup_test, "75a6e6b16026410999dc4153f16c7de2")
+    #             isogeo.catalog.get(workgroup_id=workgroup_test, "75a6e6b16026410999dc4153f16c7de2")
     #         ]
     #     )
     #     # create it online
