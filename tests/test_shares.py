@@ -17,15 +17,15 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
+import urllib3
+import unittest
+from os import environ
 from pathlib import Path
 from random import sample
 from socket import gethostname
-from sys import exit, _getframe
+from sys import _getframe, exit
 from time import gmtime, sleep, strftime
-import unittest
-import urllib3
 
 # 3rd party
 from dotenv import load_dotenv
@@ -47,7 +47,7 @@ if Path("dev.env").exists():
 hostname = gethostname()
 
 # API access
-workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -79,7 +79,6 @@ class TestShares(unittest.TestCase):
             exit()
         else:
             pass
-        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
@@ -137,7 +136,7 @@ class TestShares(unittest.TestCase):
 
         # create it online
         share_new = self.isogeo.share.create(
-            workgroup_id=workgroup_test, share=share_new, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, share=share_new, check_exists=0
         )
 
         # checks
@@ -157,7 +156,7 @@ class TestShares(unittest.TestCase):
 
         # create it online
         share_new = self.isogeo.share.create(
-            workgroup_id=workgroup_test, share=share_new, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, share=share_new, check_exists=0
         )
 
         # checks
@@ -174,12 +173,12 @@ class TestShares(unittest.TestCase):
     #         name="{} - {}".format(get_test_marker(), self.discriminator),
     #         type="application",
     #         catalogs= [
-    #             isogeo.catalog.catalog(workgroup_id=workgroup_test, "75a6e6b16026410999dc4153f16c7de2")
+    #             isogeo.catalog.catalog(workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, "75a6e6b16026410999dc4153f16c7de2")
     #         ]
     #     )
     #     # create it online
     #     share_new = self.isogeo.share.create(
-    #         workgroup_id=workgroup_test, share=share_new, check_exists=0
+    #         workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, share=share_new, check_exists=0
     #     )
 
     #     # checks
@@ -205,12 +204,12 @@ class TestShares(unittest.TestCase):
 
     # # create it online
     # share_new_1 = self.isogeo.share.create(
-    #     workgroup_id=workgroup_test, share=share_local, check_exists=0
+    #     workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, share=share_local, check_exists=0
     # )
 
     # # try to create a share with the same name
     # share_new_2 = self.isogeo.share.create(
-    #     workgroup_id=workgroup_test, share=share_local, check_exists=1
+    #     workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, share=share_local, check_exists=1
     # )
 
     # # check if object has not been created
@@ -256,7 +255,9 @@ class TestShares(unittest.TestCase):
     def test_shares_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/shares}"""
         # retrieve workgroup shares
-        wg_shares = self.isogeo.share.shares(workgroup_id=workgroup_test, caching=0)
+        wg_shares = self.isogeo.share.shares(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
+        )
         # parse and test object loader
         for i in wg_shares:
             # load it
@@ -292,7 +293,7 @@ class TestShares(unittest.TestCase):
     #     # create a new share
     #     share_fixture = Share(name="{}".format(get_test_marker()))
     #     share_fixture = self.isogeo.share.create(
-    #         workgroup_id=workgroup_test, share=share_fixture, check_exists=0
+    #         workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, share=share_fixture, check_exists=0
     #     )
 
     #     # modify local object

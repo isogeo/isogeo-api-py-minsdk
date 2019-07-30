@@ -50,7 +50,7 @@ app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
 platform = environ.get("ISOGEO_PLATFORM", "qa")
 user_email = environ.get("ISOGEO_USER_NAME")
 user_password = environ.get("ISOGEO_USER_PASSWORD")
-workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -80,7 +80,6 @@ class TestThesauri(unittest.TestCase):
             exit()
         else:
             pass
-        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
@@ -93,7 +92,10 @@ class TestThesauri(unittest.TestCase):
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
         # getting a token
-        cls.isogeo.connect(username=user_email, password=user_password)
+        cls.isogeo.connect(
+            username=environ.get("ISOGEO_USER_NAME"),
+            password=environ.get("ISOGEO_USER_PASSWORD"),
+        )
 
     def setUp(self):
         """Executed before each test."""

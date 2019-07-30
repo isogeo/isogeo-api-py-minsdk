@@ -45,7 +45,7 @@ if Path("dev.env").exists():
 hostname = gethostname()
 
 # API access
-workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -77,7 +77,6 @@ class TestDatasources(unittest.TestCase):
             exit()
         else:
             pass
-        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
@@ -113,7 +112,7 @@ class TestDatasources(unittest.TestCase):
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
                 cls.isogeo.datasource.delete(
-                    workgroup_id=workgroup_test, datasource_id=i
+                    workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, datasource_id=i
                 )
                 pass
         # close sessions
@@ -135,13 +134,17 @@ class TestDatasources(unittest.TestCase):
 
         # create it online
         datasource_new = self.isogeo.datasource.create(
-            workgroup_id=workgroup_test, datasource=datasource_new, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            datasource=datasource_new,
+            check_exists=0,
         )
 
         # checks
         self.assertEqual(datasource_new.name, datasource_name)
         self.assertTrue(
-            self.isogeo.datasource.exists(workgroup_test, datasource_new._id)
+            self.isogeo.datasource.exists(
+                WORKGROUP_TEST_FIXTURE_UUID, datasource_new._id
+            )
         )
 
         # add created datasource to deletion
@@ -156,7 +159,9 @@ class TestDatasources(unittest.TestCase):
         )
         # create it online
         datasource_new = self.isogeo.datasource.create(
-            workgroup_id=workgroup_test, datasource=datasource_new, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            datasource=datasource_new,
+            check_exists=0,
         )
 
         # checks
@@ -164,7 +169,9 @@ class TestDatasources(unittest.TestCase):
             datasource_new.name, "{} - {}".format(get_test_marker(), self.discriminator)
         )
         self.assertTrue(
-            self.isogeo.datasource.exists(workgroup_test, datasource_new._id)
+            self.isogeo.datasource.exists(
+                WORKGROUP_TEST_FIXTURE_UUID, datasource_new._id
+            )
         )
 
         # add created datasource to deletion
@@ -183,12 +190,16 @@ class TestDatasources(unittest.TestCase):
 
         # create it online
         datasource_new_1 = self.isogeo.datasource.create(
-            workgroup_id=workgroup_test, datasource=datasource_local, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            datasource=datasource_local,
+            check_exists=0,
         )
 
         # try to create a datasource with the same name
         datasource_new_2 = self.isogeo.datasource.create(
-            workgroup_id=workgroup_test, datasource=datasource_local, check_exists=2
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            datasource=datasource_local,
+            check_exists=2,
         )
 
         # check if object has not been created
@@ -210,12 +221,16 @@ class TestDatasources(unittest.TestCase):
 
         # create it online
         datasource_new_1 = self.isogeo.datasource.create(
-            workgroup_id=workgroup_test, datasource=datasource_local, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            datasource=datasource_local,
+            check_exists=0,
         )
 
         # try to create a datasource with the same name
         datasource_new_2 = self.isogeo.datasource.create(
-            workgroup_id=workgroup_test, datasource=datasource_local, check_exists=1
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            datasource=datasource_local,
+            check_exists=1,
         )
 
         # check if object has not been created
@@ -229,7 +244,7 @@ class TestDatasources(unittest.TestCase):
         """GET :groups/{workgroup_uuid}/datasources}"""
         # retrieve workgroup datasources
         wg_datasources = self.isogeo.datasource.datasources(
-            workgroup_id=workgroup_test, caching=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
         )
         # parse and test object loader
         for i in wg_datasources:
@@ -263,7 +278,9 @@ class TestDatasources(unittest.TestCase):
             location="https://geobretagne.fr/geonetwork/srv/fre/csw?",
         )
         datasource_fixture = self.isogeo.datasource.create(
-            workgroup_id=workgroup_test, datasource=datasource_fixture, check_exists=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            datasource=datasource_fixture,
+            check_exists=0,
         )
 
         # modify local object
@@ -274,12 +291,12 @@ class TestDatasources(unittest.TestCase):
 
         # update the online datasource
         datasource_fixture = self.isogeo.datasource.update(
-            workgroup_id=workgroup_test, datasource=datasource_fixture
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, datasource=datasource_fixture
         )
 
         # check if the change is effective
         datasource_fixture_updated = self.isogeo.datasource.datasource(
-            workgroup_test, datasource_fixture._id
+            WORKGROUP_TEST_FIXTURE_UUID, datasource_fixture._id
         )
         self.assertEqual(
             datasource_fixture_updated.name,
