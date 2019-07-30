@@ -123,7 +123,7 @@ if __name__ == "__main__":
         },
         {
             "route": isogeo.resource,
-            "output_json_name": "api_resource_complete",
+            "output_json_name": "api_metadata_complete",
             "params": {"id_resource": resource_id, "include": "all"},
         },
         # shares

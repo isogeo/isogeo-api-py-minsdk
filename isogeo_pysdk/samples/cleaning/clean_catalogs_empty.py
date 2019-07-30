@@ -121,7 +121,7 @@ if __name__ == "__main__":
 
     # display elapsed time
     print(
-        "{} catalogs of workgroup {} synchronously retrieved at {:5.2f}s".format(
+        "{} catalogs of workgroup {} with 0 metadata synchronously retrieved at {:5.2f}s".format(
             len(li_wg_catalogs_not_associated),
             WG_TEST_UUID,
             default_timer() - START_TIME,
