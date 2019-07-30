@@ -141,7 +141,14 @@ class ApiEvent:
             )
 
         if isinstance(event.date, str):
-            datetime.strptime(event.date, "%Y-%m-%d")
+            if len(event.date) == 10:
+                # 2019-08-09
+                datetime.strptime(event.date, "%Y-%m-%d")
+            elif len(event.date) == 25:
+                # ISO 8601 as returned by the API: '2019-08-09T00:00:00+00:00'
+                datetime.strptime(event.date[:10], "%Y-%m-%dT%H:%M:%S")
+            else:
+                logger.warning("Unknon date format: {}".format(event.date))
         elif isinstance(event.date, datetime):
             event.date = event.date.strftime("%Y-%m-%d")
         else:
@@ -154,11 +161,9 @@ class ApiEvent:
                 metadata._id, include=["events"]
             )
             # filter on creation events
-            events_creation = list(
-                filter(
-                    lambda d: d["kind"] in ["creation"], metadata_events.get("events")
-                )
-            )
+            events_creation = [
+                event for evt in metadata_events.events if evt.kind == "creation"
+            ]
             if events_creation:
                 logger.warning(
                     "A creation event already exist. A metadata can only have one creation event. Use event_update instead."
