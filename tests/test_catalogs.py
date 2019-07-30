@@ -207,7 +207,7 @@ class TestCatalogs(unittest.TestCase):
     def test_catalogs_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/catalogs}"""
         # retrieve workgroup catalogs
-        wg_catalogs = self.isogeo.catalog.catalogs(
+        wg_catalogs = self.isogeo.catalog.listing(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
         )
         # parse and test object loader
@@ -239,7 +239,7 @@ class TestCatalogs(unittest.TestCase):
     def test_catalog_shares(self):
         """GET :catalogs/{catalog_uuid}/shares"""
         # pick a random catalog
-        wg_catalogs = self.isogeo.catalog.catalogs(
+        wg_catalogs = self.isogeo.catalog.listing(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
         )
         catalog_id = sample(wg_catalogs, 1)[0].get("_id")
@@ -254,7 +254,7 @@ class TestCatalogs(unittest.TestCase):
 
     def test_catalog_statistics(self):
         """GET :catalogs/{catalog_uuid}/statistics"""
-        wg_catalogs = self.isogeo.catalog.catalogs(
+        wg_catalogs = self.isogeo.catalog.listing(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
         )
         catalog_id = sample(wg_catalogs, 1)[0].get("_id")
@@ -265,7 +265,7 @@ class TestCatalogs(unittest.TestCase):
 
     def test_catalog_statistics_tag(self):
         """GET :catalogs/{catalog_uuid}/statistics/tag/{tag_name}"""
-        wg_catalogs = self.isogeo.catalog.catalogs(
+        wg_catalogs = self.isogeo.catalog.listing(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
         )
         catalog_id = sample(wg_catalogs, 1)[0].get("_id")
@@ -301,7 +301,7 @@ class TestCatalogs(unittest.TestCase):
         catalog_fixture = self.isogeo.catalog.update(catalog_fixture)
 
         # check if the change is effective
-        catalog_fixture_updated = self.isogeo.catalog.catalog(
+        catalog_fixture_updated = self.isogeo.catalog.get(
             catalog_fixture.owner.get("_id"), catalog_fixture._id
         )
         self.assertEqual(
