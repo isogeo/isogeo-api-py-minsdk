@@ -80,7 +80,6 @@ class TestEvents(unittest.TestCase):
             exit()
         else:
             pass
-        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
         # ignore warnings related to the QA self-signed cert
         if environ.get("ISOGEO_PLATFORM").lower() == "qa":

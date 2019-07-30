@@ -48,7 +48,6 @@ class TestIsogeoUtils(unittest.TestCase):
         exit()
     else:
         pass
-    logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
     # standard methods
     def setUp(self):

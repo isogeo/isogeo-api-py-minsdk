@@ -51,7 +51,7 @@ if Path("dev.env").exists():
 hostname = gethostname()
 
 # API access
-workgroup_test = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -83,7 +83,6 @@ class TestKeywordsComplete(unittest.TestCase):
             exit()
         else:
             pass
-        logging.debug("Isogeo PySDK version: {0}".format(pysdk_version))
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
@@ -178,7 +177,7 @@ class TestKeywordsComplete(unittest.TestCase):
         """GET :groups/{workgroup_uuid}/keywords/search}"""
         # retrieve workgroup keywords
         wg_keywords = self.isogeo.keyword.workgroup(
-            workgroup_id=workgroup_test, caching=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
         )
         # parse and test object loader
         for i in wg_keywords.results:
@@ -244,7 +243,7 @@ class TestKeywordsComplete(unittest.TestCase):
     #     # create a new keyword
     #     keyword_fixture = Keyword(name="{}".format(get_test_marker()))
     #     keyword_fixture = self.isogeo.keyword.create(
-    #         workgroup_id=workgroup_test, keyword=keyword_fixture, check_exists=0
+    #         workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, keyword=keyword_fixture, check_exists=0
     #     )
 
     #     # modify local object
