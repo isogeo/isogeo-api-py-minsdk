@@ -235,7 +235,7 @@ class TestKeywordsComplete(unittest.TestCase):
         thesaurus_keywords = self.isogeo.keyword.thesaurus(page_size=50, caching=0)
         # pick one randomly
         random_keyword = sample(thesaurus_keywords.results, 1)[0]
-        random_keyword = self.isogeo.keyword.keyword(random_keyword.get("_id"))
+        random_keyword = self.isogeo.keyword.get(random_keyword.get("_id"))
 
     # -- PUT/PATCH --
     # def test_keywords_update(self):
@@ -254,7 +254,7 @@ class TestKeywordsComplete(unittest.TestCase):
     #     keyword_fixture = self.isogeo.keyword.keyword_update(keyword_fixture)
 
     #     # check if the change is effective
-    #     keyword_fixture_updated = self.isogeo.keyword.keyword(
+    #     keyword_fixture_updated = self.isogeo.keyword.get(
     #         keyword_fixture.owner.get("_id"), keyword_fixture._id
     #     )
     #     self.assertEqual(
