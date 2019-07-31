@@ -166,7 +166,9 @@ class Metadata(object):
         "links": list,
         "modified": str,
         "name": str,
+        "operations": list,
         "path": str,
+        "precision": str,
         "published": str,
         "scale": int,
         "series": bool,
@@ -183,38 +185,30 @@ class Metadata(object):
     }
 
     attr_crea = {
-        # "_abilities": list,
-        # "_creator": dict,
-        # "_id": str,
         "abstract": str,
         "collectionContext": str,
         "collectionMethod": str,
-        # "created": str,
-        # "distance": float,
-        # "editionProfile": str,
+        "distance": float,
+        "editionProfile": str,
         "encoding": str,
-        # "features": int,
+        "envelope": dict,
+        "features": int,
         "format": str,
         "formatVersion": str,
-        # "geometry": str,
-        # "keywords": list,
+        "geometry": str,
         "language": str,
-        "layers": list,
-        # "modified": str,
         "name": str,
         "path": str,
         "precision": str,
-        # "published": str,
         "scale": int,
         "series": bool,
-        "serviceLayers": list,
         "title": str,
         "topologicalConsistency": str,
         "type": str,
         "updateFrequency": str,
-        # "validFrom": str,
-        # "validTo": str,
-        # "validityComment": str,
+        "validFrom": str,
+        "validTo": str,
+        "validityComment": str,
     }
 
     attr_map = {
@@ -361,6 +355,8 @@ class Metadata(object):
             self._features = features
         if format is not None:
             self._format = format
+        if formatVersion is not None:
+            self._formatVersion = formatVersion
         if geometry is not None:
             self._geometry = geometry
         if keywords is not None:
