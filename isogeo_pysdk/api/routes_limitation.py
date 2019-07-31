@@ -254,7 +254,57 @@ class ApiLimitation:
 
         return req_limitation_deletion
 
-    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def update(self, limitation: Limitation, metadata: Metadata = None) -> Limitation:
+        """Update a limitation.
+
+        :param Limitation limitation: Limitation model object to update
+        :param Metadata metadata: parent metadata (resource) containing the limitation
+        """
+        # check limitation UUID
+        if not checker.check_is_uuid(limitation._id):
+            raise ValueError(
+                "Limitation ID is not a correct UUID: {}".format(limitation._id)
+            )
+        else:
+            pass
+
+        # retrieve parent metadata
+        if not checker.check_is_uuid(limitation.parent_resource) and not metadata:
+            raise ValueError("Limitation parent metadata is required. Requesting it...")
+        elif not checker.check_is_uuid(limitation.parent_resource) and metadata:
+            limitation.parent_resource = metadata._id
+        else:
+            pass
+
+        # URL
+        url_limitation_update = utils.get_request_base_url(
+            route="resources/{}/limitations/{}".format(
+                limitation.parent_resource, limitation._id
+            )
+        )
+
+        # request
+        req_limitation_update = self.api_client.put(
+            url=url_limitation_update,
+            json=limitation.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_limitation_update)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # add parent resource id to keep tracking
+        limitation_augmented = req_limitation_update.json()
+        limitation_augmented["parent_resource"] = limitation.parent_resource
+
+        # end of method
+        return Limitation(**limitation_augmented)
 
 
 # ##############################################################################

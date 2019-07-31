@@ -173,29 +173,28 @@ class TestLimitations(unittest.TestCase):
         self.li_fixtures_to_delete.append(limitation_new_legal)
         self.li_fixtures_to_delete.append(limitation_new_security)
 
-    # def test_limitations_create_checking_name(self):
-    #     """POST :groups/{workgroup_uuid}/limitations/}"""
-    #     # vars
-    #     name_to_be_unique = "TEST_UNIT_AUTO UNIQUE"
+    def test_limitations_create_with_directive(self):
+        """POST :resources/{metadata_uuid}/limitations/}"""
+        # vars
+        random_directive = sample(self.isogeo.directive.listing(0), 1)[0]
+        limitation_description = "{} - {}".format(get_test_marker(), self.discriminator)
 
-    #     # create local object
-    #     limitation_local = Limitation(name=name_to_be_unique)
+        # create object locally
+        limitation_new_with_directive = Limitation(
+            type="legal",
+            restriction="patent",
+            description=limitation_description,
+            directive=random_directive,
+        )
 
-    #     # create it online
-    #     limitation_new_1 = self.isogeo.limitation.limitation_create(
-    #         workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, limitation=limitation_local, check_exists=0
-    #     )
+        # create it online
+        limitation_new_with_directive = self.isogeo.metadata.limitations.create(
+            metadata=self.metadata_fixture_created,
+            limitation=limitation_new_with_directive,
+        )
 
-    #     # try to create a limitation with the same name
-    #     limitation_new_2 = self.isogeo.limitation.limitation_create(
-    #         workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, limitation=limitation_local, check_exists=1
-    #     )
-
-    #     # check if object has not been created
-    #     self.assertEqual(limitation_new_2, False)
-
-    #     # add created limitation to deletion
-    #     self.li_fixtures_to_delete.append(limitation_new_1._id)
+        # add created limitation to deletion
+        self.li_fixtures_to_delete.append(limitation_new_with_directive._id)
 
     # -- GET --
     def test_limitations_listing(self):
@@ -236,33 +235,44 @@ class TestLimitations(unittest.TestCase):
         self.assertIsInstance(online_limitation, Limitation)
 
     # -- PUT/PATCH --
-    # def test_limitations_update(self):
-    #     """PUT :groups/{workgroup_uuid}/limitations/{limitation_uuid}}"""
-    #     # create a new limitation
-    #     limitation_fixture = Limitation(name="{}".format(get_test_marker()))
-    #     limitation_fixture = self.isogeo.limitation.limitation_create(
-    #         workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, limitation=limitation_fixture, check_exists=0
-    #     )
+    def test_limitations_update(self):
+        """PUT :resources/{metadata_uuid}/limitations/{limitation_uuid}"""
+        # vars
+        random_directive = sample(self.isogeo.directive.listing(0), 1)[0]
+        limitation_description = "{} - {}".format(get_test_marker(), self.discriminator)
 
-    #     # modify local object
-    #     limitation_fixture.name = "{} - {}".format(get_test_marker(), self.discriminator)
-    #     limitation_fixture.scan = True
+        # create object locally
+        limitation_new_with_directive = Limitation(
+            type="legal",
+            restriction="patent",
+            description=limitation_description,
+            directive=random_directive,
+        )
 
-    #     # update the online limitation
-    #     limitation_fixture = self.isogeo.limitation.limitation_update(limitation_fixture)
+        # create it online
+        limitation_new_with_directive = self.isogeo.metadata.limitations.create(
+            metadata=self.metadata_fixture_created,
+            limitation=limitation_new_with_directive,
+        )
 
-    #     # check if the change is effective
-    #     limitation_fixture_updated = self.isogeo.limitation.limitation(
-    #         limitation_fixture.owner.get("_id"), limitation_fixture._id
-    #     )
-    #     self.assertEqual(
-    #         limitation_fixture_updated.name,
-    #         "{} - {}".format(get_test_marker(), self.discriminator),
-    #     )
-    #     self.assertEqual(limitation_fixture_updated.scan, True)
+        # modify local object
+        limitation_new_with_directive.description = "{} - EDITED DESCRIPTION".format(
+            get_test_marker()
+        )
 
-    #     # add created limitation to deletion
-    #     self.li_fixtures_to_delete.append(limitation_fixture_updated._id)
+        # update the online limitation
+        limitation_fixture_updated = self.isogeo.metadata.limitations.update(
+            limitation_new_with_directive
+        )
+
+        # check if the change is effective
+        self.assertEqual(
+            limitation_fixture_updated.description,
+            "{} - EDITED DESCRIPTION".format(get_test_marker()),
+        )
+
+        # add created limitation to deletion
+        self.li_fixtures_to_delete.append(limitation_fixture_updated)
 
 
 # ##############################################################################
