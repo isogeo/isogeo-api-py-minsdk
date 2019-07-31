@@ -108,7 +108,7 @@ class ApiLicense:
         return wg_licenses
 
     @ApiDecorators._check_bearer_validity
-    def license(self, license_id: str) -> License:
+    def get(self, license_id: str) -> License:
         """Get details about a specific license.
 
         :param str license_id: license UUID
