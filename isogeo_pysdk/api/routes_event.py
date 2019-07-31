@@ -148,7 +148,7 @@ class ApiEvent:
                 # ISO 8601 as returned by the API: '2019-08-09T00:00:00+00:00'
                 datetime.strptime(event.date[:10], "%Y-%m-%dT%H:%M:%S")
             else:
-                logger.warning("Unknon date format: {}".format(event.date))
+                logger.warning("Unknown date format: {}".format(event.date))
         elif isinstance(event.date, datetime):
             event.date = event.date.strftime("%Y-%m-%d")
         else:
