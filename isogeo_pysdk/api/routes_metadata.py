@@ -462,7 +462,25 @@ class ApiMetadata:
 
     #     return wg_metadata
 
-    # -- Helpers for services ---------------------------------------------------------
+    # -- Routes to manage the related objects ------------------------------------------
+    def keywords(
+        self, metadata: Metadata, include: list = ["_abilities", "count", "thesaurus"]
+    ) -> list:
+        """Returns asssociated keywords with a metadata.
+        Just a shortcut.
+
+        :param Metadata metadata: metadata object
+        :param list include: subresources that should be returned. Available values:
+
+          * '_abilities'
+          * 'count'
+          * 'thesaurus'
+        
+        :rtype: list
+        """
+        return self.api_client.keyword.metadata(
+            metadata_id=metadata._id, include=include
+        )
 
 
 # ##############################################################################

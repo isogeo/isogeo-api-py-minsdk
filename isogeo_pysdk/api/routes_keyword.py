@@ -55,6 +55,57 @@ class ApiKeyword:
         super(ApiKeyword, self).__init__()
 
     @ApiDecorators._check_bearer_validity
+    def metadata(
+        self,
+        metadata_id: str = None,
+        include: list = ["_abilities", "count", "thesaurus"],
+    ) -> list:
+        """List a metadata's kewyords with complete information.
+
+        :param str metadata_id: metadata UUID
+        :param list include: subresources that should be returned. Available values:
+
+          * '_abilities'
+          * 'count'
+          * 'thesaurus'
+        
+        :rtype: list
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(metadata_id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata_id)
+            )
+        else:
+            pass
+
+        # handling request parameters
+        payload = {"_include": ",".join(include)}
+
+        # URL
+        url_workgroup_keywords = utils.get_request_base_url(
+            route="resources/{}/keywords/".format(metadata_id)
+        )
+
+        # request
+        req_metadata_keywords = self.api_client.get(
+            url=url_workgroup_keywords,
+            headers=self.api_client.header,
+            params=payload,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_metadata_keywords)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_metadata_keywords.json()
+
+    @ApiDecorators._check_bearer_validity
     def thesaurus(
         self,
         thesaurus_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
@@ -224,31 +275,36 @@ class ApiKeyword:
         return KeywordSearch(**req_thesaurus_keywords.json())
 
     @ApiDecorators._check_bearer_validity
-    def keyword(
+    def get(
         self, keyword_id: str, include: list = ["_abilities", "count", "thesaurus"]
     ) -> Keyword:
         """Get details about a specific keyword.
 
-        :param str workgroup_id: identifier of the owner workgroup
         :param str keyword_id: keyword UUID
         :param list include: additionnal subresource to include in the response
+
+
+        :Example:
+        >>> # get a metadata with its tags (or keywords)
+        >>> md = isogeo.metadata.get(METADATA_UUID, include=["tags"])
+        >>> # list Isogeo keywords
+        >>> li_keywords_uuids = [
+            tag[8:] for tag in self.metadata_source.tags
+            if tag.startswith("keyword:isogeo:")
+            ]
+        >>> # pick a random one
+        >>> random_keyword = sample(li_keywords_uuid, 1)[0]
+        >>> # get its details
+        >>> keyword = isogeo.keyword.get(random_keyword)
         """
-        # check workgroup UUID
-        # if not checker.check_is_uuid(workgroup_id):
-        #     raise ValueError(
-        #         "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
-        #     )
+        # check keyword UUID
+        # if not checker.check_is_uuid(keyword_id):
+        #     raise ValueError("Keyword ID is not a correct UUID: {}".format(keyword_id))
         # else:
         #     pass
 
-        # check keyword UUID
-        if not checker.check_is_uuid(keyword_id):
-            raise ValueError("Keyword ID is not a correct UUID.")
-        else:
-            pass
-
         # request parameter
-        payload = {"_include": include}
+        payload = {"_include": ",".join(include)}
 
         # keyword route
         url_keyword = utils.get_request_base_url(route="keywords/{}".format(keyword_id))
