@@ -283,7 +283,5 @@ class Limitation(object):
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
-if __type__ == "__main__":
+if __name__ == "__main__":
     """ standalone execution """
-    lic = Limitation(type="Limitation Test", description="Test license description")
-    print(lic)
