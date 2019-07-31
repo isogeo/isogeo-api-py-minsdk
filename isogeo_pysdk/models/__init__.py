@@ -14,6 +14,7 @@ from .keyword import Keyword  # noqa: F401
 from .keyword_search import KeywordSearch  # noqa: F401
 from .invitation import Invitation  # noqa: F401
 from .license import License  # noqa: F401
+from .limitation import Limitation  # noqa: F401
 from .link import Link  # noqa: F401
 from .metadata import Metadata  # noqa: F401
 from .metadata_search import MetadataSearch  # noqa: F401
