@@ -22,24 +22,18 @@ class Directive(object):
     """Directives are entities included as subresource of limitations into metadata CGUs.
 
 
-    Sample:
+    :Example:
 
-    ```json
-    [
+    .. code-block:: json
+
         {
             "_id": string (uuid),
             "name": string,
             "description": string
         }
-    ]
-    ```
-    """
 
     """
-    Attributes:
-      attr_types (dict): basic structure of directive attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-    """
+
     attr_types = {"_id": str, "description": str, "name": str}
 
     attr_map = {}
