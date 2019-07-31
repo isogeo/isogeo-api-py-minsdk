@@ -208,6 +208,52 @@ class ApiLimitation:
         # end of method
         return Limitation(**limitation_augmented)
 
+    @ApiDecorators._check_bearer_validity
+    def delete(self, limitation: Limitation, metadata: Metadata = None):
+        """Delete a limitation from a metadata.
+
+        :param Limitation limitation: Limitation model object to delete
+        :param Metadata metadata: parent metadata (resource) containing the limitation
+        """
+        # check limitation UUID
+        if not checker.check_is_uuid(limitation._id):
+            raise ValueError(
+                "Limitation ID is not a correct UUID: {}".format(limitation._id)
+            )
+        else:
+            pass
+
+        # retrieve parent metadata
+        if not checker.check_is_uuid(limitation.parent_resource) and not metadata:
+            raise ValueError("Limitation parent metadata is required. Requesting it...")
+        elif not checker.check_is_uuid(limitation.parent_resource) and metadata:
+            limitation.parent_resource = metadata._id
+        else:
+            pass
+
+        # URL
+        url_limitation_delete = utils.get_request_base_url(
+            route="resources/{}/limitations/{}".format(
+                limitation.parent_resource, limitation._id
+            )
+        )
+
+        # request
+        req_limitation_deletion = self.api_client.delete(
+            url=url_limitation_delete,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_limitation_deletion)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_limitation_deletion
+
     # -- Routes to manage the related objects ------------------------------------------
 
 

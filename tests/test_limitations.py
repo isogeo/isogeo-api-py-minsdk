@@ -128,13 +128,13 @@ class TestLimitations(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """Executed after the last test."""
+        # clean created limitations
+        if len(cls.li_fixtures_to_delete):
+            for i in cls.li_fixtures_to_delete:
+                cls.isogeo.metadata.limitations.delete(limitation=i)
+
         # clean created metadata
         cls.isogeo.metadata.delete(cls.metadata_fixture_created._id)
-        # clean created limitations
-        # if len(cls.li_fixtures_to_delete):
-        #     for i in cls.li_fixtures_to_delete:
-        #         cls.isogeo.metadata.limitations.delete(limitation=i)
-        #         pass
         # close sessions
         cls.isogeo.close()
 
@@ -169,6 +169,9 @@ class TestLimitations(unittest.TestCase):
         self.assertEqual(limitation_new_security.type, "security")
         self.assertEqual(limitation_new_legal.description, limitation_description)
         # self.assertEqual(limitation_new_security.description, limitation_description)
+
+        self.li_fixtures_to_delete.append(limitation_new_legal)
+        self.li_fixtures_to_delete.append(limitation_new_security)
 
     # def test_limitations_create_checking_name(self):
     #     """POST :groups/{workgroup_uuid}/limitations/}"""
