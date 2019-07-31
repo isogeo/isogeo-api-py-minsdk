@@ -137,6 +137,77 @@ class ApiLimitation:
         # end of method
         return Limitation(**limitation_augmented)
 
+    @ApiDecorators._check_bearer_validity
+    def create(self, metadata: Metadata, limitation: Limitation) -> Limitation:
+        """Add a new limitation to a metadata (= resource).
+
+        :param Metadata metadata: metadata (resource) to edit
+        :param Limitation limitation: limitation object to create
+
+        :returns: 409 if a limitation with the same name already exists.
+
+        :rtype: Limitation or tuple
+
+        :Example:
+        >>> # retrieve metadata
+        >>> md = isogeo.metadata.get(METADATA_UUID)
+        >>> # create the limitation locally
+        >>> new_limitation = Limitation(
+            type="legal",
+            restriction="patent",
+            description="Do not use for commercial purpose.",
+            )
+        >>> # add it to the metadata
+        >>> isogeo.metadata.limitations.create(md, new_limitation)
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # check relation between type and restriction/directive
+        if limitation.type == "security":
+            if limitation.restriction is not None:
+                limitation.restriction = None
+                logger.warning(
+                    "Limitation restriction are not allowed for security limitations. Only description will be sent."
+                )
+            if limitation.directive is not None:
+                limitation.directive = None
+                logger.warning(
+                    "Limitation directive are not allowed for security limitations. Only description will be sent."
+                )
+
+        # URL
+        url_limitation_create = utils.get_request_base_url(
+            route="resources/{}/limitations/".format(metadata._id)
+        )
+
+        # request
+        req_new_limitation = self.api_client.post(
+            url=url_limitation_create,
+            json=limitation.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_new_limitation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # add parent resource id to keep tracking
+        limitation_augmented = req_new_limitation.json()
+        limitation_augmented["parent_resource"] = metadata._id
+
+        # end of method
+        return Limitation(**limitation_augmented)
+
     # -- Routes to manage the related objects ------------------------------------------
 
 

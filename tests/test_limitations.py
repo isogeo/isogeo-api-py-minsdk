@@ -141,41 +141,34 @@ class TestLimitations(unittest.TestCase):
     # -- TESTS ---------------------------------------------------------
 
     # -- POST --
-    # def test_limitations_create_basic(self):
-    #     """POST :groups/{workgroup_uuid}/limitations/}"""
-    #     # var
-    #     limitation_date = strftime("%Y-%m-%d", gmtime())
-    #     limitation_kind_creation = "creation"
-    #     limitation_kind_update = "update"
-    #     limitation_description = "{} - {}".format(get_test_marker(), self.discriminator)
+    def test_limitations_create_basic(self):
+        """POST :resources/{metadata_uuid}/limitations/}"""
+        # var
+        limitation_description = "{} - {}".format(get_test_marker(), self.discriminator)
 
-    #     # create object locally
-    #     limitation_new_creation = Limitation(
-    #         date=limitation_date,
-    #         kind=limitation_kind_creation,
-    #         description=limitation_description,
-    #         parent_resource=self.metadata_fixture_created._id,
-    #     )
-    #     limitation_new_update = Limitation(
-    #         date=limitation_date,
-    #         kind=limitation_kind_update,
-    #         description=limitation_description,
-    #         parent_resource=self.metadata_fixture_created._id,
-    #     )
+        # create object locally
+        limitation_new_legal = Limitation(
+            type="legal", restriction="patent", description=limitation_description
+        )
+        limitation_new_security = Limitation(
+            type="security",
+            description=limitation_description,
+            parent_resource=self.metadata_fixture_created._id,
+        )
 
-    #     # create it online
-    #     limitation_new_creation = self.isogeo.metadata.limitations.create(
-    #         metadata=self.metadata_fixture_created, limitation=limitation_new_creation
-    #     )
-    #     limitation_new_update = self.isogeo.metadata.limitations.create(
-    #         metadata=self.metadata_fixture_created, limitation=limitation_new_update
-    #     )
+        # create it online
+        limitation_new_legal = self.isogeo.metadata.limitations.create(
+            metadata=self.metadata_fixture_created, limitation=limitation_new_legal
+        )
+        limitation_new_security = self.isogeo.metadata.limitations.create(
+            metadata=self.metadata_fixture_created, limitation=limitation_new_security
+        )
 
-    #     # checks
-    #     self.assertEqual(limitation_new_creation.kind, limitation_kind_creation)
-    #     self.assertEqual(limitation_new_update.kind, limitation_kind_update)
-    #     self.assertEqual(limitation_new_creation.description, None)
-    #     self.assertEqual(limitation_new_update.description, limitation_description)
+        # checks
+        self.assertEqual(limitation_new_legal.type, "legal")
+        self.assertEqual(limitation_new_security.type, "security")
+        self.assertEqual(limitation_new_legal.description, limitation_description)
+        # self.assertEqual(limitation_new_security.description, limitation_description)
 
     # def test_limitations_create_checking_name(self):
     #     """POST :groups/{workgroup_uuid}/limitations/}"""

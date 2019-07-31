@@ -152,9 +152,9 @@ class Limitation(object):
     # restriction
     @property
     def restriction(self) -> str:
-        """Gets the restriction (URL) of this Limitation.
+        """Gets the restriction of this Limitation.
 
-        :return: The restriction (URL) of this Limitation.
+        :return: The restriction of this Limitation.
         :rtype: str
         """
         return self._restriction
@@ -163,10 +163,13 @@ class Limitation(object):
     def restriction(self, restriction: str):
         """Sets the restriction of this Limitation.
 
-        :param str restriction: The restriction (URL) of this Limitation.
+        :param str restriction: The restriction of this Limitation.
         """
         # check type value
-        if type not in LimitationRestrictions.__members__:
+        if (
+            restriction is not None
+            and restriction not in LimitationRestrictions.__members__
+        ):
             raise ValueError(
                 "Limitation restriction '{}' is not an accepted value. Must be one of: {}.".format(
                     type, " | ".join([e.name for e in LimitationRestrictions])
