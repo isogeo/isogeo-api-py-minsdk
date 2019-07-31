@@ -22,11 +22,14 @@ import unittest
 # module target
 from isogeo_pysdk.enums import (
     ApplicationTypes,
+    CatalogStatisticsTags,
     ContactRoles,
     ContactTypes,
     EditionProfiles,
     EventKinds,
     KeywordCasing,
+    LimitationRestrictions,
+    LimitationTypes,
     LinkActions,
     LinkKinds,
     LinkTypes,
@@ -102,6 +105,22 @@ class TestEnums(unittest.TestCase):
         self.assertTrue("capitalized" in KeywordCasing.__members__)
         self.assertFalse("Uppercase" in KeywordCasing.__members__)
         for i in KeywordCasing:
+            self.assertIsInstance(i.value, int)
+
+    def test_limitation_restrictions(self):
+        """Check limitation's restrictions list"""
+        self.assertEqual(len(LimitationRestrictions), 7)
+        self.assertTrue("license" in LimitationRestrictions.__members__)
+        self.assertFalse("License" in LimitationRestrictions.__members__)
+        for i in LimitationRestrictions:
+            self.assertIsInstance(i.value, int)
+
+    def test_limitation_types(self):
+        """Check limitation's types list"""
+        self.assertEqual(len(LimitationTypes), 2)
+        self.assertTrue("legal" in LimitationTypes.__members__)
+        self.assertFalse("Legal" in LimitationTypes.__members__)
+        for i in LimitationTypes:
             self.assertIsInstance(i.value, int)
 
     def test_link_action(self):
