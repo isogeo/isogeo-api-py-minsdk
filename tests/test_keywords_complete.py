@@ -17,14 +17,15 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
+import unittest
+import urllib3
+from os import environ
 from pathlib import Path
 from random import sample
 from socket import gethostname
-from sys import exit, _getframe
-from time import gmtime, strftime
-import unittest
+from sys import _getframe, exit
+from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
@@ -51,6 +52,7 @@ if Path("dev.env").exists():
 hostname = gethostname()
 
 # API access
+METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
@@ -84,8 +86,9 @@ class TestKeywordsComplete(unittest.TestCase):
         else:
             pass
 
-        # class vars and attributes
-        cls.li_fixtures_to_delete = []
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
 
         # API connection
         cls.isogeo = IsogeoSession(
@@ -100,6 +103,13 @@ class TestKeywordsComplete(unittest.TestCase):
             password=environ.get("ISOGEO_USER_PASSWORD"),
         )
 
+        # class vars and attributes
+        cls.li_fixtures_to_delete = []
+
+        cls.metadata_fixture_existing = cls.isogeo.metadata.get(
+            metadata_id=METADATA_TEST_FIXTURE_UUID
+        )
+
     def setUp(self):
         """Executed before each test."""
         # tests stuff
@@ -109,7 +119,7 @@ class TestKeywordsComplete(unittest.TestCase):
 
     def tearDown(self):
         """Executed after each test."""
-        pass
+        sleep(0.5)
 
     @classmethod
     def tearDownClass(cls):
@@ -173,6 +183,23 @@ class TestKeywordsComplete(unittest.TestCase):
         self.li_fixtures_to_delete.append(keyword_new_1_created)
 
     # -- GET --
+    def test_keywords_list_metadata(self):
+        """GET :resources/{metadata_uuid}/keywords/}"""
+        # retrieve metadata keywords from keywords api module
+        keywords_metadata = self.isogeo.keyword.metadata(
+            metadata_id=METADATA_TEST_FIXTURE_UUID
+        )
+        self.assertIsInstance(keywords_metadata, list)
+
+        # retrieve metadata keywords from metadata api module (shortut)
+        metadata_keywords = self.isogeo.metadata.keywords(
+            metadata=self.metadata_fixture_existing
+        )
+        self.assertIsInstance(metadata_keywords, list)
+
+        # compare both
+        self.assertEqual(keywords_metadata, metadata_keywords)
+
     def test_keywords_search_workgroup(self):
         """GET :groups/{workgroup_uuid}/keywords/search}"""
         # retrieve workgroup keywords
