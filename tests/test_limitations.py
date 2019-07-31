@@ -194,7 +194,7 @@ class TestLimitations(unittest.TestCase):
         )
 
         # add created limitation to deletion
-        self.li_fixtures_to_delete.append(limitation_new_with_directive._id)
+        self.li_fixtures_to_delete.append(limitation_new_with_directive)
 
     # -- GET --
     def test_limitations_listing(self):
