@@ -37,17 +37,15 @@ class Limitation(object):
             "type": "string"
         }
 
-    
     """
 
     attr_types = {
-        "_abilities": str,
         "_id": str,
-        "_tag": str,
         "description": str,
         "directive": int,
         "restriction": str,
         "type": str,
+        "parent_resource": str,
     }
 
     attr_crea = {
@@ -66,6 +64,7 @@ class Limitation(object):
         directive: int = None,
         restriction: str = None,
         type: str = None,
+        parent_resource: str = None,  # specific to implementation
     ):
         """Limitation model.
 
@@ -73,7 +72,8 @@ class Limitation(object):
         :param str description: description of the license, defaults to None
         :param Directive directive: directive of associated metadata, defaults to None
         :param str restriction: URL of the complete license, defaults to None
-        :param str type: defaults to None
+        :param str type: limitation type, defaults to None
+        :param str parent_resource: UUID of the metadata containgin the limitation
         """
 
         # default values for the object attributes/properties
@@ -82,6 +82,8 @@ class Limitation(object):
         self._directive = None
         self._restriction = None
         self._type = None
+        # additional parameters
+        self.parent_resource = parent_resource
 
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
@@ -95,6 +97,8 @@ class Limitation(object):
             self._restriction = restriction
         if type is not None:
             self._type = type
+        if parent_resource is not None:
+            self._parent_resource = parent_resource
 
     # -- PROPERTIES --------------------------------------------------------------------
     # license UUID
