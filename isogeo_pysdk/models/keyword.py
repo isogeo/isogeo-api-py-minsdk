@@ -25,37 +25,33 @@ class Keyword(object):
     """Keywords are entities used to organize and shares metadata of a workgroup.
 
 
-    Sample:
+    :Example:
 
-    ```json
-    {
-        '_abilities': [
-            'keyword:delete',
-            'keyword:restrict'
-            ],
-        '_created': None,
-        '_id': 'ac56a9fbe6f348a79ec9899ebce2d6da',
-        '_modified': None,
-        '_tag': 'keyword:isogeo:tests-unitaires',
-        'code': 'tests-unitaires',
-        'count': {
-            'isogeo': 0
-            },
-        'description': None,
-        'text': 'tests unitaires',
-        'thesaurus': {
-            '_id': '1616597fbc4348c8b11ef9d59cf594c8', 
-            'code': 'isogeo'
-            }
-    }
-    ```
-    """
+    .. code-block:: json
+
+        {
+            '_abilities': [
+                'keyword:delete',
+                'keyword:restrict'
+                ],
+            '_created': None,
+            '_id': 'ac56a9fbe6f348a79ec9899ebce2d6da',
+            '_modified': None,
+            '_tag': 'keyword:isogeo:tests-unitaires',
+            'code': 'tests-unitaires',
+            'count': {
+                'isogeo': 0
+                },
+            'description': None,
+            'text': 'tests unitaires',
+            'thesaurus': {
+                '_id': '1616597fbc4348c8b11ef9d59cf594c8', 
+                'code': 'isogeo'
+                }
+        }
 
     """
-    Attributes:
-      attr_types (dict): basic structure of keyword attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-    """
+
     attr_types = {
         "_abilities": list,
         "_created": str,
