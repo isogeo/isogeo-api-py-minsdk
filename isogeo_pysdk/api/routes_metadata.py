@@ -128,7 +128,11 @@ class ApiMetadata:
 
     @ApiDecorators._check_bearer_validity
     def create(
-        self, workgroup_id: str, metadata: Metadata, check_exists: bool = 1
+        self,
+        workgroup_id: str,
+        metadata: Metadata,
+        check_exists: bool = 1,
+        return_basic_or_complete: bool = 0,
     ) -> Metadata:
         """Add a new metadata to a workgroup.
 
@@ -136,8 +140,18 @@ class ApiMetadata:
         :param Metadata metadata: Metadata model object to create
         :param bool check_exists: check if a metadata with the same title already exists into the workgroup:
 
-        - 0 = no check
-        - 1 = compare name [DEFAULT]
+          - 0 = no check
+          - 1 = compare name [DEFAULT]
+
+        :param bool return_basic_or_complete: creation of metada uses a bulk script.\
+          So, by default API does not return the complete object but the minimal info.\
+          This option allow to overrides the basic behavior. Options:
+
+          - 0 = basic (only the _id, title and attributes passed for the creation) [DEFAULT]
+          - 1 = complete (make an addtionnal request)
+
+        :rtype: Metadata
+
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -146,7 +160,8 @@ class ApiMetadata:
             pass
 
         # check if metadata already exists in workgroup
-        # if check_exists:
+        if check_exists:
+            logger.debug(NotImplemented)
         #     # retrieve workgroup metadatas
         #     if not self.api_client._wg_metadatas_names:
         #         self.metadatas(workgroup_id=workgroup_id, include=[])
@@ -181,12 +196,14 @@ class ApiMetadata:
         if isinstance(req_check, tuple):
             return req_check
 
-        # load new metadata and save it to the cache
+        # load new metadata
         new_metadata = Metadata(**req_new_metadata.json())
-        # self.api_client._wg_metadatas_names[new_metadata.name] = new_metadata._id
 
-        # end of method
-        return new_metadata
+        # return basic metadata or complete
+        if return_basic_or_complete:
+            return self.get(metadata_id=new_metadata._id)
+        else:
+            return new_metadata
 
     @ApiDecorators._check_bearer_validity
     def delete(self, metadata_id: str) -> Response:
