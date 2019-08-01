@@ -21,21 +21,16 @@ import pprint
 class CoordinateSystem(object):
     """CoordinateSystems.
 
-    Sample:
+    :Example:
 
-    ```json
-    {
-        '_tag': 'coordinate-system:31154',
-        'code': 31154,
-        'name': 'Zanderij / TM 54 NW'
-    }
-    ```
-    """
+    .. code-block:: json
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of datasource attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
+        {
+            '_tag': 'coordinate-system:31154',
+            'code': 31154,
+            'name': 'Zanderij / TM 54 NW'
+        }
+
     """
 
     attr_types = {"_tag": str, "alias": str, "code": str, "name": str}
@@ -47,7 +42,7 @@ class CoordinateSystem(object):
     def __init__(
         self, _tag: str = None, alias: str = None, code: str = None, name: str = None
     ):
-        """CoordinateSystem model"""
+        """Coordinate-systems model"""
 
         # default values for the object attributes/properties
         self.__tag = None
@@ -88,10 +83,10 @@ class CoordinateSystem(object):
         return self._alias
 
     @alias.setter
-    def alias(self, alias: int):
-        """Sets the alias of this CoordinateSystem.
+    def alias(self, alias: str):
+        """Sets the custom alias of this CoordinateSystem.
 
-        :param int alias: alias of associated resources to the CoordinateSystem
+        :param str alias: custom alias of the CoordinateSystem
         """
 
         self._alias = alias
