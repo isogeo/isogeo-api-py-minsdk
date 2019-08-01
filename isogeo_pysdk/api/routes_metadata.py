@@ -126,13 +126,13 @@ class ApiMetadata:
 
     @ApiDecorators._check_bearer_validity
     def create(
-        self, workgroup_id: str, metadata: Metadata, check_exists: int = 1
+        self, workgroup_id: str, metadata: Metadata, check_exists: bool = 1
     ) -> Metadata:
         """Add a new metadata to a workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup
         :param Metadata metadata: Metadata model object to create
-        :param int check_exists: check if a metadata with the same title already exists into the workgroup:
+        :param bool check_exists: check if a metadata with the same title already exists into the workgroup:
 
         - 0 = no check
         - 1 = compare name [DEFAULT]
@@ -144,7 +144,7 @@ class ApiMetadata:
             pass
 
         # check if metadata already exists in workgroup
-        # if check_exists == 1:
+        # if check_exists:
         #     # retrieve workgroup metadatas
         #     if not self.api_client._wg_metadatas_names:
         #         self.metadatas(workgroup_id=workgroup_id, include=[])
