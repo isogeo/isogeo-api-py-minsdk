@@ -25,31 +25,26 @@ class ServiceLayer(object):
     """ServiceLayers are entities defining rules of data creation.
 
 
-    Sample:
+    :Example:
 
-    ```json
-    {
-    "_id": "string (uuid)",
-    "id": "string",
-    "mimeTypes": [
-        "string"
-    ],
-    "titles": [
+    .. code-block:: json
+
         {
-        "lang": "string",
-        "value": "string"
+            "_id": "string (uuid)",
+            "id": "string",
+            "mimeTypes": [
+                "string"
+            ],
+            "titles": [
+                {
+                    "lang": "string",
+                    "value": "string"
+                }
+            ]
         }
-    ]
-    }
-    ```
-    """
 
     """
-    Attributes:
-      attr_types (dict): basic structure of service layer attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-      attr_map (dict): mapping between read and write attributes. {"attribute name - GET": "attribute type - POST"}
-    """
+
     attr_types = {
         "_id": str,
         "dataset": dict,
