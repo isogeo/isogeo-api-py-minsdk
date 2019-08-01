@@ -508,7 +508,7 @@ class ApiWorkgroup:
     # -- Aliased methods ------------------------------------------------------
     @ApiDecorators._check_bearer_validity
     def coordinate_systems(self, workgroup_id: str, caching: bool = 1) -> list:
-        """Returns selected coordinate-systems for the specified workgroup.
+        """Returns coordinate-systems for the specified workgroup.
         It's just an alias for the ApiCoordinateSystem.listing method.
 
         :param str workgroup_id: workgroup UUID

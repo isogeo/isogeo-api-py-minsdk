@@ -14,80 +14,38 @@
 # standard library
 import pprint
 
+# package
+from isogeo_pysdk.enums import MetadataSubresources, MetadataTypes
+
+# from isogeo_pysdk.models.directive import Directive
 
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 class Metadata(object):
-    """Metadata are the main entities in Isogeo, they represent metadata.
+    """Metadata are the main entities in Isogeo.
 
-    Sample:
+    :Example:
 
-    ```json
-    {
-        "_abilities": [
-            "string"
-        ],
-        "_created": "string (date-time)",
-        "_creator": {
+    .. code-block:: json
+
+
+        {
             "_abilities": [
-            "string"
+                "string"
             ],
             "_created": "string (date-time)",
-            "_id": "string (uuid)",
-            "_modified": "string (date-time)",
-            "areKeywordsRestricted": "boolean",
-            "canCreateMetadata": "boolean",
-            "code": "string",
-            "contact": {
-            "_created": "string (date-time)",
-            "_id": "string (uuid)",
-            "_modified": "string (date-time)",
-            "addressLine1": "string",
-            "addressLine2": "string",
-            "addressLine3": "string",
-            "available": "string",
-            "city": "string",
-            "count": "integer (int32)",
-            "countryCode": "string",
-            "email": "string",
-            "fax": "string",
-            "hash": "string",
-            "name": "string",
-            "organization": "string",
-            "phone": "string",
-            "type": "string",
-            "zipCode": "string"
-            },
-            "keywordsCasing": "string",
-            "metadataLanguage": "string",
-            "themeColor": "string"
-        },
-        "_id": "string (uuid)",
-        "_modified": "string (date-time)",
-        "abstract": "string",
-        "bbox": [
-            "number (double)"
-        ],
-        "collectionContext": "string",
-        "collectionMethod": "string",
-        "conditions": [
-            {
-            "_id": "string (uuid)",
-            "description": "string",
-            "license": {
+            "_creator": {
+                "_abilities": [
+                "string"
+                ],
+                "_created": "string (date-time)",
                 "_id": "string (uuid)",
-                "content": "string",
-                "count": "integer (int32)",
-                "link": "string",
-                "name": "string"
-            }
-            }
-        ],
-        "contacts": [
-            {
-            "_id": "string (uuid)",
-            "contact": {
+                "_modified": "string (date-time)",
+                "areKeywordsRestricted": "boolean",
+                "canCreateMetadata": "boolean",
+                "code": "string",
+                "contact": {
                 "_created": "string (date-time)",
                 "_id": "string (uuid)",
                 "_modified": "string (date-time)",
@@ -106,36 +64,77 @@ class Metadata(object):
                 "phone": "string",
                 "type": "string",
                 "zipCode": "string"
+                },
+                "keywordsCasing": "string",
+                "metadataLanguage": "string",
+                "themeColor": "string"
             },
-            "role": "string"
-            }
-        ],
-        "context": "object",
-        "coordinate-system": "object",
-        "created": "string (date-time)",
-        "distance": "number (double)",
-        "editionProfile": "string",
-        "encoding": "string",
-        "envelope": "object",
-        "features": "integer (int32)",
-        "format": "string",
-        "formatVersion": "string",
-        "geometry": "string",
-        "height": "integer (int32)",
-        "keywords": [
-            {}
-        ]
+            "_id": "string (uuid)",
+            "_modified": "string (date-time)",
+            "abstract": "string",
+            "bbox": [
+                "number (double)"
+            ],
+            "collectionContext": "string",
+            "collectionMethod": "string",
+            "conditions": [
+                {
+                "_id": "string (uuid)",
+                "description": "string",
+                "license": {
+                    "_id": "string (uuid)",
+                    "content": "string",
+                    "count": "integer (int32)",
+                    "link": "string",
+                    "name": "string"
+                }
+                }
+            ],
+            "contacts": [
+                {
+                "_id": "string (uuid)",
+                "contact": {
+                    "_created": "string (date-time)",
+                    "_id": "string (uuid)",
+                    "_modified": "string (date-time)",
+                    "addressLine1": "string",
+                    "addressLine2": "string",
+                    "addressLine3": "string",
+                    "available": "string",
+                    "city": "string",
+                    "count": "integer (int32)",
+                    "countryCode": "string",
+                    "email": "string",
+                    "fax": "string",
+                    "hash": "string",
+                    "name": "string",
+                    "organization": "string",
+                    "phone": "string",
+                    "type": "string",
+                    "zipCode": "string"
+                },
+                "role": "string"
+                }
+            ],
+            "context": "object",
+            "coordinate-system": "object",
+            "created": "string (date-time)",
+            "distance": "number (double)",
+            "editionProfile": "string",
+            "encoding": "string",
+            "envelope": "object",
+            "features": "integer (int32)",
+            "format": "string",
+            "formatVersion": "string",
+            "geometry": "string",
+            "height": "integer (int32)",
+            "keywords": [
+                {}
+            ]
         }
-    ```
 
     """
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of metadata attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-      attr_map (dict): mapping between read and write attributes. {"attribute name - GET": "attribute type - POST"}
-    """
     attr_types = {
         "_abilities": list,
         "_created": str,
@@ -166,7 +165,9 @@ class Metadata(object):
         "links": list,
         "modified": str,
         "name": str,
+        "operations": list,
         "path": str,
+        "precision": str,
         "published": str,
         "scale": int,
         "series": bool,
@@ -183,38 +184,30 @@ class Metadata(object):
     }
 
     attr_crea = {
-        # "_abilities": list,
-        # "_creator": dict,
-        # "_id": str,
         "abstract": str,
         "collectionContext": str,
         "collectionMethod": str,
-        # "created": str,
-        # "distance": float,
-        # "editionProfile": str,
+        "distance": float,
+        "editionProfile": str,
         "encoding": str,
-        # "features": int,
+        "envelope": dict,
+        "features": int,
         "format": str,
         "formatVersion": str,
-        # "geometry": str,
-        # "keywords": list,
+        "geometry": str,
         "language": str,
-        "layers": list,
-        # "modified": str,
         "name": str,
         "path": str,
         "precision": str,
-        # "published": str,
         "scale": int,
         "series": bool,
-        "serviceLayers": list,
         "title": str,
         "topologicalConsistency": str,
         "type": str,
         "updateFrequency": str,
-        # "validFrom": str,
-        # "validTo": str,
-        # "validityComment": str,
+        "validFrom": str,
+        "validTo": str,
+        "validityComment": str,
     }
 
     attr_map = {
@@ -361,6 +354,8 @@ class Metadata(object):
             self._features = features
         if format is not None:
             self._format = format
+        if formatVersion is not None:
+            self._formatVersion = formatVersion
         if geometry is not None:
             self._geometry = geometry
         if keywords is not None:
@@ -411,21 +406,21 @@ class Metadata(object):
     # -- PROPERTIES --------------------------------------------------------------------
     # abilities of the user related to the metadata
     @property
-    def _abilities(self) -> str:
-        """Gets the abilities of this Catalog.
+    def _abilities(self) -> list:
+        """Gets the abilities of this Metadata.
 
-        :return: The abilities of this Catalog.
-        :rtype: str
+        :return: The abilities of this Metadata.
+        :rtype: list
         """
         return self.__abilities
 
     # metadata owner
     @property
-    def _creator(self) -> str:
-        """Gets the creator of this Catalog.
+    def _creator(self) -> dict:
+        """Gets the creator of this Metadata.
 
         :return: The creator of this Metadata.
-        :rtype: str
+        :rtype: dict
         """
         return self.__creator
 
@@ -479,9 +474,9 @@ class Metadata(object):
 
     @collectionContext.setter
     def collectionContext(self, collectionContext: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the collection context of this Metadata.
 
-        :param str collectionContext: The first address line of this Metadata.
+        :param str collectionContext: The collection context of this Metadata.
         """
 
         self._collectionContext = collectionContext
@@ -489,56 +484,56 @@ class Metadata(object):
     # collection method
     @property
     def collectionMethod(self) -> str:
-        """Gets the collectionMethod of this Metadata.
+        """Gets the collection method of this Metadata.
 
-        :return: The collectionMethod of this Metadata.
+        :return: The collection method of this Metadata.
         :rtype: str
         """
         return self._collectionMethod
 
     @collectionMethod.setter
     def collectionMethod(self, collectionMethod: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the collection method of this Metadata.
 
-        :param str collectionMethod: The first address line of this Metadata.
+        :param str collectionMethod: the collection method to set. Accepts markdown.
         """
 
         self._collectionMethod = collectionMethod
 
     # CGUs
     @property
-    def conditions(self) -> str:
+    def conditions(self) -> list:
         """Gets the conditions of this Metadata.
 
         :return: The conditions of this Metadata.
-        :rtype: str
+        :rtype: list
         """
         return self._conditions
 
     @conditions.setter
-    def conditions(self, conditions: str):
-        """Sets the first line of the address of this Metadata.
+    def conditions(self, conditions: list):
+        """Sets conditions of this Metadata.
 
-        :param str conditions: The first address line of this Metadata.
+        :param list conditions: conditions to be set
         """
 
         self._conditions = conditions
 
     # contacts
     @property
-    def contacts(self) -> str:
+    def contacts(self) -> list:
         """Gets the contacts of this Metadata.
 
         :return: The contacts of this Metadata.
-        :rtype: str
+        :rtype: list
         """
         return self._contacts
 
     @contacts.setter
-    def contacts(self, contacts: str):
-        """Sets the first line of the address of this Metadata.
+    def contacts(self, contacts: list):
+        """Sets the  of this Metadata.
 
-        :param str contacts: The first address line of this Metadata.
+        :param list contacts: to be set
         """
 
         self._contacts = contacts
@@ -555,9 +550,9 @@ class Metadata(object):
 
     @coordinateSystem.setter
     def coordinateSystem(self, coordinateSystem: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the coordinate systems of this Metadata.
 
-        :param str coordinateSystem: The first address line of this Metadata.
+        :param str coordinateSystem: to be set
         """
 
         self._coordinateSystem = coordinateSystem
@@ -574,9 +569,9 @@ class Metadata(object):
 
     @created.setter
     def created(self, created: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str created: The first address line of this Metadata.
+        :param str created: to be set
         """
 
         self._created = created
@@ -593,9 +588,9 @@ class Metadata(object):
 
     @distance.setter
     def distance(self, distance: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str distance: The first address line of this Metadata.
+        :param str distance: to be set
         """
 
         self._distance = distance
@@ -612,9 +607,9 @@ class Metadata(object):
 
     @editionProfile.setter
     def editionProfile(self, editionProfile: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str editionProfile: The first address line of this Metadata.
+        :param str editionProfile: to be set
         """
 
         self._editionProfile = editionProfile
@@ -631,9 +626,9 @@ class Metadata(object):
 
     @encoding.setter
     def encoding(self, encoding: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str encoding: The first address line of this Metadata.
+        :param str encoding: to be set
         """
 
         self._encoding = encoding
@@ -650,9 +645,9 @@ class Metadata(object):
 
     @envelope.setter
     def envelope(self, envelope: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str envelope: The first address line of this Metadata.
+        :param str envelope: to be set
         """
 
         self._envelope = envelope
@@ -669,9 +664,9 @@ class Metadata(object):
 
     @events.setter
     def events(self, events: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str events: The first address line of this Metadata.
+        :param str events: to be set
         """
 
         self._events = events
@@ -688,9 +683,9 @@ class Metadata(object):
 
     @featureAttributes.setter
     def featureAttributes(self, featureAttributes: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str featureAttributes: The first address line of this Metadata.
+        :param str featureAttributes: to be set
         """
 
         self._featureAttributes = featureAttributes
@@ -707,9 +702,9 @@ class Metadata(object):
 
     @features.setter
     def features(self, features: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str features: The first address line of this Metadata.
+        :param str features: to be set
         """
 
         self._features = features
@@ -726,9 +721,9 @@ class Metadata(object):
 
     @format.setter
     def format(self, format: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str format: The first address line of this Metadata.
+        :param str format: to be set
         """
 
         self._format = format
@@ -745,9 +740,9 @@ class Metadata(object):
 
     @formatVersion.setter
     def formatVersion(self, formatVersion: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str formatVersion: The first address line of this Metadata.
+        :param str formatVersion: to be set
         """
 
         self._formatVersion = formatVersion
@@ -764,9 +759,9 @@ class Metadata(object):
 
     @geometry.setter
     def geometry(self, geometry: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str geometry: The first address line of this Metadata.
+        :param str geometry: to be set
         """
 
         self._geometry = geometry
@@ -783,9 +778,9 @@ class Metadata(object):
 
     @keywords.setter
     def keywords(self, keywords: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str keywords: The first address line of this Metadata.
+        :param str keywords: to be set
         """
 
         self._keywords = keywords
@@ -802,9 +797,9 @@ class Metadata(object):
 
     @language.setter
     def language(self, language: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str language: The first address line of this Metadata.
+        :param str language: to be set
         """
 
         self._language = language
@@ -821,9 +816,9 @@ class Metadata(object):
 
     @layers.setter
     def layers(self, layers: list):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param list layers: The first address line of this Metadata.
+        :param list layers: to be set
         """
 
         self._layers = layers
@@ -840,9 +835,9 @@ class Metadata(object):
 
     @limitations.setter
     def limitations(self, limitations: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str limitations: The first address line of this Metadata.
+        :param str limitations: to be set
         """
 
         self._limitations = limitations
@@ -859,9 +854,9 @@ class Metadata(object):
 
     @links.setter
     def links(self, links: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str links: The first address line of this Metadata.
+        :param str links: to be set
         """
 
         self._links = links
@@ -878,9 +873,9 @@ class Metadata(object):
 
     @modified.setter
     def modified(self, modified: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str modified: The first address line of this Metadata.
+        :param str modified: to be set
         """
 
         self._modified = modified
@@ -916,9 +911,9 @@ class Metadata(object):
 
     @operations.setter
     def operations(self, operations: list):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param list operations: The first address line of this Metadata.
+        :param list operations: to be set
         """
 
         self._operations = operations
@@ -935,9 +930,9 @@ class Metadata(object):
 
     @path.setter
     def path(self, path: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str path: The first address line of this Metadata.
+        :param str path: to be set
         """
 
         self._path = path
@@ -954,9 +949,9 @@ class Metadata(object):
 
     @precision.setter
     def precision(self, precision: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str precision: The first address line of this Metadata.
+        :param str precision: to be set
         """
 
         self._precision = precision
@@ -973,9 +968,9 @@ class Metadata(object):
 
     @published.setter
     def published(self, published: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str published: The first address line of this Metadata.
+        :param str published: to be set
         """
 
         self._published = published
@@ -992,9 +987,9 @@ class Metadata(object):
 
     @scale.setter
     def scale(self, scale: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str scale: The first address line of this Metadata.
+        :param str scale: to be set
         """
 
         self._scale = scale
@@ -1011,9 +1006,9 @@ class Metadata(object):
 
     @series.setter
     def series(self, series: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str series: The first address line of this Metadata.
+        :param str series: to be set
         """
 
         self._series = series
@@ -1030,9 +1025,9 @@ class Metadata(object):
 
     @serviceLayers.setter
     def serviceLayers(self, serviceLayers: list):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param list serviceLayers: The first address line of this Metadata.
+        :param list serviceLayers: to be set
         """
 
         self._serviceLayers = serviceLayers
@@ -1049,9 +1044,9 @@ class Metadata(object):
 
     @specifications.setter
     def specifications(self, specifications: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str specifications: The first address line of this Metadata.
+        :param str specifications: to be set
         """
 
         self._specifications = specifications
@@ -1068,9 +1063,9 @@ class Metadata(object):
 
     @tags.setter
     def tags(self, tags: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str tags: The first address line of this Metadata.
+        :param str tags: to be set
         """
 
         self._tags = tags
@@ -1087,9 +1082,9 @@ class Metadata(object):
 
     @title.setter
     def title(self, title: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str title: The first address line of this Metadata.
+        :param str title: to be set
         """
 
         self._title = title
@@ -1106,9 +1101,9 @@ class Metadata(object):
 
     @topologicalConsistency.setter
     def topologicalConsistency(self, topologicalConsistency: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str topologicalConsistency: The first address line of this Metadata.
+        :param str topologicalConsistency: to be set
         """
 
         self._topologicalConsistency = topologicalConsistency
@@ -1144,9 +1139,9 @@ class Metadata(object):
 
     @updateFrequency.setter
     def updateFrequency(self, updateFrequency: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str updateFrequency: The first address line of this Metadata.
+        :param str updateFrequency: to be set
         """
 
         self._updateFrequency = updateFrequency
@@ -1163,9 +1158,9 @@ class Metadata(object):
 
     @validFrom.setter
     def validFrom(self, validFrom: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str validFrom: The first address line of this Metadata.
+        :param str validFrom: to be set
         """
 
         self._validFrom = validFrom
@@ -1182,9 +1177,9 @@ class Metadata(object):
 
     @validTo.setter
     def validTo(self, validTo: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str validTo: The first address line of this Metadata.
+        :param str validTo: to be set
         """
 
         self._validTo = validTo
@@ -1201,9 +1196,9 @@ class Metadata(object):
 
     @validityComment.setter
     def validityComment(self, validityComment: str):
-        """Sets the first line of the address of this Metadata.
+        """Sets the  of this Metadata.
 
-        :param str validityComment: The first address line of this Metadata.
+        :param str validityComment: to be set
         """
 
         self._validityComment = validityComment
