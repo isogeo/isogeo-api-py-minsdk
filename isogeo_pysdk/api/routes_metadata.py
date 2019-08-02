@@ -482,6 +482,57 @@ class ApiMetadata:
     #     return wg_metadata
 
     # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def download_xml(self, metadata: Metadata) -> Response:
+        """Download the metadata exported into XML ISO 19139.
+
+        :param Metadata metadata: metadata object to export
+
+        :rtype: Response
+
+        :Example:
+
+        .. code-block:: python
+
+            # get the download stream
+            xml_stream = isogeo.metadata.download_xml(Metadata(_id=METADATA_UUID))
+            # write it to a file
+            with open("./{}.xml".format("metadata_exported_as_xml"), "wb") as fd:
+                for block in xml_stream.iter_content(1024):
+                    fd.write(block)
+
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # URL
+        url_metadata_dl_xml = utils.get_request_base_url(
+            route="resources/{}.xml".format(metadata._id)
+        )
+
+        # request
+        req_metadata_dl_xml = self.api_client.get(
+            url=url_metadata_dl_xml,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            stream=True,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_metadata_dl_xml)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_metadata_dl_xml
+
     def keywords(
         self, metadata: Metadata, include: list = ["_abilities", "count", "thesaurus"]
     ) -> list:
