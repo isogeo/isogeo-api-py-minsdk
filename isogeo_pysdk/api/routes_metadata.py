@@ -31,6 +31,7 @@ from isogeo_pysdk.utils import IsogeoUtils
 from .routes_event import ApiEvent
 from .routes_feature_attributes import ApiFeatureAttribute
 from .routes_limitation import ApiLimitation
+from .routes_link import ApiLink
 from .routes_service_layers import ApiServiceLayer
 from .routes_service_operations import ApiServiceOperation
 
@@ -68,6 +69,7 @@ class ApiMetadata:
         self.events = ApiEvent(self.api_client)
         self.layers = ApiServiceLayer(self.api_client)
         self.limitations = ApiLimitation(self.api_client)
+        self.links = ApiLink(self.api_client)
         self.operations = ApiServiceOperation(self.api_client)
 
         # initialize
