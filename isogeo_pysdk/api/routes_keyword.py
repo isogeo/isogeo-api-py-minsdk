@@ -427,21 +427,75 @@ class ApiKeyword:
 
     # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity
-    def tagging(self, metadata: Metadata, keyword: Keyword) -> dict:
+    def tagging(
+        self, metadata: Metadata, keyword: Keyword, check_exists: bool = 0
+    ) -> dict:
         """Associate a keyword to a metadata.
 
         :param Metadata metadata: metadata (resource) to edit
         :param Keyword keyword: object to associate
+        :param bool check_exists: check if a metadata with the same service base URL and format alerady exists. Defaults to True.
+
+        :Example:
+
+        .. code-block:: python
+
+            # retrieve a metadata
+            md = isogeo.metadata.get(METADATA_UUID)
+            # retrieve a keyword
+            keyword = isogeo.keyword.get(KEYWORD_UUID)
+
         """
         # check contact UUID
         if not checker.check_is_uuid(metadata._id):
-            raise ValueError("Metadata ID is not a correct UUID.")
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
         else:
             pass
 
         # check keyword UUID
         if not checker.check_is_uuid(keyword._id):
-            raise ValueError("Keyword ID is not a correct UUID.")
+            raise ValueError("Keyword ID is not a correct UUID: {}".format(keyword._id))
+        else:
+            pass
+
+        # check if kyword is already associated
+        if check_exists:
+            # retrieve metadata existing keywords
+            if metadata.tags:
+                # first look into the tags
+                metadata_existing_keywords = [
+                    tag for tag in metadata.tags if tag.startswith("keyword:isogeo:")
+                ]
+            elif metadata.keywords:
+                # if not, maybe the metadata has been passed with subresuorces: so use it
+                metadata_existing_keywords = [
+                    tag
+                    for tag in metadata.keywords
+                    if tag.get("_tag").startswith("keyword:isogeo:")
+                ]
+            else:
+                # if not, make a new request to perform the check
+                metadata_existing_keywords = self.metadata(
+                    metadata_id=metadata._id, include=[]
+                )
+
+                metadata_existing_keywords = [
+                    tag
+                    for tag in metadata.keywords
+                    if tag.get("_tag").startswith("keyword:isogeo:")
+                ]
+            # then compare
+            if keyword._tag in metadata_existing_keywords:
+                logger.info(
+                    "Keyword {} is already associated with the metadata {}. Tagging operation cancelled.".format(
+                        keyword._tag, metadata._id
+                    )
+                )
+                # return checker as true
+                return True, 204
+
         else:
             pass
 

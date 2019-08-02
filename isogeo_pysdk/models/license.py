@@ -14,65 +14,24 @@
 # standard library
 import pprint
 
-
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 class License(object):
     """Licenses are entities included as subresource into metadata.
 
-
     Sample:
 
-    Licenses owned by Isogeo (locked):
+    .. code-block:: json
 
-    ```json
-    {
-        '_abilities': [],
-        '_id': '34f800d2370a43d2a1681eb2397b0dd3',
-        '_tag': 'license:isogeo:34f800d2370a43d2a1681eb2397b0dd3',
-        'link': 'http://professionnels.ign.fr/sites/default/files/cgu-mission-service-public.pdf',
-        'name': 'Licence IGN - Mission de service public'
-    }
-    ```
+        {
+            "_id": "string (uuid)",
+            "content": "string",
+            "count": "integer (int32)",
+            "link": "string",
+            "name": "string"
+        }
 
-    Licenses owned by a specific workgroup:
-
-    ```json
-    {
-        '_abilities': [
-            'license:delete', 
-            'license:update
-        '],
-        '_id': '8a53902292cd4b329a87677724688757',
-        '_tag': 'license:32f7e95ec4e94ca3bc1afda960003882:8a53902292cd4b329a87677724688757',
-        'content': "Conditions d'utilisation associées au téléchargement des données "
-                    'de "geomayenne.fr" :\n'
-                    '\n'
-                    '* Respecter les droits de propriété intellectuelle en mentionnant '
-                    'la source et la date de dernière mise à jour,\n'
-                    "* Utilisation sous la pleine responsabilité de l'utilisateur qui "
-                    "apprécie l'adéquation de la donnée avec ses besoins.",
-        'count': 6,
-        'link': 'https://www.geomayenne.fr/fichiers/CGU/CU_geomayenne_fr.pdf',
-        'name': 'CU geomayenne.fr',
-        'owner': {'_created': '2015-05-21T12:08:16.4295098+00:00',
-                '_id': '32f7e95ec4e94ca3bc1afda960003882',
-                '_modified': '2019-05-13T16:05:50.8485348+00:00',
-                '_tag': 'owner:32f7e95ec4e94ca3bc1afda960003882',
-                'areKeywordsRestricted': False,
-                'canCreateLegacyServiceLinks': True,
-                'canCreateMetadata': True,
-                'hasCswClient': True,
-                'hasScanFme': True,
-                'keywordsCasing': 'lowercase',
-                'metadataLanguage': 'fr',
-                'themeColor': '#4499A1'}
-    }
-    ```
-    """
-
-    """
     Attributes:
       attr_types (dict): basic structure of license attributes. {"attribute name": "attribute type"}.
       attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
@@ -104,7 +63,17 @@ class License(object):
         name: str = None,
         owner: dict = None,
     ):
-        """License model"""
+        """License model.
+        
+        :param list _abilities: list of attached abilities, defaults to None
+        :param str _id: object UUID, defaults to None
+        :param str _tag: search tag code, defaults to None
+        :param int count: count of associated metadata, defaults to None
+        :param str content: description of the license, defaults to None
+        :param str link: URL of the complete license, defaults to None
+        :param str name: defaults to None
+        :param dict owner: group which own the license, defaults to None
+        """
 
         # default values for the object attributes/properties
         self.__abilities = None
@@ -139,9 +108,9 @@ class License(object):
     # abilities of the user related to the metadata
     @property
     def _abilities(self) -> str:
-        """Gets the abilities of this Catalog.
+        """Gets the abilities of this License.
 
-        :return: The abilities of this Catalog.
+        :return: The abilities of this License.
         :rtype: str
         """
         return self.__abilities
@@ -156,33 +125,15 @@ class License(object):
         """
         return self.__id
 
-    @_id.setter
-    def _id(self, _id: str):
-        """Sets the id of this License.
-
-        :param str id: The id of this License.
-        """
-
-        self.__id = _id
-
     # tag
     @property
     def _tag(self) -> str:
-        """Gets the tag used for Isogeo filters of this Specification.
+        """Gets the tag used in search filters.
 
-        :return: The tag of this Specification.
+        :return: The tag of this License.
         :rtype: str
         """
         return self.__tag
-
-    @_tag.setter
-    def _tag(self, _tag: str):
-        """Sets the tag used into Isogeo filters of this Specification.
-
-        :param str _tag: the tag of this Specification.
-        """
-
-        self.__tag = _tag
 
     # content
     @property
@@ -209,18 +160,9 @@ class License(object):
         """Gets the count of this License.
 
         :return: The count of this License.
-        :rtype: str
+        :rtype: int
         """
         return self._count
-
-    @count.setter
-    def count(self, count: int):
-        """Sets the count of this License.
-
-        :param int count: count of associated resources to the License
-        """
-
-        self._count = count
 
     # link
     @property
@@ -234,9 +176,9 @@ class License(object):
 
     @link.setter
     def link(self, link: str):
-        """Sets the id of this License.
+        """Sets the link of this License.
 
-        :param str XX: The id of this License.
+        :param str link: The link (URL) of this License.
         """
 
         self._link = link
@@ -255,7 +197,7 @@ class License(object):
     def name(self, name: str):
         """Sets the name of this License.
 
-        :param str name: The name of this License. Accept markdown syntax.
+        :param str name: The name of this License.
         """
 
         self._name = name

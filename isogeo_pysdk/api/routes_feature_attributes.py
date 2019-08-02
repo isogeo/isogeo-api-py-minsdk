@@ -267,7 +267,7 @@ class ApiFeatureAttribute:
     def update(
         self, attribute: FeatureAttribute, metadata: Metadata = None
     ) -> FeatureAttribute:
-        """Update an feature-attribute.
+        """Update a feature-attribute.
 
         :param FeatureAttribute attribute: Feature Attribute model object to update
         :param Metadata metadata: parent metadata (resource) containing the feature-attribute
