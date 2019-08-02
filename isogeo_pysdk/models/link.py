@@ -33,6 +33,7 @@ class Link(object):
         'actions': list,
         'kind': string,
         'parent_resource': string (uuid),
+        'size': int,
         'title': string,
         'type': string,
         'url': string
@@ -44,9 +45,10 @@ class Link(object):
         "_id": str,
         "actions": list,
         "kind": str,
+        "parent_resource": str,
+        "size": int,
         "title": str,
         "type": str,
-        "parent_resource": str,
         "url": str,
     }
 
@@ -57,33 +59,16 @@ class Link(object):
         "type": str,
         "parent_resource": str,
         "url": str,
-        "waitForSync": bool,
     }
 
     attr_map = {}
-
-    # possible values for link 'action' attribute
-    LINK_ACTIONS_VALUES = ("download", "other", "view")
-    # possible values for link 'kind' attribute
-    LINK_KINDS_VALUES = (
-        "data",
-        "esriFeatureService",
-        "esriMapService",
-        "esriTileService",
-        "url",
-        "wfs",
-        "wms",
-        "wmts",
-    )
-
-    # possible values for link 'type' attribute
-    LINK_TYPESS_VALUES = ("hosted", "link", "url")
 
     def __init__(
         self,
         _id: str = None,
         actions: list = None,
         kind: str = None,
+        size: int = None,
         title: str = None,
         type: str = None,
         url: str = None,
@@ -96,6 +81,7 @@ class Link(object):
         self.__id = None
         self._actions = None
         self._kind = None
+        self._size = None
         self._title = None
         self._type = None
         self._url = None
@@ -110,6 +96,8 @@ class Link(object):
             self._actions = actions
         if kind is not None:
             self._kind = kind
+        if size is not None:
+            self._size = size
         if title is not None:
             self._title = title
         if type is not None:
@@ -193,6 +181,16 @@ class Link(object):
         """
 
         self._kind = kind
+
+    # size
+    @property
+    def size(self) -> int:
+        """Gets the size of the hosted data.
+
+        :return: The size of the hosted data.
+        :rtype: int
+        """
+        return self._size
 
     # type
     @property
