@@ -51,6 +51,34 @@ class ApiLink:
         # initialize
         super(ApiLink, self).__init__()
 
+    @ApiDecorators._check_bearer_validity
+    def listing(self, metadata: Metadata) -> list:
+        """Get links of a metadata.
+
+        :param Metadata metadata: metadata (resource)
+        """
+        # request URL
+        url_links = utils.get_request_base_url(
+            route="resources/{}/links/".format(metadata._id)
+        )
+
+        # request
+        req_links = self.api_client.get(
+            url=url_links,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_links)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_links.json()
+
     # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity
     def kinds_actions(self) -> list:
