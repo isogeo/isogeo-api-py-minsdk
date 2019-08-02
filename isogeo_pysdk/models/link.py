@@ -14,6 +14,9 @@
 # standard library
 import pprint
 
+# package
+from isogeo_pysdk.enums import LinkActions, LinkKinds, LinkTypes
+
 
 # #############################################################################
 # ########## Classes ###############
@@ -21,29 +24,22 @@ import pprint
 class Link(object):
     """Links are entities included as subresource into metadata for data history title.
 
+    :Example:
 
-    Sample:
+    .. code-block:: json
 
-    ```json
     {
-        '_id': 'c693334b947445bd891d11ad227fbfab',
-        'actions': ['view', 'download'],
-        'kind': 'wfs',
-        'parent_resource': '1d3b9f4ea78443489d47dfb505a0605f',
-        'title': 'WFS - PUBLIC SSL - Externe (sans JSONP) - Visualisation et téléchargement lycées aquitains',
-        'type': 'url',
-        'url': 'https://www.pigma.org/geoserver/ows?typeName=craquitaine:craquitaine_lycees'
+        '_id': string (uuid),
+        'actions': list,
+        'kind': string,
+        'parent_resource': string (uuid),
+        'title': string,
+        'type': string,
+        'url': string
     }
-    ```
-    """
 
     """
-    Attributes:
-      attr_types (dict): basic structure of link attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-      attr_
-      LINK_KINDS_VALUES (tuple): possible values for an link kind
-    """
+
     attr_types = {
         "_id": str,
         "actions": list,
@@ -93,7 +89,6 @@ class Link(object):
         url: str = None,
         # implementation additional parameters
         parent_resource: str = None,
-        waitForSync: bool = 1,
     ):
         """Link model"""
 
@@ -106,7 +101,6 @@ class Link(object):
         self._url = None
         # additional parameters
         self.parent_resource = parent_resource
-        self.waitForSync = waitForSync
 
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
@@ -145,19 +139,19 @@ class Link(object):
 
     # actions
     @property
-    def actions(self) -> str:
+    def actions(self) -> list:
         """Gets the actions of this Link.
 
         :return: The actions of this Link.
-        :rtype: str
+        :rtype: list
         """
         return self._actions
 
     @actions.setter
-    def actions(self, actions: str):
+    def actions(self, actions: list):
         """Sets the actions of this Link.
 
-        :param str actions: The actions of this Link.
+        :param list actions: The actions of this Link.
         """
 
         self._actions = actions
