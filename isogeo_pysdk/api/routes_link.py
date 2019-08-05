@@ -80,6 +80,69 @@ class ApiLink:
         # end of method
         return req_links.json()
 
+    @ApiDecorators._check_bearer_validity
+    def get(self, metadata_id: str, link_id: str) -> Link:
+        """Get details about a specific link.
+
+        :param str metadata_id: metadata UUID
+        :param str link_id: link UUID
+
+        :rtype: Link
+
+        :Example:
+
+        .. code-block:: python
+
+            # get a metadata
+            md = isogeo.metadata.get(METADATA_UUID)
+            # list its links
+            md_links = isogeo.metadata.links.listing(md)
+            # get the first link
+            link = isogeo.metadata.links.get(
+                metadata_id=md._id,
+                link_id=md_links[0].get("_id")
+                )
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata_id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata_id)
+            )
+        else:
+            pass
+
+        # check link UUID
+        if not checker.check_is_uuid(link_id):
+            raise ValueError("Features Attribute ID is not a correct UUID.")
+        else:
+            pass
+
+        # URL
+        url_link = utils.get_request_base_url(
+            route="resources/{}/links/{}".format(metadata_id, link_id)
+        )
+
+        # request
+        req_link = self.api_client.get(
+            url=url_link,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_link)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # add parent resource id to keep tracking
+        link_augmented = req_link.json()
+        link_augmented["parent_resource"] = metadata_id
+
+        # end of method
+        return Link(**link_augmented)
+
     # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity
     def download_hosted(self, link: Link, encode_clean: bool = 1) -> tuple:
