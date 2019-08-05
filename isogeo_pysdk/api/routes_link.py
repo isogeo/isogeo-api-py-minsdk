@@ -143,6 +143,100 @@ class ApiLink:
         # end of method
         return Link(**link_augmented)
 
+    @ApiDecorators._check_bearer_validity
+    def create(self, metadata: Metadata, link: Link) -> Link:
+        """Add a new link to a metadata (= resource).
+
+        :param Metadata metadata: metadata (resource) to edit
+        :param Link link: link object to create
+
+        :returns: 409 if a link with the same name already exists.
+
+        :rtype: Link or tuple
+
+        :Example:
+
+        .. code-block:: python
+
+            # retrieve metadata
+            md = isogeo.metadata.get(METADATA_UUID)
+            # create the link locally
+            new_link = Link(
+                type="url",
+                restriction="patent",
+                description="Do not use for commercial purpose.",
+                )
+            # add it to the metadata
+            isogeo.metadata.links.create(md, new_link)
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # check link actions, kinds and types
+        if not all(i in LinkActions.__members__ for i in link.actions):
+            raise ValueError(
+                "Link action '{}' are not an accepted value. Accepted values: {}".format(
+                    link.actions, " | ".join([e.name for e in LinkActions])
+                )
+            )
+        else:
+            pass
+
+        if link.kind not in LinkKinds.__members__:
+            raise ValueError(
+                "Link kind '{}' is not an accepted value. Accepted values: {}".format(
+                    link.kind, " | ".join([e.name for e in LinkKinds])
+                )
+            )
+        else:
+            pass
+
+        if link.type not in LinkTypes.__members__:
+            raise ValueError(
+                "Link type '{}' is not an accepted value. Accepted values: {}".format(
+                    link.type, " | ".join([e.name for e in LinkTypes])
+                )
+            )
+        else:
+            pass
+
+        # check relation between link kind/actions
+        link.actions = self.clean_kind_action_liability(
+            link_actions=link.actions, link_kind=link.kind
+        )
+
+        # URL
+        url_link_create = utils.get_request_base_url(
+            route="resources/{}/links/".format(metadata._id)
+        )
+
+        # request
+        req_new_link = self.api_client.post(
+            url=url_link_create,
+            json=link.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_new_link)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # add parent resource id to keep tracking
+        link_augmented = req_new_link.json()
+        link_augmented["parent_resource"] = metadata._id
+
+        # end of method
+        return Link(**link_augmented)
+
     # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity
     def download_hosted(self, link: Link, encode_clean: bool = 1) -> tuple:
