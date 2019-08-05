@@ -232,7 +232,7 @@ class ApiLink:
 
         # URL
         url_link_create = utils.get_request_base_url(
-            route="resources/{}/links/".format(metadata._id)
+            route="resources/{}/links".format(metadata._id)
         )
 
         # request
@@ -301,6 +301,54 @@ class ApiLink:
             return req_check
 
         return req_link_deletion
+
+    @ApiDecorators._check_bearer_validity
+    def update(self, link: Link, metadata: Metadata = None) -> Link:
+        """Update a link.
+        
+        :param Link link: Link model object to update
+        :param Metadata metadata: parent metadata (resource) containing the link. Optional if the link contains the 'parent_resource' attribute.
+        """
+        # check link UUID
+        if not checker.check_is_uuid(link._id):
+            raise ValueError("Link ID is not a correct UUID: {}".format(link._id))
+        else:
+            pass
+
+        # retrieve parent metadata
+        if not checker.check_is_uuid(link.parent_resource) and not metadata:
+            raise ValueError("Link parent metadata is required. Requesting it...")
+        elif not checker.check_is_uuid(link.parent_resource) and metadata:
+            link.parent_resource = metadata._id
+        else:
+            pass
+
+        # URL
+        url_link_update = utils.get_request_base_url(
+            route="resources/{}/links/{}".format(link.parent_resource, link._id)
+        )
+
+        # request
+        req_link_update = self.api_client.put(
+            url=url_link_update,
+            json=link.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_link_update)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # add parent resource id to keep tracking
+        link_augmented = req_link_update.json()
+        link_augmented["parent_resource"] = link.parent_resource
+
+        # end of method
+        return Link(**link_augmented)
 
     # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity

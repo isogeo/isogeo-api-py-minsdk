@@ -129,7 +129,7 @@ class TestLinks(unittest.TestCase):
                 cls.isogeo.metadata.links.delete(link=i)
 
         # clean created metadata
-        # cls.isogeo.metadata.delete(cls.metadata_fixture_created._id)
+        cls.isogeo.metadata.delete(cls.metadata_fixture_created._id)
         # close sessions
         cls.isogeo.close()
 
@@ -247,45 +247,34 @@ class TestLinks(unittest.TestCase):
         # check
         self.assertIsInstance(online_link, Link)
 
-    # # -- PUT/PATCH --
-    # def test_links_update(self):
-    #     """PUT :resources/{metadata_uuid}/links/{link_uuid}"""
-    #     # vars
-    #     random_directive = sample(self.isogeo.directive.listing(0), 1)[0]
-    #     link_description = "{} - {}".format(get_test_marker(), self.discriminator)
+    # -- PUT/PATCH --
+    def test_links_update(self):
+        """PUT :resources/{metadata_uuid}/links/{link_uuid}"""
+        # vars
+        link_fixture = Link()
 
-    #     # create object locally
-    #     link_new_with_directive = Link(
-    #         type="legal",
-    #         restriction="patent",
-    #         description=link_description,
-    #         directive=random_directive,
-    #     )
+        link_fixture.actions = ["other"]
+        link_fixture.kind = "url"
+        link_fixture.title = "{} - {}".format(get_test_marker(), self.discriminator)
+        link_fixture.type = "url"
+        link_fixture.url = "https://pypi.org/project/isogeo-pysdk/"
 
-    #     # create it online
-    #     link_new_with_directive = self.isogeo.metadata.links.create(
-    #         metadata=self.metadata_fixture_created,
-    #         link=link_new_with_directive,
-    #     )
+        # create it online
+        link_created = self.isogeo.metadata.links.create(
+            metadata=self.metadata_fixture_created, link=link_fixture
+        )
 
-    #     # modify local object
-    #     link_new_with_directive.description = "{} - EDITED DESCRIPTION".format(
-    #         get_test_marker()
-    #     )
+        # modify local object
+        link_created.actions = ["download", "view"]
 
-    #     # update the online link
-    #     link_fixture_updated = self.isogeo.metadata.links.update(
-    #         link_new_with_directive
-    #     )
+        # update the online link
+        link_fixture_updated = self.isogeo.metadata.links.update(link_created)
 
-    #     # check if the change is effective
-    #     self.assertEqual(
-    #         link_fixture_updated.description,
-    #         "{} - EDITED DESCRIPTION".format(get_test_marker()),
-    #     )
+        # check if the change is effective
+        self.assertEqual(link_fixture_updated.actions, ["download", "view"])
 
-    #     # add created link to deletion
-    #     self.li_fixtures_to_delete.append(link_fixture_updated)
+        # add created link to deletion
+        self.li_fixtures_to_delete.append(link_fixture_updated)
 
     # -- OTHERS --
     def test_links_matrix_cleaner(self):
