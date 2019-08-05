@@ -124,9 +124,9 @@ class TestLinks(unittest.TestCase):
     def tearDownClass(cls):
         """Executed after the last test."""
         # clean created links
-        # if len(cls.li_fixtures_to_delete):
-        #     for i in cls.li_fixtures_to_delete:
-        #         cls.isogeo.metadata.links.delete(link=i)
+        if len(cls.li_fixtures_to_delete):
+            for i in cls.li_fixtures_to_delete:
+                cls.isogeo.metadata.links.delete(link=i)
 
         # clean created metadata
         # cls.isogeo.metadata.delete(cls.metadata_fixture_created._id)
@@ -144,7 +144,7 @@ class TestLinks(unittest.TestCase):
         # create object locally
         link_new_url = Link(
             actions=["download", "other"],
-            kind="data",
+            kind="url",
             title=link_name,
             type="url",
             url="https://pypi.org/project/isogeo-pysdk/",

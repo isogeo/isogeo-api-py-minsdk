@@ -15,6 +15,9 @@
 import logging
 import re
 
+# 3rd party
+from requests.models import Response
+
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
@@ -253,6 +256,51 @@ class ApiLink:
 
         # end of method
         return Link(**link_augmented)
+
+    @ApiDecorators._check_bearer_validity
+    def delete(self, link: Link, metadata: Metadata = None) -> Response:
+        """Delete a link from a metadata.
+
+        :param Link link: Link model object to delete
+        :param Metadata metadata: parent metadata (resource) containing the link. Optional if the link contains the 'parent_resource' attribute.
+
+        :rtype: Response
+
+        """
+        # check link UUID
+        if not checker.check_is_uuid(link._id):
+            raise ValueError("Link ID is not a correct UUID: {}".format(link._id))
+        else:
+            pass
+
+        # retrieve parent metadata
+        if not checker.check_is_uuid(link.parent_resource) and not metadata:
+            raise ValueError("Link parent metadata is required. Requesting it...")
+        elif not checker.check_is_uuid(link.parent_resource) and metadata:
+            link.parent_resource = metadata._id
+        else:
+            pass
+
+        # URL
+        url_link_delete = utils.get_request_base_url(
+            route="resources/{}/links/{}".format(link.parent_resource, link._id)
+        )
+
+        # request
+        req_link_deletion = self.api_client.delete(
+            url=url_link_delete,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_link_deletion)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return req_link_deletion
 
     # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity
