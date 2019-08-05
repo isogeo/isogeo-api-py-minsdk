@@ -311,11 +311,12 @@ class ApiLink:
         return (req_download_hosted, filename, utils._convert_octets(link.size))
 
     @ApiDecorators._check_bearer_validity
-    def kinds_actions(self) -> list:
+    def kinds_actions(self, caching: bool = 1) -> list:
         """Get the relation between kinds and action for links.
 
-        :rtype: list
+        :param bool caching: cache the response into the main API client instance. Defaults to True.
 
+        :rtype: list
         """
         # request URL
         url_links = utils.get_request_base_url(route="link-kinds/")
@@ -333,6 +334,10 @@ class ApiLink:
         req_check = checker.check_api_response(req_links)
         if isinstance(req_check, tuple):
             return req_check
+
+        # caching
+        if caching:
+            self.api_client._links_kinds_actions = req_links.json()
 
         # end of method
         return req_links.json()
