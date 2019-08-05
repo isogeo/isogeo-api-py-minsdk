@@ -211,6 +211,22 @@ class ApiLink:
             link_actions=link.actions, link_kind=link.kind
         )
 
+        # deprecation warnings
+        if link.kind in (
+            "esriFeatureService",
+            "esriMapService",
+            "esriTileService",
+            "wfs",
+            "wms",
+            "wmts",
+        ):
+            logger.warning(
+                DeprecationWarning(
+                    "Creation of geographic services with raw URL links is deprecated. "
+                    "Use services layers instead."
+                )
+            )
+
         # URL
         url_link_create = utils.get_request_base_url(
             route="resources/{}/links/".format(metadata._id)
