@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+import re
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
@@ -93,7 +94,7 @@ class ApiLink:
 
         Example of resource_link dict:
 
-        .. code-block:: json
+        .. code-block:: python
 
             # get links from a metadata
             md_links = isogeo.metadata.links.listing(Metadata(_id=METADATA_UUID))
@@ -153,7 +154,11 @@ class ApiLink:
 
     @ApiDecorators._check_bearer_validity
     def kinds_actions(self) -> list:
-        """Get the relation between kinds and action for links."""
+        """Get the relation between kinds and action for links.
+
+        :rtype: list
+
+        """
         # request URL
         url_links = utils.get_request_base_url(route="link-kinds/")
 
