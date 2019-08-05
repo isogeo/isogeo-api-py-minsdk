@@ -18,6 +18,7 @@ import re
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
+from isogeo_pysdk.enums import LinkActions, LinkKinds, LinkTypes
 from isogeo_pysdk.models import Link, Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
@@ -335,6 +336,45 @@ class ApiLink:
 
         # end of method
         return req_links.json()
+
+    # -- Helpers -----------------------------------------------------------------------
+    def clean_kind_action_liability(self, link_actions: list, link_kind: str) -> list:
+        """Link available actions depend on link kind.\
+            Relationships between kinds and actions are described in the `/link-kinds` route.
+            This is a helper checking the liability between kind/actions/type and cleaning if needed.
+            Useful before creating or updating a link.
+
+        :param list link_actions: link actions
+        :param str link_kind: link kind
+
+        :rtype: list
+        """
+        # get matrix kinds/actions as dict - use cache if exists
+        if self.api_client._links_kinds_actions:
+            matrix_kind_actions = {
+                i.get("kind"): i.get("actions")
+                for i in self.api_client._links_kinds_actions
+            }
+        else:
+            matrix_kind_actions = {
+                i.get("kind"): i.get("actions") for i in self.kinds_actions()
+            }
+
+        # compare with available actions
+        if not all(i in matrix_kind_actions.get(link_kind) for i in link_actions):
+            logger.warning(
+                "Actions have been cleaned because only these actions '{}'"
+                "can be set with this kind of link '{}'.".format(
+                    " | ".join(matrix_kind_actions.get(link_kind)), link_kind
+                )
+            )
+            link_actions = [
+                action
+                for action in link_actions
+                if action in matrix_kind_actions.get(link_kind)
+            ]
+
+        return link_actions
 
 
 # ##############################################################################
