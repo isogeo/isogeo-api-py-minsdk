@@ -14,6 +14,9 @@
 # standard library
 import pprint
 
+# package
+from isogeo_pysdk.enums import LinkActions, LinkKinds, LinkTypes
+
 
 # #############################################################################
 # ########## Classes ###############
@@ -21,79 +24,59 @@ import pprint
 class Link(object):
     """Links are entities included as subresource into metadata for data history title.
 
+    :Example:
 
-    Sample:
+    .. code-block:: json
 
-    ```json
     {
-        '_id': 'c693334b947445bd891d11ad227fbfab',
-        'actions': ['view', 'download'],
-        'kind': 'wfs',
-        'parent_resource': '1d3b9f4ea78443489d47dfb505a0605f',
-        'title': 'WFS - PUBLIC SSL - Externe (sans JSONP) - Visualisation et téléchargement lycées aquitains',
-        'type': 'url',
-        'url': 'https://www.pigma.org/geoserver/ows?typeName=craquitaine:craquitaine_lycees'
+        '_id': string (uuid),
+        'actions': list,
+        'kind': string,
+        'parent_resource': string (uuid),
+        'size': int,
+        'title': string,
+        'type': string,
+        'url': string
     }
-    ```
-    """
 
     """
-    Attributes:
-      attr_types (dict): basic structure of link attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-      attr_
-      LINK_KINDS_VALUES (tuple): possible values for an link kind
-    """
+
     attr_types = {
         "_id": str,
         "actions": list,
         "kind": str,
+        "link": dict,
+        "parent_resource": str,
+        "size": int,
         "title": str,
         "type": str,
-        "parent_resource": str,
         "url": str,
     }
 
     attr_crea = {
         "actions": list,
         "kind": str,
+        "link": dict,
         "title": str,
         "type": str,
         "parent_resource": str,
         "url": str,
-        "waitForSync": bool,
     }
 
     attr_map = {}
-
-    # possible values for link 'action' attribute
-    LINK_ACTIONS_VALUES = ("download", "other", "view")
-    # possible values for link 'kind' attribute
-    LINK_KINDS_VALUES = (
-        "data",
-        "esriFeatureService",
-        "esriMapService",
-        "esriTileService",
-        "url",
-        "wfs",
-        "wms",
-        "wmts",
-    )
-
-    # possible values for link 'type' attribute
-    LINK_TYPESS_VALUES = ("hosted", "link", "url")
 
     def __init__(
         self,
         _id: str = None,
         actions: list = None,
         kind: str = None,
+        link: dict = None,
+        size: int = None,
         title: str = None,
         type: str = None,
         url: str = None,
         # implementation additional parameters
         parent_resource: str = None,
-        waitForSync: bool = 1,
     ):
         """Link model"""
 
@@ -101,12 +84,13 @@ class Link(object):
         self.__id = None
         self._actions = None
         self._kind = None
+        self._link = None
+        self._size = None
         self._title = None
         self._type = None
         self._url = None
         # additional parameters
         self.parent_resource = parent_resource
-        self.waitForSync = waitForSync
 
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
@@ -116,6 +100,10 @@ class Link(object):
             self._actions = actions
         if kind is not None:
             self._kind = kind
+        if link is not None:
+            self._link = link
+        if size is not None:
+            self._size = size
         if title is not None:
             self._title = title
         if type is not None:
@@ -145,22 +133,78 @@ class Link(object):
 
     # actions
     @property
-    def actions(self) -> str:
+    def actions(self) -> list:
         """Gets the actions of this Link.
 
         :return: The actions of this Link.
-        :rtype: str
+        :rtype: list
         """
         return self._actions
 
     @actions.setter
-    def actions(self, actions: str):
+    def actions(self, actions: list):
         """Sets the actions of this Link.
 
-        :param str actions: The actions of this Link.
+        :param list actions: The actions of this Link.
         """
 
         self._actions = actions
+
+    # kind
+    @property
+    def kind(self) -> str:
+        """Gets the kind of this Link.
+
+        :return: The kind of this Link.
+        :rtype: str
+        """
+        return self._kind
+
+    @kind.setter
+    def kind(self, kind: str):
+        """Sets the kind of this Link.
+
+        :param str kind: The kind of this Link. Must be one of LINK_KIND_VALUES
+        """
+
+        # check kind value
+        if kind not in LinkKinds.__members__:
+            raise ValueError(
+                "Link kind '{}' is not an accepted value. Must be one of: {}.".format(
+                    kind, " | ".join([e.name for e in LinkKinds])
+                )
+            )
+
+        self._kind = kind
+
+    # link
+    @property
+    def link(self) -> dict:
+        """Gets the associated link of this Link.
+
+        :return: The associated link of this Link.
+        :rtype: dict
+        """
+        return self._link
+
+    @link.setter
+    def link(self, link: dict):
+        """Sets the associated link of this Link.
+
+        :param dict link: The associated link of this Link.
+        """
+
+        self._link = link
+
+    # size
+    @property
+    def size(self) -> int:
+        """Gets the size of the hosted data.
+
+        :return: The size of the hosted data.
+        :rtype: int
+        """
+        return self._size
 
     # title
     @property
@@ -181,25 +225,6 @@ class Link(object):
 
         self._title = title
 
-    # kind
-    @property
-    def kind(self) -> str:
-        """Gets the kind of this Link.
-
-        :return: The kind of this Link.
-        :rtype: str
-        """
-        return self._kind
-
-    @kind.setter
-    def kind(self, kind: str):
-        """Sets the kind of this Link.
-
-        :param str kind: The kind of this Link. Must be one of LINK_KIND_VALUES
-        """
-
-        self._kind = kind
-
     # type
     @property
     def type(self) -> str:
@@ -216,6 +241,14 @@ class Link(object):
 
         :param str type: The type of this Link. Must be one of LINK_KIND_VALUES
         """
+
+        # check type value
+        if type not in LinkTypes.__members__:
+            raise ValueError(
+                "link type '{}' is not an accepted value. Must be one of: {}.".format(
+                    type, " | ".join([e.name for e in LinkTypes])
+                )
+            )
 
         self._type = type
 

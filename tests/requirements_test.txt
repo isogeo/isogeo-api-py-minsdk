@@ -17,6 +17,7 @@ coverage
 flake8
 requests==2.22.*
 pycodestyle
+pylint
 python-dateutil
 python-dotenv
 pytest
