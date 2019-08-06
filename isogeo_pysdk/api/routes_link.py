@@ -13,7 +13,9 @@
 
 # Standard library
 import logging
+import mimetypes
 import re
+from pathlib import Path
 
 # 3rd party
 from requests.models import Response
@@ -350,7 +352,7 @@ class ApiLink:
         # end of method
         return Link(**link_augmented)
 
-    # -- Routes to manage the related objects ------------------------------------------
+    # -- Methods to manage links with hosted data --------------------------------------
     @ApiDecorators._check_bearer_validity
     def download_hosted(self, link: Link, encode_clean: bool = 1) -> tuple:
         """Download hosted resource.
@@ -422,6 +424,130 @@ class ApiLink:
         # end of method
         return (req_download_hosted, filename, utils._convert_octets(link.size))
 
+    @ApiDecorators._check_bearer_validity
+    def upload_hosted(
+        self, metadata: Metadata, link: Link, file_to_upload: str
+    ) -> Link:
+        """Add a new link to a metadata uploading a file to hosted data. \
+            See: https://requests.readthedocs.io/en/latest/user/quickstart/#post-a-multipart-encoded-file
+
+        :param Metadata metadata: metadata (resource) to edit
+        :param Link link: link object to create
+        :param Path file_to_upload: file path to upload
+
+        :rtype: Link or tuple
+
+        :Example:
+
+        .. code-block:: python
+
+            from pathlib import Path
+            
+            # define metadata
+            md = isogeo.metadata.get(METADATA_UUID)
+            
+            # localize the file on the OS
+            my_file = Path("./upload/documentation.zip")
+
+            # create the link locally
+            lk = Link(
+                title=my_file.name
+                )
+            
+            # add it to the metadata
+            send = isogeo.metadata.links.upload_hosted(
+                metadata=md,
+                link=lk,
+                file_to_upload=my_file.resolve()
+                )
+
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+
+        # check metadata UUID
+        if metadata.type == "service":
+            raise ValueError("Upload data is not possible for metadata of geoservices")
+
+        # check link properties: just warn and ignore bad kinds and types
+        if (
+            link.kind != "data"
+            or link.type != "hosted"
+            or "download" not in link.actions
+        ):
+            logger.warning(
+                "A link with hosted data attached has necessarily 'data' as kind, "
+                "'hosted' as type and 'download' in actions properties. Given values have been ignored."
+            )
+
+        # ensure properties
+        link.kind = "data"
+        link.type = "hosted"
+        link.actions = ["download"]
+
+        # check file
+        filepath = Path(file_to_upload)
+        if not filepath.exists():
+            raise FileNotFoundError(
+                "Passed file doesn't exists: {}".format(file_to_upload)
+            )
+
+        filename = filepath.name
+        filetype = mimetypes.guess_type(filename)[0]
+        if filetype is None:
+            filetype = "application/octet-stream"
+            logger.warning(
+                "File mimetype could not be guessed. "
+                "So it'll be considered as 'application/octet-stream' as RFC7231 says. "
+                "See: https://tools.ietf.org/html/rfc7231#section-3.1.1.5 and "
+                "https://stackoverflow.com/a/28652339/2556577"
+            )
+
+        # URL
+        url_link_create = utils.get_request_base_url(
+            route="resources/{}/links".format(metadata._id)
+        )
+
+        # reading the file and sending it
+        logger.debug(
+            "Uploading the file {} (type: {}) to the metadata '{}'".format(
+                filename, filetype, metadata._id
+            )
+        )
+        with filepath.open("rb") as opened_file:
+            # request
+            req_new_link = self.api_client.post(
+                url=url_link_create,
+                data=link.to_dict_creation(),
+                files={
+                    "file": (
+                        filename,  # file name
+                        opened_file,  # file content (binary mode required)
+                        filetype,  # file mime type
+                    )
+                },
+                headers=self.api_client.headers,
+                proxies=self.api_client.proxies,
+                verify=self.api_client.ssl,
+                timeout=self.api_client.timeout,
+            )
+
+        # checking response
+        req_check = checker.check_api_response(req_new_link)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # add parent resource id to keep tracking
+        link_augmented = req_new_link.json()[0]
+        link_augmented["parent_resource"] = metadata._id
+
+        # end of method
+        return Link(**link_augmented)
+
+    # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity
     def kinds_actions(self, caching: bool = 1) -> list:
         """Get the relation between kinds and action for links.
