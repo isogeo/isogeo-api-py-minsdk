@@ -194,7 +194,7 @@ class TestLinks(unittest.TestCase):
         self.assertIsInstance(send, Link)
 
         # to the trash
-        self.li_fixtures_to_delete.append(link_new_hosted)
+        self.li_fixtures_to_delete.append(send)
 
     # -- GET --
     def test_links_kinds_actions_listing(self):
