@@ -17,6 +17,7 @@
 # ##################################
 
 # Standard library
+import json
 import logging
 import urllib3
 import unittest
@@ -26,6 +27,7 @@ from random import sample
 from socket import gethostname
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
+from zipfile import ZipFile
 
 # 3rd party
 from dotenv import load_dotenv
@@ -137,7 +139,7 @@ class TestLinks(unittest.TestCase):
 
     # -- POST --
     def test_links_create_basic(self):
-        """POST :resources/{metadata_uuid}/links/}"""
+        """POST :resources/{metadata_uuid}/links/"""
         # var
         link_name = "{} - {}".format(get_test_marker(), self.discriminator)
 
@@ -149,51 +151,50 @@ class TestLinks(unittest.TestCase):
             type="url",
             url="https://pypi.org/project/isogeo-pysdk/",
         )
-        # link_new_security = Link(
-        #     type="security",
-        #     description=link_description,
-        #     parent_resource=self.metadata_fixture_created._id,
-        # )
 
         # create it online
         link_new_url = self.isogeo.metadata.links.create(
             metadata=self.metadata_fixture_created, link=link_new_url
         )
-        # link_new_security = self.isogeo.metadata.links.create(
-        #     metadata=self.metadata_fixture_created, link=link_new_security
-        # )
 
         # checks
         self.assertEqual(link_new_url.type, "url")
-        # self.assertEqual(link_new_security.type, "security")
         self.assertEqual(link_new_url.title, link_name)
-        # # self.assertEqual(link_new_security.description, link_description)
 
+        # to the trash
         self.li_fixtures_to_delete.append(link_new_url)
-        # self.li_fixtures_to_delete.append(link_new_security)
 
-    # def test_links_create_with_directive(self):
-    #     """POST :resources/{metadata_uuid}/links/}"""
-    #     # vars
-    #     random_directive = sample(self.isogeo.directive.listing(0), 1)[0]
-    #     link_description = "{} - {}".format(get_test_marker(), self.discriminator)
+    def test_links_create_hosted(self):
+        """POST :resources/{metadata_uuid}/links/"""
+        # var
+        link_name = "{} - {}".format(get_test_marker(), self.discriminator)
 
-    #     # create object locally
-    #     link_new_with_directive = Link(
-    #         type="legal",
-    #         restriction="patent",
-    #         description=link_description,
-    #         directive=random_directive,
-    #     )
+        # download the fixture metadata as JSON and ZIP it to simulate data to upload
+        out_filename = Path("./metadata.json")
+        md = self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID, include="all")
+        with out_filename.open(mode="w", encoding="utf-8") as out_json:
+            json.dump(md.to_dict(), out_json, sort_keys=True, indent=4, default=list)
 
-    #     # create it online
-    #     link_new_with_directive = self.isogeo.metadata.links.create(
-    #         metadata=self.metadata_fixture_created,
-    #         link=link_new_with_directive,
-    #     )
+        with ZipFile("./fixture_zipped.zip", "w") as md_zipped:
+            md_zipped.write(out_filename)
 
-    #     # add created link to deletion
-    #     self.li_fixtures_to_delete.append(link_new_with_directive)
+        # create object locally
+        link_new_hosted = Link(
+            actions=["download"], kind="data", title=link_name, type="hosted"
+        )
+
+        # create it online
+        send = self.isogeo.metadata.links.upload_hosted(
+            metadata=md,
+            link=link_new_hosted,
+            file_to_upload=Path("./fixture_zipped.zip").resolve(),
+        )
+
+        # check it
+        self.assertIsInstance(send, Link)
+
+        # to the trash
+        self.li_fixtures_to_delete.append(link_new_hosted)
 
     # -- GET --
     def test_links_kinds_actions_listing(self):
