@@ -156,7 +156,7 @@ class ApiLink:
         :param Metadata metadata: metadata (resource) to edit
         :param Link link: link object to create
 
-        :returns: 409 if a link with the same name already exists.
+        :returns: the created link or a tuple with the request's response error code
 
         :rtype: Link or tuple
 
@@ -174,6 +174,16 @@ class ApiLink:
                 )
             # add it to the metadata
             isogeo.metadata.links.create(md, new_link)
+
+            # to create a link which is a pointer to another link, add the link attribute:
+            new_link = Link(
+                actions=["other"],
+                title="Associated link",
+                kind="url",
+                type="link",
+                link=Link(_id=LINK_UUID)
+                )
+
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):
@@ -184,6 +194,10 @@ class ApiLink:
             pass
 
         # check link actions, kinds and types
+        if not link.actions:
+            logger.warning("Link doesn't have any action set. 'other' will be applied.")
+            link.actions = ["other"]
+
         if not all(i in LinkActions.__members__ for i in link.actions):
             raise ValueError(
                 "Link action '{}' are not an accepted value. Accepted values: {}".format(

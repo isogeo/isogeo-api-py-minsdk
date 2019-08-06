@@ -45,6 +45,7 @@ class Link(object):
         "_id": str,
         "actions": list,
         "kind": str,
+        "link": dict,
         "parent_resource": str,
         "size": int,
         "title": str,
@@ -55,6 +56,7 @@ class Link(object):
     attr_crea = {
         "actions": list,
         "kind": str,
+        "link": dict,
         "title": str,
         "type": str,
         "parent_resource": str,
@@ -68,6 +70,7 @@ class Link(object):
         _id: str = None,
         actions: list = None,
         kind: str = None,
+        link: dict = None,
         size: int = None,
         title: str = None,
         type: str = None,
@@ -81,6 +84,7 @@ class Link(object):
         self.__id = None
         self._actions = None
         self._kind = None
+        self._link = None
         self._size = None
         self._title = None
         self._type = None
@@ -96,6 +100,8 @@ class Link(object):
             self._actions = actions
         if kind is not None:
             self._kind = kind
+        if link is not None:
+            self._link = link
         if size is not None:
             self._size = size
         if title is not None:
@@ -144,6 +150,62 @@ class Link(object):
 
         self._actions = actions
 
+    # kind
+    @property
+    def kind(self) -> str:
+        """Gets the kind of this Link.
+
+        :return: The kind of this Link.
+        :rtype: str
+        """
+        return self._kind
+
+    @kind.setter
+    def kind(self, kind: str):
+        """Sets the kind of this Link.
+
+        :param str kind: The kind of this Link. Must be one of LINK_KIND_VALUES
+        """
+
+        # check kind value
+        if kind not in LinkKinds.__members__:
+            raise ValueError(
+                "Link kind '{}' is not an accepted value. Must be one of: {}.".format(
+                    kind, " | ".join([e.name for e in LinkKinds])
+                )
+            )
+
+        self._kind = kind
+
+    # link
+    @property
+    def link(self) -> dict:
+        """Gets the associated link of this Link.
+
+        :return: The associated link of this Link.
+        :rtype: dict
+        """
+        return self._link
+
+    @link.setter
+    def link(self, link: dict):
+        """Sets the associated link of this Link.
+
+        :param dict link: The associated link of this Link.
+        """
+
+        self._link = link
+
+    # size
+    @property
+    def size(self) -> int:
+        """Gets the size of the hosted data.
+
+        :return: The size of the hosted data.
+        :rtype: int
+        """
+        return self._size
+
     # title
     @property
     def title(self) -> str:
@@ -163,35 +225,6 @@ class Link(object):
 
         self._title = title
 
-    # kind
-    @property
-    def kind(self) -> str:
-        """Gets the kind of this Link.
-
-        :return: The kind of this Link.
-        :rtype: str
-        """
-        return self._kind
-
-    @kind.setter
-    def kind(self, kind: str):
-        """Sets the kind of this Link.
-
-        :param str kind: The kind of this Link. Must be one of LINK_KIND_VALUES
-        """
-
-        self._kind = kind
-
-    # size
-    @property
-    def size(self) -> int:
-        """Gets the size of the hosted data.
-
-        :return: The size of the hosted data.
-        :rtype: int
-        """
-        return self._size
-
     # type
     @property
     def type(self) -> str:
@@ -208,6 +241,14 @@ class Link(object):
 
         :param str type: The type of this Link. Must be one of LINK_KIND_VALUES
         """
+
+        # check type value
+        if type not in LinkTypes.__members__:
+            raise ValueError(
+                "link type '{}' is not an accepted value. Must be one of: {}.".format(
+                    type, " | ".join([e.name for e in LinkTypes])
+                )
+            )
 
         self._type = type
 
