@@ -232,6 +232,13 @@ class ApiLink:
                 )
             )
 
+        # if the goal is to create a link with uploaded data, prefer the other method
+        if link.kind == "data" and link.type == "hosted":
+            raise RuntimeError(
+                "Wrong method. To create a file attaching uploaded data, "
+                "use the 'isogeo.metadata.links.upload_hosted' method instead."
+            )
+
         # URL
         url_link_create = utils.get_request_base_url(
             route="resources/{}/links".format(metadata._id)
@@ -435,6 +442,7 @@ class ApiLink:
         :param Link link: link object to create
         :param Path file_to_upload: file path to upload
 
+        :returns: the new Link if successed or the tuple with the request error code
         :rtype: Link or tuple
 
         :Example:
