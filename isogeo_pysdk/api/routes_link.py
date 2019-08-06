@@ -628,7 +628,7 @@ class ApiLink:
         # compare with available actions
         if not all(i in matrix_kind_actions.get(link_kind) for i in link_actions):
             logger.warning(
-                "Actions have been cleaned because only these actions '{}'"
+                "Actions have been cleaned because only these actions '{}' "
                 "can be set with this kind of link '{}'.".format(
                     " | ".join(matrix_kind_actions.get(link_kind)), link_kind
                 )
