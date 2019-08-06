@@ -483,7 +483,7 @@ class ApiKeyword:
 
                 metadata_existing_keywords = [
                     tag
-                    for tag in metadata.keywords
+                    for tag in metadata_existing_keywords
                     if tag.get("_tag").startswith("keyword:isogeo:")
                 ]
             # then compare
