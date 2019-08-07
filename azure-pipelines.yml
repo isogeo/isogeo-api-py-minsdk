@@ -66,6 +66,7 @@ jobs:
     env:
       CODECOV_TOKEN: $(CODECOV_TOKEN)
     inputs:
+      authType: userAndPass 
       files: 'coverage.xml'
       url: 'https://codecov.io/bash'
       options: '-t $(CODECOV_TOKEN)'
