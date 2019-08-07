@@ -206,21 +206,26 @@ class ApiCatalog:
 
     @ApiDecorators._check_bearer_validity
     def create(
-        self, workgroup_id: str, check_exists: int = 1, catalog: object = Catalog()
+        self, workgroup_id: str, catalog: object = Catalog(), check_exists: bool = 1
     ) -> Catalog:
         """Add a new catalog to a workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param int check_exists: check if a catalog already exists inot the workgroup:
-
-        - 0 = no check
-        - 1 = compare name [DEFAULT]
-
         :param class catalog: Catalog model object to create
+        :param bool check_exists: check if a catalog already exists into the workgroup:
+
+            - 0 = no check
+            - 1 = compare name [DEFAULT]
+
+        :returns: the created catalog or False if a similar cataog already exists or a tuple with response error code
+        :rtype: Catalog
+
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
-            raise ValueError("Workgroup ID is not a correct UUID.")
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
         else:
             pass
 
