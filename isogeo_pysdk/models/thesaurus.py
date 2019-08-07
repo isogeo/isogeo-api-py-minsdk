@@ -25,16 +25,15 @@ class Thesaurus(object):
     """Thesaurus are entities which can be used in shares.
 
 
-    Sample:
+    :Example:
 
-    ```json
+    .. code-block:: json
     {
         '_abilities': [],
         '_id': '926f969ee2bb470a84066625f68b96bb',
         'code': 'iso19115-topic',
         'name': 'MD_TopicCategoryCode'
     }
-    ```
     """
 
     """

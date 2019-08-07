@@ -25,16 +25,15 @@ class Event(object):
     """Events are entities included as subresource into metadata for data history description.
 
 
-    Sample:
+    :Example:
 
-    ```json
+    .. code-block:: json
     {
         '_id': string (uuid),
         'date': string (datetime),
         'description': string,
         'kind': string
     }
-    ```
     """
 
     """

@@ -24,9 +24,9 @@ from isogeo_pysdk.models.contact import Contact
 class User(object):
     """Users in Isogeo platform.
 
-    Sample:
+    :Example:
 
-    ```json
+    .. code-block:: json
     {
         "_abilities": [
             "string"
@@ -58,7 +58,6 @@ class User(object):
         "staff": "boolean",
         "timezone": "string"
         }
-    ```
     """
 
     """

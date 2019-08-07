@@ -24,9 +24,8 @@ from isogeo_pysdk.models.keyword import Keyword
 class KeywordSearch(object):
     """Keyword searchs are entities used to organize and shares metadata of a workgroup.
 
-    ```json
+    .. code-block:: json
 
-    ```
     """
 
     """

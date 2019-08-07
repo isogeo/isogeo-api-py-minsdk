@@ -26,9 +26,9 @@ class Application(object):
     """Applications are entities which can be used in shares.
 
 
-    Sample:
+    :Example:
 
-    ```json
+    .. code-block:: json
     {
         "_abilities": [
             "application:delete",
@@ -78,7 +78,6 @@ class Application(object):
         "type": "group",
         "url": "http://help.isogeo.com/arcmap/"
     }
-    ```
     """
 
     """

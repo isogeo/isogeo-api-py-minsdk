@@ -20,7 +20,7 @@ import pprint
 class License(object):
     """Licenses are entities included as subresource into metadata.
 
-    Sample:
+    :Example:
 
     .. code-block:: json
 

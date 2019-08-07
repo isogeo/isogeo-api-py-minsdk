@@ -22,9 +22,9 @@ class Format(object):
     """Formats are entities included as subresource into metadata for data history code.
 
 
-    Sample:
+    :Example:
 
-    ```json
+    .. code-block:: json
     {
         "_id": string (uuid),
         "_tag": "format:dgn",
@@ -42,7 +42,6 @@ class Format(object):
             null
         ]
     }
-    ```
     """
 
     """

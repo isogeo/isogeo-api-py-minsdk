@@ -27,9 +27,9 @@ class Share(object):
     """Shares are entities used to publish catalog(s) of metadata to applications.
 
 
-    Sample:
+    :Example:
 
-    ```json
+    .. code-block:: json
     {
     "_created": "string (date-time)",
     "_creator": {
@@ -136,7 +136,6 @@ class Share(object):
         }
     ]
     }
-    ```
     """
 
     """

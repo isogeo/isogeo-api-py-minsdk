@@ -21,9 +21,9 @@ import pprint
 class Datasource(object):
     """Datasources are CSW client entry-points.
 
-    Sample:
+    :Example:
 
-    ```json
+    .. code-block:: json
     {
         '_created': '2019-05-17T13:56:56.6162418+00:00',
         '_id': '2c891ce8692146c4901115a4232b13a2',
@@ -47,7 +47,6 @@ class Datasource(object):
                 'status': 'failed'
             }]
         }
-    ```
     """
 
     """

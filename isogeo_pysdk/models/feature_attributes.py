@@ -25,7 +25,7 @@ class FeatureAttribute(object):
 
     :Example:
 
-    ```json
+    .. code-block:: json
     {
         "_id": string (uuid),
         "alias": string,
@@ -34,7 +34,6 @@ class FeatureAttribute(object):
         "language": string
         "name": string,
     }
-    ```
     """
 
     """

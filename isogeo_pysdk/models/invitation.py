@@ -23,9 +23,9 @@ from isogeo_pysdk.models.workgroup import Workgroup
 class Invitation(object):
     """Invitations are CSW client entry-points.
 
-    Sample:
+    :Example:
 
-    ```json
+    .. code-block:: json
     {
         "_id": "6c7c9e0c63a943f79ba1e00766d0082d",
         "_created": "2019-07-25T09:23:37.0975771+00:00",
@@ -53,7 +53,6 @@ class Invitation(object):
             "hasScanFme": false,
             "keywordsCasing": "lowercase"
         }
-    ```
     """
 
     """

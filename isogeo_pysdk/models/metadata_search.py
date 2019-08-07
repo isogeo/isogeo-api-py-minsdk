@@ -24,9 +24,8 @@ import pprint
 class MetadataSearch(object):
     """Metadata searchs are entities used to organize and shares metadata of a workgroup.
 
-    ```json
+    .. code-block:: json
 
-    ```
     """
 
     """

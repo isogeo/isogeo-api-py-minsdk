@@ -25,73 +25,66 @@ class Workgroup(object):
     """Workgroups are entities containing metadata.
 
 
-    Sample:
+    :Example:
 
-    ```json
-    {
-        '_abilities': [
-            'group:manage',
-            'group:update'
-        ],
-        '_created': '2015-05-21T12:08:16.4295098+00:00',
-        '_id': '32f7e95ec4e94ca3bc1afda960003882',
-        '_modified': '2018-12-27T10:47:28.7880956+00:00',
-        '_tag': 'owner:32f7e95ec4e94ca3bc1afda960003882',
-        'areKeywordsRestricted': False,
-        'canCreateLegacyServiceLinks': True,
-        'canCreateMetadata': True,
-        'contact': {
-            '_deleted': False,
-            '_id': '2a3aefc4f80347f590afe58127f6cb0f',
-            '_tag': 'contact:group:2a3aefc4f80347f590afe58127f6cb0f',
-            'addressLine1': '26 rue du faubourg Saint-Antoine',
-            'addressLine2': '4éme étage',
-            'addressLine3': 'bouton porte',
-            'available': False,
-            'city': 'Paris',
-            'countryCode': 'FR',
-            'email': 'dev@isogeo.com',
-            'fax': '33 (0)9 67 46 50 06',
-            'name': 'Isogeo Test',
-            'phone': '33 (0)9 67 46 50 06',
-            'type': 'group',
-            'zipCode': '75012'
-        },
-        'hasCswClient': True,
-        'hasScanFme': True,
-        'keywordsCasing': 'lowercase',
-        'limits': {
-            'canDiffuse': False,
-            'canShare': True,
-            'Workgroups': {
-                'current': 1,
-                'max': -1
+    .. code-block:: json
+
+        {
+            '_abilities': [
+                'group:manage',
+                'group:update'
+            ],
+            '_created': '2015-05-21T12:08:16.4295098+00:00',
+            '_id': '32f7e95ec4e94ca3bc1afda960003882',
+            '_modified': '2018-12-27T10:47:28.7880956+00:00',
+            '_tag': 'owner:32f7e95ec4e94ca3bc1afda960003882',
+            'areKeywordsRestricted': False,
+            'canCreateLegacyServiceLinks': True,
+            'canCreateMetadata': True,
+            'contact': {
+                '_deleted': False,
+                '_id': '2a3aefc4f80347f590afe58127f6cb0f',
+                '_tag': 'contact:group:2a3aefc4f80347f590afe58127f6cb0f',
+                'addressLine1': '26 rue du faubourg Saint-Antoine',
+                'addressLine2': '4éme étage',
+                'addressLine3': 'bouton porte',
+                'available': False,
+                'city': 'Paris',
+                'countryCode': 'FR',
+                'email': 'dev@isogeo.com',
+                'fax': '33 (0)9 67 46 50 06',
+                'name': 'Isogeo Test',
+                'phone': '33 (0)9 67 46 50 06',
+                'type': 'group',
+                'zipCode': '75012'
             },
-            'resources': {
-                'current': 2,
-                'max': 20
-            },
-            'upload': {
-                'current': 0,
-                'max': 1073741824
-            },
-            'users': {
-                'current': 1,
-                'max': 2}
-            },
-        'metadataLanguage': 'fr',
-        'themeColor': '#4499A1'
-    }
-    ```
+            'hasCswClient': True,
+            'hasScanFme': True,
+            'keywordsCasing': 'lowercase',
+            'limits': {
+                'canDiffuse': False,
+                'canShare': True,
+                'Workgroups': {
+                    'current': 1,
+                    'max': -1
+                },
+                'resources': {
+                    'current': 2,
+                    'max': 20
+                },
+                'upload': {
+                    'current': 0,
+                    'max': 1073741824
+                },
+                'users': {
+                    'current': 1,
+                    'max': 2}
+                },
+            'metadataLanguage': 'fr',
+            'themeColor': '#4499A1'
+        }
     """
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of workgroup attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-      attr_map (dict): mapping between read and write attributes. {"attribute name - GET": "attribute type - POST"}
-      GROUP_KEYWORDSCASING_VALUES (tuple): possible values for 'canCreateLegacyServiceLinks' option
-    """
     attr_types = {
         "_abilities": list,
         "_created": str,
@@ -131,9 +124,6 @@ class Workgroup(object):
             "contact.zipCode",
         ]
     }
-
-    # possible values for workgroup 'keywordsCasing' attribute
-    GROUP_KEYWORDSCASING_VALUES = ("capitalized", "lowercase", "mixedcase", "uppercase")
 
     def __init__(
         self,
