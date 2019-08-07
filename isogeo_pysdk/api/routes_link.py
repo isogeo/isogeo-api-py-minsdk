@@ -384,8 +384,7 @@ class ApiLink:
         :returns: tuple(stream, filename, human readable size)
         :rtype: tuple
 
-
-        Example of resource_link dict:
+        Example:
 
         .. code-block:: python
 
