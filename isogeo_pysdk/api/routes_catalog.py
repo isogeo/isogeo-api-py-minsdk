@@ -206,7 +206,7 @@ class ApiCatalog:
 
     @ApiDecorators._check_bearer_validity
     def create(
-        self, workgroup_id: str, catalog: object = Catalog(), check_exists: bool = 1
+        self, workgroup_id: str, catalog: Catalog, check_exists: bool = 1
     ) -> Catalog:
         """Add a new catalog to a workgroup.
 
