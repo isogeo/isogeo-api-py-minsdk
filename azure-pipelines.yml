@@ -60,7 +60,7 @@ jobs:
 
   # Codecov. Inspired from: https://github.com/codecov/example-azure-pipelines
   - task: cURLUploader@2
-    displayName: "Publish coverage results to Codecov"
+    displayName: "Publish coverage results to Codecov - with cURL"
     condition: succeededOrFailed()
     continueOnError: true
     env:
@@ -71,16 +71,15 @@ jobs:
       url: 'https://codecov.io/bash'
       options: '-t $(CODECOV_TOKEN)'
 
-
-  # - task: Bash@3
-  #   displayName: "Publish coverage results to Codecov"
-  #   condition: succeededOrFailed()
-  #   continueOnError: true
-  #   env:
-  #     CODECOV_TOKEN: $(CODECOV_TOKEN)
-  #   inputs:
-  #     targetType: 'inline'
-  #     script: <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f .
+  - task: Bash@3
+    displayName: "Publish coverage results to Codecov - with bash"
+    condition: succeededOrFailed()
+    continueOnError: true
+    env:
+      CODECOV_TOKEN: $(CODECOV_TOKEN)
+    inputs:
+      targetType: 'inline'
+      script: <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f .
 
   - task: PublishTestResults@2
     displayName: "Publish unit test results"
