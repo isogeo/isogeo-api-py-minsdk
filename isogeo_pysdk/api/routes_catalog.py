@@ -110,6 +110,45 @@ class ApiCatalog:
         return wg_catalogs
 
     @ApiDecorators._check_bearer_validity
+    def metadata(self, metadata_id: str) -> list:
+        """List metadata's catalogs with complete information.
+
+        :param str metadata_id: metadata UUID
+
+        :returns: the list of catalogs associated with the metadata
+        :rtype: list
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata_id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata_id)
+            )
+        else:
+            pass
+
+        # URL
+        url_metadata_catalogs = utils.get_request_base_url(
+            route="resources/{}/catalogs/".format(metadata_id)
+        )
+
+        # request
+        req_metadata_catalogs = self.api_client.get(
+            url=url_metadata_catalogs,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_metadata_catalogs)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_metadata_catalogs.json()
+
+    @ApiDecorators._check_bearer_validity
     def get(
         self,
         workgroup_id: str,

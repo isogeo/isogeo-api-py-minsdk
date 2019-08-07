@@ -13,7 +13,9 @@
 
 # Standard library
 import logging
+from functools import wraps
 from urllib.parse import urlparse, parse_qs, urlunparse
+
 
 # 3rd party
 import requests
@@ -535,6 +537,17 @@ class ApiMetadata:
         # end of method
         return req_metadata_dl_xml
 
+    # -- Routes to manage subresources -------------------------------------------------
+    def catalogs(self, metadata: Metadata) -> list:
+        """Returns asssociated catalogs with a metadata.
+        Just a shortcut.
+
+        :param Metadata metadata: metadata object
+
+        :rtype: list
+        """
+        return self.api_client.keyword.metadata(metadata_id=metadata._id)
+
     def keywords(
         self, metadata: Metadata, include: list = ["_abilities", "count", "thesaurus"]
     ) -> list:
@@ -544,10 +557,10 @@ class ApiMetadata:
         :param Metadata metadata: metadata object
         :param list include: subresources that should be returned. Available values:
 
-          * '_abilities'
-          * 'count'
-          * 'thesaurus'
-        
+        * '_abilities'
+        * 'count'
+        * 'thesaurus'
+
         :rtype: list
         """
         return self.api_client.keyword.metadata(

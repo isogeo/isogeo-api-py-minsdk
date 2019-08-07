@@ -60,7 +60,7 @@ class ApiKeyword:
         metadata_id: str = None,
         include: list = ["_abilities", "count", "thesaurus"],
     ) -> list:
-        """List a metadata's kewyords with complete information.
+        """List a metadata's keywords with complete information.
 
         :param str metadata_id: metadata UUID
         :param list include: subresources that should be returned. Available values:
@@ -68,10 +68,10 @@ class ApiKeyword:
           * '_abilities'
           * 'count'
           * 'thesaurus'
-        
+
         :rtype: list
         """
-        # check workgroup UUID
+        # check metadata UUID
         if not checker.check_is_uuid(metadata_id):
             raise ValueError(
                 "Metadata ID is not a correct UUID: {}".format(metadata_id)
@@ -83,13 +83,13 @@ class ApiKeyword:
         payload = {"_include": ",".join(include)}
 
         # URL
-        url_workgroup_keywords = utils.get_request_base_url(
+        url_metadata_keywords = utils.get_request_base_url(
             route="resources/{}/keywords/".format(metadata_id)
         )
 
         # request
         req_metadata_keywords = self.api_client.get(
-            url=url_workgroup_keywords,
+            url=url_metadata_keywords,
             headers=self.api_client.header,
             params=payload,
             proxies=self.api_client.proxies,
