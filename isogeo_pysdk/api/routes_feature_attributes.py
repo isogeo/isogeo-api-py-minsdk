@@ -321,13 +321,16 @@ class ApiFeatureAttribute:
 
     # -- Extra methods as helpers --------------------------------------------------
     def import_from_dataset(
-        self, metadata_source: Metadata, metadata_dest: Metadata, mode: str = "simple"
+        self, metadata_source: Metadata, metadata_dest: Metadata, mode: str = "add"
     ) -> bool:
         """Import feature-attributes from another vector metadata.
 
         :param Metadata metadata_source: metadata from which to import the attributes
         :param Metadata metadata_dest: metadata where to import the attributes
-        :param str mode: [description], defaults to "simple"
+        :param str mode: mode of import, defaults to "add":
+            - 'add': add the attributes except those with a duplicated name
+            - 'update': update only the attributes with the same name
+            - 'update_or_add': update the attributes with the same name or create
 
         :raises TypeError: if one metadata is not a vector
         :raises ValueError: if mode is not one of accepted value
@@ -337,9 +340,9 @@ class ApiFeatureAttribute:
         >>> md_source = isogeo.metadata.get(METADATA_UUID_SOURCE)
         >>> md_dest = isogeo.metadata.get(METADATA_UUID_DEST)
         >>> # launch import
-        >>> isogeo.metadata.attributes.import_from_dataset(md_source, md_dest, "simple")
+        >>> isogeo.metadata.attributes.import_from_dataset(md_source, md_dest, "add")
         """
-        accepted_modes = ("simple", "update")
+        accepted_modes = ("add", "update", "update_or_add")
 
         # check metadata type
         if (
@@ -360,7 +363,7 @@ class ApiFeatureAttribute:
         attributes_dest_names = [attr.get("name") for attr in attributes_dest]
 
         # according to the selected mode
-        if mode == "simple":
+        if mode == "add":
             for attribute in attributes_source:
                 attribute = FeatureAttribute(**attribute)
                 # check if an attribute with the same name already exists and ignore it
@@ -380,13 +383,46 @@ class ApiFeatureAttribute:
                 )
         elif mode == "update":
             for attribute in attributes_source:
-                attribute = FeatureAttribute(**attribute)
+                attr_src = FeatureAttribute(**attribute)
                 # check if an attribute with the same name already exists, then update it
-                if attribute.name in attributes_dest_names:
-                    self.update(metadata=metadata_dest, attribute=attribute)
+                if attr_src.name in attributes_dest_names:
+                    attr_dst = FeatureAttribute(
+                        **[
+                            attr
+                            for attr in attributes_dest
+                            if attr.get("name") == attr_src.name
+                        ][0]
+                    )
+                    attr_dst.alias = attr_src.alias
+                    attr_dst.dataType = attr_src.dataType
+                    attr_dst.description = attr_src.description
+                    attr_dst.language = attr_src.language
+                    self.update(metadata=metadata_dest, attribute=attr_dst)
                     logger.debug(
                         "Attribute with the same name ({}) spotted. It has been updated.".format(
-                            attribute.name
+                            attr_dst.name
+                        )
+                    )
+        elif mode == "update_or_add":
+            for attribute in attributes_source:
+                attr_src = FeatureAttribute(**attribute)
+                # check if an attribute with the same name already exists, then update it
+                if attr_src.name in attributes_dest_names:
+                    attr_dst = FeatureAttribute(
+                        **[
+                            attr
+                            for attr in attributes_dest
+                            if attr.get("name") == attr_src.name
+                        ][0]
+                    )
+                    attr_dst.alias = attr_src.alias
+                    attr_dst.dataType = attr_src.dataType
+                    attr_dst.description = attr_src.description
+                    attr_dst.language = attr_src.language
+                    self.update(metadata=metadata_dest, attribute=attr_dst)
+                    logger.debug(
+                        "Attribute with the same name ({}) spotted. It has been updated.".format(
+                            attr_dst.name
                         )
                     )
                 else:
