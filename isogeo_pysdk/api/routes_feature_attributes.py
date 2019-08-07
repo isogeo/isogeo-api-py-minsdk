@@ -383,13 +383,46 @@ class ApiFeatureAttribute:
                 )
         elif mode == "update":
             for attribute in attributes_source:
-                attribute = FeatureAttribute(**attribute)
+                attr_src = FeatureAttribute(**attribute)
                 # check if an attribute with the same name already exists, then update it
-                if attribute.name in attributes_dest_names:
-                    self.update(metadata=metadata_dest, attribute=attribute)
+                if attr_src.name in attributes_dest_names:
+                    attr_dst = FeatureAttribute(
+                        **[
+                            attr
+                            for attr in attributes_dest
+                            if attr.get("name") == attr_src.name
+                        ][0]
+                    )
+                    attr_dst.alias = attr_src.alias
+                    attr_dst.dataType = attr_src.dataType
+                    attr_dst.description = attr_src.description
+                    attr_dst.language = attr_src.language
+                    self.update(metadata=metadata_dest, attribute=attr_dst)
                     logger.debug(
                         "Attribute with the same name ({}) spotted. It has been updated.".format(
-                            attribute.name
+                            attr_dst.name
+                        )
+                    )
+        elif mode == "update_or_add":
+            for attribute in attributes_source:
+                attr_src = FeatureAttribute(**attribute)
+                # check if an attribute with the same name already exists, then update it
+                if attr_src.name in attributes_dest_names:
+                    attr_dst = FeatureAttribute(
+                        **[
+                            attr
+                            for attr in attributes_dest
+                            if attr.get("name") == attr_src.name
+                        ][0]
+                    )
+                    attr_dst.alias = attr_src.alias
+                    attr_dst.dataType = attr_src.dataType
+                    attr_dst.description = attr_src.description
+                    attr_dst.language = attr_src.language
+                    self.update(metadata=metadata_dest, attribute=attr_dst)
+                    logger.debug(
+                        "Attribute with the same name ({}) spotted. It has been updated.".format(
+                            attr_dst.name
                         )
                     )
                 else:
