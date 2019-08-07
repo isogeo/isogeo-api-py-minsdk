@@ -28,16 +28,16 @@ class Link(object):
 
     .. code-block:: json
 
-    {
-        '_id': string (uuid),
-        'actions': list,
-        'kind': string,
-        'parent_resource': string (uuid),
-        'size': int,
-        'title': string,
-        'type': string,
-        'url': string
-    }
+        {
+            '_id': string (uuid),
+            'actions': list,
+            'kind': string,
+            'parent_resource': string (uuid),
+            'size': int,
+            'title': string,
+            'type': string,
+            'url': string
+        }
 
     """
 
