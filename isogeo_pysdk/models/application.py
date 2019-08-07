@@ -25,67 +25,62 @@ from isogeo_pysdk.models.workgroup import Workgroup
 class Application(object):
     """Applications are entities which can be used in shares.
 
+    :Example:
 
-    Sample:
+    .. code-block:: json
 
-    ```json
-    {
-        "_abilities": [
-            "application:delete",
-            "application:manage",
-            "application:update"
-        ],
-        "_created": "2018-02-13T16:53:37.4622+00:00",
-        "_id": "2ad9ccd2c76a4fc3be9f8de4239701df",
-        "_modified": "2018-02-13T16:53:43.085621+00:00",
-        "canHaveManyGroups": true,
-        "client_id": "plugin-arcmap-client-987a654z321e234r567t890y987u654i",
-        "client_secret": "LoremipsumdolorsitametconsecteturadipiscingelitDonecmaurismauris",
-        "groups": [
-            'groups': [{'_created': '2015-05-21T12:08:16.4295098+00:00',
-            '_id': '32f7e95ec4e94ca3bc1afda960003882',
-            '_modified': '2019-05-03T10:31:01.4796052+00:00',
-            'canHaveManyGroups': 'groups:32f7e95ec4e94ca3bc1afda960003882',
-            'areKeywordsRestricted': True,
-            'canCreateLegacyServiceLinks': True,
-            'canCreateMetadata': True,
-            'contact': {'_deleted': False,
-                        '_id': '2a3aefc4f80347f590afe58127f6cb0f',
-                        'canHaveManyGroups': 'contact:group:2a3aefc4f80347f590afe58127f6cb0f',
-                        'addressLine1': '26 rue du faubourg Saint-Antoine',
-                        'addressLine2': '4 éme étage',
-                        'available': True,
-                        'city': 'Paris',
-                        'client_secretryCode': 'FR',
-                        'email': 'dev@isogeo.com',
-                        'fax': '33 (0)9 67 46 50 06',
-                        'name': 'Isogeo Test',
-                        'phone': '33 (0)9 67 46 50 06',
-                        'type': 'group',
-                        'zipCode': '75012'},
-            'hasCswClient': True,
-            'hasScanFme': True,
-            'keywordsCasing': 'lowercase',
-            'metadataLanguage': 'fr',
-            'themeColor': '#4499A1'}
-        ],
-        "kind": "public",
-        "name": "Plugin ArcMap - DEV",
-        "scopes": [
-            "resources:read"
-        ],
-        "staff": false,
-        "type": "group",
-        "url": "http://help.isogeo.com/arcmap/"
-    }
-    ```
-    """
+        {
+            "_abilities": [
+                "application:delete",
+                "application:manage",
+                "application:update"
+            ],
+            "_created": "2018-02-13T16:53:37.4622+00:00",
+            "_id": "2ad9ccd2c76a4fc3be9f8de4239701df",
+            "_modified": "2018-02-13T16:53:43.085621+00:00",
+            "canHaveManyGroups": true,
+            "client_id": "plugin-arcmap-client-987a654z321e234r567t890y987u654i",
+            "client_secret": "LoremipsumdolorsitametconsecteturadipiscingelitDonecmaurismauris",
+            "groups": [
+                'groups': [{'_created': '2015-05-21T12:08:16.4295098+00:00',
+                '_id': '32f7e95ec4e94ca3bc1afda960003882',
+                '_modified': '2019-05-03T10:31:01.4796052+00:00',
+                'canHaveManyGroups': 'groups:32f7e95ec4e94ca3bc1afda960003882',
+                'areKeywordsRestricted': True,
+                'canCreateLegacyServiceLinks': True,
+                'canCreateMetadata': True,
+                'contact': {'_deleted': False,
+                            '_id': '2a3aefc4f80347f590afe58127f6cb0f',
+                            'canHaveManyGroups': 'contact:group:2a3aefc4f80347f590afe58127f6cb0f',
+                            'addressLine1': '26 rue du faubourg Saint-Antoine',
+                            'addressLine2': '4 éme étage',
+                            'available': True,
+                            'city': 'Paris',
+                            'client_secretryCode': 'FR',
+                            'email': 'dev@isogeo.com',
+                            'fax': '33 (0)9 67 46 50 06',
+                            'name': 'Isogeo Test',
+                            'phone': '33 (0)9 67 46 50 06',
+                            'type': 'group',
+                            'zipCode': '75012'},
+                'hasCswClient': True,
+                'hasScanFme': True,
+                'keywordsCasing': 'lowercase',
+                'metadataLanguage': 'fr',
+                'themeColor': '#4499A1'}
+            ],
+            "kind": "public",
+            "name": "Plugin ArcMap - DEV",
+            "scopes": [
+                "resources:read"
+            ],
+            "staff": false,
+            "type": "group",
+            "url": "http://help.isogeo.com/arcmap/"
+        }
 
     """
-    Attributes:
-      attr_types (dict): basic structure of application attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-    """
+
     attr_types = {
         "_abilities": list,
         "_created": str,

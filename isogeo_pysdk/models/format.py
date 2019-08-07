@@ -22,34 +22,30 @@ class Format(object):
     """Formats are entities included as subresource into metadata for data history code.
 
 
-    Sample:
+    :Example:
 
-    ```json
-    {
-        "_id": string (uuid),
-        "_tag": "format:dgn",
-        "aliases": [
-            "dgnv7",
-            "dgnv8",
-            "igds"
-        ],
-        "code": "dgn",
-        "name": "DGN",
-        "type": "dataset",
-        "versions": [
-            "v8",
-            "V7",
-            null
-        ]
-    }
-    ```
-    """
+    .. code-block:: json
+
+        {
+            "_id": string (uuid),
+            "_tag": "format:dgn",
+            "aliases": [
+                "dgnv7",
+                "dgnv8",
+                "igds"
+            ],
+            "code": "dgn",
+            "name": "DGN",
+            "type": "dataset",
+            "versions": [
+                "v8",
+                "V7",
+                null
+            ]
+        }
 
     """
-    Attributes:
-      attr_types (dict): basic structure of format attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-    """
+
     attr_types = {
         "_id": str,
         "_tag": str,

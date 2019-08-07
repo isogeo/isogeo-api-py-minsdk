@@ -24,24 +24,19 @@ from isogeo_pysdk.models.workgroup import Workgroup
 class Thesaurus(object):
     """Thesaurus are entities which can be used in shares.
 
+    :Example:
 
-    Sample:
+    .. code-block:: JSON
 
-    ```json
-    {
-        '_abilities': [],
-        '_id': '926f969ee2bb470a84066625f68b96bb',
-        'code': 'iso19115-topic',
-        'name': 'MD_TopicCategoryCode'
-    }
-    ```
-    """
+        {
+            '_abilities': [],
+            '_id': '926f969ee2bb470a84066625f68b96bb',
+            'code': 'iso19115-topic',
+            'name': 'MD_TopicCategoryCode'
+        }
 
     """
-    Attributes:
-      attr_types (dict): basic structure of thesaurus attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-    """
+
     attr_types = {"_abilities": list, "_id": str, "code": str, "name": str}
 
     attr_crea = {"name": str}

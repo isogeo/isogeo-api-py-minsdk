@@ -25,9 +25,9 @@ class Specification(object):
     """Specifications are entities defining rules of data creation.
 
 
-    Sample:
+    :Example:
 
-    ```json
+    .. code-block:: json
     {
         '_abilities': [],
         '_id': '85526b48b85c49409e6050e605d2253c',
@@ -37,7 +37,6 @@ class Specification(object):
         'name': 'CNIG SUP v2016',
         'published': '2016-06-30T00:00:00'
     }
-    ```
     """
 
     """
