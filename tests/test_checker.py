@@ -116,18 +116,18 @@ class TestIsogeoChecker(unittest.TestCase):
         uuid_bad_3 = checker.check_is_uuid(
             "urn:geonetwork:siret:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
         )
+        # type error
+        uuid_bad_type = checker.check_is_uuid(uuid_str=2018)
         # test type
         self.assertIsInstance(uuid_bad_1, bool)
         self.assertIsInstance(uuid_bad_2, bool)
         self.assertIsInstance(uuid_bad_3, bool)
+        self.assertIsInstance(uuid_bad_type, bool)
         # test value
         self.assertEqual(uuid_bad_1, 0)
         self.assertEqual(uuid_bad_2, 0)
         self.assertEqual(uuid_bad_3, 0)
-        # type error
-        uuid_int = 2018
-        with self.assertRaises(TypeError):
-            checker.check_is_uuid(uuid_str=uuid_int)
+        self.assertEqual(uuid_bad_type, 0)
 
     # Internet connection
     def test_checker_internet_ok(self):
