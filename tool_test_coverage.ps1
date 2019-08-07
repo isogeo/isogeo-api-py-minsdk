@@ -19,7 +19,7 @@ python -m black --target-version=py36 ./tests
 
 "-- STEP -- Run coverage"
 # coverage run -m unittest discover -s tests/
-python -m pytest --maxfail=2 --random-order --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html --cov-append tests
+python -m pytest --maxfail=2 --random-order --junitxml=junit/test-results.xml --cov-config=.coveragerc --cov=isogeo_pysdk --cov-report=xml --cov-report=html --cov-append tests
 
 "-- STEP -- Build and open coverage report"
 coverage html
