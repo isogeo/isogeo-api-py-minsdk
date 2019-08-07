@@ -32,7 +32,7 @@ import urllib3
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import CoordinateSystem, IsogeoSession
+from isogeo_pysdk import CoordinateSystem, Metadata, Workgroup, IsogeoSession
 from isogeo_pysdk import __version__ as pysdk_version
 
 # #############################################################################
@@ -46,6 +46,7 @@ if Path("dev.env").exists():
 hostname = gethostname()
 
 # API access
+METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
@@ -79,9 +80,6 @@ class TestCoordinateSystems(unittest.TestCase):
         else:
             pass
 
-        # class vars and attributes
-        cls.li_fixtures_to_delete = []
-
         # ignore warnings related to the QA self-signed cert
         if environ.get("ISOGEO_PLATFORM").lower() == "qa":
             urllib3.disable_warnings()
@@ -99,6 +97,17 @@ class TestCoordinateSystems(unittest.TestCase):
             password=environ.get("ISOGEO_USER_PASSWORD"),
         )
 
+        # class vars and attributes
+        cls.li_fixtures_to_delete = []
+
+        md = Metadata(title=get_test_marker(), type="vectorDataset")
+        cls.metadata_fixture_created = cls.isogeo.metadata.create(
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+        )
+        cls.metadata_fixture_existing = cls.isogeo.metadata.get(
+            metadata_id=METADATA_TEST_FIXTURE_UUID
+        )
+
     def setUp(self):
         """Executed before each test."""
         # tests stuff
@@ -114,10 +123,41 @@ class TestCoordinateSystems(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """Executed after the last test."""
+        # clean created metadata
+        cls.isogeo.metadata.delete(cls.metadata_fixture_created._id)
         # close sessions
         cls.isogeo.close()
 
     # -- TESTS ---------------------------------------------------------
+    # -- POST --
+    def test_coordinate_systems_association_metadata(self):
+        """POST :resources/{metadata_uuid}/coordinate-systems/"""
+        # get a SRS among the associated in the workgroup
+        coordinate_systems = self.isogeo.coordinate_system.listing(
+            self.isogeo.metadata.get(self.metadata_fixture_created._id)._creator.get(
+                "_id"
+            )
+        )
+
+        # pick randomly one and load it into a model
+        random_srs = CoordinateSystem(**sample(coordinate_systems, 1)[0])
+
+        # associate it
+        srs_associated = self.isogeo.srs.associate_metadata(
+            metadata=self.metadata_fixture_created, coordinate_system=random_srs
+        )
+
+        # check type
+        self.assertIsInstance(srs_associated, CoordinateSystem)
+
+        # refresh fixture metadata
+        self.metadata_updated = self.isogeo.metadata.get(
+            metadata_id=self.metadata_fixture_created._id, include=["coordinate-system"]
+        )
+
+        # -- dissociate
+        self.isogeo.srs.dissociate_metadata(metadata=self.metadata_fixture_created)
+
     # -- GET --
     def test_coordinate_systems_listing_global(self):
         """GET :/coordinate-systems/}"""

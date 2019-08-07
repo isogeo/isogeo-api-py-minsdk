@@ -30,6 +30,8 @@ from isogeo_pysdk.utils import IsogeoUtils
 # other routes
 from .routes_event import ApiEvent
 from .routes_feature_attributes import ApiFeatureAttribute
+from .routes_limitation import ApiLimitation
+from .routes_link import ApiLink
 from .routes_service_layers import ApiServiceLayer
 from .routes_service_operations import ApiServiceOperation
 
@@ -66,6 +68,8 @@ class ApiMetadata:
         self.attributes = ApiFeatureAttribute(self.api_client)
         self.events = ApiEvent(self.api_client)
         self.layers = ApiServiceLayer(self.api_client)
+        self.limitations = ApiLimitation(self.api_client)
+        self.links = ApiLink(self.api_client)
         self.operations = ApiServiceOperation(self.api_client)
 
         # initialize
@@ -126,16 +130,30 @@ class ApiMetadata:
 
     @ApiDecorators._check_bearer_validity
     def create(
-        self, workgroup_id: str, metadata: Metadata, check_exists: int = 1
+        self,
+        workgroup_id: str,
+        metadata: Metadata,
+        check_exists: bool = 1,
+        return_basic_or_complete: bool = 0,
     ) -> Metadata:
         """Add a new metadata to a workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup
         :param Metadata metadata: Metadata model object to create
-        :param int check_exists: check if a metadata with the same title already exists into the workgroup:
+        :param bool check_exists: check if a metadata with the same title already exists into the workgroup:
 
-        - 0 = no check
-        - 1 = compare name [DEFAULT]
+          - 0 = no check
+          - 1 = compare name [DEFAULT]
+
+        :param bool return_basic_or_complete: creation of metada uses a bulk script.\
+          So, by default API does not return the complete object but the minimal info.\
+          This option allow to overrides the basic behavior. Options:
+
+          - 0 = basic (only the _id, title and attributes passed for the creation) [DEFAULT]
+          - 1 = complete (make an addtionnal request)
+
+        :rtype: Metadata
+
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -144,7 +162,8 @@ class ApiMetadata:
             pass
 
         # check if metadata already exists in workgroup
-        # if check_exists == 1:
+        if check_exists:
+            logger.debug(NotImplemented)
         #     # retrieve workgroup metadatas
         #     if not self.api_client._wg_metadatas_names:
         #         self.metadatas(workgroup_id=workgroup_id, include=[])
@@ -179,12 +198,14 @@ class ApiMetadata:
         if isinstance(req_check, tuple):
             return req_check
 
-        # load new metadata and save it to the cache
+        # load new metadata
         new_metadata = Metadata(**req_new_metadata.json())
-        # self.api_client._wg_metadatas_names[new_metadata.name] = new_metadata._id
 
-        # end of method
-        return new_metadata
+        # return basic metadata or complete
+        if return_basic_or_complete:
+            return self.get(metadata_id=new_metadata._id)
+        else:
+            return new_metadata
 
     @ApiDecorators._check_bearer_validity
     def delete(self, metadata_id: str) -> Response:
@@ -462,7 +483,76 @@ class ApiMetadata:
 
     #     return wg_metadata
 
-    # -- Helpers for services ---------------------------------------------------------
+    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def download_xml(self, metadata: Metadata) -> Response:
+        """Download the metadata exported into XML ISO 19139.
+
+        :param Metadata metadata: metadata object to export
+
+        :rtype: Response
+
+        :Example:
+
+        .. code-block:: python
+
+            # get the download stream
+            xml_stream = isogeo.metadata.download_xml(Metadata(_id=METADATA_UUID))
+            # write it to a file
+            with open("./{}.xml".format("metadata_exported_as_xml"), "wb") as fd:
+                for block in xml_stream.iter_content(1024):
+                    fd.write(block)
+
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # URL
+        url_metadata_dl_xml = utils.get_request_base_url(
+            route="resources/{}.xml".format(metadata._id)
+        )
+
+        # request
+        req_metadata_dl_xml = self.api_client.get(
+            url=url_metadata_dl_xml,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            stream=True,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_metadata_dl_xml)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_metadata_dl_xml
+
+    def keywords(
+        self, metadata: Metadata, include: list = ["_abilities", "count", "thesaurus"]
+    ) -> list:
+        """Returns asssociated keywords with a metadata.
+        Just a shortcut.
+
+        :param Metadata metadata: metadata object
+        :param list include: subresources that should be returned. Available values:
+
+          * '_abilities'
+          * 'count'
+          * 'thesaurus'
+        
+        :rtype: list
+        """
+        return self.api_client.keyword.metadata(
+            metadata_id=metadata._id, include=include
+        )
 
 
 # ##############################################################################

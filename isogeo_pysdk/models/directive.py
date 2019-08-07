@@ -19,30 +19,22 @@ import pprint
 # ########## Classes ###############
 # ##################################
 class Directive(object):
-    """Directives are entities included as subresource into metadata for data history description.
+    """Directives are entities included as subresource of limitations into metadata CGUs.
 
 
-    Sample:
+    :Example:
 
-    ```json
-    [
+    .. code-block:: json
+
         {
             "_id": string (uuid),
             "name": string,
             "description": string
         }
-    ]
-    ```
-    """
 
     """
-    Attributes:
-      attr_types (dict): basic structure of directive attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-    """
+
     attr_types = {"_id": str, "description": str, "name": str}
-
-    attr_crea = {"description": str, "name": str}
 
     attr_map = {}
 
@@ -101,39 +93,6 @@ class Directive(object):
 
         for attr, _ in self.attr_types.items():
             value = getattr(self, attr)
-            if isinstance(value, list):
-                result[attr] = list(
-                    map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)
-                )
-            elif hasattr(value, "to_dict"):
-                result[attr] = value.to_dict()
-            elif isinstance(value, dict):
-                result[attr] = dict(
-                    map(
-                        lambda item: (item[0], item[1].to_dict())
-                        if hasattr(item[1], "to_dict")
-                        else item,
-                        value.items(),
-                    )
-                )
-            else:
-                result[attr] = value
-        if issubclass(Directive, dict):
-            for key, value in self.items():
-                result[key] = value
-
-        return result
-
-    def to_dict_creation(self) -> dict:
-        """Returns the model properties as a dict structured for creation purpose (POST)"""
-        result = {}
-
-        for attr, _ in self.attr_crea.items():
-            # get attribute value
-            value = getattr(self, attr)
-            # switch attribute name for creation purpose
-            if attr in self.attr_map:
-                attr = self.attr_map.get(attr)
             if isinstance(value, list):
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)

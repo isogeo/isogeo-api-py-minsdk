@@ -14,10 +14,13 @@
 # Standard library
 import logging
 
+# 3rd party
+from requests.models import Response
+
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import CoordinateSystem, Workgroup
+from isogeo_pysdk.models import CoordinateSystem, Metadata, Workgroup
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -176,6 +179,104 @@ class ApiCoordinateSystem:
 
     # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity
+    def associate_metadata(
+        self, metadata: Metadata, coordinate_system: CoordinateSystem
+    ) -> Response:
+        """Associate a coordinate-system (SRS) to a metadata.
+
+        If a coordinate-system is already associated to the metadata, it'll be oversritten.
+
+        :param Metadata metadata: metadata object to update
+        :param CoordinateSystem coordinate_system: coordinate-system model object to associate
+
+        :rtype: CoordinateSystem
+
+        :Example:
+
+            .. code-block:: python
+
+                # retrieve metadata
+                md = isogeo.metadata.get(
+                        metadata_id=METADATA_UUID,
+                        include=[]
+                )
+                # retrieve one of the SRS selected in the workgroup of the metadata
+                wg_srs = self.isogeo.coordinate_system.listing(md._creator.get("_id"))
+                random_srs = CoordinateSystem(**sample(wg_srs, 1)[0])
+                # associate them
+                isogeo.coordinateSystem.associate_metadata(
+                    metadata=md,
+                    coordinateSystem=random_srs,
+                )
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # URL
+        url_srs_association = utils.get_request_base_url(
+            route="resources/{}/coordinate-system".format(metadata._id)
+        )
+
+        # request
+        req_srs_association = self.api_client.put(
+            url=url_srs_association,
+            json=coordinate_system.to_dict(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_srs_association)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return CoordinateSystem(**req_srs_association.json())
+
+    @ApiDecorators._check_bearer_validity
+    def dissociate_metadata(self, metadata: Metadata) -> Response:
+        """Removes the coordinate-system from a metadata.
+
+        :param Metadata metadata: metadata object to update
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # URL
+        url_coordinateSystem_dissociation = utils.get_request_base_url(
+            route="resources/{}/coordinate-system".format(metadata._id)
+        )
+
+        # request
+        req_coordinateSystem_dissociation = self.api_client.delete(
+            url=url_coordinateSystem_dissociation,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_coordinateSystem_dissociation)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_coordinateSystem_dissociation
+
+    @ApiDecorators._check_bearer_validity
     def associate_workgroup(
         self, coordinate_system: CoordinateSystem, workgroup: Workgroup = None
     ) -> CoordinateSystem:
@@ -195,7 +296,7 @@ class ApiCoordinateSystem:
         >>> # add it to the workgroup selection
         >>> isogeo.srs.associate_workgroup(
             workgroup=isogeo.workgroup.workgroup(WORKGROUP_UUID),
-            coordinate_system_code=coordsys
+            coordinate_system=coordsys
             )
         """
         # check workgroup UUID

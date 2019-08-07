@@ -47,8 +47,8 @@ if Path("dev.env").exists():
 hostname = gethostname()
 
 # API access
+METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
-MD_TEST_FIXTURE = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -106,7 +106,7 @@ class TestEvents(unittest.TestCase):
             WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
         )
         cls.metadata_fixture_existing = cls.isogeo.metadata.get(
-            metadata_id=MD_TEST_FIXTURE
+            metadata_id=METADATA_TEST_FIXTURE_UUID
         )
 
     def setUp(self):

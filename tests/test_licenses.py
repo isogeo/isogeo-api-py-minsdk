@@ -315,8 +315,8 @@ class TestLicenses(unittest.TestCase):
         self.assertTrue(self.isogeo.license.exists(license_specific.get("_id")))
 
         # get and check both
-        license_isogeo = self.isogeo.license.license(license_isogeo.get("_id"))
-        license_specific = self.isogeo.license.license(license_specific.get("_id"))
+        license_isogeo = self.isogeo.license.get(license_isogeo.get("_id"))
+        license_specific = self.isogeo.license.get(license_specific.get("_id"))
         self.assertIsInstance(license_isogeo, License)
         self.assertIsInstance(license_specific, License)
 
@@ -344,7 +344,7 @@ class TestLicenses(unittest.TestCase):
         license_fixture = self.isogeo.license.update(license_fixture)
 
         # check if the change is effective
-        license_fixture_updated = self.isogeo.license.license(license_fixture._id)
+        license_fixture_updated = self.isogeo.license.get(license_fixture._id)
         self.assertEqual(
             license_fixture_updated.name,
             "{} - {}".format(get_test_marker(), self.discriminator),

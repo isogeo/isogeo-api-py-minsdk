@@ -87,6 +87,7 @@ class IsogeoSession(OAuth2Session):
         self._directives = {}  # EU environment directives used as INSPIRE limitations
         self._formats_geo = []  # Isogeo formats for geographic data
         self._formats_nogeo = []  # Isogeo formats for non-geographic data
+        self._links_kinds_actions = []  # Isogeo matrix for links kind/action
         self._shares_names = {}  # Isogeo applications by names
         self._thesauri_codes = {}  # Isogeo thesauri by codes
         self._workgroups_names = {}  # Isogeo workgroups by names

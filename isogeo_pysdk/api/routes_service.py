@@ -76,6 +76,7 @@ class ApiService:
         service_format: str = None,
         service_title: str = None,
         check_exists: bool = 1,
+        ignore_avaibility: bool = 0,
         http_verb: str = "HEAD",
     ) -> Metadata:
         """Add a new metadata of a geographic webservice to a workgroup.
@@ -87,7 +88,9 @@ class ApiService:
         :param str service_type: type of service. Must be one of: 'esri', 'esri_ogc', 'ogc', 'guess'
         :param str service_format: format of the web service. Must be one of the accepted codes in API (Non exhaustive list: 'efs', 'ems', 'wfs', 'wms', 'wmts'). If is None, so the it'll try to guess it from the URL.
         :param str service_title: title for the metadata service in case of analisis fail. OPTIONNAL.
-        :param bool check_exists: check if a metadata with the same service base URL and format alerady exists
+        :param bool check_exists: check if a metadata with the same service base URL and format alerady exists. Defaults to True.
+        :param bool ignore_avaibility: the service URL is tested to determine if it can be reached (HEAD then GET). This option allow to ignore the test result.\
+            Can be useful if the service is only reachable by certains URLs or domains like *.isogeo.com. Defaults to False.
         :param str http_verb: HTTP verb to use to check the if the service is available. Must be one of: GET, HEAD
 
         :rtype: Service
@@ -97,23 +100,26 @@ class ApiService:
 
         :Example:
 
-        >>> # for an OGC WMS by GeoServer, passing type and format
-        >>> isogeo.services.create(
-            workgroup_id=WORKGROUP_UUID,
-            service_type="ogc",
-            service_format="wms",
-            service_url="https://magosm.magellium.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities"
+        .. code-block:: python
+
+            # for an OGC WMS by GeoServer, passing type and format
+            isogeo.services.create(
+                workgroup_id=WORKGROUP_UUID,
+                service_type="ogc",
+                service_format="wms",
+                service_url="https://magosm.magellium.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities"
             )
-        >>> # for an OGC WFS by ArcGIS Server, passing only the service URL with query parameters
-        >>> new_srv = isogeo.services.create(
-            workgroup_id=WORKGROUP_UUID,
-            service_url="https://ligeo.paysdelaloire.fr/server/services/Le_Mans/Le_Mans_service/MapServer/WFSServer?request=GetCapabilities&service=WFS",
+            # for an OGC WFS by ArcGIS Server, passing only the service URL with query parameters
+            new_srv = isogeo.services.create(
+                workgroup_id=WORKGROUP_UUID,
+                service_url="https://ligeo.paysdelaloire.fr/server/services/Le_Mans/Le_Mans_service/MapServer/WFSServer?request=GetCapabilities&service=WFS",
             )
-        >>> # for an Esri FeatureServer
-        >>> new_srv = isogeo.services.create(
-            workgroup_id=WORKGROUP_UUID,
-            service_url="https://api-carto.dijon.fr/arcgis/rest/services/SIGNALISATION/signalisation_MAJ/FeatureServer?f=pjson",
+            # for an Esri FeatureServer
+            new_srv = isogeo.services.create(
+                workgroup_id=WORKGROUP_UUID,
+                service_url="https://api-carto.dijon.fr/arcgis/rest/services/SIGNALISATION/signalisation_MAJ/FeatureServer?f=pjson",
             )
+
         """
         # CHECKS PARAMS
         # check workgroup UUID
@@ -148,12 +154,23 @@ class ApiService:
             return self.create(
                 workgroup_id=workgroup_id,
                 service_url=service_url,
+                service_type=service_type,
                 service_format=service_format,
+                service_title=service_title,
+                check_exists=check_exists,
+                ignore_avaibility=ignore_avaibility,
                 http_verb="GET",
             )
         elif req_check_reachable.status_code >= 400 and http_verb == "GET":
-            logger.debug("GET failed. Geographic server seems to be out of service")
-            return (False, req_check_reachable)
+            if ignore_avaibility:
+                logger.error(
+                    "GET failed. Geographic server doesn't seem to be reachable but the avaibility is set to be ignored."
+                )
+            else:
+                logger.warning(
+                    "GET failed. Geographic server seems to be out of service"
+                )
+                return (False, req_check_reachable)
         else:
             logger.debug(
                 "{} successed. Service {} is reachable.".format(http_verb, service_url)
@@ -257,7 +274,7 @@ class ApiService:
 
         # check if metadata already exists in workgroup
         # based on the format and base URL (cleaned)
-        if check_exists == 1:
+        if check_exists:
             # retrieve workgroup metadatas
             md_services = self.api_client.metadata.search(
                 query="type:service format:{} owner:{}".format(
@@ -383,4 +400,3 @@ class ApiService:
 if __name__ == "__main__":
     """ standalone execution """
     api_metadata = ApiService()
-    print(api_metadata)
