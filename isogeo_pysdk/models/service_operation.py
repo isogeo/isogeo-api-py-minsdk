@@ -25,30 +25,25 @@ class ServiceOperation(object):
     """ServiceOperations are entities defining rules of data creation.
 
 
-    Sample:
+    :Example:
 
-    ```json
-    {
-    "_id": "string (uuid)",
-    "mimeTypesIn": [
-        "string"
-    ],
-    "mimeTypesOut": [
-        "string"
-    ],
-    "name": "string",
-    "url": "string",
-    "verb": "string"
-    }
-    ```
-    """
+    .. code-block:: json
+
+        {
+            "_id": "string (uuid)",
+            "mimeTypesIn": [
+                "string"
+            ],
+            "mimeTypesOut": [
+                "string"
+            ],
+            "name": "string",
+            "url": "string",
+            "verb": "string"
+        }
 
     """
-    Attributes:
-      attr_types (dict): basic structure of service layer attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-      attr_map (dict): mapping between read and write attributes. {"attribute name - GET": "attribute type - POST"}
-    """
+
     attr_types = {
         "_id": str,
         "mimeTypesIn": list,

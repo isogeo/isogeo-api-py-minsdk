@@ -50,7 +50,7 @@
             "args": [
                 "-m",
                 "black",
-                "--target-version=py36",
+                "--target-version=py37",
                 "./isogeo_pysdk"
             ],
             "group": "build",
@@ -63,7 +63,7 @@
             "args": [
                 "-m",
                 "black",
-                "--target-version=py36",
+                "--target-version=py37",
                 "./tests"
             ],
             "group": "build",
