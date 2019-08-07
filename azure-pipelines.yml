@@ -71,16 +71,6 @@ jobs:
       url: 'https://codecov.io/bash'
       options: '-t $(CODECOV_TOKEN)'
 
-  - task: Bash@3
-    displayName: "Publish coverage results to Codecov - with bash"
-    condition: succeededOrFailed()
-    continueOnError: true
-    env:
-      CODECOV_TOKEN: $(CODECOV_TOKEN)
-    inputs:
-      targetType: 'inline'
-      script: <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f .
-
   - task: PublishTestResults@2
     displayName: "Publish unit test results"
     condition: succeededOrFailed()
