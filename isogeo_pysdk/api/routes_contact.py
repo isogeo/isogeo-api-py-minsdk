@@ -111,7 +111,7 @@ class ApiContact:
         return wg_contacts
 
     @ApiDecorators._check_bearer_validity
-    def contact(self, contact_id: str) -> Contact:
+    def get(self, contact_id: str) -> Contact:
         """Get details about a specific contact.
 
         :param str contact_id: contact UUID
