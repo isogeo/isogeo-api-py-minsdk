@@ -18,6 +18,7 @@ from datetime import datetime
 # submodules
 from isogeo_pysdk.enums import EventKinds
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
@@ -28,19 +29,16 @@ class Event(object):
     :Example:
 
     .. code-block:: json
-    {
-        '_id': string (uuid),
-        'date': string (datetime),
-        'description': string,
-        'kind': string
-    }
-    """
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of event attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-    """
+        {
+            '_id': string (uuid),
+            'date': string (datetime),
+            'description': string,
+            'kind': string
+        }
+
+        """
+
     attr_types = {
         "_id": str,
         "date": str,

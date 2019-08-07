@@ -24,35 +24,31 @@ class Datasource(object):
     :Example:
 
     .. code-block:: json
-    {
-        '_created': '2019-05-17T13:56:56.6162418+00:00',
-        '_id': '2c891ce8692146c4901115a4232b13a2',
-        '_modified': '2019-05-17T13:57:50.4434219+00:00',
-        '_tag': 'data-source:2c891ce8692146c4901115a4232b13a2',
-        'enabled': True,
-        'lastSession': {
-            '_created': '2019-05-17T13:58:06.5165889+00:00',
-            '_id': 'ea99c37d809c4b1b9b4f257326ad1975',
-            '_modified': '2019-05-17T13:58:28.5554966+00:00',
-            'status': 'failed'
-            },
-        'location': 'http://ogc.geo-ide.developpement-durable.gouv.fr/csw/all-harvestable',
-        'name': 'TEST - CSW entrypoint (datasource)',
-        'resourceCount': 0,
-        'sessions': [
-            {
+
+        {
+            '_created': '2019-05-17T13:56:56.6162418+00:00',
+            '_id': '2c891ce8692146c4901115a4232b13a2',
+            '_modified': '2019-05-17T13:57:50.4434219+00:00',
+            '_tag': 'data-source:2c891ce8692146c4901115a4232b13a2',
+            'enabled': True,
+            'lastSession': {
                 '_created': '2019-05-17T13:58:06.5165889+00:00',
                 '_id': 'ea99c37d809c4b1b9b4f257326ad1975',
                 '_modified': '2019-05-17T13:58:28.5554966+00:00',
                 'status': 'failed'
-            }]
+                },
+            'location': 'http://ogc.geo-ide.developpement-durable.gouv.fr/csw/all-harvestable',
+            'name': 'TEST - CSW entrypoint (datasource)',
+            'resourceCount': 0,
+            'sessions': [
+                {
+                    '_created': '2019-05-17T13:58:06.5165889+00:00',
+                    '_id': 'ea99c37d809c4b1b9b4f257326ad1975',
+                    '_modified': '2019-05-17T13:58:28.5554966+00:00',
+                    'status': 'failed'
+                }]
         }
-    """
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of datasource attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
     """
 
     attr_types = {
