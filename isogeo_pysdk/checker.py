@@ -305,7 +305,7 @@ class IsogeoChecker(object):
         """
         # check uuid type
         if not isinstance(uuid_str, str):
-            logger.error(
+            logger.debug(
                 TypeError(
                     "'uuid_str' parameter expects a str value. Got: {}".format(
                         type(uuid_str)
