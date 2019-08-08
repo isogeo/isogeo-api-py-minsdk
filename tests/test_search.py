@@ -6,9 +6,9 @@
 
     ```python
     # for whole test
-    python -m unittest tests.test_metadatas
+    python -m unittest tests.test_search
     # for specific
-    python -m unittest tests.test_metadatas.TestMetadatas.test_metadatas_create
+    python -m unittest tests.test_search.TestSearch.test_search_search_as_application
     ```
 """
 
@@ -61,7 +61,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 def get_test_marker():
     """Returns the function name"""
-    return "TEST_PySDK - Metadatas - {}".format(_getframe(1).f_code.co_name)
+    return "TEST_PySDK - Search - {}".format(_getframe(1).f_code.co_name)
 
 
 # #############################################################################
@@ -69,8 +69,8 @@ def get_test_marker():
 # ##################################
 
 
-class TestMetadatas(unittest.TestCase):
-    """Test Metadata model of Isogeo API."""
+class TestSearch(unittest.TestCase):
+    """Test search methods."""
 
     # -- Standard methods --------------------------------------------------------
     @classmethod
@@ -105,12 +105,6 @@ class TestMetadatas(unittest.TestCase):
             password=environ.get("ISOGEO_USER_PASSWORD"),
         )
 
-        # fixture metadata
-        md = Metadata(title=get_test_marker(), type="vectorDataset")
-        cls.fixture_metadata = cls.isogeo.metadata.create(
-            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
-        )
-
     def setUp(self):
         """Executed before each test."""
         # tests stuff
@@ -121,41 +115,33 @@ class TestMetadatas(unittest.TestCase):
     def tearDown(self):
         """Executed after each test."""
         sleep(0.5)
-        pass
 
     @classmethod
     def tearDownClass(cls):
         """Executed after the last test."""
-        # clean created metadata
-        cls.isogeo.metadata.delete(cls.fixture_metadata._id)
-
-        # clean created metadatas
-        if len(cls.li_fixtures_to_delete):
-            for i in cls.li_fixtures_to_delete:
-                cls.isogeo.metadata.delete(metadata_id=i)
         # close sessions
         cls.isogeo.close()
 
     # -- TESTS ---------------------------------------------------------
     # -- GET --
-    # def test_metadatas_search_as_application(self):
-    #     """GET :resources/search"""
-    #     basic_search = self.isogeo.metadata.search()
-    #     self.assertIsInstance(basic_search.total, int)
-    #     self.assertEqual(len(basic_search.results), 20)
+    def test_search_search_as_application(self):
+        """GET :resources/search"""
+        basic_search = self.isogeo.search()
+        self.assertIsInstance(basic_search.total, int)
+        self.assertEqual(len(basic_search.results), 20)
 
-    # def test_search_specific_mds_bad(self):
-    #     """Searches filtering on specific metadata."""
-    #     # get random metadata within a small search
-    #     search = self.isogeo.metadata.search(
-    #         page_size=5,
-    #         # whole_share=0
-    #     )
-    #     metadata_id = sample(search.results, 1)[0].get("_id")
+    def test_search_specific_mds_bad(self):
+        """Searches filtering on specific metadata."""
+        # get random metadata within a small search
+        search = self.isogeo.search(
+            page_size=5,
+            # whole_share=0
+        )
+        metadata_id = sample(search.results, 1)[0].get("_id")
 
-    #     # # pass metadata UUID
-    #     # with self.assertRaises(TypeError):
-    #     #     self.isogeo.search(self.bearer,
-    #     #                         page_size=0,
-    #     #                         whole_share=0,
-    #     #                         specific_md=md)
+        # # pass metadata UUID
+        # with self.assertRaises(TypeError):
+        #     self.isogeo.search(self.bearer,
+        #                         page_size=0,
+        #                         whole_share=0,
+        #                         specific_md=md)

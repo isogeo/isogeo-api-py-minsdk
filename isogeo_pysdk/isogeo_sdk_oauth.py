@@ -205,6 +205,7 @@ class IsogeoSession(OAuth2Session):
         self.invitation = api.ApiInvitation(self)
         self.license = api.ApiLicense(self)
         self.metadata = api.ApiMetadata(self)
+        self.search = api.ApiSearch(self).search
         self.services = api.ApiService(self)
         self.share = api.ApiShare(self)
         self.specification = api.ApiSpecification(self)
