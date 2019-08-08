@@ -327,7 +327,8 @@ class ApiFeatureAttribute:
 
         :param Metadata metadata_source: metadata from which to import the attributes
         :param Metadata metadata_dest: metadata where to import the attributes
-        :param str mode: mode of import, defaults to "add":
+        :param str mode: mode of import, defaults to 'add':
+
             - 'add': add the attributes except those with a duplicated name
             - 'update': update only the attributes with the same name
             - 'update_or_add': update the attributes with the same name or create
@@ -336,11 +337,16 @@ class ApiFeatureAttribute:
         :raises ValueError: if mode is not one of accepted value
 
         :Example:
-        >>> # get the metadata objects
-        >>> md_source = isogeo.metadata.get(METADATA_UUID_SOURCE)
-        >>> md_dest = isogeo.metadata.get(METADATA_UUID_DEST)
-        >>> # launch import
-        >>> isogeo.metadata.attributes.import_from_dataset(md_source, md_dest, "add")
+
+        .. code-block:: python
+
+            # get the metadata objects
+            md_source = isogeo.metadata.get(METADATA_UUID_SOURCE)
+            md_dest = isogeo.metadata.get(METADATA_UUID_DEST)
+
+            # launch import
+            isogeo.metadata.attributes.import_from_dataset(md_source, md_dest, "add")
+
         """
         accepted_modes = ("add", "update", "update_or_add")
 
