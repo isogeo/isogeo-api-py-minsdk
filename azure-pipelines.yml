@@ -174,11 +174,3 @@ jobs:
 
   - script: twine upload dist/* -r 'Python Package Index (PyPi)' -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
     displayName: "Upload to PyPi"
-
-  - task: GitHubRelease@0
-    inputs:
-      gitHubConnection: 'Azure DevOps'
-      repositoryName: 'isogeo/isogeo-api-py-minsdk'
-      action: 'create'
-      target: '$(Build.SourceVersion)'
-      tagSource: 'auto'
