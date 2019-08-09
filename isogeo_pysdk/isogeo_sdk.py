@@ -38,7 +38,7 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 checker = IsogeoChecker()
 utils = IsogeoUtils()
-version = "3.0.0"
+version = "3.1.0"
 
 # #############################################################################
 # ########## Classes ###############
