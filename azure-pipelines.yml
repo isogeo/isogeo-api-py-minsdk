@@ -19,7 +19,6 @@ jobs:
 
 # LINT AND FORMATTING CODE
 - job: 'Lint'
-  dependsOn: 'Test'
   pool:
     vmImage: "windows-2019"
 
@@ -40,8 +39,9 @@ jobs:
       python -m black --target-version=py37 .\tests
     displayName: 'Apply black code formatting'
 
-# UNIT TESTS
+# TESTS
 - job: 'Test'
+  dependsOn: 'Lint'
   pool:
     vmImage: "windows-2019"
   strategy:
@@ -117,7 +117,7 @@ jobs:
 # BUILD and PUBLISH
 # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
 - job: 'Publish'
-  dependsOn: 'Lint'
+  dependsOn: 'Test'
   pool:
     vmImage: "windows-2019"
   # condition:
@@ -164,6 +164,6 @@ jobs:
     inputs:
       externalFeeds: 'Python Package Index (PyPi)'
 
-  - script: twine upload dist/* -r 'Python Package Index (PyPi)' -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
+  - script: twine upload -r 'Python Package Index (PyPi)' --config-file $(PYPIRC_PATH) dist/*
     continueOnError: true
     displayName: "Upload to PyPi"
