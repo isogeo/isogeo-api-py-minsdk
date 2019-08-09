@@ -4,7 +4,13 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
-- master
+  batch: true
+  branches:
+    include:
+    - master
+  tags:
+    include:
+    - "*"
 
 pr:
 - master
@@ -137,6 +143,7 @@ jobs:
 
 
 # PUBLISH
+# only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
 - job: 'Publish'
   dependsOn: 'Build'
   pool:
