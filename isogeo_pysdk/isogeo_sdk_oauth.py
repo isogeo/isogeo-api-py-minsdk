@@ -333,5 +333,8 @@ if __name__ == "__main__":
     METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
     WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
+    search = isogeo.search()
+    print(search.total, len(search.results))
+
     # -- END -------
     isogeo.close()  # close session

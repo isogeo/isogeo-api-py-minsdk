@@ -49,7 +49,6 @@ setup(
     # dependencies
     install_requires=["requests>=2.20.0", "requests-oauthlib>=1.2.0"],
     extras_require={
-        "api-write": ["requests-oauthlib"],
         "dev": ["black", "python-dotenv"],
         "test": ["codecov", "coverage", "pytest", "pytest-cov"],
     },
