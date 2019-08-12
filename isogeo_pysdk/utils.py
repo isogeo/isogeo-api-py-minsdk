@@ -690,6 +690,7 @@ class IsogeoUtils(object):
         return share
 
     # -- API AUTH ------------------------------------------------------------
+    @classmethod
     def credentials_loader(self, in_credentials: str = "client_secrets.json") -> dict:
         """Loads API credentials from a file, JSON or INI.
 

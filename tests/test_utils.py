@@ -17,12 +17,19 @@
 # ##################################
 
 # Standard library
-import json
 import logging
-from os import environ, path
-from sys import exit
 import unittest
+import urllib3
+from os import environ
+from pathlib import Path
+from random import sample
+from socket import gethostname
+from sys import _getframe, exit
+from time import gmtime, sleep, strftime
 from urllib.parse import urlparse
+
+# 3rd party
+from dotenv import load_dotenv
 
 # module target
 from isogeo_pysdk import IsogeoUtils
@@ -31,9 +38,11 @@ from isogeo_pysdk import IsogeoUtils
 # ######## Globals #################
 # ##################################
 
-# API access
-app_id = environ.get("ISOGEO_API_DEV_ID")
-app_token = environ.get("ISOGEO_API_DEV_SECRET")
+if Path("dev.env").exists():
+    load_dotenv("dev.env", override=True)
+
+# host machine name - used as discriminator
+hostname = gethostname()
 
 # #############################################################################
 # ########## Classes ###############
@@ -43,11 +52,26 @@ app_token = environ.get("ISOGEO_API_DEV_SECRET")
 class TestIsogeoUtils(unittest.TestCase):
     """Test utils for Isogeo API."""
 
-    if not app_id or not app_token:
-        logging.critical("No API credentials set as env variables.")
-        exit()
-    else:
-        pass
+    # -- Standard methods --------------------------------------------------------
+    @classmethod
+    def setUpClass(cls):
+        """Executed when module is loaded before any test."""
+        # checks
+        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_CLIENT_SECRET"
+        ):
+            logging.critical("No API credentials set as env variables.")
+            exit()
+        else:
+            pass
+
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
+
+        # API credentials settings
+        cls.client_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
+        cls.client_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
 
     # standard methods
     def setUp(self):

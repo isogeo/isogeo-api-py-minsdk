@@ -30,7 +30,6 @@ from time import gmtime, sleep, strftime
 # 3rd party
 from dotenv import load_dotenv
 
-
 # Isogeo
 from isogeo_pysdk import Isogeo, IsogeoChecker
 
