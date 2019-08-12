@@ -21,7 +21,7 @@ import quopri
 import re
 import uuid
 from configparser import ConfigParser
-from os import path
+from pathlib import Path
 from urllib.parse import urlparse
 
 # 3rd party
@@ -695,21 +695,21 @@ class IsogeoUtils(object):
           look for a client_secrets.json file.
         """
         accepted_extensions = (".ini", ".json")
+        in_credentials_path = Path(in_credentials)  # load path
+
         # checks
-        if not path.isfile(in_credentials):
+        if not in_credentials_path.is_file():
             raise IOError("Credentials file doesn't exist: {}".format(in_credentials))
-        else:
-            in_credentials = path.normpath(in_credentials)
-        if path.splitext(in_credentials)[1] not in accepted_extensions:
+
+        if in_credentials_path.suffix not in accepted_extensions:
             raise ValueError(
                 "Extension of credentials file must be one of {}".format(
                     accepted_extensions
                 )
             )
-        else:
-            kind = path.splitext(in_credentials)[1]
+
         # load, check and set
-        if kind == ".json":
+        if in_credentials_path.suffix == ".json":
             with open(in_credentials, "r") as f:
                 in_auth = json.loads(f.read())
             # check structure
