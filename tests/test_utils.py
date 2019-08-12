@@ -25,7 +25,7 @@ import unittest
 from urllib.parse import urlparse
 
 # module target
-from isogeo_pysdk import IsogeoUtils, __version__ as pysdk_version
+from isogeo_pysdk import IsogeoUtils
 
 # #############################################################################
 # ######## Globals #################

@@ -33,7 +33,7 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Contact
+from isogeo_pysdk import Isogeo, Contact
 
 
 # #############################################################################

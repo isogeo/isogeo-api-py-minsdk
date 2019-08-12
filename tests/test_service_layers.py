@@ -31,8 +31,8 @@ from time import gmtime, sleep, strftime
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import IsogeoSession, Metadata, ServiceLayer
-from isogeo_pysdk import __version__ as pysdk_version
+from isogeo_pysdk import Isogeo, Metadata, ServiceLayer
+
 
 # #############################################################################
 # ######## Globals #################

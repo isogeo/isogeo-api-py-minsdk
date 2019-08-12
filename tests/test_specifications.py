@@ -32,12 +32,7 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import (
-    IsogeoSession,
-    __version__ as pysdk_version,
-    Metadata,
-    Specification,
-)
+from isogeo_pysdk import Isogeo, Metadata, Specification
 
 
 # #############################################################################

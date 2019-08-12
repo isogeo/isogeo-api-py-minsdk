@@ -33,8 +33,8 @@ import urllib3
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import Format, IsogeoSession
-from isogeo_pysdk import __version__ as pysdk_version
+from isogeo_pysdk import Format, Isogeo
+
 
 # #############################################################################
 # ######## Globals #################

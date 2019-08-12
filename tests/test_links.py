@@ -34,7 +34,7 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Link, Metadata
+from isogeo_pysdk import Isogeo, Link, Metadata
 
 
 # #############################################################################

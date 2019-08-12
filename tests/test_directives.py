@@ -31,8 +31,8 @@ import urllib3
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import Directive, IsogeoSession
-from isogeo_pysdk import __version__ as pysdk_version
+from isogeo_pysdk import Directive, Isogeo
+
 
 # #############################################################################
 # ######## Globals #################

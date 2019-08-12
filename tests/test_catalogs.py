@@ -31,8 +31,8 @@ from time import gmtime, sleep, strftime
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import Catalog, IsogeoSession, Share
-from isogeo_pysdk import __version__ as pysdk_version
+from isogeo_pysdk import Catalog, Isogeo, Share
+
 from isogeo_pysdk.enums import CatalogStatisticsTags
 
 # #############################################################################

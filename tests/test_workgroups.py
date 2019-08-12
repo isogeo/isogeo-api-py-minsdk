@@ -31,8 +31,8 @@ from time import gmtime, sleep, strftime
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import Contact, IsogeoSession, Workgroup
-from isogeo_pysdk import __version__ as pysdk_version
+from isogeo_pysdk import Contact, Isogeo, Workgroup
+
 from isogeo_pysdk.enums import WorkgroupStatisticsTags
 
 # #############################################################################
