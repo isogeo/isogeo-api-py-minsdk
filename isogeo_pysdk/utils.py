@@ -735,6 +735,10 @@ class IsogeoUtils(object):
                         auth_settings.get("token_uri")
                     ),
                     "uri_redirect": None,
+                    # below, attributes added from 2019 august in Isogeo Manager
+                    "kind": auth_settings.get("kind"),
+                    "type": auth_settings.get("isogeo_type"),
+                    "staff": auth_settings.get("isogeo_staff"),
                 }
             else:
                 # assuming in_auth == 'installed'
@@ -751,6 +755,10 @@ class IsogeoUtils(object):
                         auth_settings.get("token_uri")
                     ),
                     "uri_redirect": auth_settings.get("redirect_uris", None),
+                    # below, attributes added from 2019 august in Isogeo Manager
+                    "kind": auth_settings.get("kind"),
+                    "type": auth_settings.get("isogeo_type"),
+                    "staff": auth_settings.get("isogeo_staff"),
                 }
         else:
             # assuming file is an .ini
