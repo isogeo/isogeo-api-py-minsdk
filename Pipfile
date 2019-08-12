@@ -26,4 +26,4 @@ requests = ">=2.20.0"
 requests-oauthlib = ">=1.2.0"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"
