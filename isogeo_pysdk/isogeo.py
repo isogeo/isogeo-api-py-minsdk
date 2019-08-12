@@ -26,7 +26,8 @@ from oauthlib.oauth2 import LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
 # modules
-from isogeo_pysdk import api, version
+from isogeo_pysdk.__about__ import __version__ as version
+from isogeo_pysdk import api
 from isogeo_pysdk.api_hooks import IsogeoHooks
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.models import User
@@ -45,7 +46,7 @@ utils = IsogeoUtils()
 # ##################################
 
 
-class IsogeoSession(OAuth2Session):
+class Isogeo(OAuth2Session):
 
     # -- ATTRIBUTES -----------------------------------------------------------
     AUTH_MODES = {"group", "user_private", "user_public"}
@@ -60,7 +61,7 @@ class IsogeoSession(OAuth2Session):
         token=None,
         token_updater=None,
         # custom
-        app_name: str = "isogeo-pysdk-writer/{}".format(version),
+        app_name: str = "isogeo-pysdk/{}".format(version),
         auth_mode: str = "user_private",
         client_secret: str = None,
         lang: str = "en",
@@ -127,7 +128,6 @@ class IsogeoSession(OAuth2Session):
 
         # auth mode
         if auth_mode not in self.AUTH_MODES:
-            logger.error("Auth mode value is not good: {}".format(auth_mode))
             raise ValueError(
                 "Mode value must be one of: {}".format(" | ".join(self.AUTH_MODES))
             )
@@ -212,7 +212,7 @@ class IsogeoSession(OAuth2Session):
         self.user = api.ApiUser(self)
         self.workgroup = api.ApiWorkgroup(self)
 
-        return super().__init__(
+        super().__init__(
             client_id=client_id,
             client=self.client,
             auto_refresh_url=auto_refresh_url,
@@ -315,7 +315,7 @@ if __name__ == "__main__":
         urllib3.disable_warnings()
 
     # instanciate
-    isogeo = IsogeoSession(
+    isogeo = Isogeo(
         client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
         client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
@@ -333,8 +333,7 @@ if __name__ == "__main__":
     METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
     WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
-    search = isogeo.search()
-    print(search.total, len(search.results))
+    print(isogeo.auth_mode)
 
     # -- END -------
     isogeo.close()  # close session

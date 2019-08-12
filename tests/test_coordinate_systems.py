@@ -85,7 +85,7 @@ class TestCoordinateSystems(unittest.TestCase):
             urllib3.disable_warnings()
 
         # API connection
-        cls.isogeo = IsogeoSession(
+        cls.isogeo = Isogeo(
             client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
             client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),

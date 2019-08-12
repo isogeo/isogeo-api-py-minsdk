@@ -24,7 +24,7 @@ from timeit import default_timer
 from dotenv import load_dotenv
 
 # Isogeo
-from isogeo_pysdk import IsogeoSession
+from isogeo_pysdk import Isogeo
 
 # #############################################################################
 # ######## Globals #################
@@ -90,7 +90,7 @@ if __name__ == "__main__":
 
     # -- Authentication and connection ---------------------------------
     # Isogeo client
-    isogeo = IsogeoSession(
+    isogeo = Isogeo(
         client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
         client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
