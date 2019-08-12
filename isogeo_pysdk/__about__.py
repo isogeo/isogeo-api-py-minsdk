@@ -1,8 +1,6 @@
 # Metadata bout the package to easily retrieve informations about it.
 # see: https://packaging.python.org/guides/single-sourcing-package-version/
 
-import os.path
-
 __all__ = [
     "__title__",
     "__summary__",
@@ -13,12 +11,6 @@ __all__ = [
     "__license__",
     "__copyright__",
 ]
-
-
-try:
-    base_dir = os.path.dirname(os.path.abspath(__file__))
-except NameError:
-    base_dir = None
 
 
 __title__ = "Isogeo Python SDK"

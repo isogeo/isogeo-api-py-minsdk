@@ -19,7 +19,6 @@ import logging
 import socket
 import warnings
 from collections import Counter
-from datetime import datetime
 from uuid import UUID
 
 # modules
@@ -78,23 +77,6 @@ EDIT_TABS = {
     "advanced": ",".join(FILTER_TYPES),
     "metadata": ",".join(FILTER_TYPES),
 }
-
-_SUBRESOURCES_MD = (
-    "_creator",
-    "conditions",
-    "contacts",
-    "coordinate-system",
-    "events",
-    "feature-attributes",
-    "keywords",
-    "layers",
-    "limitations",
-    "links",
-    "operations",
-    "serviceLayers",
-    "specifications",
-    "tags",
-)
 
 _SUBRESOURCES_KW = ("_abilities", "count", "thesaurus")
 

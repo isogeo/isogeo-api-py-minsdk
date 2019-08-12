@@ -28,16 +28,13 @@ from urllib.parse import urlparse
 import requests
 
 # modules
-try:
-    from . import checker
-except (ImportError, ValueError, SystemError):
-    import checker
+from isogeo_pysdk.checker import IsogeoChecker
 
 # ##############################################################################
 # ########## Globals ###############
 # ##################################
 
-checker = checker.IsogeoChecker()
+checker = IsogeoChecker()
 logger = logging.getLogger(__name__)
 
 # ##############################################################################

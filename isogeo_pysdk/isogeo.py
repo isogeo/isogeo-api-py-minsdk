@@ -18,7 +18,6 @@
 # Standard library
 import locale
 import logging
-from datetime import datetime
 from sys import platform as opersys
 
 # 3rd party library
