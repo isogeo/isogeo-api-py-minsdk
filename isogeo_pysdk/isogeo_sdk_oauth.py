@@ -60,13 +60,13 @@ class IsogeoSession(OAuth2Session):
         token=None,
         token_updater=None,
         # custom
-        app_name: str = "isogeo-pysdk-writer/{}".format(version),
-        auth_mode: str = "user_private",
+        auth_mode: str = "group",
         client_secret: str = None,
-        lang: str = "en",
         platform: str = "qa",
         proxy: dict = None,
         timeout: tuple = (15, 45),
+        lang: str = "fr",
+        app_name: str = "isogeo-pysdk/{}".format(version),
         # additional
         **kwargs,
     ):

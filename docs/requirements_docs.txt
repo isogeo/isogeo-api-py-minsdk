@@ -20,6 +20,3 @@ requests_oauthlib
 
 # required
 Sphinx
-
-# themes
-guzzle_sphinx_theme
