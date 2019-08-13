@@ -18,7 +18,6 @@ from .utils import IsogeoUtils  # noqa: F401
 
 # subpackages
 from .api import *  # noqa: F401
-from .auth import *  # noqa: F401
 from .enums import *  # noqa: F401
 from .models import *  # noqa: F401
 
