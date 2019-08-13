@@ -170,7 +170,7 @@ class ApiCatalog:
             pass
         # check catalog UUID
         if not checker.check_is_uuid(catalog_id):
-            raise ValueError("Catalog ID is not a correct UUID.")
+            raise ValueError("Catalog ID is not a correct UUID: {}".format(catalog_id))
         else:
             pass
 

@@ -1,5 +1,5 @@
-﻿#!/usr/bin/env python
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
+#! python3
 
 """
     This module is an abstraction class about the Isogeo REST API.

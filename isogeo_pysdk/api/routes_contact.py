@@ -111,7 +111,7 @@ class ApiContact:
         return wg_contacts
 
     @ApiDecorators._check_bearer_validity
-    def contact(self, contact_id: str) -> Contact:
+    def get(self, contact_id: str) -> Contact:
         """Get details about a specific contact.
 
         :param str contact_id: contact UUID
@@ -144,18 +144,24 @@ class ApiContact:
 
     @ApiDecorators._check_bearer_validity
     def create(
-        self, workgroup_id: str, check_exists: int = 1, contact: object = Contact()
+        self, workgroup_id: str, contact: Contact, check_exists: int = 1
     ) -> Contact:
         """Add a new contact to a workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup
+        :param class contact: Contact model object to create
         :param int check_exists: check if a contact already exists inot the workgroup:
 
-        - 0 = no check
-        - 1 = compare name [DEFAULT]
-        - 2 = compare email
+            - 0 = no check
+            - 1 = compare name [DEFAULT]
+            - 2 = compare email
 
-        :param class contact: Contact model object to create
+
+        :returns: the created contact or False if a similar cataog already exists or a tuple with response error code
+        :rtype: Contact
+
+
+
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):

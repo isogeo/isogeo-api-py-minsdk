@@ -288,7 +288,7 @@ class TestContacts(unittest.TestCase):
         self.assertTrue(self.isogeo.contact.exists(contact_workgroup.get("_id")))
 
         # get and check
-        contact_workgroup = self.isogeo.contact.contact(contact_workgroup.get("_id"))
+        contact_workgroup = self.isogeo.contact.get(contact_workgroup.get("_id"))
 
         self.assertIsInstance(contact_workgroup, Contact)
 
@@ -317,7 +317,7 @@ class TestContacts(unittest.TestCase):
         contact_fixture = self.isogeo.contact.update(contact_fixture)
 
         # check if the change is effective
-        contact_fixture_updated = self.isogeo.contact.contact(contact_fixture._id)
+        contact_fixture_updated = self.isogeo.contact.get(contact_fixture._id)
         self.assertEqual(
             contact_fixture_updated.name,
             "{} - UPDATED - {}".format(get_test_marker(), self.discriminator),

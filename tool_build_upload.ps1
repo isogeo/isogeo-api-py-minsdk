@@ -19,8 +19,8 @@ python -m pip install --upgrade -r ./requirements.txt
 python -m pip install --upgrade black twine
 
 # apply black linter
-python -m black --target-version=py36 .\isogeo_pysdk
-python -m black --target-version=py36 .\tests
+python -m black --target-version=py37 .\isogeo_pysdk
+python -m black --target-version=py37 .\tests
 
 # remove previous builds
 "-- STEP -- Clean up the previous builds"

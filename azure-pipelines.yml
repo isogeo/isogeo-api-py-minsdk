@@ -4,15 +4,44 @@
 # https://docs.microsoft.com/azure/devops/pipelines/languages/python
 
 trigger:
-- master
+  batch: false
+  branches:
+    include:
+    - master
+  tags:
+    include:
+    - "*"
 
 pr:
 - master
 
 jobs:
 
-# UNIT TESTS
+# LINT AND FORMATTING CODE
+- job: 'Lint'
+  pool:
+    vmImage: "windows-2019"
+
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '3.7'
+      architecture: 'x64'
+      addToPath: true
+
+  - script: |
+      python -m pip install -U pip
+      python -m pip install -U black
+    displayName: 'Install black dependencies'
+
+  - script: |
+      python -m black --target-version=py37 .\isogeo_pysdk
+      python -m black --target-version=py37 .\tests
+    displayName: 'Apply black code formatting'
+
+# TESTS
 - job: 'Test'
+  dependsOn: 'Lint'
   pool:
     vmImage: "windows-2019"
   strategy:
@@ -37,7 +66,7 @@ jobs:
     displayName: 'Install dependencies'
 
   - script: |
-      python -m pytest --random-order --maxfail=3 --junitxml=junit/test-results.xml --cov=com --cov-report=xml --cov-report=html --cov-append tests
+      python -m pytest --random-order --maxfail=3 --junitxml=junit/test-results.xml --cov=isogeo_pysdk --cov-report=xml --cov-append tests
     env:
       # platform
       ISOGEO_PLATFORM: $(ISOGEO_PLATFORM)
@@ -58,14 +87,18 @@ jobs:
       ISOGEO_WORKGROUP_TEST_UUID: $(ISOGEO_WORKGROUP_TEST_UUID)
     displayName: 'Tests and coverage - Pytest'
 
-  # # Codecov. Inspired from: https://github.com/codecov/example-azure-pipelines
-  # - task: Bash@3
-  #   displayName: "Publish coverage results to Codecov"
-  #   condition: succeededOrFailed()
-  #   continueOnError: true
-  #   inputs:
-  #     targetType: 'inline'
-  #     script: <(curl https://codecov.io/bash) -t $(CODECOV_TOKEN) -f coverage.xml
+  # Codecov. Inspired from: https://github.com/codecov/example-azure-pipelines
+  - task: cURLUploader@2
+    displayName: "Publish coverage results to Codecov - with cURL"
+    condition: succeededOrFailed()
+    continueOnError: true
+    env:
+      CODECOV_TOKEN: $(CODECOV_TOKEN)
+    inputs:
+      authType: userAndPass 
+      files: 'coverage.xml'
+      url: 'https://codecov.io/bash'
+      options: '-t $(CODECOV_TOKEN)'
 
   - task: PublishTestResults@2
     displayName: "Publish unit test results"
@@ -81,35 +114,24 @@ jobs:
       summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
       reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
 
-
-# LINT AND FORMATTING CODE
-- job: 'Lint'
+# BUILD and PUBLISH
+# only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
+- job: 'Publish'
   dependsOn: 'Test'
   pool:
     vmImage: "windows-2019"
+  # condition:
+  #   contains(variables['Build.SourceBranch'], 'tags')
 
   steps:
-  - task: UsePythonVersion@0
+  - task: GitHubRelease@0
     inputs:
-      versionSpec: '3.6'
-      architecture: 'x64'
-      addToPath: true
+      gitHubConnection: 'Azure DevOps'
+      repositoryName: 'isogeo/isogeo-api-py-minsdk'
+      action: 'create'
+      target: '$(Build.SourceVersion)'
+      tagSource: 'auto'
 
-  - script: |
-      python -m pip install -U pip
-      python -m pip install -U black
-    displayName: 'Install black dependencies'
-
-  - script: python -m black --target-version=py36 .\isogeo_pysdk
-    displayName: 'Apply black code formatting'
-
-# BUILD
-- job: 'Build'
-  dependsOn: 'Lint'
-  pool:
-    vmImage: "windows-2019"
-
-  steps:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '3.x'
@@ -131,35 +153,17 @@ jobs:
   - script: python setup.py bdist_wheel
     displayName: 'Build wheel'
 
-
-# PUBLISH
-- job: 'Publish'
-  dependsOn: 'Build'
-  pool:
-    vmImage: "windows-2019"
-  condition:
-    contains(variables['Build.SourceBranch'], 'tags')
-
-  steps:
-  - task: UsePythonVersion@0
+  - task: PublishPipelineArtifact@1
+    displayName: 'Publish Artifact: Isogeo Python SDK package'
     inputs:
-      versionSpec: '3.x'
-      architecture: 'x64'
-      addToPath: true
-
-  - script: 'python -m pip install -U twine'
+      path: $(System.DefaultWorkingDirectory)/dist
+      artifact: 'IsogeoPythonSDK_$(Build.SourceVersion)'
 
   - task: TwineAuthenticate@0
+    # see: https://dev.azure.com/isogeo/Python%20SDK/_settings/adminservices?resourceId=7650b333-6c8a-4c56-a839-a33242255c16&resource=%5Bobject%20Object%5D&_a=resources
     inputs:
-      externalFeeds: 'Python Package Index (PyPi)'  # see: https://dev.azure.com/isogeo/Python%20SDK/_settings/adminservices?resourceId=7650b333-6c8a-4c56-a839-a33242255c16&resource=%5Bobject%20Object%5D&_a=resources
+      externalFeeds: 'Python Package Index (PyPi)'
 
-  - script: twine upload dist/* -u $(TWINE_USERNAME) -p $(TWINE_PASSWORD)
+  - script: twine upload -r 'Python Package Index (PyPi)' --config-file $(PYPIRC_PATH) dist/*
+    continueOnError: true
     displayName: "Upload to PyPi"
-
-  - task: GitHubRelease@0
-    inputs:
-      gitHubConnection: 'Azure DevOps'
-      repositoryName: 'isogeo/isogeo-api-py-minsdk'
-      action: 'create'
-      target: '$(Build.SourceVersion)'
-      tagSource: 'auto'

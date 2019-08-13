@@ -281,26 +281,26 @@ class ApiMetadata:
 
     @ApiDecorators._check_bearer_validity
     def update(self, metadata: Metadata) -> Metadata:
-        """Check if the specified resource exists and is available for the authenticated user.
+        """Update a metadata, but **ONLY** the root attributes, not the subresources.
 
         :param Metadata metadata: metadata object to update
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):
             raise ValueError(
-                "Resource ID is not a correct UUID: {}".format(metadata._id)
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
             )
         else:
             pass
 
         # URL builder
-        url_metadata_exists = utils.get_request_base_url(
+        url_metadata_update = utils.get_request_base_url(
             route="resources/{}".format(metadata._id)
         )
 
         # request
-        req_metadata_exists = self.api_client.patch(
-            url=url_metadata_exists,
+        req_metadata_update = self.api_client.patch(
+            url=url_metadata_update,
             json=metadata.to_dict_creation(),
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
@@ -309,11 +309,12 @@ class ApiMetadata:
         )
 
         # checking response
-        req_check = checker.check_api_response(req_metadata_exists)
+        req_check = checker.check_api_response(req_metadata_update)
         if isinstance(req_check, tuple):
             return req_check
 
-        return True
+        # return updated object
+        return Metadata(**req_metadata_update.json())
 
     # -- Routes to search --------------------------------------------------------------
     @ApiDecorators._check_bearer_validity
