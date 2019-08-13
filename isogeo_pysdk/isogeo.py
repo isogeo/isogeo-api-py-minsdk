@@ -78,8 +78,8 @@ class Isogeo(OAuth2Session):
         #  (for scripts executed on the server-side with user credentials
         #  but without requiring user action)
         isogeo = Isogeo(
-            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+            client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+            client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
             auth_mode="user_legacy",
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
@@ -402,9 +402,9 @@ if __name__ == "__main__":
 
     # for oAuth2 Legacy Flow
     isogeo = Isogeo(
-        client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-        client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
         auth_mode="user_legacy",
+        client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+        client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
     )
@@ -417,9 +417,9 @@ if __name__ == "__main__":
 
     # for oAuth2 Backend (Client Credentials Grant) Flow
     isogeo = Isogeo(
-        client_id=environ.get("ISOGEO_API_DEV_ID"),
-        client_secret=environ.get("ISOGEO_API_DEV_SECRET"),
         auth_mode="group",
+        client_id=environ.get("ISOGEO_API_GROUP_CLIENT_ID"),
+        client_secret=environ.get("ISOGEO_API_GROUP_CLIENT_SECRET"),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
     )

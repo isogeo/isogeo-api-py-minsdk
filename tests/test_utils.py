@@ -57,8 +57,8 @@ class TestIsogeoUtils(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
-            "ISOGEO_API_USER_CLIENT_SECRET"
+        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
         ):
             logging.critical("No API credentials set as env variables.")
             exit()
@@ -70,8 +70,8 @@ class TestIsogeoUtils(unittest.TestCase):
             urllib3.disable_warnings()
 
         # API credentials settings
-        cls.client_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
-        cls.client_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
+        cls.client_id = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID")
+        cls.client_secret = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET")
 
     # standard methods
     def setUp(self):

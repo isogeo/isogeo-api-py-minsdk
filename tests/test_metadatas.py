@@ -44,8 +44,8 @@ load_dotenv("dev.env", override=True)
 hostname = gethostname()
 
 # API access
-app_script_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
-app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
+app_script_id = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID")
+app_script_secret = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET")
 platform = environ.get("ISOGEO_PLATFORM", "qa")
 user_email = environ.get("ISOGEO_USER_NAME")
 user_password = environ.get("ISOGEO_USER_PASSWORD")
@@ -91,8 +91,8 @@ class TestMetadatas(unittest.TestCase):
         # API connection
         cls.isogeo = Isogeo(
             auth_mode="user_legacy",
-            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+            client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+            client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
