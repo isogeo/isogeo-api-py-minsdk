@@ -17,7 +17,7 @@ import pathlib
 from setuptools import find_packages, setup
 
 # package (to get version)
-import isogeo_pysdk
+from isogeo_pysdk.__about__ import __version__
 
 # SETUP ######################################################################
 
@@ -31,7 +31,7 @@ README = (HERE / "README.md").read_text()
 setup(
     # meta
     name="isogeo-pysdk",
-    version=isogeo_pysdk.__version__,
+    version=__version__,
     author="Isogeo",
     author_email="support@isogeo.com",
     description="Python package to make it easy to use Isogeo REST API",
@@ -49,7 +49,6 @@ setup(
     # dependencies
     install_requires=["requests>=2.20.0", "requests-oauthlib>=1.2.0"],
     extras_require={
-        "api-write": ["requests-oauthlib"],
         "dev": ["black", "python-dotenv"],
         "test": ["codecov", "coverage", "pytest", "pytest-cov"],
     },

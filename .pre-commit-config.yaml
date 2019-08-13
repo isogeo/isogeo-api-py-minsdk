@@ -1,4 +1,4 @@
-exclude: ^(.venv_packaging/|.venv*/|tests/dev/|tests/fixtures/)
+exclude: ^(.venv_packaging/|.venv_tests/|.venv*/|tests/dev/|tests/fixtures/)
 repos:
 -   repo: https://github.com/python/black
     rev: 19.3b0

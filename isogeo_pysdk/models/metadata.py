@@ -152,8 +152,8 @@ class Metadata(object):
         "editionProfile": str,
         "encoding": str,
         "envelope": dict,
-        "events": dict,
-        "featureAttributes": dict,
+        "events": list,
+        "featureAttributes": list,
         "features": int,
         "format": str,
         "formatVersion": str,
@@ -233,8 +233,8 @@ class Metadata(object):
         editionProfile: str = None,
         encoding: str = None,
         envelope: dict = None,
-        events: dict = None,
-        featureAttributes: dict = None,
+        events: list = None,
+        featureAttributes: list = None,
         features: int = None,
         format: str = None,
         formatVersion: str = None,
@@ -654,57 +654,57 @@ class Metadata(object):
 
     # events
     @property
-    def events(self) -> str:
+    def events(self) -> list:
         """Gets the events of this Metadata.
 
         :return: The events of this Metadata.
-        :rtype: str
+        :rtype: list
         """
         return self._events
 
     @events.setter
-    def events(self, events: str):
+    def events(self, events: list):
         """Sets the  of this Metadata.
 
-        :param str events: to be set
+        :param list events: to be set
         """
 
         self._events = events
 
     # featureAttributes
     @property
-    def featureAttributes(self) -> str:
+    def featureAttributes(self) -> list:
         """Gets the featureAttributes of this Metadata.
 
         :return: The featureAttributes of this Metadata.
-        :rtype: str
+        :rtype: list
         """
         return self._featureAttributes
 
     @featureAttributes.setter
-    def featureAttributes(self, featureAttributes: str):
+    def featureAttributes(self, featureAttributes: list):
         """Sets the  of this Metadata.
 
-        :param str featureAttributes: to be set
+        :param list featureAttributes: to be set
         """
 
         self._featureAttributes = featureAttributes
 
     # features
     @property
-    def features(self) -> str:
+    def features(self) -> int:
         """Gets the features of this Metadata.
 
         :return: The features of this Metadata.
-        :rtype: str
+        :rtype: int
         """
         return self._features
 
     @features.setter
-    def features(self, features: str):
+    def features(self, features: int):
         """Sets the  of this Metadata.
 
-        :param str features: to be set
+        :param int features: to be set
         """
 
         self._features = features

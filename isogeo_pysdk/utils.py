@@ -21,23 +21,20 @@ import quopri
 import re
 import uuid
 from configparser import ConfigParser
-from os import path
+from pathlib import Path
 from urllib.parse import urlparse
 
 # 3rd party
 import requests
 
 # modules
-try:
-    from . import checker
-except (ImportError, ValueError, SystemError):
-    import checker
+from isogeo_pysdk.checker import IsogeoChecker
 
 # ##############################################################################
 # ########## Globals ###############
 # ##################################
 
-checker = checker.IsogeoChecker()
+checker = IsogeoChecker()
 logger = logging.getLogger(__name__)
 
 # ##############################################################################
@@ -690,6 +687,7 @@ class IsogeoUtils(object):
         return share
 
     # -- API AUTH ------------------------------------------------------------
+    @classmethod
     def credentials_loader(self, in_credentials: str = "client_secrets.json") -> dict:
         """Loads API credentials from a file, JSON or INI.
 
@@ -697,21 +695,21 @@ class IsogeoUtils(object):
           look for a client_secrets.json file.
         """
         accepted_extensions = (".ini", ".json")
+        in_credentials_path = Path(in_credentials)  # load path
+
         # checks
-        if not path.isfile(in_credentials):
+        if not in_credentials_path.is_file():
             raise IOError("Credentials file doesn't exist: {}".format(in_credentials))
-        else:
-            in_credentials = path.normpath(in_credentials)
-        if path.splitext(in_credentials)[1] not in accepted_extensions:
+
+        if in_credentials_path.suffix not in accepted_extensions:
             raise ValueError(
                 "Extension of credentials file must be one of {}".format(
                     accepted_extensions
                 )
             )
-        else:
-            kind = path.splitext(in_credentials)[1]
+
         # load, check and set
-        if kind == ".json":
+        if in_credentials_path.suffix == ".json":
             with open(in_credentials, "r") as f:
                 in_auth = json.loads(f.read())
             # check structure
@@ -737,6 +735,10 @@ class IsogeoUtils(object):
                         auth_settings.get("token_uri")
                     ),
                     "uri_redirect": None,
+                    # below, attributes added from 2019 august in Isogeo Manager
+                    "kind": auth_settings.get("kind"),
+                    "type": auth_settings.get("isogeo_type"),
+                    "staff": auth_settings.get("isogeo_staff"),
                 }
             else:
                 # assuming in_auth == 'installed'
@@ -753,6 +755,10 @@ class IsogeoUtils(object):
                         auth_settings.get("token_uri")
                     ),
                     "uri_redirect": auth_settings.get("redirect_uris", None),
+                    # below, attributes added from 2019 august in Isogeo Manager
+                    "kind": auth_settings.get("kind"),
+                    "type": auth_settings.get("isogeo_type"),
+                    "staff": auth_settings.get("isogeo_staff"),
                 }
         else:
             # assuming file is an .ini
