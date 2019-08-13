@@ -75,45 +75,7 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# html_theme = 'alabaster'
-
-if on_rtd:
-    html_theme = "default"
-else:
-    import guzzle_sphinx_theme
-
-    html_theme = "guzzle_sphinx_theme"
-    html_theme_path = guzzle_sphinx_theme.html_theme_path()
-    extensions.append("guzzle_sphinx_theme")
-    # Guzzle theme options
-    html_theme_options = {
-        "project_nav_name": project,
-        # Path to a touch icon
-        "touch_icon": "",
-        # Specify a base_url used to generate sitemap.xml links. If not
-        # specified, then no sitemap will be built.
-        "base_url": "http://isogeo-api-pysdk.readthedocs.io",
-        # Allow a separate homepage from the master_doc
-        # "homepage": "index",
-        # Allow the project link to be overriden to a custom URL.
-        "projectlink": "https://github.com/Isogeo/isogeo-api-py-minsdk/",
-    }
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
-
-# Custom sidebar templates, must be a dictionary that maps document names
-# to template names.
-#
-# The default sidebars (for documents that don't match any pattern) are
-# defined by theme itself.  Builtin themes are using these templates by
-# default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
-# 'searchbox.html']``.
-#
-# html_sidebars = {}
-
+html_theme = "default"
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
