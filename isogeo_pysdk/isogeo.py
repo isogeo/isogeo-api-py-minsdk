@@ -47,8 +47,64 @@ utils = IsogeoUtils()
 
 class Isogeo(OAuth2Session):
     """Main class in Isogeo API Python wrapper. Manage authentication and requests to the REST API.
+    Inherits from :class:`requests_oauthlib.OAuth2Session`.
+
+    **Inherited:**
+
+    :param str client_id: Client id obtained during registration
+    :param str redirect_uri: Redirect URI you registered as callback
+    :param list auto_refresh_url: Refresh token endpoint URL, must be HTTPS. Supply
+                    this if you wish the client to automatically refresh
+                    your access tokens.
+
+    **Package specific:**
+
+    :param str client_secret: application oAuth2 secret
+    :param str auth_mode: oAuth2 authentication flow to use. Must be one of 'AUTH_MODES'
+    :param str platform: to request production or quality assurance
+    :param dict proxy: dictionary of proxy settings as described in `Requests <https://2.python-requests.org/en/master/user/advanced/#proxies>`_
+    :param str lang: API localization ("en" or "fr").
+    :param str app_name: to custom the application name and user-agent
+
 
     :returns: authenticated requests Session you can use to send requests to the API.
+    :rtype: requests_oauthlib.OAuth2Session
+
+    :Example:
+
+    .. code-block:: python
+
+        # using oAuth2 Password Credentials Grant (Legacy Application)
+        #  (for scripts executed on the server-side with user credentials
+        #  but without requiring user action)
+        isogeo = Isogeo(
+            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
+            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+            auth_mode="user_legacy",
+            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+            platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        )
+
+        # getting a token
+        isogeo.connect(
+            username=environ.get("ISOGEO_USER_NAME"),
+            password=environ.get("ISOGEO_USER_PASSWORD"),
+        )
+
+        # using oAuth2 Client Credentials Grant (Backend Application)
+        #  (for scripts executed on the server-side with only application credentials
+        #  but limited to read-only in Isogeo API)
+        isogeo = Isogeo(
+            client_id=environ.get("ISOGEO_API_DEV_ID"),
+            client_secret=environ.get("ISOGEO_API_DEV_SECRET"),
+            auth_mode="group",
+            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+            platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        )
+    
+        # getting a token
+        isogeo.connect()
+
     """
 
     # -- ATTRIBUTES -----------------------------------------------------------
