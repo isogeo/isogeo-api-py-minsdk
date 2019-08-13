@@ -87,6 +87,7 @@ class TestLimitations(unittest.TestCase):
 
         # API connection
         cls.isogeo = Isogeo(
+            auth_mode="user_legacy",
             client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
             client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
