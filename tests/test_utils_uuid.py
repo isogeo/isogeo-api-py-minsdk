@@ -14,12 +14,11 @@
 # ##################################
 
 # Standard library
-import json
-import logging
-from os import environ, path
-from sys import exit
 import unittest
-from urllib.parse import urlparse
+from pathlib import Path
+
+# 3rd party
+from dotenv import load_dotenv
 
 # module target
 from isogeo_pysdk import IsogeoUtils
@@ -28,9 +27,9 @@ from isogeo_pysdk import IsogeoUtils
 # ######## Globals #################
 # ##################################
 
-# API access
-app_id = environ.get("ISOGEO_API_DEV_ID")
-app_token = environ.get("ISOGEO_API_DEV_SECRET")
+if Path("dev.env").exists():
+    load_dotenv("dev.env", override=True)
+
 
 # #############################################################################
 # ########## Classes ###############
@@ -40,16 +39,14 @@ app_token = environ.get("ISOGEO_API_DEV_SECRET")
 class TestIsogeoUtilsUuid(unittest.TestCase):
     """Test search to Isogeo API."""
 
-    if not app_id or not app_token:
-        logging.critical("No API credentials set as env variables.")
-        exit()
-    else:
-        pass
+    # -- Standard methods --------------------------------------------------------
+    @classmethod
+    def setUpClass(cls):
+        """Executed when module is loaded before any test."""
+        cls.utils = IsogeoUtils()
 
-    # standard methods
     def setUp(self):
         """ Fixtures prepared before each test."""
-        self.utils = IsogeoUtils()
         # uuid
         self.uuid_hex = "0269803d50c446b09f5060ef7fe3e22b"
         self.uuid_urn4122 = "urn:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
