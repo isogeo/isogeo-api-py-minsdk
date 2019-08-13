@@ -20,6 +20,7 @@ pytest-random-order = "*"
 setuptools = "*"
 twine = "*"
 wheel = "*"
+sphinx = "*"
 
 [packages]
 requests = ">=2.20.0"

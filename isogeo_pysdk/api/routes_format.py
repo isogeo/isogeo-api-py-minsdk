@@ -194,21 +194,16 @@ class ApiFormat:
         :rtype: Format or tuple
 
         :Example:
-        >>> format_to_add = Format(
-            code="geojson",
-            name="GeoJSON",
-            type="vectorDataset"
-        )
-        >>> print(isogeo.formats.create(format_to_add))
-        {
-            '_id': string (uuid),
-            '_tag': 'format:geojson',
-            'aliases': [],
-            'code': 'geojson',
-            'name': 'GeoJSON',
-            'type': 'vectorDataset',
-            'versions': []
-        }
+
+        .. code-block:: python
+
+            format_to_add = Format(
+                code="geojson",
+                name="GeoJSON",
+                type="vectorDataset"
+            )
+            isogeo.formats.create(format_to_add)
+
         """
         # check format code
         if not frmt.code:

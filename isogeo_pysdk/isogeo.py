@@ -133,13 +133,13 @@ class Isogeo(OAuth2Session):
     def __init__(
         self,
         # custom
-        app_name: str = "isogeo-pysdk/{}".format(version),
         auth_mode: str = "group",
         client_secret: str = None,
         platform: str = "qa",
         proxy: dict = None,
         timeout: tuple = (15, 45),
         lang: str = "fr",
+        app_name: str = "isogeo-pysdk/{}".format(version),
         # additional
         **kwargs,
     ):
