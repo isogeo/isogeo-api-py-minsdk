@@ -78,10 +78,10 @@ class Isogeo(OAuth2Session):
         app_name: str = "isogeo-pysdk/{}".format(version),
         auth_mode: str = "group",
         client_secret: str = None,
-        lang: str = "en",
         platform: str = "qa",
         proxy: dict = None,
         timeout: tuple = (15, 45),
+        lang: str = "fr",
         # additional
         **kwargs,
     ):
