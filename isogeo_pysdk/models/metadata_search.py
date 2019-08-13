@@ -23,15 +23,8 @@ import pprint
 # ##################################
 class MetadataSearch(object):
     """Metadata searchs are entities used to organize and shares metadata of a workgroup.
-
-    .. code-block:: json
-
     """
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of search attributes. {"attribute name": "attribute type"}.
-    """
     attr_types = {
         "envelope": object,
         "limit": int,
