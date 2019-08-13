@@ -119,11 +119,13 @@ class Isogeo(OAuth2Session):
             "client_id": str,
             "client_secret": str,
             "auto_refresh_url": str,
+            "redirect_uris": list,
         },
         "user_public": {
             "client_id": str,
             "client_secret": str,
             "auto_refresh_url": str,
+            "redirect_uris": list,
         },
         "guess": {},
     }
