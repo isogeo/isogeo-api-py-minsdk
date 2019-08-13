@@ -111,7 +111,6 @@ class TestShares(unittest.TestCase):
     def tearDown(self):
         """Executed after each test."""
         sleep(0.5)
-        pass
 
     @classmethod
     def tearDownClass(cls):
@@ -223,7 +222,7 @@ class TestShares(unittest.TestCase):
     def test_shares_get_user(self):
         """GET :/shares}"""
         # retrieve workgroup shares
-        shares = self.isogeo.share.shares(caching=0)
+        shares = self.isogeo.share.listing(caching=0)
         # parse and test object loader
         for i in shares[:50]:
             # load it
@@ -256,7 +255,7 @@ class TestShares(unittest.TestCase):
     def test_shares_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/shares}"""
         # retrieve workgroup shares
-        wg_shares = self.isogeo.share.shares(
+        wg_shares = self.isogeo.share.listing(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
         )
         # parse and test object loader
@@ -305,7 +304,7 @@ class TestShares(unittest.TestCase):
     #     share_fixture = self.isogeo.share.update(share_fixture)
 
     #     # check if the change is effective
-    #     share_fixture_updated = self.isogeo.share.share(
+    #     share_fixture_updated = self.isogeo.share.get(
     #         share_fixture.owner.get("_id"), share_fixture._id
     #     )
     #     self.assertEqual(

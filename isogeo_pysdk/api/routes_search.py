@@ -127,7 +127,7 @@ class ApiSearch:
         :param list include: subresources that should be returned.
          Must be a list of strings. Available values: *isogeo.SUBRESOURCES*
         :param bool whole_share: option to return all results or only the
-         page size. *True* by DEFAULT.
+                                page size. *False* by DEFAULT.
         :param bool check: option to check query parameters and avoid erros.
          *True* by DEFAULT.
         :param bool augment: option to improve API response by adding
@@ -175,18 +175,21 @@ class ApiSearch:
         if isinstance(req_check, tuple):
             return req_check
 
+        # store search response
+        req_metadata_search = ResourceSearch(**req_metadata_search.json())
+
         # add shares to tags and query
         if augment:
-            self.add_tags_shares(req_metadata_search.get("tags"))
+            self.add_tags_shares(req_metadata_search.tags)
             if share:
-                req_metadata_search.get("query")["_shares"] = [share]
+                req_metadata_search.query["_shares"] = [share]
             else:
-                req_metadata_search.get("query")["_shares"] = []
+                req_metadata_search.query["_shares"] = []
         else:
             pass
 
         # end of method
-        return ResourceSearch(**req_metadata_search.json())
+        return req_metadata_search
 
     # -- UTILITIES -----------------------------------------------------------
     def add_tags_shares(self, tags: dict = dict()):
@@ -195,15 +198,15 @@ class ApiSearch:
         :param dict tags: tags dictionary from a search request
         """
         # check if shares_id have already been retrieved or not
-        if not hasattr(self, "shares_id"):
-            shares = self.shares()
-            self.shares_id = {
+        if not hasattr(self.api_client, "shares_id"):
+            shares = self.api_client.share.listing()
+            self.api_client.shares_id = {
                 "share:{}".format(i.get("_id")): i.get("name") for i in shares
             }
         else:
             pass
         # update query tags
-        tags.update(self.shares_id)
+        tags.update(self.api_client.shares_id)
 
 
 # ##############################################################################
