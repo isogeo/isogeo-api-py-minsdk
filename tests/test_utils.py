@@ -8,7 +8,7 @@
     # for whole test
     python -m unittest tests.test_utils
     # for specific
-    python -m unittest tests.test_utils.TestIsogeoUtils.
+    python -m unittest tests.test_utils.TestIsogeoUtils.test_get_edit_url_ok
     ```
 """
 
@@ -147,7 +147,7 @@ class TestIsogeoUtils(unittest.TestCase):
             tab="identification",
         )
         self.assertIsInstance(url, str)
-        self.assertIn("https://app.isogeo.com", url)
+        self.assertIn("app", url)
         self.assertIn("groups", url)
         urlparse(url)
         # again with type extracted from metadata model
