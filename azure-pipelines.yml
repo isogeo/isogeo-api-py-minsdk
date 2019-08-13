@@ -120,8 +120,8 @@ jobs:
   dependsOn: 'Test'
   pool:
     vmImage: "windows-2019"
-  # condition:
-  #   contains(variables['Build.SourceBranch'], 'tags')
+  condition:
+    contains(variables['Build.SourceBranch'], 'tags')
 
   steps:
   - task: GitHubRelease@0
