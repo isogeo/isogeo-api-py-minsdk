@@ -51,7 +51,7 @@ Add shares tags to search response and as attributes
     token = isogeo.connect()
 
     # set augment option on True
-    search = isogeo.search(token, page_size=0, whole_share=0, augment=1)
+    search = isogeo.search(token, page_size=0, whole_results=0, augment=1)
 
     # through search tags
     print(search.get("tags"))
@@ -92,7 +92,7 @@ The share UUID is required: 2 methods are proposed to retrieve it.
     # empty search
     search = isogeo.search(token,
                            page_size=0,     # get only tags, not results
-                           whole_share=0,   # do not retrieve the whole application scope
+                           whole_results=0,   # do not retrieve the whole application scope
                            augment=1    # -> this parameter is what we need
                            )
 
@@ -123,7 +123,7 @@ With the augmented share, it's also possible to check if a metadata is present w
     # get a metadata
     search = isogeo.search(token,
                            page_size=1,     # get only one result
-                           whole_share=0    # do not retrieve the whole application scope
+                           whole_results=0    # do not retrieve the whole application scope
                            )
     md = search.get("results")[0]
 
@@ -307,7 +307,7 @@ In Isogeo, every metadata resource can be downloaded in its XML version (ISO 191
     search_to_be_exported = isogeo.search(token,
                                           page_size=10,
                                           query="type:dataset",
-                                          whole_share=0
+                                          whole_results=0
                                           )
 
     # loop on results and export
@@ -348,7 +348,7 @@ Administrators and editors can link raw data and docs (.zip, .pdf...) to metadat
     latest_data_modified = isogeo.search(token,
                                          page_size=10,
                                          order_by="modified",
-                                         whole_share=0,
+                                         whole_results=0,
                                          query="action:download",
                                          include=["links"],
                                          )
