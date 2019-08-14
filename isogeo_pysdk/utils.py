@@ -273,7 +273,9 @@ class IsogeoUtils(object):
             version_url = "https://qa-isogeo-app.azurewebsites.net/about"
         else:
             raise ValueError(
-                "Component value must be one of: " "api [default], db, app."
+                "Incorrect component value: {}. Must be one of: api [default], db, app.".format(
+                    component
+                )
             )
 
         # send request
