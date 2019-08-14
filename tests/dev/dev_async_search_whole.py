@@ -50,7 +50,7 @@ isogeo.connect()
 def _meta_get_resource_sync(offset):
     """Just a meta func to get execution time"""
     search = isogeo.search(
-        page_size=50, offset=offset, check=0, whole_share=0, include="all"
+        page_size=50, offset=offset, check=0, whole_results=0, include="all"
     )
 
     elapsed = default_timer() - START_TIME
@@ -90,7 +90,7 @@ async def search_metadata_asynchronous(max_workers):
 # ##################################
 if __name__ == "__main__":
     page = 50
-    search = isogeo.search(page_size=page, whole_share=0)
+    search = isogeo.search(page_size=page, whole_results=0)
     total_shared = search.total
     total_pages = utils.pages_counter(total_shared, page_size=page)
 
@@ -110,7 +110,7 @@ if __name__ == "__main__":
     metadatas = []  # a recipient list
     for offset in range(0, total_pages):
         in_search = isogeo.search(
-            page_size=page, offset=offset, check=0, whole_share=0, include="all"
+            page_size=page, offset=offset, check=0, whole_results=0, include="all"
         )
         # storing results by addition
         metadatas.extend(in_search.results)
@@ -157,5 +157,3 @@ if __name__ == "__main__":
         i["coordinateSystem"] = i.pop("coordinate-system", list)
         i["featureAttributes"] = i.pop("feature-attributes", list)
         Metadata(**i)
-
-    print(isogeo.search.cache_info())

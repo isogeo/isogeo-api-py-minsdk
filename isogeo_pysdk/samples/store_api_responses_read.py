@@ -104,9 +104,9 @@ if __name__ == "__main__":
 
     # -- Async exports --------------------------------------------------
     # get some object identifiers required for certain routes
-    resource_id = sample(isogeo.search(whole_share=0, page_size=50).get("results"), 1)[
-        0
-    ].get("_id")
+    resource_id = sample(
+        isogeo.search(whole_results=0, page_size=50).get("results"), 1
+    )[0].get("_id")
     share_id = isogeo.shares()[0].get("_id")
 
     # list of methods to execute
@@ -114,12 +114,12 @@ if __name__ == "__main__":
         {
             "route": isogeo.search,
             "output_json_name": "api_search_empty",
-            "params": {"page_size": 0, "whole_share": 0, "augment": 1},
+            "params": {"page_size": 0, "whole_results": 0, "augment": 1},
         },
         {
             "route": isogeo.search,
             "output_json_name": "api_search_complete",
-            "params": {"whole_share": 1, "include": "all", "augment": 1},
+            "params": {"whole_results": 1, "include": "all", "augment": 1},
         },
         {
             "route": isogeo.resource,

@@ -45,7 +45,7 @@ if __name__ == "__main__":
     search = isogeo.search(
         query="owner:b81e0b3bc3124deeadbf59ad05c71a2a",
         page_size=10,
-        whole_share=0,
+        whole_results=0,
         include=["layers", "links", "operations", "serviceLayers"],
     )
 

@@ -26,7 +26,7 @@ from requests.models import Response
 from isogeo_pysdk.exceptions import AlreadyExistError
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Metadata, ResourceSearch
+from isogeo_pysdk.models import Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
 # other routes

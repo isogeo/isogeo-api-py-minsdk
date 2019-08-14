@@ -88,7 +88,7 @@ if __name__ == "__main__":
     # get the metadata ids
     md_ids = [
         md.get("_id")
-        for md in isogeo.search(page_size=how_much_mds, whole_share=0).results
+        for md in isogeo.search(page_size=how_much_mds, whole_results=0).results
     ]
 
     # SYNC

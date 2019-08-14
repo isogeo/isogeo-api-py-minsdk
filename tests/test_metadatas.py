@@ -145,7 +145,7 @@ class TestMetadatas(unittest.TestCase):
     #     # get random metadata within a small search
     #     search = self.isogeo.metadata.search(
     #         page_size=5,
-    #         # whole_share=0
+    #         # whole_results=0
     #     )
     #     metadata_id = sample(search.results, 1)[0].get("_id")
 
@@ -153,5 +153,5 @@ class TestMetadatas(unittest.TestCase):
     #     # with self.assertRaises(TypeError):
     #     #     self.isogeo.search(self.bearer,
     #     #                         page_size=0,
-    #     #                         whole_share=0,
+    #     #                         whole_results=0,
     #     #                         specific_md=md)

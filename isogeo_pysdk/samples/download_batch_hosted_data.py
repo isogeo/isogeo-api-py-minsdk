@@ -49,7 +49,7 @@ if __name__ == "__main__":
     latest_data_modified = isogeo.search(
         page_size=10,
         order_by="modified",
-        whole_share=0,
+        whole_results=0,
         query="action:download",
         include=["links"],
     )

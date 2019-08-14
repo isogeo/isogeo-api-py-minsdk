@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     # ------------ REAL START ----------------------------
     latest_data_modified = isogeo.search(
-        page_size=10, order_by="modified", whole_share=0, include=["events"]
+        page_size=10, order_by="modified", whole_results=0, include=["events"]
     )
 
     print("Last 10 data updated \nTitle | datetime\n\t description")
