@@ -76,9 +76,10 @@ class ApiSearch:
         # specific options of implemention
         augment: bool = False,
         check: bool = True,
+        previous_total: int = None,
         # tags_as_dicts: bool = False,
-        whole_share: bool = False,
-    ) -> ResourceSearch:
+        whole_results: bool = False,
+    ) -> MetadataSearch:
         """Search within the resources shared to the application. It's the mainly used method to retrieve metadata.
 
         :param str query: search terms and semantic filters. Equivalent of
@@ -119,14 +120,32 @@ class ApiSearch:
         :param list specific_md: list of metadata UUIDs to filter on
         :param list include: subresources that should be returned.
          Must be a list of strings. Available values: *isogeo.SUBRESOURCES*
-        :param bool whole_share: option to return all results or only the
+        :param bool whole_results: option to return all results or only the
                                 page size. *False* by DEFAULT.
         :param bool check: option to check query parameters and avoid erros.
          *True* by DEFAULT.
         :param bool augment: option to improve API response by adding
          some tags on the fly (like shares_id)
+        :param int previous_total: if different of None, value will be used to paginate. Can save a request;
         :param bool tags_as_dicts: option to store tags as key/values by filter.
         """
+        # PAGINATION
+        # determine if a request to get the total is required
+        if previous_total is None:
+            total_results = self.get_search_context().total
+        else:
+            total_results = previous_total
+
+        # check if results
+        if total_results < 1:
+            logger.warning
+
+        # determine if a pagination is required
+        if not whole_results:
+            print("no pagination required")
+
+        total_pages = utils.pages_counter(total_results)
+
         # handling request parameters
         payload = {
             "_id": checker._check_filter_specific_md(specific_md),
@@ -169,7 +188,7 @@ class ApiSearch:
             return req_check
 
         # store search response
-        req_metadata_search = ResourceSearch(**req_metadata_search.json())
+        req_metadata_search = MetadataSearch(**req_metadata_search.json())
 
         # add shares to tags and query
         if augment:
@@ -227,6 +246,6 @@ class ApiSearch:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
-    api_metadata = ApiSearch()
-    print(api_metadata)
+    """Standalone execution """
+    api_search = ApiSearch()
+    print(api_search)
