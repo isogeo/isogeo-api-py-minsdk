@@ -13,19 +13,12 @@
 
 # Standard library
 import logging
-from functools import wraps
-from urllib.parse import urlparse, parse_qs, urlunparse
-
-
-# 3rd party
-import requests
-from requests.adapters import HTTPAdapter
-from requests.models import Response
+from functools import lru_cache
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import ResourceSearch
+from isogeo_pysdk.models import MetadataSearch
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -207,6 +200,27 @@ class ApiSearch:
             pass
         # update query tags
         tags.update(self.api_client.shares_id)
+
+    @lru_cache()
+    @ApiDecorators._check_bearer_validity
+    def get_search_context(self):
+        """Helper to get the search context (total results, tags, etc.) for the authenticated application/user."""
+        # request
+        print("YOUHOu")
+        req_search_total_results = self.api_client.get(
+            url=utils.get_request_base_url(route="resources/search"),
+            headers=self.api_client.header,
+            params={"_limit": 0},
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_search_total_results)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        return MetadataSearch(**req_search_total_results.json())
 
 
 # ##############################################################################
