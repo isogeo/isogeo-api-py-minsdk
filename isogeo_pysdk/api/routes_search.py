@@ -12,8 +12,10 @@
 # ##################################
 
 # Standard library
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 import logging
-from functools import lru_cache
+from functools import lru_cache, partial
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
@@ -76,7 +78,7 @@ class ApiSearch:
         # specific options of implemention
         augment: bool = False,
         check: bool = True,
-        previous_total: int = None,
+        expected_total: int = None,
         # tags_as_dicts: bool = False,
         whole_results: bool = False,
     ) -> MetadataSearch:
@@ -126,26 +128,9 @@ class ApiSearch:
          *True* by DEFAULT.
         :param bool augment: option to improve API response by adding
          some tags on the fly (like shares_id)
-        :param int previous_total: if different of None, value will be used to paginate. Can save a request;
+        :param int expected_total: if different of None, value will be used to paginate. Can save a request.
         :param bool tags_as_dicts: option to store tags as key/values by filter.
         """
-        # PAGINATION
-        # determine if a request to get the total is required
-        if previous_total is None:
-            total_results = self.get_search_context().total
-        else:
-            total_results = previous_total
-
-        # check if results
-        if total_results < 1:
-            logger.warning
-
-        # determine if a pagination is required
-        if not whole_results:
-            print("no pagination required")
-
-        total_pages = utils.pages_counter(total_results)
-
         # handling request parameters
         payload = {
             "_id": checker._check_filter_specific_md(specific_md),
@@ -172,27 +157,117 @@ class ApiSearch:
         # URL
         url_resources_search = utils.get_request_base_url(route="resources/search")
 
-        # request
-        req_metadata_search = self.api_client.get(
-            url=url_resources_search,
-            headers=self.api_client.header,
-            params=payload,
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-            timeout=(5, 200),
-        )
+        # SEARCH CASES
 
-        # checking response
-        req_check = checker.check_api_response(req_metadata_search)
-        if isinstance(req_check, tuple):
-            return req_check
+        # cASE - MULTIPLE PAGINATED SEARCHES
+        if whole_results:
+            # PAGINATION
+            # determine if a request to get the total is required
+            if expected_total is None:
+                # make an empty request with same filters
+                total_results = self.search(
+                    # filters
+                    query=query,
+                    include=include,
+                    share=share,
+                    specific_md=specific_md,
+                    bbox=bbox,
+                    georel=georel,
+                    poly=poly,
+                    # options
+                    augment=0,
+                    check=0,
+                    page_size=0,
+                    whole_results=0,
+                ).total
+            else:
+                total_results = expected_total
 
-        # store search response
-        req_metadata_search = MetadataSearch(**req_metadata_search.json())
+            # avoid to launch async searches if it's possible in one request
+            if total_results <= 100:
+                logger.debug(
+                    "Paginated (size={}) search changed into a unique search because "
+                    "the total of metadata {} is less than the maximum size (100).".format(
+                        page_size, total_results
+                    )
+                )
+                return self.search(
+                    # filters
+                    query=query,
+                    # include=include,
+                    share=share,
+                    specific_md=specific_md,
+                    bbox=bbox,
+                    georel=georel,
+                    poly=poly,
+                    # sorting
+                    order_by=order_by,
+                    order_dir=order_dir,
+                    # options
+                    augment=0,
+                    check=0,
+                    page_size=100,
+                    whole_results=0,
+                )
+            else:
+                # store search args as dict
+                search_params = {
+                    # filters
+                    "query": query,
+                    "include": include,
+                    "share": share,
+                    "specific_md": specific_md,
+                    "bbox": bbox,
+                    "georel": georel,
+                    "poly": poly,
+                    # sorting
+                    "order_by": order_by,
+                    "order_dir": order_dir,
+                }
+
+                # launch async searches
+                loop = asyncio.get_event_loop()
+                future_searches_concatenated = asyncio.ensure_future(
+                    self.search_metadata_asynchronous(
+                        total_results=total_results, **search_params
+                    )
+                )
+                loop.run_until_complete(future_searches_concatenated)
+
+                # check results structure
+                req_metadata_search = future_searches_concatenated.result()
+
+                # properly close the loop
+                loop.close()
+
+        # cASE - NO PAGINATION NEEDED
+        elif page_size == 0 or not whole_results:
+            logger.debug(
+                "Simple search with page parameters offset={} - page_size={}".format(
+                    offset, page_size
+                )
+            )
+
+            # request
+            req_metadata_search = self.api_client.get(
+                url=url_resources_search,
+                headers=self.api_client.header,
+                params=payload,
+                proxies=self.api_client.proxies,
+                verify=self.api_client.ssl,
+                timeout=(5, 200),
+            )
+
+            # checking response
+            req_check = checker.check_api_response(req_metadata_search)
+            if isinstance(req_check, tuple):
+                return req_check
+
+            req_metadata_search = MetadataSearch(**req_metadata_search.json())
 
         # add shares to tags and query
         if augment:
-            self.add_tags_shares(req_metadata_search.tags)
+            self.add_tags_shares(req_metadata_search)
             if share:
                 req_metadata_search.query["_shares"] = [share]
             else:
@@ -203,8 +278,67 @@ class ApiSearch:
         # end of method
         return req_metadata_search
 
+    # -- SEARCH SUBMETHODS
+    async def search_metadata_asynchronous(
+        self, total_results: int, max_workers: int = 10, **kwargs
+    ):
+
+        # prepare async searches
+        total_pages = utils.pages_counter(total_results, page_size=100)
+        li_offsets = [offset * 100 for offset in range(0, total_pages)]
+
+        logger.debug("Async search launched with {} pages.".format(total_pages))
+
+        with ThreadPoolExecutor(
+            max_workers=max_workers, thread_name_prefix="IsogeoSearch"
+        ) as executor:
+            # Set any session parameters here before calling `fetch`
+            loop = asyncio.get_event_loop()
+            tasks = [
+                loop.run_in_executor(
+                    executor,
+                    partial(
+                        self.search,
+                        # filters
+                        query=kwargs.get("query"),
+                        include=kwargs.get("include"),
+                        share=kwargs.get("share"),
+                        specific_md=kwargs.get("specific_md"),
+                        bbox=kwargs.get("bbox"),
+                        poly=kwargs.get("poly"),
+                        georel=kwargs.get("georel"),
+                        # sorting
+                        order_by=kwargs.get("order_by"),
+                        order_dir=kwargs.get("order_dir"),
+                        # pagination
+                        offset=offset,
+                        page_size=100,
+                        # options
+                        augment=0,
+                        check=0,
+                        expected_total=364,
+                        to_dict=False,
+                        whole_results=0,
+                    ),
+                )
+                for offset in li_offsets
+            ]
+
+            # store responses in a fresh Metadata Search object
+            final_search = MetadataSearch(results=[], query={}, tags={})
+            for response in await asyncio.gather(*tasks):
+                final_search.envelope = response.envelope
+                final_search.limit = response.total
+                final_search.offset = 0
+                final_search.query.update(response.query)
+                final_search.results.extend(response.results)
+                final_search.tags.update(response.tags)
+                final_search.total = response.total
+
+            return final_search
+
     # -- UTILITIES -----------------------------------------------------------
-    def add_tags_shares(self, tags: dict = dict()):
+    def add_tags_shares(self, search: MetadataSearch):
         """Add shares list to the tags attributes in search results.
 
         :param dict tags: tags dictionary from a search request
@@ -218,28 +352,7 @@ class ApiSearch:
         else:
             pass
         # update query tags
-        tags.update(self.api_client.shares_id)
-
-    @lru_cache()
-    @ApiDecorators._check_bearer_validity
-    def get_search_context(self):
-        """Helper to get the search context (total results, tags, etc.) for the authenticated application/user."""
-        # request
-        print("YOUHOu")
-        req_search_total_results = self.api_client.get(
-            url=utils.get_request_base_url(route="resources/search"),
-            headers=self.api_client.header,
-            params={"_limit": 0},
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_search_total_results)
-        if isinstance(req_check, tuple):
-            return req_check
-
-        return MetadataSearch(**req_search_total_results.json())
+        search.tags.update(self.api_client.shares_id)
 
 
 # ##############################################################################
