@@ -147,12 +147,12 @@ class TestSearch(unittest.TestCase):
         md_a, md_b = sample(search_10.results, 2)
         md_bad = "trust_me_this_is_a_good_uuid"
         # get random metadata within a small search
-        search_ids_1 = self.isogeo.search(specific_md=[md_a.get("_id")])
+        search_ids_1 = self.isogeo.search(specific_md=(md_a.get("_id"),))
         search_ids_2 = self.isogeo.search(
-            specific_md=[md_a.get("_id"), md_b.get("_id")]
+            specific_md=(md_a.get("_id"), md_b.get("_id"))
         )
         search_ids_3 = self.isogeo.search(
-            specific_md=[md_a.get("_id"), md_b.get("_id"), md_bad]
+            specific_md=(md_a.get("_id"), md_b.get("_id"), md_bad)
         )
         # test length
         self.assertEqual(len(search_ids_1.results), 1)
@@ -174,7 +174,7 @@ class TestSearch(unittest.TestCase):
     # includes
     def test_search_includes_ok(self):
         """Searches including includes."""
-        self.isogeo.search(page_size=0, whole_results=0, include=["links", "contacts"])
+        self.isogeo.search(page_size=0, whole_results=0, include=("links", "contacts"))
 
     def test_search_includes_all_ok(self):
         """Searches including includes."""
@@ -182,7 +182,7 @@ class TestSearch(unittest.TestCase):
 
     def test_search_includes_empty(self):
         """Search with empty includes list."""
-        self.isogeo.search(page_size=0, whole_results=0, include=[])
+        self.isogeo.search(page_size=0, whole_results=0, include=())
 
     def test_search_includes_bad(self):
         """Include sub_resrouces require a list."""

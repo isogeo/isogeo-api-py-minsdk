@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+from functools import lru_cache
 
 # 3rd party
 from requests.models import Response
@@ -55,6 +56,7 @@ class ApiShare:
         super(ApiShare, self).__init__()
 
     # -- Routes to manage the object ---------------------------------------------------
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(self, workgroup_id: str = None, caching: bool = 1) -> list:
         """Get all shares which are accessible by the authenticated user OR shares for a workgroup.

@@ -278,8 +278,8 @@ class IsogeoChecker(object):
             uid = UUID(uuid_str)
             return uid.hex == uuid_str.replace("-", "").replace("urn:uuid:", "")
         except ValueError as e:
-            logging.error(
-                "uuid ValueError. {} ({})  -- {}".format(type(uuid_str), uuid_str, e)
+            logging.warning(
+                "uuid ValueError. {} ({}) -- {}".format(type(uuid_str), uuid_str, e)
             )
             return False
 
@@ -327,24 +327,29 @@ class IsogeoChecker(object):
             return True
 
     # -- FILTERS -------------------------------------------------------------
-    def _check_filter_specific_md(self, specific_md: list):
+    def _check_filter_specific_md(self, specific_md: tuple):
         """Check if specific_md parameter is valid.
 
-        :param list specific_md: list of specific metadata UUID to check
+        :param tuple specific_md: tuple of specific metadata UUID to check
         """
-        if isinstance(specific_md, list):
+        if isinstance(specific_md, (list, tuple)):
             if len(specific_md) > 0:
                 # checking UUIDs and poping bad ones
+                specific_md = list(specific_md)
                 for md in specific_md:
                     if not self.check_is_uuid(md):
                         specific_md.remove(md)
-                        logging.error("Metadata UUID is not correct: {}".format(md))
+                        logging.warning(
+                            "Incorrect metadata UUID has been removed: {}".format(md)
+                        )
                 # joining survivors
                 specific_md = ",".join(specific_md)
             else:
                 specific_md = ""
         else:
-            raise TypeError("'specific_md' expects a list")
+            raise TypeError(
+                "'specific_md' expects a tuple, not {}".format(type(specific_md))
+            )
         return specific_md
 
     def _check_filter_specific_tag(self, specific_tag: list):
@@ -385,7 +390,7 @@ class IsogeoChecker(object):
         # sub resources manager
         if isinstance(includes, str) and includes.lower() == "all":
             includes = ",".join(ref_subresources)
-        elif isinstance(includes, list):
+        elif isinstance(includes, (list, tuple)):
             if len(includes):
                 for subresource in includes:
                     if subresource not in ref_subresources:
