@@ -267,14 +267,14 @@ class IsogeoUtils(object):
             version_url = "{}://v1.{}.isogeo.com/about/database".format(
                 prot, self.api_url
             )
-        elif component == "app" and self.platform == "prod":
+        elif component == "app" and self.platform == "prod" or self.platform is None:
             version_url = "https://app.isogeo.com/about"
         elif component == "app" and self.platform == "qa":
             version_url = "https://qa-isogeo-app.azurewebsites.net/about"
         else:
             raise ValueError(
-                "Incorrect component value: {}. Must be one of: api [default], db, app.".format(
-                    component
+                "Incorrect component value: {} for platform {}. Must be one of: api [default], db, app.".format(
+                    component, self.platform
                 )
             )
 
