@@ -80,7 +80,7 @@ class ApiSearch:
         augment: bool = False,
         check: bool = True,
         expected_total: int = None,
-        # tags_as_dicts: bool = False,
+        tags_as_dicts: bool = False,
         whole_results: bool = False,
     ) -> MetadataSearch:
         """Search within the resources shared to the application. It's the mainly used method to retrieve metadata.
@@ -121,16 +121,41 @@ class ApiSearch:
          from a specific results index
         :param str share: share UUID to filter on
         :param tuple specific_md: list of metadata UUIDs to filter on
-        :param tuple include: subresources that should be returned.
-         Must be a tuple of strings. Available values: *isogeo.SUBRESOURCES*
-        :param bool whole_results: option to return all results or only the
-                                page size. *False* by DEFAULT.
-        :param bool check: option to check query parameters and avoid erros.
-         *True* by DEFAULT.
-        :param bool augment: option to improve API response by adding
-         some tags on the fly (like shares_id)
+        :param tuple include: subresources that should be returned. See: :py:class:`enums.MetadataSubresources`.
+        :param bool whole_results: option to return all results or only the page size. *False* by DEFAULT.
+        :param bool check: option to check query parameters and avoid erros. *True* by DEFAULT.
+        :param bool augment: option to improve API response by adding some tags on the fly (like shares_id)
         :param int expected_total: if different of None, value will be used to paginate. Can save a request.
         :param bool tags_as_dicts: option to store tags as key/values by filter.
+
+        :rtype: MetadataSearch
+
+        :Example:
+
+        .. code-block:: python
+
+            # get the search context (without results), useful to populate a search widget
+            search_context = isogeo.search(page_size=0, whole_results=0, augment=1)
+
+            # search the 10 first results in alphabetically order
+            search_10 = isogeo.search(
+                page_size=10,
+                include="all",
+                order_by="title",
+                order_dir="asc",
+                expected_total=search_context.total
+            )
+
+            # returns all results, filtering on vector-datasets
+            search_full = isogeo.search(
+                query="type:vector-dataset",
+                order_by="title",
+                order_dir="desc",
+                include="all",
+                augment=1,
+                whole_results=1
+            )
+
         """
         # handling request parameters
         payload = {
@@ -229,7 +254,7 @@ class ApiSearch:
                 # launch async searches
                 loop = asyncio.get_event_loop()
                 future_searches_concatenated = asyncio.ensure_future(
-                    self.search_metadata_asynchronous(
+                    self._search_metadata_asynchronous(
                         total_results=total_results, **search_params
                     )
                 )
@@ -276,18 +301,41 @@ class ApiSearch:
         else:
             pass
 
+        # store tags in dicts
+        if tags_as_dicts:
+            new_tags = utils.tags_to_dict(
+                tags=req_metadata_search.tags, prev_query=req_metadata_search.query
+            )
+            # clear
+            req_metadata_search.tags.clear()
+            req_metadata_search.query.clear()
+            # update
+            req_metadata_search.tags.update(new_tags[0])
+            req_metadata_search.query.update(new_tags[1])
+        else:
+            pass
+
         # end of method
         return req_metadata_search
 
     # -- SEARCH SUBMETHODS
-    async def search_metadata_asynchronous(
+    async def _search_metadata_asynchronous(
         self, total_results: int, max_workers: int = 10, **kwargs
-    ):
+    ) -> MetadataSearch:
+        """Meta async method used to request big searches (> 100 results), using asyncio.
+        It's a private method launched by the main search method.
 
+        Arguments:
+            total_results {int} -- total of results to retrieve
+
+        Keyword Arguments:
+            max_workers {int} -- maximum of workers to use as threads (default: {10})
+
+        :rtype: MetadataSearch
+        """
         # prepare async searches
         total_pages = utils.pages_counter(total_results, page_size=100)
         li_offsets = [offset * 100 for offset in range(0, total_pages)]
-
         logger.debug("Async search launched with {} pages.".format(total_pages))
 
         with ThreadPoolExecutor(
@@ -317,8 +365,8 @@ class ApiSearch:
                         # options
                         augment=0,
                         check=0,
-                        expected_total=364,
-                        to_dict=False,
+                        expected_total=total_results,
+                        tags_as_dicts=0,
                         whole_results=0,
                     ),
                 )
@@ -340,9 +388,9 @@ class ApiSearch:
 
     # -- UTILITIES -----------------------------------------------------------
     def add_tags_shares(self, search: MetadataSearch):
-        """Add shares list to the tags attributes in search results.
+        """Add shares list to the tags attributes in search.
 
-        :param dict tags: tags dictionary from a search request
+        :param MetadataSearch search: search to add shares
         """
         # check if shares_id have already been retrieved or not
         if not hasattr(self.api_client, "shares_id"):
