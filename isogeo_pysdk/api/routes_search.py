@@ -56,17 +56,18 @@ class ApiSearch:
         super(ApiSearch, self).__init__()
 
     # -- Routes to search --------------------------------------------------------------
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def search(
         self,
         # semantic and objects filters
         query: str = "",
         share: str = None,
-        specific_md: list = [],
+        specific_md: tuple = (),
         # results model
-        include: list = [],
+        include: tuple = (),
         # geographic filters
-        bbox: list = None,
+        bbox: tuple = None,
         poly: str = None,
         georel: str = None,
         # sorting
@@ -89,7 +90,7 @@ class ApiSearch:
          string like *oil* or a tag like *keyword:isogeo:formations*
          or *keyword:inspire-theme:landcover*. The *AND* operator
          is applied when various tags are passed.
-        :param list bbox: Bounding box to limit the search. Must be a 4 list of coordinates in WGS84 (EPSG 4326). Could be associated with *georel*.
+        :param tuple bbox: Bounding box to limit the search. Must be a 4 tuple of coordinates in WGS84 (EPSG 4326). Could be associated with *georel*.
         :param str poly: Geographic criteria for the search, in WKT format. Could be associated with *georel*.
         :param str georel: geometric operator to apply to the `bbox` or `poly` parameters. Available values:
 
@@ -119,9 +120,9 @@ class ApiSearch:
         :param int offset: offset to start page size
          from a specific results index
         :param str share: share UUID to filter on
-        :param list specific_md: list of metadata UUIDs to filter on
-        :param list include: subresources that should be returned.
-         Must be a list of strings. Available values: *isogeo.SUBRESOURCES*
+        :param tuple specific_md: list of metadata UUIDs to filter on
+        :param tuple include: subresources that should be returned.
+         Must be a tuple of strings. Available values: *isogeo.SUBRESOURCES*
         :param bool whole_results: option to return all results or only the
                                 page size. *False* by DEFAULT.
         :param bool check: option to check query parameters and avoid erros.
