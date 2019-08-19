@@ -302,7 +302,7 @@ class IsogeoUtils(object):
         md_type: str = None,
         owner_id: str = None,
         tab: str = "identification",
-    ):
+    ) -> str:
         """Constructs the edition URL of a metadata.
 
         :param str md_id: metadata/resource UUID
@@ -314,8 +314,12 @@ class IsogeoUtils(object):
             raise ValueError("One of md_id or owner_id is not a correct UUID.")
         else:
             pass
-        if checker.check_edit_tab(tab, md_type=md_type):
-            pass
+        if not checker.check_edit_tab(tab, md_type=md_type):
+            logger.warning(
+                "Tab '{}' is not a valid tab for the is type '{}' of metadata. "
+                "It'll be replaced by default value.".format(tab, md_type)
+            )
+            tab = "identification"
         # construct URL
         return (
             "{}"
