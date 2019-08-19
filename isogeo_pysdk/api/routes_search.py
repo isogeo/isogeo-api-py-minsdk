@@ -252,7 +252,16 @@ class ApiSearch:
                 }
 
                 # launch async searches
-                loop = asyncio.get_event_loop()
+                try:
+                    loop = asyncio.get_event_loop()
+                except RuntimeError as e:
+                    logger.warning(
+                        "Async get loop failed. Maybe because it's already executed in a separated thread.",
+                        e,
+                    )
+                    loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(loop)
+
                 future_searches_concatenated = asyncio.ensure_future(
                     self._search_metadata_asynchronous(
                         total_results=total_results, **search_params
