@@ -72,8 +72,8 @@ class TestMetadatas(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
-            "ISOGEO_API_USER_CLIENT_SECRET"
+        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
         ):
             logging.critical("No API credentials set as env variables.")
             exit()
@@ -155,3 +155,9 @@ class TestMetadatas(unittest.TestCase):
     #     #                         page_size=0,
     #     #                         whole_results=0,
     #     #                         specific_md=md)
+
+    def test_metadatas_get_detailed(self):
+        """GET :resources/{metadata_uuid}"""
+        # retrieve fixture metadata
+        metadata = self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID, include="all")
+        self.assertIsInstance(metadata, Metadata)

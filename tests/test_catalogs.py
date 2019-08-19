@@ -303,7 +303,8 @@ class TestCatalogs(unittest.TestCase):
 
         # check if the change is effective
         catalog_fixture_updated = self.isogeo.catalog.get(
-            catalog_fixture.owner.get("_id"), catalog_fixture._id
+            workgroup_id=catalog_fixture.owner.get("_id"),
+            catalog_id=catalog_fixture._id,
         )
         self.assertEqual(
             catalog_fixture_updated.name,

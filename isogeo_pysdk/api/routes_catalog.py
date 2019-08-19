@@ -201,12 +201,8 @@ class ApiCatalog:
         if isinstance(req_check, tuple):
             return req_check
 
-        # handle bad JSON attribute
-        catalog = req_catalog.json()
-        catalog["scan"] = catalog.pop("$scan")
-
         # end of method
-        return Catalog(**catalog)
+        return Catalog.clean_attributes(req_catalog.json())
 
     @ApiDecorators._check_bearer_validity
     def create(
