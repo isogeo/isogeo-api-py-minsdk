@@ -78,7 +78,7 @@ class ApiMetadata:
         super(ApiMetadata, self).__init__()
 
     @ApiDecorators._check_bearer_validity
-    def get(self, metadata_id: str, include: list or str = []) -> Metadata:
+    def get(self, metadata_id: str, include: tuple or str = ()) -> Metadata:
         """Get complete or partial metadata about a specific metadata (= resource).
 
         :param str metadata_id: metadata UUID to get
@@ -108,7 +108,7 @@ class ApiMetadata:
         )
 
         # request
-        req_resource = self.api_client.get(
+        req_metadata = self.api_client.get(
             url=url_resource,
             headers=self.api_client.header,
             params=payload,
@@ -118,17 +118,12 @@ class ApiMetadata:
         )
 
         # checking response
-        req_check = checker.check_api_response(req_resource)
+        req_check = checker.check_api_response(req_metadata)
         if isinstance(req_check, tuple):
             return req_check
 
-        # handle bad JSON attribute
-        metadata = req_resource.json()
-        metadata["coordinateSystem"] = metadata.pop("coordinate-system", list)
-        metadata["featureAttributes"] = metadata.pop("feature-attributes", list)
-
         # end of method
-        return Metadata(**metadata)
+        return Metadata.clean_attributes(req_metadata.json())
 
     @ApiDecorators._check_bearer_validity
     def create(

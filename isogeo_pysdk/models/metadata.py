@@ -225,6 +225,15 @@ class Metadata(object):
         "featureAttributes": "feature-attributes",
     }
 
+    @classmethod
+    def clean_attributes(cls, raw_object: dict):
+        """Renames attributes wich are incompatible with Python (hyphens...).
+        See related issue: https://github.com/isogeo/isogeo-api-py-minsdk/issues/82
+        """
+        for k, v in cls.attr_map.items():
+            raw_object[k] = raw_object.pop(v, [])
+        return cls(**raw_object)
+
     def __init__(
         self,
         _abilities: list = None,
