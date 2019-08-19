@@ -10,6 +10,10 @@ import asyncio
 from concurrent.futures import ThreadPoolExecutor
 from os import environ
 from timeit import default_timer
+import urllib3
+
+# 3rd party
+from dotenv import load_dotenv
 
 # Isogeo
 from isogeo_pysdk import Isogeo
@@ -18,12 +22,21 @@ from isogeo_pysdk import Isogeo
 # ######## Globals #################
 # ##################################
 
-# API access
-app_id = environ.get("ISOGEO_API_DEV_ID")
-app_token = environ.get("ISOGEO_API_DEV_SECRET")
+# get user ID as environment variables
+load_dotenv("dev.env")
+
+# ignore warnings related to the QA self-signed cert
+if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+    urllib3.disable_warnings()
 
 # start Isogeo
-isogeo = Isogeo(client_id=app_id, client_secret=app_token)
+isogeo = Isogeo(
+    auth_mode="group",
+    client_id=environ.get("ISOGEO_API_GROUP_CLIENT_ID"),
+    client_secret=environ.get("ISOGEO_API_GROUP_CLIENT_SECRET"),
+    auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+    platform=environ.get("ISOGEO_PLATFORM", "qa"),
+)
 
 # getting a token
 isogeo.connect()
@@ -34,7 +47,7 @@ isogeo.connect()
 # ##################################
 def _meta_get_resource_sync(md_uuid):
     """Just a meta func to get execution time"""
-    isogeo.resource(id_resource=md_uuid)
+    isogeo.metadata.get(metadata_id=md_uuid)
 
     elapsed = default_timer() - START_TIME
     time_completed_at = "{:5.2f}s".format(elapsed)
@@ -75,7 +88,7 @@ if __name__ == "__main__":
     # get the metadata ids
     md_ids = [
         md.get("_id")
-        for md in isogeo.search(page_size=how_much_mds, whole_share=0).get("results")
+        for md in isogeo.search(page_size=how_much_mds, whole_results=0).results
     ]
 
     # SYNC
@@ -85,7 +98,7 @@ if __name__ == "__main__":
     # SYNCHRONOUS
     total_start_time = default_timer()
     for md_uuid in md_ids:
-        isogeo.resource(id_resource=md_uuid)
+        isogeo.metadata.get(metadata_id=md_uuid)
         elapsed = default_timer() - total_start_time
         time_completed_at = "{:5.2f}s".format(elapsed)
         print("{0:<30} {1:>20}".format(md_uuid, time_completed_at))

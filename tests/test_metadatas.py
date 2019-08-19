@@ -17,14 +17,15 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
-from random import sample
-from socket import gethostname
-from sys import exit, _getframe
-from time import gmtime, sleep, strftime
 import unittest
 import urllib3
+from os import environ
+from pathlib import Path
+from random import sample
+from socket import gethostname
+from sys import _getframe, exit
+from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
@@ -38,17 +39,13 @@ from isogeo_pysdk import Isogeo, Metadata, MetadataSearch
 # ######## Globals #################
 # ##################################
 
-load_dotenv("dev.env", override=True)
+if Path("dev.env").exists():
+    load_dotenv("dev.env", override=True)
 
 # host machine name - used as discriminator
 hostname = gethostname()
 
 # API access
-app_script_id = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID")
-app_script_secret = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET")
-platform = environ.get("ISOGEO_PLATFORM", "qa")
-user_email = environ.get("ISOGEO_USER_NAME")
-user_password = environ.get("ISOGEO_USER_PASSWORD")
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
@@ -75,7 +72,9 @@ class TestMetadatas(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not app_script_id or not app_script_secret:
+        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_CLIENT_SECRET"
+        ):
             logging.critical("No API credentials set as env variables.")
             exit()
         else:
@@ -135,7 +134,24 @@ class TestMetadatas(unittest.TestCase):
 
     # -- TESTS ---------------------------------------------------------
     # -- GET --
-    def test_metadatas_search_as_application(self):
-        """GET :resources/search"""
-        basic_search = self.isogeo.metadata.search()
-        self.assertIsInstance(basic_search.total, int)
+    # def test_metadatas_search_as_application(self):
+    #     """GET :resources/search"""
+    #     basic_search = self.isogeo.metadata.search()
+    #     self.assertIsInstance(basic_search.total, int)
+    #     self.assertEqual(len(basic_search.results), 20)
+
+    # def test_search_specific_mds_bad(self):
+    #     """Searches filtering on specific metadata."""
+    #     # get random metadata within a small search
+    #     search = self.isogeo.metadata.search(
+    #         page_size=5,
+    #         # whole_results=0
+    #     )
+    #     metadata_id = sample(search.results, 1)[0].get("_id")
+
+    #     # # pass metadata UUID
+    #     # with self.assertRaises(TypeError):
+    #     #     self.isogeo.search(self.bearer,
+    #     #                         page_size=0,
+    #     #                         whole_results=0,
+    #     #                         specific_md=md)

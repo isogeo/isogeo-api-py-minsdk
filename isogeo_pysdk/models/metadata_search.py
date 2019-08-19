@@ -18,27 +18,21 @@ import pprint
 # from isogeo_pysdk.models.resource import Metadata
 # from isogeo_pysdk.models.tag import Tag
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 class MetadataSearch(object):
     """Metadata searchs are entities used to organize and shares metadata of a workgroup.
-
-    .. code-block:: json
-
     """
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of search attributes. {"attribute name": "attribute type"}.
-    """
     attr_types = {
         "envelope": object,
         "limit": int,
         "offset": int,
-        "query": str,
+        "query": dict,
         "results": list,
-        "tags": list,
+        "tags": dict,
         "total": int,
     }
 
@@ -47,9 +41,9 @@ class MetadataSearch(object):
         envelope: dict = None,
         limit: int = None,
         offset: int = None,
-        query: str = None,
+        query: dict = None,
         results: list = None,
-        tags: list = None,
+        tags: dict = None,
         total: int = None,
     ):
         """resource/search? model"""
@@ -87,7 +81,7 @@ class MetadataSearch(object):
         """Gets the abilities of this Metadata search.
 
         :return: The abilities of this Metadata search.
-        :rtype: str
+        :rtype: dict
         """
         return self._envelope
 
@@ -144,16 +138,16 @@ class MetadataSearch(object):
 
     # search last modification date
     @property
-    def query(self) -> str:
+    def query(self) -> dict:
         """Gets the modified of this Metadata search.
 
         :return: The modified of this Metadata search.
-        :rtype: str
+        :rtype: dict
         """
         return self._query
 
     @query.setter
-    def query(self, query: str):
+    def query(self, query: dict):
         """Sets the query of this InlineResponse2001.
 
 
@@ -186,16 +180,16 @@ class MetadataSearch(object):
 
     # tags
     @property
-    def tags(self) -> list:
+    def tags(self) -> dict:
         """Gets the tags of this Metadata search.
 
         :return: The tags of this Metadata search.
-        :rtype: str
+        :rtype: dict
         """
         return self._tags
 
     @tags.setter
-    def tags(self, tags: list):
+    def tags(self, tags: dict):
         """Sets the tags of this InlineResponse2001.
 
         The aggregated set of tags for the entire search results  # noqa: E501

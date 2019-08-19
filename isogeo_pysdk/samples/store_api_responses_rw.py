@@ -125,7 +125,7 @@ if __name__ == "__main__":
 
     # get some object identifiers required for certain routes
     app_id = sample(isogeo.applications(include=[]), 1)[0].get("_id")
-    # resource_id = sample(isogeo.search(whole_share=0, page_size=50).get("results"), 1)[
+    # resource_id = sample(isogeo.search(whole_results=0, page_size=50).get("results"), 1)[
     #     0
     # ].get("_id")
     # share_id = isogeo.shares()[0].get("_id")

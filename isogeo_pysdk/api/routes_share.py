@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+from functools import lru_cache
 
 # 3rd party
 from requests.models import Response
@@ -55,8 +56,9 @@ class ApiShare:
         super(ApiShare, self).__init__()
 
     # -- Routes to manage the object ---------------------------------------------------
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
-    def shares(self, workgroup_id: str = None, caching: bool = 1) -> list:
+    def listing(self, workgroup_id: str = None, caching: bool = 1) -> list:
         """Get all shares which are accessible by the authenticated user OR shares for a workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup. If `None`, then list shares for the autenticated user
@@ -97,13 +99,9 @@ class ApiShare:
 
         # if caching use or store the workgroup shares
         if caching and workgroup_id is None:
-            self.api_client._shares_names = {
-                i.get("name"): i.get("_id") for i in shares
-            }
+            self.api_client._shares = shares
         elif caching:
-            self.api_client._wg_shares_names = {
-                i.get("name"): i.get("_id") for i in shares
-            }
+            self.api_client._wg_shares = shares
         else:
             pass
 
@@ -163,10 +161,10 @@ class ApiShare:
         # check if share already exists in workgroup
         if check_exists == 1:
             # retrieve workgroup shares
-            if not self.api_client._wg_shares_names:
-                self.shares()
+            if not self.api_client._wg_shares:
+                share.listing()
             # check
-            if share.name in self.api_client._wg_shares_names:
+            if share.name in self.api_client._wg_shares:
                 logger.debug(
                     "Share with the same name already exists: {}. Use 'share_update' instead.".format(
                         share.name
@@ -198,7 +196,7 @@ class ApiShare:
 
         # load new share and save it to the cache
         new_share = Share(**req_new_share.json())
-        self.api_client._shares_names[new_share.name] = new_share._id
+        self.api_client._shares[new_share.name] = new_share._id
 
         # end of method
         return new_share
@@ -303,7 +301,7 @@ class ApiShare:
         # update share in cache
         new_share = Share(**req_share_update.json())
         if caching:
-            self.api_client._shares_names[new_share.name] = new_share._id
+            self.api_client._shares[new_share.name] = new_share._id
 
         # end of method
         return new_share

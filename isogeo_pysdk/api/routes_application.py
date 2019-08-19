@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+from functools import lru_cache
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
@@ -51,6 +52,7 @@ class ApiApplication:
         # initialize
         super(ApiApplication, self).__init__()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
         self,
@@ -329,6 +331,7 @@ class ApiApplication:
         return new_application
 
     # -- Routes to manage the related objects ------------------------------------------
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def workgroups(self, application_id: str = None) -> list:
         """Get all groups associated with an application.

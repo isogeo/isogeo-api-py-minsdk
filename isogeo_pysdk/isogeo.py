@@ -166,7 +166,7 @@ class Isogeo(OAuth2Session):
         self._formats_geo = []  # Isogeo formats for geographic data
         self._formats_nogeo = []  # Isogeo formats for non-geographic data
         self._links_kinds_actions = []  # Isogeo matrix for links kind/action
-        self._shares_names = {}  # Isogeo applications by names
+        self._shares = {}  # Isogeo applications by names
         self._thesauri_codes = {}  # Isogeo thesauri by codes
         self._workgroups_names = {}  # Isogeo workgroups by names
         # user
@@ -180,7 +180,7 @@ class Isogeo(OAuth2Session):
         self._wg_datasources_names = {}  # workgroup datasources by names
         self._wg_datasources_urls = {}  # workgroup datasources by urls (location)
         self._wg_licenses_names = {}  # workgroup licenses by names
-        self._wg_shares_names = {}  # workgroup shares by names
+        self._wg_shares = {}  # workgroup shares
         self._wg_specifications_names = {}  # workgroup specifications by names
 
         # checking internet connection
@@ -282,6 +282,7 @@ class Isogeo(OAuth2Session):
         self.invitation = api.ApiInvitation(self)
         self.license = api.ApiLicense(self)
         self.metadata = api.ApiMetadata(self)
+        self.search = api.ApiSearch(self).search
         self.services = api.ApiService(self)
         self.share = api.ApiShare(self)
         self.specification = api.ApiSpecification(self)

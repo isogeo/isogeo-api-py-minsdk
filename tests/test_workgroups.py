@@ -225,7 +225,7 @@ class TestWorkgroups(unittest.TestCase):
         self.assertTrue(self.isogeo.workgroup.exists(workgroup_id.get("_id")))
 
         # get and check both
-        workgroup = self.isogeo.workgroup.workgroup(workgroup_id.get("_id"))
+        workgroup = self.isogeo.workgroup.get(workgroup_id.get("_id"))
 
         self.assertIsInstance(workgroup, Workgroup)
 
@@ -315,7 +315,7 @@ class TestWorkgroups(unittest.TestCase):
     #     )
 
     #     # check if the change is effective
-    #     workgroup_fixture_updated = self.isogeo.workgroup.workgroup(
+    #     workgroup_fixture_updated = self.isogeo.workgroup.get(
     #         workgroup_fixture._id
     #     )
     #     self.assertEqual(

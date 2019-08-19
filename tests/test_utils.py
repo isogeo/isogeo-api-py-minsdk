@@ -8,7 +8,7 @@
     # for whole test
     python -m unittest tests.test_utils
     # for specific
-    python -m unittest tests.test_utils.TestIsogeoUtils.
+    python -m unittest tests.test_utils.TestIsogeoUtils.test_get_edit_url_ok
     ```
 """
 
@@ -17,15 +17,8 @@
 # ##################################
 
 # Standard library
-import logging
 import unittest
-import urllib3
-from os import environ
 from pathlib import Path
-from random import sample
-from socket import gethostname
-from sys import _getframe, exit
-from time import gmtime, sleep, strftime
 from urllib.parse import urlparse
 
 # 3rd party
@@ -41,9 +34,6 @@ from isogeo_pysdk import IsogeoUtils
 if Path("dev.env").exists():
     load_dotenv("dev.env", override=True)
 
-# host machine name - used as discriminator
-hostname = gethostname()
-
 # #############################################################################
 # ########## Classes ###############
 # ##################################
@@ -56,27 +46,12 @@ class TestIsogeoUtils(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
-        # checks
-        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
-            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
-        ):
-            logging.critical("No API credentials set as env variables.")
-            exit()
-        else:
-            pass
-
-        # ignore warnings related to the QA self-signed cert
-        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
-            urllib3.disable_warnings()
-
-        # API credentials settings
-        cls.client_id = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID")
-        cls.client_secret = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET")
+        cls.utils = IsogeoUtils()
 
     # standard methods
     def setUp(self):
         """ Fixtures prepared before each test."""
-        self.utils = IsogeoUtils()
+        pass
 
     def tearDown(self):
         """Executed after each test."""
@@ -172,7 +147,7 @@ class TestIsogeoUtils(unittest.TestCase):
             tab="identification",
         )
         self.assertIsInstance(url, str)
-        self.assertIn("https://app.isogeo.com", url)
+        self.assertIn("app", url)
         self.assertIn("groups", url)
         urlparse(url)
         # again with type extracted from metadata model
@@ -233,8 +208,10 @@ class TestIsogeoUtils(unittest.TestCase):
     # -- URLs Builders - request -------------------------------------
     def test_get_request_base_url(self):
         """Test URL request builder."""
-        resource_url = self.utils.get_request_base_url("resource")
-        self.assertEqual(resource_url, "https://api.isogeo.com/resource/")
+        resource_url = self.utils.get_request_base_url("resources")
+        self.assertEqual(
+            resource_url, "https://{}.isogeo.com/resources/".format(self.utils.api_url)
+        )
 
     # -- URLs Builders - view on web app -------------------------------------
     def test_get_view_url_ok(self):
