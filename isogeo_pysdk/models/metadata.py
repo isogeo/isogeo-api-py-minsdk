@@ -13,11 +13,21 @@
 
 # standard library
 import pprint
+import re
+import unicodedata
 
 # package
 from isogeo_pysdk.enums import MetadataSubresources, MetadataTypes
 
-# from isogeo_pysdk.models.directive import Directive
+
+# #############################################################################
+# ########## Globals ###############
+# ##################################
+
+# for slugified title
+_slugify_strip_re = re.compile(r"[^\w\s-]")
+_slugify_hyphenate_re = re.compile(r"[-\s]+")
+
 
 # #############################################################################
 # ########## Classes ###############
@@ -540,19 +550,19 @@ class Metadata(object):
 
     # coordinateSystem
     @property
-    def coordinateSystem(self) -> str:
+    def coordinateSystem(self) -> dict:
         """Gets the coordinateSystem of this Metadata.
 
         :return: The coordinateSystem of this Metadata.
-        :rtype: str
+        :rtype: dict
         """
         return self._coordinateSystem
 
     @coordinateSystem.setter
-    def coordinateSystem(self, coordinateSystem: str):
+    def coordinateSystem(self, coordinateSystem: dict):
         """Sets the coordinate systems of this Metadata.
 
-        :param str coordinateSystem: to be set
+        :param dict coordinateSystem: to be set
         """
 
         self._coordinateSystem = coordinateSystem
@@ -1204,6 +1214,32 @@ class Metadata(object):
         self._validityComment = validityComment
 
     # -- METHODS -----------------------------------------------------------------------
+    def title_or_name(self, slugged: bool = False) -> str:
+        """Gets the title of this Metadata or the name if there is no title.
+        It can return a slugified value.
+
+        :param bool slugged: slugify title. Defaults to `False`.
+
+        :return: the title or the name of this Metadata.
+        :rtype: str
+        """
+        if self._title:
+            title_or_name = self._title
+        else:
+            title_or_name = self._name
+
+        # slugify
+        if slugged:
+            title_or_name = (
+                unicodedata.normalize("NFKD", title_or_name)
+                .encode("ascii", "ignore")
+                .decode("ascii")
+            )
+            title_or_name = _slugify_strip_re.sub("", title_or_name).strip().lower()
+            title_or_name = _slugify_hyphenate_re.sub("-", title_or_name)
+
+        return title_or_name
+
     def to_dict(self) -> dict:
         """Returns the model properties as a dict"""
         result = {}
