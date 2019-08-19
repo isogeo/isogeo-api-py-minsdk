@@ -185,7 +185,7 @@ class ApiSearch:
 
         # SEARCH CASES
 
-        # cASE - MULTIPLE PAGINATED SEARCHES
+        # CASE - MULTIPLE PAGINATED SEARCHES
         if whole_results:
             # PAGINATION
             # determine if a request to get the total is required
@@ -194,7 +194,6 @@ class ApiSearch:
                 total_results = self.search(
                     # filters
                     query=query,
-                    include=include,
                     share=share,
                     specific_md=specific_md,
                     bbox=bbox,
@@ -220,17 +219,18 @@ class ApiSearch:
                 return self.search(
                     # filters
                     query=query,
-                    # include=include,
                     share=share,
                     specific_md=specific_md,
                     bbox=bbox,
                     georel=georel,
                     poly=poly,
+                    # results
+                    include=include,
                     # sorting
                     order_by=order_by,
                     order_dir=order_dir,
                     # options
-                    augment=0,
+                    augment=augment,
                     check=0,
                     page_size=100,
                     whole_results=0,
@@ -256,8 +256,9 @@ class ApiSearch:
                     loop = asyncio.get_event_loop()
                 except RuntimeError as e:
                     logger.warning(
-                        "Async get loop failed. Maybe because it's already executed in a separated thread.",
-                        e,
+                        "Async get loop failed. Maybe because it's already executed in a separated thread. Original error: ".format(
+                            e
+                        )
                     )
                     loop = asyncio.new_event_loop()
                     asyncio.set_event_loop(loop)
