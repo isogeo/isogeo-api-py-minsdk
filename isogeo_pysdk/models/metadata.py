@@ -433,6 +433,28 @@ class Metadata(object):
         """
         return self.__abilities
 
+    # _created
+    @property
+    def _created(self) -> str:
+        """Gets the creation datetime of the Metadata.
+        Datetime format is: `%Y-%m-%dT%H:%M:%S+00:00`.
+
+        :return: The created of this Metadata.
+        :rtype: str
+        """
+        return self.__created
+
+    # _modified
+    @property
+    def _modified(self) -> str:
+        """Gets the last modification datetime of this Metadata.
+        Datetime format is: `%Y-%m-%dT%H:%M:%S+00:00`.
+
+        :return: The modified of this Metadata.
+        :rtype: str
+        """
+        return self.__modified
+
     # metadata owner
     @property
     def _creator(self) -> dict:
@@ -579,7 +601,8 @@ class Metadata(object):
     # created
     @property
     def created(self) -> str:
-        """Gets the created of this Metadata.
+        """Gets the creation date of the data described by the Metadata.
+        Date format is: `%Y-%m-%dT%H:%M:%S+00:00`.
 
         :return: The created of this Metadata.
         :rtype: str
@@ -588,7 +611,7 @@ class Metadata(object):
 
     @created.setter
     def created(self, created: str):
-        """Sets the  of this Metadata.
+        """Sets the creation date of the data described by the Metadata.
 
         :param str created: to be set
         """
