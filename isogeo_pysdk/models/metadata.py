@@ -157,7 +157,7 @@ class Metadata(object):
         "conditions": list,
         "contacts": list,
         "coordinateSystem": dict,
-        "creation": str,
+        "created": str,
         "distance": float,
         "editionProfile": str,
         "encoding": str,
@@ -173,7 +173,7 @@ class Metadata(object):
         "layers": list,
         "limitations": list,
         "links": list,
-        "modification": str,
+        "modified": str,
         "name": str,
         "operations": list,
         "path": str,
@@ -222,9 +222,9 @@ class Metadata(object):
 
     attr_map = {
         "coordinateSystem": "coordinate-system",
-        "creation": "created",
+        # "creation": "created",
         "featureAttributes": "feature-attributes",
-        "modification": "modified",
+        # "modification": "modified",
     }
 
     @classmethod
@@ -249,7 +249,7 @@ class Metadata(object):
         conditions: list = None,
         contacts: list = None,
         coordinateSystem: dict = None,
-        creation: str = None,
+        created: str = None,
         distance: float = None,
         editionProfile: str = None,
         encoding: str = None,
@@ -265,7 +265,7 @@ class Metadata(object):
         layers: list = None,
         limitations: list = None,
         links: list = None,
-        modification: str = None,
+        modified: str = None,
         name: str = None,
         operations: list = None,
         path: str = None,
@@ -298,7 +298,7 @@ class Metadata(object):
         self._conditions = None
         self._contacts = None
         self._coordinateSystem = None
-        self._creation = None
+        self._creation = None  # = created
         self._distance = None
         self._editionProfile = None
         self._encoding = None
@@ -314,7 +314,7 @@ class Metadata(object):
         self._layers = None
         self._limitations = None
         self._links = None
-        self._modification = None
+        self._modification = None  # = modified
         self._name = None
         self._operations = None
         self._path = None
@@ -357,8 +357,8 @@ class Metadata(object):
             self._contacts = contacts
         if coordinateSystem is not None:
             self._coordinateSystem = coordinateSystem
-        if creation is not None:
-            self._creation = creation
+        if created is not None:
+            self._creation = created
         if distance is not None:
             self._distance = distance
         if editionProfile is not None:
@@ -389,8 +389,8 @@ class Metadata(object):
             self._limitations = limitations
         if links is not None:
             self._links = links
-        if modification is not None:
-            self._modification = modification
+        if modified is not None:
+            self._modification = modified
         if name is not None:
             self._name = name
         if operations is not None:
@@ -602,10 +602,10 @@ class Metadata(object):
 
     # created
     @property
-    def creation(self) -> str:
+    def created(self) -> str:
         """Gets the creation date of the data described by the Metadata.
         It's the equivalent of the `created` original attribute (renamed to avoid conflicts with the _created` one).
-        
+
         Date format is: `%Y-%m-%dT%H:%M:%S+00:00`.
 
         :return: The creation of this Metadata.
@@ -900,7 +900,7 @@ class Metadata(object):
 
     # modification
     @property
-    def modification(self) -> str:
+    def modified(self) -> str:
         """Gets the last modification date of the data described by this Metadata.
 
         It's the equivalent of the `created` original attribute (renamed to avoid conflicts with the _created` one).
