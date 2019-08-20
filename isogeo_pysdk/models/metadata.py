@@ -157,7 +157,7 @@ class Metadata(object):
         "conditions": list,
         "contacts": list,
         "coordinateSystem": dict,
-        "created": str,
+        "creation": str,
         "distance": float,
         "editionProfile": str,
         "encoding": str,
@@ -173,7 +173,7 @@ class Metadata(object):
         "layers": list,
         "limitations": list,
         "links": list,
-        "modified": str,
+        "modification": str,
         "name": str,
         "operations": list,
         "path": str,
@@ -222,7 +222,9 @@ class Metadata(object):
 
     attr_map = {
         "coordinateSystem": "coordinate-system",
+        "creation": "created",
         "featureAttributes": "feature-attributes",
+        "modification": "modified",
     }
 
     @classmethod
@@ -247,7 +249,7 @@ class Metadata(object):
         conditions: list = None,
         contacts: list = None,
         coordinateSystem: dict = None,
-        created: str = None,
+        creation: str = None,
         distance: float = None,
         editionProfile: str = None,
         encoding: str = None,
@@ -263,7 +265,7 @@ class Metadata(object):
         layers: list = None,
         limitations: list = None,
         links: list = None,
-        modified: str = None,
+        modification: str = None,
         name: str = None,
         operations: list = None,
         path: str = None,
@@ -296,7 +298,7 @@ class Metadata(object):
         self._conditions = None
         self._contacts = None
         self._coordinateSystem = None
-        self._created = None
+        self._creation = None
         self._distance = None
         self._editionProfile = None
         self._encoding = None
@@ -312,7 +314,7 @@ class Metadata(object):
         self._layers = None
         self._limitations = None
         self._links = None
-        self._modified = None
+        self._modification = None
         self._name = None
         self._operations = None
         self._path = None
@@ -355,8 +357,8 @@ class Metadata(object):
             self._contacts = contacts
         if coordinateSystem is not None:
             self._coordinateSystem = coordinateSystem
-        if created is not None:
-            self._created = created
+        if creation is not None:
+            self._creation = creation
         if distance is not None:
             self._distance = distance
         if editionProfile is not None:
@@ -387,8 +389,8 @@ class Metadata(object):
             self._limitations = limitations
         if links is not None:
             self._links = links
-        if modified is not None:
-            self._modified = modified
+        if modification is not None:
+            self._modification = modification
         if name is not None:
             self._name = name
         if operations is not None:
@@ -600,23 +602,16 @@ class Metadata(object):
 
     # created
     @property
-    def created(self) -> str:
+    def creation(self) -> str:
         """Gets the creation date of the data described by the Metadata.
+        It's the equivalent of the `created` original attribute (renamed to avoid conflicts with the _created` one).
+        
         Date format is: `%Y-%m-%dT%H:%M:%S+00:00`.
 
-        :return: The created of this Metadata.
+        :return: The creation of this Metadata.
         :rtype: str
         """
-        return self._created
-
-    @created.setter
-    def created(self, created: str):
-        """Sets the creation date of the data described by the Metadata.
-
-        :param str created: to be set
-        """
-
-        self._created = created
+        return self._creation
 
     # distance
     @property
@@ -903,24 +898,17 @@ class Metadata(object):
 
         self._links = links
 
-    # modified
+    # modification
     @property
-    def modified(self) -> str:
-        """Gets the modified of this Metadata.
+    def modification(self) -> str:
+        """Gets the last modification date of the data described by this Metadata.
 
-        :return: The modified of this Metadata.
+        It's the equivalent of the `created` original attribute (renamed to avoid conflicts with the _created` one).
+
+        :return: The modification of this Metadata.
         :rtype: str
         """
-        return self._modified
-
-    @modified.setter
-    def modified(self, modified: str):
-        """Sets the  of this Metadata.
-
-        :param str modified: to be set
-        """
-
-        self._modified = modified
+        return self._modification
 
     # name
     @property
@@ -1166,6 +1154,14 @@ class Metadata(object):
 
         :param str type: The type of this Metadata.
         """
+
+        # check type value
+        if type not in MetadataTypes.__members__:
+            raise ValueError(
+                "Metadata type '{}' is not an accepted value. Must be one of: {}.".format(
+                    type, " | ".join([e.name for e in MetadataTypes])
+                )
+            )
 
         self._type = type
 

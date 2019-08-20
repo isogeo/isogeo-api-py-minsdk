@@ -161,3 +161,5 @@ class TestMetadatas(unittest.TestCase):
         # retrieve fixture metadata
         metadata = self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID, include="all")
         self.assertIsInstance(metadata, Metadata)
+        md_as_dict = metadata.to_dict()
+        self.assertIsInstance(md_as_dict, dict)
