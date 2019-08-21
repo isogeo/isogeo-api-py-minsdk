@@ -138,7 +138,7 @@ class TestMetadatas(unittest.TestCase):
         """GET :resources/search"""
         search = self.isogeo.search(include="all")
         for md in search.results:
-            metadata = Metadata(**md)
+            metadata = Metadata.clean_attributes(md)
             # compare values
             self.assertEqual(md.get("_id"), metadata._id)
             self.assertEqual(md.get("_created"), metadata._created)
