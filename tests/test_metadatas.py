@@ -134,11 +134,17 @@ class TestMetadatas(unittest.TestCase):
 
     # -- TESTS ---------------------------------------------------------
     # -- GET --
-    # def test_metadatas_search_as_application(self):
-    #     """GET :resources/search"""
-    #     basic_search = self.isogeo.metadata.search()
-    #     self.assertIsInstance(basic_search.total, int)
-    #     self.assertEqual(len(basic_search.results), 20)
+    def test_metadatas_in_search_results(self):
+        """GET :resources/search"""
+        search = self.isogeo.search(include="all")
+        for md in search.results:
+            metadata = Metadata.clean_attributes(md)
+            # compare values
+            self.assertEqual(md.get("_id"), metadata._id)
+            self.assertEqual(md.get("_created"), metadata._created)
+            self.assertEqual(md.get("modified"), metadata.modified)
+            self.assertEqual(md.get("created"), metadata.created)
+            self.assertEqual(md.get("modified"), metadata.modified)
 
     # def test_search_specific_mds_bad(self):
     #     """Searches filtering on specific metadata."""
@@ -160,4 +166,23 @@ class TestMetadatas(unittest.TestCase):
         """GET :resources/{metadata_uuid}"""
         # retrieve fixture metadata
         metadata = self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID, include="all")
+        # check object
         self.assertIsInstance(metadata, Metadata)
+        # check attributes
+        self.assertTrue(hasattr(metadata, "_id"))
+        self.assertTrue(hasattr(metadata, "_created"))
+        self.assertTrue(hasattr(metadata, "_creator"))
+        self.assertTrue(hasattr(metadata, "_modified"))
+        self.assertTrue(hasattr(metadata, "abstract"))
+        self.assertTrue(hasattr(metadata, "created"))
+        self.assertTrue(hasattr(metadata, "modified"))
+
+        # check method to dict
+        md_as_dict = metadata.to_dict()
+        self.assertIsInstance(md_as_dict, dict)
+        # compare values
+        self.assertEqual(md_as_dict.get("_id"), metadata._id)
+        self.assertEqual(md_as_dict.get("_created"), metadata._created)
+        self.assertEqual(md_as_dict.get("modified"), metadata.modified)
+        self.assertEqual(md_as_dict.get("created"), metadata.created)
+        self.assertEqual(md_as_dict.get("modified"), metadata.modified)

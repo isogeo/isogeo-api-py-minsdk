@@ -222,7 +222,9 @@ class Metadata(object):
 
     attr_map = {
         "coordinateSystem": "coordinate-system",
+        # "creation": "created",
         "featureAttributes": "feature-attributes",
+        # "modification": "modified",
     }
 
     @classmethod
@@ -296,7 +298,7 @@ class Metadata(object):
         self._conditions = None
         self._contacts = None
         self._coordinateSystem = None
-        self._created = None
+        self._creation = None  # = created
         self._distance = None
         self._editionProfile = None
         self._encoding = None
@@ -312,7 +314,7 @@ class Metadata(object):
         self._layers = None
         self._limitations = None
         self._links = None
-        self._modified = None
+        self._modification = None  # = modified
         self._name = None
         self._operations = None
         self._path = None
@@ -356,7 +358,7 @@ class Metadata(object):
         if coordinateSystem is not None:
             self._coordinateSystem = coordinateSystem
         if created is not None:
-            self._created = created
+            self._creation = created
         if distance is not None:
             self._distance = distance
         if editionProfile is not None:
@@ -388,7 +390,7 @@ class Metadata(object):
         if links is not None:
             self._links = links
         if modified is not None:
-            self._modified = modified
+            self._modification = modified
         if name is not None:
             self._name = name
         if operations is not None:
@@ -432,6 +434,28 @@ class Metadata(object):
         :rtype: list
         """
         return self.__abilities
+
+    # _created
+    @property
+    def _created(self) -> str:
+        """Gets the creation datetime of the Metadata.
+        Datetime format is: `%Y-%m-%dT%H:%M:%S+00:00`.
+
+        :return: The created of this Metadata.
+        :rtype: str
+        """
+        return self.__created
+
+    # _modified
+    @property
+    def _modified(self) -> str:
+        """Gets the last modification datetime of this Metadata.
+        Datetime format is: `%Y-%m-%dT%H:%M:%S+00:00`.
+
+        :return: The modified of this Metadata.
+        :rtype: str
+        """
+        return self.__modified
 
     # metadata owner
     @property
@@ -579,21 +603,15 @@ class Metadata(object):
     # created
     @property
     def created(self) -> str:
-        """Gets the created of this Metadata.
+        """Gets the creation date of the data described by the Metadata.
+        It's the equivalent of the `created` original attribute (renamed to avoid conflicts with the _created` one).
 
-        :return: The created of this Metadata.
+        Date format is: `%Y-%m-%dT%H:%M:%S+00:00`.
+
+        :return: The creation of this Metadata.
         :rtype: str
         """
-        return self._created
-
-    @created.setter
-    def created(self, created: str):
-        """Sets the  of this Metadata.
-
-        :param str created: to be set
-        """
-
-        self._created = created
+        return self._creation
 
     # distance
     @property
@@ -880,24 +898,17 @@ class Metadata(object):
 
         self._links = links
 
-    # modified
+    # modification
     @property
     def modified(self) -> str:
-        """Gets the modified of this Metadata.
+        """Gets the last modification date of the data described by this Metadata.
 
-        :return: The modified of this Metadata.
+        It's the equivalent of the `created` original attribute (renamed to avoid conflicts with the _created` one).
+
+        :return: The modification of this Metadata.
         :rtype: str
         """
-        return self._modified
-
-    @modified.setter
-    def modified(self, modified: str):
-        """Sets the  of this Metadata.
-
-        :param str modified: to be set
-        """
-
-        self._modified = modified
+        return self._modification
 
     # name
     @property
@@ -1143,6 +1154,14 @@ class Metadata(object):
 
         :param str type: The type of this Metadata.
         """
+
+        # check type value
+        if type not in MetadataTypes.__members__:
+            raise ValueError(
+                "Metadata type '{}' is not an accepted value. Must be one of: {}.".format(
+                    type, " | ".join([e.name for e in MetadataTypes])
+                )
+            )
 
         self._type = type
 

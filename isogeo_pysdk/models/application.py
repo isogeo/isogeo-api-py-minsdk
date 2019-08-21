@@ -16,7 +16,6 @@ import pprint
 
 # package
 from isogeo_pysdk.enums import ApplicationTypes
-from isogeo_pysdk.models.workgroup import Workgroup
 
 
 # #############################################################################
