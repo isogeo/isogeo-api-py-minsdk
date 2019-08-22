@@ -19,6 +19,7 @@
 # Standard library
 import unittest
 from datetime import datetime
+from os import environ
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -137,10 +138,12 @@ class TestIsogeoUtils(unittest.TestCase):
         """Raise error if platform parameter is bad."""
         with self.assertRaises(ValueError):
             self.utils.set_base_url(platform="skynet")
+        self.utils.set_base_url(platform=environ.get("ISOGEO_PLATFORM", "qa"))
 
     # -- URLs Builders - edit (app) ------------------------------------------
     def test_get_edit_url_ok(self):
         """Test URL builder for edition link on APP"""
+        self.utils.set_base_url(platform=environ.get("ISOGEO_PLATFORM", "qa"))
         url = self.utils.get_edit_url(
             md_id="0269803d50c446b09f5060ef7fe3e22b",
             md_type="vector-dataset",
