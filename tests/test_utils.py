@@ -18,6 +18,8 @@
 
 # Standard library
 import unittest
+from datetime import datetime
+from os import environ
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -136,10 +138,12 @@ class TestIsogeoUtils(unittest.TestCase):
         """Raise error if platform parameter is bad."""
         with self.assertRaises(ValueError):
             self.utils.set_base_url(platform="skynet")
+        self.utils.set_base_url(platform=environ.get("ISOGEO_PLATFORM", "qa"))
 
     # -- URLs Builders - edit (app) ------------------------------------------
     def test_get_edit_url_ok(self):
         """Test URL builder for edition link on APP"""
+        self.utils.set_base_url(platform=environ.get("ISOGEO_PLATFORM", "qa"))
         url = self.utils.get_edit_url(
             md_id="0269803d50c446b09f5060ef7fe3e22b",
             md_type="vector-dataset",
@@ -345,3 +349,28 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertEqual(p_default, 5)
         p_default = self.utils.pages_counter(total=156, page_size=22)
         self.assertEqual(p_default, 8)
+
+    # -- Methods helpers
+    def test_helper_datetimes(self):
+        """Test class method to help formatting dates."""
+        # simple dates str
+        simple_date = self.utils.hlpr_date_as_datetime("2019-08-09")
+        self.assertIsInstance(simple_date, datetime)
+        self.assertEqual(simple_date.year, 2019)
+
+        # events datetimes str
+        event_date = self.utils.hlpr_date_as_datetime("2018-06-04T00:00:00+00:00")
+        self.assertIsInstance(event_date, datetime)
+        self.assertEqual(event_date.year, 2018)
+
+        # metadata timestamps str - 6 milliseconds
+        md_date = self.utils.hlpr_date_as_datetime("2019-05-17T13:01:08.559123+00:00")
+        self.assertIsInstance(md_date, datetime)
+        self.assertEqual(md_date.year, 2019)
+
+        # metadata timestamps str - more than 6 milliseconds
+        md_date_larger = self.utils.hlpr_date_as_datetime(
+            "2019-06-13T16:21:38.1917618+00:00"
+        )
+        self.assertIsInstance(md_date_larger, datetime)
+        self.assertEqual(md_date_larger.year, 2019)

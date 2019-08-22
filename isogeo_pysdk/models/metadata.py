@@ -25,8 +25,8 @@ from isogeo_pysdk.enums import MetadataSubresources, MetadataTypes
 # ##################################
 
 # for slugified title
-_slugify_strip_re = re.compile(r"[^\w\s-]")
-_slugify_hyphenate_re = re.compile(r"[-\s]+")
+_regex_slugify_strip = re.compile(r"[^\w\s-]")
+_regex_slugify_hyphenate = re.compile(r"[-\s]+")
 
 
 # #############################################################################
@@ -145,7 +145,8 @@ class Metadata(object):
 
     """
 
-    attr_types = {
+    # -- ATTRIBUTES --------------------------------------------------------------------
+    ATTR_TYPES = {
         "_abilities": list,
         "_created": str,
         "_creator": dict,
@@ -193,7 +194,7 @@ class Metadata(object):
         "validityComment": str,
     }
 
-    attr_crea = {
+    ATTR_CREA = {
         "abstract": str,
         "collectionContext": str,
         "collectionMethod": str,
@@ -220,21 +221,27 @@ class Metadata(object):
         "validityComment": str,
     }
 
-    attr_map = {
+    ATTR_MAP = {
         "coordinateSystem": "coordinate-system",
-        # "creation": "created",
         "featureAttributes": "feature-attributes",
-        # "modification": "modified",
     }
 
+    # -- CLASS METHODS -----------------------------------------------------------------
     @classmethod
     def clean_attributes(cls, raw_object: dict):
-        """Renames attributes wich are incompatible with Python (hyphens...).
+        """Renames attributes which are incompatible with Python (hyphens...).
         See related issue: https://github.com/isogeo/isogeo-api-py-minsdk/issues/82
+
+        :param dict raw_object: metadata dictionary returned by a request.json()
+
+        :returns: the metadata with correct attributes
+        :rtype: Metadata
         """
-        for k, v in cls.attr_map.items():
+        for k, v in cls.ATTR_MAP.items():
             raw_object[k] = raw_object.pop(v, [])
         return cls(**raw_object)
+
+    # -- CLASS INSTANCIATION -----------------------------------------------------------
 
     def __init__(
         self,
@@ -1242,13 +1249,14 @@ class Metadata(object):
         self._validityComment = validityComment
 
     # -- METHODS -----------------------------------------------------------------------
+
     def title_or_name(self, slugged: bool = False) -> str:
         """Gets the title of this Metadata or the name if there is no title.
         It can return a slugified value.
 
         :param bool slugged: slugify title. Defaults to `False`.
 
-        :return: the title or the name of this Metadata.
+        :returns: the title or the name of this Metadata.
         :rtype: str
         """
         if self._title:
@@ -1263,8 +1271,8 @@ class Metadata(object):
                 .encode("ascii", "ignore")
                 .decode("ascii")
             )
-            title_or_name = _slugify_strip_re.sub("", title_or_name).strip().lower()
-            title_or_name = _slugify_hyphenate_re.sub("-", title_or_name)
+            title_or_name = _regex_slugify_strip.sub("", title_or_name).strip().lower()
+            title_or_name = _regex_slugify_hyphenate.sub("-", title_or_name)
 
         return title_or_name
 
@@ -1272,7 +1280,7 @@ class Metadata(object):
         """Returns the model properties as a dict"""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -1301,12 +1309,12 @@ class Metadata(object):
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
-        for attr, _ in self.attr_crea.items():
+        for attr, _ in self.ATTR_CREA.items():
             # get attribute value
             value = getattr(self, attr)
             # switch attribute name for creation purpose
-            if attr in self.attr_map:
-                attr = self.attr_map.get(attr)
+            if attr in self.ATTR_MAP:
+                attr = self.ATTR_MAP.get(attr)
             if isinstance(value, list):
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)

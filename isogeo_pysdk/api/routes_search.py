@@ -256,7 +256,7 @@ class ApiSearch:
                     loop = asyncio.get_event_loop()
                 except RuntimeError as e:
                     logger.warning(
-                        "Async get loop failed. Maybe because it's already executed in a separated thread. Original error: ".format(
+                        "Async get loop failed. Maybe because it's already executed in a separated thread. Original error: {}".format(
                             e
                         )
                     )
