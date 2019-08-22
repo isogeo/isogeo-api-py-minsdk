@@ -32,12 +32,14 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import Isogeo, Metadata, MetadataSearch
+from isogeo_pysdk import Isogeo, IsogeoUtils, Metadata, MetadataSearch
 
 
 # #############################################################################
 # ######## Globals #################
 # ##################################
+
+utils = IsogeoUtils()
 
 if Path("dev.env").exists():
     load_dotenv("dev.env", override=True)
@@ -145,6 +147,16 @@ class TestMetadatas(unittest.TestCase):
             self.assertEqual(md.get("modified"), metadata.modified)
             self.assertEqual(md.get("created"), metadata.created)
             self.assertEqual(md.get("modified"), metadata.modified)
+
+            # -- HELPERS
+            # dates
+            md_date_creation = utils.hlpr_date_as_datetime(metadata._created)
+            self.assertEqual(int(metadata._created[:4]), md_date_creation.year)
+            md_date_modification = utils.hlpr_date_as_datetime(metadata._modified)
+            self.assertEqual(int(metadata._modified[:4]), md_date_modification.year)
+            if metadata.created:
+                ds_date_creation = utils.hlpr_date_as_datetime(metadata.created)
+                self.assertEqual(int(metadata.created[:4]), ds_date_creation.year)
 
     # def test_search_specific_mds_bad(self):
     #     """Searches filtering on specific metadata."""

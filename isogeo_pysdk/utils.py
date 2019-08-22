@@ -845,7 +845,7 @@ class IsogeoUtils(object):
             out_date = datetime.strptime(
                 in_date, _dtm_data
             )  # events datetimes (=dates)
-        elif len(in_date) == 32 and "." in in_date:
+        elif len(in_date) > 25 and len(in_date) <= 32 and "." in in_date:
             out_date = datetime.strptime(
                 in_date, _dtm_metadata
             )  # metadata timestamps with 6 milliseconds
@@ -856,7 +856,7 @@ class IsogeoUtils(object):
             )
         else:
             raise TypeError(
-                "This format of timestamps is not recognized: {}.Try by yourself!".format(
+                "This format of timestamps is not recognized: {}. Try by yourself!".format(
                     in_date
                 )
             )
