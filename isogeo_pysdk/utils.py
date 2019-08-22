@@ -21,6 +21,7 @@ import quopri
 import re
 import uuid
 from configparser import ConfigParser
+from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlparse
 
@@ -36,6 +37,28 @@ from isogeo_pysdk.checker import IsogeoChecker
 
 checker = IsogeoChecker()
 logger = logging.getLogger(__name__)
+
+# timestamps format helpers
+_regex_milliseconds = re.compile(r"\.(.*)\+")
+
+"""
+    For timestamps about metadata (_created, _modified):
+
+        - `2019-05-17T13:01:08.559123+00:00`: sometimes there are 6 digits in milliseconds, as accepted in `standard lib (%f) <https://docs.python.org/fr/3/library/datetime.html#strftime-strptime-behavior>`_
+        - `2019-08-21T16:07:42.9419347+00:00`: sometimes there are more than 6 digits in milliseconds
+"""
+_dtm_metadata = "%Y-%m-%dT%H:%M:%S.%f+00:00"
+
+"""
+    For timestamps about data (created, modified, published): `2018-06-04T00:00:00+00:00` without milliseconds.
+"""
+_dtm_data = "%Y-%m-%dT%H:%M:%S+00:00"  # 2018-06-04T00:00:00+00:00
+
+"""
+    For simple date. Used to add new events.
+"""
+_dtm_simple = "%Y-%m-%d"  # 2018-06-04
+
 
 # ##############################################################################
 # ########## Classes ###############
@@ -792,6 +815,53 @@ class IsogeoUtils(object):
             }
         # method ending
         return out_auth
+
+    # -- HELPERS ---------------------------------------------------------------
+    @classmethod
+    def hlpr_date_as_datetime(cls, in_date: str) -> datetime:
+        """Helper to handle differnts dates formats.
+        See: https://github.com/isogeo/isogeo-api-py-minsdk/issues/85
+
+        :param dict raw_object: metadata dictionary returned by a request.json()
+
+        :returns: a correct datetime object
+        :rtype: datetime
+
+        :Example:
+
+        .. code-block:: python
+
+            # for an event date
+            event_date = Metadata.hlpr_date_as_datetime("2018-06-04T00:00:00+00:00")
+            # for a metadata creation date with 6 digits as milliseconds
+            md_date = Metadata.hlpr_date_as_datetime("2019-05-17T13:01:08.559123+00:00")
+            # for a metadata creation date with more than 6 digits as milliseconds
+            md_date_larger = Metadata.hlpr_date_as_datetime("2019-06-13T16:21:38.1917618+00:00")
+
+        """
+        if len(in_date) == 10:
+            out_date = datetime.strptime(in_date, _dtm_simple)  # basic dates
+        elif len(in_date) == 25:
+            out_date = datetime.strptime(
+                in_date, _dtm_data
+            )  # events datetimes (=dates)
+        elif len(in_date) == 32 and "." in in_date:
+            out_date = datetime.strptime(
+                in_date, _dtm_metadata
+            )  # metadata timestamps with 6 milliseconds
+        elif len(in_date) >= 32 and "." in in_date:
+            milliseconds = re.search(_regex_milliseconds, in_date)
+            return cls.hlpr_date_as_datetime(
+                in_date.replace(milliseconds.group(1), milliseconds.group(1)[:6])
+            )
+        else:
+            raise TypeError(
+                "This format of timestamps is not recognized: {}.Try by yourself!".format(
+                    in_date
+                )
+            )
+
+        return out_date
 
 
 # #############################################################################
