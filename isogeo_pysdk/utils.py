@@ -822,7 +822,7 @@ class IsogeoUtils(object):
 
     # -- HELPERS ---------------------------------------------------------------
     @classmethod
-    def hlpr_date_as_datetime(cls, in_date: str) -> datetime:
+    def hlpr_datetimes(cls, in_date: str) -> datetime:
         """Helper to handle differnts dates formats.
         See: https://github.com/isogeo/isogeo-api-py-minsdk/issues/85
 
@@ -836,11 +836,14 @@ class IsogeoUtils(object):
         .. code-block:: python
 
             # for an event date
-            event_date = Metadata.hlpr_date_as_datetime("2018-06-04T00:00:00+00:00")
+            IsogeoUtils.hlpr_datetimes"2018-06-04T00:00:00+00:00")
+            >>> 2018-06-04 00:00:00
             # for a metadata creation date with 6 digits as milliseconds
-            md_date = Metadata.hlpr_date_as_datetime("2019-05-17T13:01:08.559123+00:00")
+            IsogeoUtils.hlpr_datetimes"2019-05-17T13:01:08.559123+00:00")
+            >>> 2019-05-17 13:01:08.559123
             # for a metadata creation date with more than 6 digits as milliseconds
-            md_date_larger = Metadata.hlpr_date_as_datetime("2019-06-13T16:21:38.1917618+00:00")
+            IsogeoUtils.hlpr_datetimes"2019-06-13T16:21:38.1917618+00:00")
+            >>> 2019-06-13 16:21:38.191761
 
         """
         if len(in_date) == 10:
@@ -855,7 +858,7 @@ class IsogeoUtils(object):
             )  # metadata timestamps with 6 milliseconds
         elif len(in_date) >= 32 and "." in in_date:
             milliseconds = re.search(_regex_milliseconds, in_date)
-            return cls.hlpr_date_as_datetime(
+            return cls.hlpr_datetimes(
                 in_date.replace(milliseconds.group(1), milliseconds.group(1)[:6])
             )
         else:
