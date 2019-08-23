@@ -349,6 +349,36 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertEqual(p_default, 8)
 
     # -- Methods helpers
+    def test_guess_platform(self):
+        """Test class method to guess platform from url."""
+        # prod
+        prod_api = IsogeoUtils.guess_platform_from_url("https://api.isogeo.com/about/")
+        self.assertEqual(prod_api, "prod")
+        prod_api = IsogeoUtils.guess_platform_from_url(
+            "https://v1.api.isogeo.com/about/"
+        )
+        self.assertEqual(prod_api, "prod")
+        prod_app = IsogeoUtils.guess_platform_from_url("https://app.isogeo.com/")
+        self.assertEqual(prod_app, "prod")
+
+        # qa
+        qa_api = IsogeoUtils.guess_platform_from_url("https://api.qa.isogeo.com/about")
+        self.assertEqual(qa_api, "qa")
+        qa_api = IsogeoUtils.guess_platform_from_url(
+            "https://v1.api.qa.isogeo.com/about"
+        )
+        self.assertEqual(qa_api, "qa")
+        qa_app = IsogeoUtils.guess_platform_from_url(
+            "https://qa-isogeo-app.azurewebsites.net/"
+        )
+        self.assertEqual(qa_app, "qa")
+
+        # unknown
+        unknown_api = IsogeoUtils.guess_platform_from_url(
+            "https://api.isogeo.ratp.local/about"
+        )
+        self.assertEqual(unknown_api, "unknown")
+
     def test_helper_datetimes(self):
         """Test class method to help formatting dates."""
         # simple dates str

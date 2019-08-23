@@ -418,6 +418,44 @@ class IsogeoUtils(object):
         )
         return api_url_base.geturl()
 
+    @classmethod
+    def guess_platform_from_url(self, url: str = "https://api.isogeo.com/") -> str:
+        """Returns the Isogeo platform from a given URL.
+
+        :param url str: URL string to guess from
+
+        :rtype: str
+        :returns: "prod" or "qa" or "unknown" 
+
+        :Example:
+
+        .. code-block:: python
+
+            IsogeoUtils.guess_platform_from_url("https://api.isogeo.com")
+            >>> "prod"
+            IsogeoUtils.guess_platform_from_url("https://api.qa.isogeo.com")
+            >>> "qa"
+            IsogeoUtils.guess_platform_from_url("https://api.isogeo.ratp.local")
+            >>> "unknown"
+
+        """
+        if "api.isogeo.com" in url:
+            api_platform = "prod"
+        elif "app.isogeo.com" in url:
+            api_platform = "prod"
+        elif "api.qa.isogeo.com" in url:
+            api_platform = "qa"
+        elif "qa." in url and "isogeo" in url:
+            api_platform = "qa"
+        elif "qa-" in url and "isogeo" in url:
+            # https://qa-isogeo-app.azurewebsites.net
+            # https://qa-isogeo-open.azurewebsites.net
+            api_platform = "qa"
+        else:
+            api_platform = "unknown"  # not recognized. on-premises?
+
+        return api_platform
+
     # -- SEARCH  --------------------------------------------------------------
     @classmethod
     def pages_counter(self, total: int, page_size: int = 100) -> int:
@@ -724,8 +762,33 @@ class IsogeoUtils(object):
     def credentials_loader(self, in_credentials: str = "client_secrets.json") -> dict:
         """Loads API credentials from a file, JSON or INI.
 
-        :param str in_credentials: path to the credentials file. By default,
-          look for a client_secrets.json file.
+        :param str in_credentials: path to the credentials file. By default, `./client_secrets.json`
+
+        :rtype: dict
+        :returns: a dictionary with credentials (ID, secret, URLs, platform...)
+
+        :Example:
+
+        .. code-block:: python
+
+            api_credentials = IsogeoUtils.credentials_loader("./_auth/client_secrets.json")
+            pprint.pprint(api_credentials)
+            >>> {
+                    'auth_mode': 'group',
+                    'client_id': 'python-minimalist-sdk-test-uuid-1a2b3c4d5e6f7g8h9i0j11k12l',
+                    'client_secret': 'application-secret-1a2b3c4d5e6f7g8h9i0j11k12l13m14n15o16p17Q18rS',
+                    'kind': None,
+                    'platform': 'prod',
+                    'scopes': ['resources:read'],
+                    'staff': None,
+                    'type': None,
+                    'uri_auth': 'https://id.api.isogeo.com/oauth/authorize',
+                    'uri_base': 'https://api.isogeo.com',
+                    'uri_redirect': None,
+                    'uri_token': 'https://id.api.isogeo.com/oauth/token'
+                }
+
+
         """
         accepted_extensions = (".ini", ".json")
         in_credentials_path = Path(in_credentials)  # load path
@@ -817,6 +880,10 @@ class IsogeoUtils(object):
                 ),
                 "uri_redirect": auth_settings.get("URI_REDIRECT"),
             }
+
+        # add guessed platform
+        out_auth["platform"] = self.guess_platform_from_url(out_auth.get("uri_base"))
+
         # method ending
         return out_auth
 

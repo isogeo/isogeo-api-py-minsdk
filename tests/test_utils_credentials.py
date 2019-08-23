@@ -155,6 +155,7 @@ class TestIsogeoUtilsCredentials(unittest.TestCase):
             self.assertIn("kind", creds_json_group)
             self.assertIn("type", creds_json_group)
             self.assertIn("staff", creds_json_group)
+            self.assertIn("platform", creds_json_group)
             # values
             self.assertEqual(creds_json_group.get("auth_mode"), "group")
             self.assertEqual(
@@ -166,6 +167,7 @@ class TestIsogeoUtilsCredentials(unittest.TestCase):
                 "https://id.api.isogeo.com/oauth/token",
             )
             self.assertEqual(creds_json_group.get("uri_base"), "https://api.isogeo.com")
+            self.assertEqual(creds_json_group.get("platform"), "prod")
             self.assertIsNone(creds_json_group.get("uri_redirect"))
 
     def test_credentials_loader_ini(self):
