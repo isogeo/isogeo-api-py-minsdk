@@ -82,11 +82,10 @@ class TestIsogeoUtils(unittest.TestCase):
     def test_get_isogeo_version_app(self):
         """Check APP version"""
         # prod
+        self.utils.set_base_url(platform="prod")
         version_app_prod = self.utils.get_isogeo_version(component="app")
         # qa
-        platform, api_url, app_url, csw_url, mng_url, oc_url, ssl = self.utils.set_base_url(
-            platform="qa"
-        )
+        self.utils.set_base_url(platform="qa")
         version_app_qa = self.utils.get_isogeo_version(component="app")
         # check
         self.assertIsInstance(version_app_prod, str)
