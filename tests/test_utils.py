@@ -417,3 +417,8 @@ class TestIsogeoUtils(unittest.TestCase):
         md_date_larger = IsogeoUtils.hlpr_datetimes("2019-06-13T16:21:38.1917618+00:00")
         self.assertIsInstance(md_date_larger, datetime)
         self.assertEqual(md_date_larger.year, 2019)
+
+        # specification published date
+        spec_date = IsogeoUtils.hlpr_datetimes("2014-10-02T00:00:00")
+        self.assertIsInstance(spec_date, datetime)
+        self.assertEqual(spec_date.year, 2014)

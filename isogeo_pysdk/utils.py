@@ -55,6 +55,11 @@ _dtm_metadata = "%Y-%m-%dT%H:%M:%S.%f+00:00"
 _dtm_data = "%Y-%m-%dT%H:%M:%S+00:00"  # 2018-06-04T00:00:00+00:00
 
 """
+    For timestamps about metadata subresource (specifications...): `2018-06-04T00:00:00` with basic time.
+"""
+_dtm_time = "%Y-%m-%dT%H:%M:%S"  # 2018-06-04T00:00:00+00:00
+
+"""
     For simple date. Used to add new events.
 """
 _dtm_simple = "%Y-%m-%d"  # 2018-06-04
@@ -928,6 +933,10 @@ class IsogeoUtils(object):
         """
         if len(in_date) == 10:
             out_date = datetime.strptime(in_date, _dtm_simple)  # basic dates
+        elif len(in_date) == 19:
+            out_date = datetime.strptime(
+                in_date, _dtm_time
+            )  # specification published dates
         elif len(in_date) == 25:
             out_date = datetime.strptime(
                 in_date, _dtm_data
@@ -943,8 +952,8 @@ class IsogeoUtils(object):
             )
         else:
             raise TypeError(
-                "This format of timestamps is not recognized: {}. Try by yourself!".format(
-                    in_date
+                "This format of timestamps is not recognized: {} ({}). Try by yourself!".format(
+                    in_date, len(in_date)
                 )
             )
 
