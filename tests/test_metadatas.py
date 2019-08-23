@@ -150,12 +150,12 @@ class TestMetadatas(unittest.TestCase):
 
             # -- HELPERS
             # dates
-            md_date_creation = utils.hlpr_date_as_datetime(metadata._created)
+            md_date_creation = utils.hlpr_datetimes(metadata._created)
             self.assertEqual(int(metadata._created[:4]), md_date_creation.year)
-            md_date_modification = utils.hlpr_date_as_datetime(metadata._modified)
+            md_date_modification = utils.hlpr_datetimes(metadata._modified)
             self.assertEqual(int(metadata._modified[:4]), md_date_modification.year)
             if metadata.created:
-                ds_date_creation = utils.hlpr_date_as_datetime(metadata.created)
+                ds_date_creation = utils.hlpr_datetimes(metadata.created)
                 self.assertEqual(int(metadata.created[:4]), ds_date_creation.year)
 
     # def test_search_specific_mds_bad(self):

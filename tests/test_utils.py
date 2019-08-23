@@ -349,33 +349,59 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertEqual(p_default, 8)
 
     # -- Methods helpers
+    def test_guess_platform(self):
+        """Test class method to guess platform from url."""
+        # prod
+        prod_api = IsogeoUtils.guess_platform_from_url("https://api.isogeo.com/about/")
+        self.assertEqual(prod_api, "prod")
+        prod_api = IsogeoUtils.guess_platform_from_url(
+            "https://v1.api.isogeo.com/about/"
+        )
+        self.assertEqual(prod_api, "prod")
+        prod_app = IsogeoUtils.guess_platform_from_url("https://app.isogeo.com/")
+        self.assertEqual(prod_app, "prod")
+
+        # qa
+        qa_api = IsogeoUtils.guess_platform_from_url("https://api.qa.isogeo.com/about")
+        self.assertEqual(qa_api, "qa")
+        qa_api = IsogeoUtils.guess_platform_from_url(
+            "https://v1.api.qa.isogeo.com/about"
+        )
+        self.assertEqual(qa_api, "qa")
+        qa_app = IsogeoUtils.guess_platform_from_url(
+            "https://qa-isogeo-app.azurewebsites.net/"
+        )
+        self.assertEqual(qa_app, "qa")
+
+        # unknown
+        unknown_api = IsogeoUtils.guess_platform_from_url(
+            "https://api.isogeo.ratp.local/about"
+        )
+        self.assertEqual(unknown_api, "unknown")
+
     def test_helper_datetimes(self):
         """Test class method to help formatting dates."""
         # simple dates str
-        simple_date = self.utils.hlpr_date_as_datetime("2019-08-09")
+        simple_date = IsogeoUtils.hlpr_datetimes("2019-08-09")
         self.assertIsInstance(simple_date, datetime)
         self.assertEqual(simple_date.year, 2019)
 
         # events datetimes str
-        event_date = self.utils.hlpr_date_as_datetime("2018-06-04T00:00:00+00:00")
+        event_date = IsogeoUtils.hlpr_datetimes("2018-06-04T00:00:00+00:00")
         self.assertIsInstance(event_date, datetime)
         self.assertEqual(event_date.year, 2018)
 
         # metadata timestamps str - 6 milliseconds
-        md_date = self.utils.hlpr_date_as_datetime("2019-05-17T13:01:08.559123+00:00")
+        md_date = IsogeoUtils.hlpr_datetimes("2019-05-17T13:01:08.559123+00:00")
         self.assertIsInstance(md_date, datetime)
         self.assertEqual(md_date.year, 2019)
 
         # metadata timestamps str - 6 milliseconds
-        md_date_lesser = self.utils.hlpr_date_as_datetime(
-            "2017-12-01T16:36:28.74561+00:00"
-        )
+        md_date_lesser = IsogeoUtils.hlpr_datetimes("2017-12-01T16:36:28.74561+00:00")
         self.assertIsInstance(md_date_lesser, datetime)
         self.assertEqual(md_date_lesser.year, 2017)
 
         # metadata timestamps str - more than 6 milliseconds
-        md_date_larger = self.utils.hlpr_date_as_datetime(
-            "2019-06-13T16:21:38.1917618+00:00"
-        )
+        md_date_larger = IsogeoUtils.hlpr_datetimes("2019-06-13T16:21:38.1917618+00:00")
         self.assertIsInstance(md_date_larger, datetime)
         self.assertEqual(md_date_larger.year, 2019)
