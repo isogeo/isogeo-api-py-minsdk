@@ -198,6 +198,7 @@ class IsogeoUtils(object):
 
         return "%s %s" % (s, size_name[i])
 
+    @classmethod
     def convert_uuid(self, in_uuid: str = str, mode: bool = 0):
         """Convert a metadata UUID to its URI equivalent. And conversely.
 
@@ -239,6 +240,7 @@ class IsogeoUtils(object):
         else:
             raise ValueError("'mode' must be  one of: 0 | 1 | 2")
 
+    @classmethod
     def encoded_words_to_text(self, in_encoded_words: str):
         """Pull out the character set, encoding, and encoded text from the input
         encoded words. Next, it decodes the encoded words into a byte string,
@@ -248,8 +250,8 @@ class IsogeoUtils(object):
 
         See:
 
-        - https://github.com/isogeo/isogeo-api-py-minsdk/issues/32
-        - https://dmorgan.info/posts/encoded-word-syntax/
+          - https://github.com/isogeo/isogeo-api-py-minsdk/issues/32
+          - https://dmorgan.info/posts/encoded-word-syntax/
 
         :param str in_encoded_words: base64 or quori encoded character string.
         """
@@ -417,6 +419,7 @@ class IsogeoUtils(object):
         return api_url_base.geturl()
 
     # -- SEARCH  --------------------------------------------------------------
+    @classmethod
     def pages_counter(self, total: int, page_size: int = 100) -> int:
         """Simple helper to handle pagination. Returns the number of pages for a
         given number of results.
