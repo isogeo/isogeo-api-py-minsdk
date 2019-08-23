@@ -142,6 +142,7 @@ class TestIsogeoUtils(unittest.TestCase):
     # -- URLs Builders - edit (app) ------------------------------------------
     def test_get_edit_url_ok(self):
         """Test URL builder for edition link on APP"""
+        self.utils.set_base_url(platform=environ.get("ISOGEO_PLATFORM", "prod"))
         url = self.utils.get_edit_url(
             md_id="0269803d50c446b09f5060ef7fe3e22b",
             md_type="vector-dataset",
@@ -349,6 +350,18 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertEqual(p_default, 8)
 
     # -- Methods helpers
+    def test_get_url_base(self):
+        """Test class method to get API base URL from token url."""
+        # prod
+        prod_api = IsogeoUtils.get_url_base_from_url_token()
+        self.assertEqual(prod_api, "https://api.isogeo.com")
+
+        # qa
+        qa_api = IsogeoUtils.get_url_base_from_url_token(
+            url_api_token="https://id.api.qa.isogeo.com/oauth/token"
+        )
+        self.assertEqual(qa_api, "https://api.qa.isogeo.com")
+
     def test_guess_platform(self):
         """Test class method to guess platform from url."""
         # prod
