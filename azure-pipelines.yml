@@ -87,19 +87,6 @@ jobs:
       ISOGEO_WORKGROUP_TEST_UUID: $(ISOGEO_WORKGROUP_TEST_UUID)
     displayName: 'Tests and coverage - Pytest'
 
-  # Codecov. Inspired from: https://github.com/codecov/example-azure-pipelines
-  - task: cURLUploader@2
-    displayName: "Publish coverage results to Codecov - with cURL"
-    condition: succeededOrFailed()
-    continueOnError: true
-    env:
-      CODECOV_TOKEN: $(CODECOV_TOKEN)
-    inputs:
-      authType: userAndPass 
-      files: 'coverage.xml'
-      url: 'https://codecov.io/bash'
-      options: '-t $(CODECOV_TOKEN)'
-
   - task: PublishTestResults@2
     displayName: "Publish unit test results"
     condition: succeededOrFailed()
