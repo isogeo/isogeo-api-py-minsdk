@@ -180,7 +180,8 @@ class IsogeoUtils(object):
             self.ssl,
         )
 
-    def _convert_octets(self, octets: int) -> str:
+    @classmethod
+    def convert_octets(self, octets: int) -> str:
         """Convert a mount of octets in readable size.
 
         :param int octets: mount of octets to convert
