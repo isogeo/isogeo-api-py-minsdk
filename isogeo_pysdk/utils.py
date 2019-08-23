@@ -907,11 +907,12 @@ class IsogeoUtils(object):
 
     # -- HELPERS ---------------------------------------------------------------
     @classmethod
-    def hlpr_datetimes(cls, in_date: str) -> datetime:
+    def hlpr_datetimes(cls, in_date: str, try_again: bool = 1) -> datetime:
         """Helper to handle differnts dates formats.
         See: https://github.com/isogeo/isogeo-api-py-minsdk/issues/85
 
         :param dict raw_object: metadata dictionary returned by a request.json()
+        :param bool try_again: iterations on the method
 
         :returns: a correct datetime object
         :rtype: datetime
@@ -951,11 +952,19 @@ class IsogeoUtils(object):
                 in_date.replace(milliseconds.group(1), milliseconds.group(1)[:6])
             )
         else:
-            raise TypeError(
-                "This format of timestamps is not recognized: {} ({}). Try by yourself!".format(
-                    in_date, len(in_date)
+            if try_again and len(in_date) >= 10:
+                logger.warning(
+                    "Format of timestamp not recognized: {} ({})."
+                    " Trying again with only the 10 first characters: {}".format(
+                        in_date, len(in_date), in_date[:10]
+                    )
                 )
-            )
+                return cls.hlpr_datetimes(in_date[:10], try_again=0)
+            else:
+                logger.error(
+                    "Format of timestamp not recognized: {} ({}). Formatting failed."
+                )
+                out_date = None
 
         return out_date
 

@@ -422,3 +422,8 @@ class TestIsogeoUtils(unittest.TestCase):
         spec_date = IsogeoUtils.hlpr_datetimes("2014-10-02T00:00:00")
         self.assertIsInstance(spec_date, datetime)
         self.assertEqual(spec_date.year, 2014)
+
+        # specification published date
+        unrecognized_date = IsogeoUtils.hlpr_datetimes("2014-10-02T00:00:00+00")
+        self.assertIsInstance(unrecognized_date, datetime)
+        self.assertEqual(unrecognized_date.year, 2014)
