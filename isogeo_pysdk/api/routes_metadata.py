@@ -371,17 +371,6 @@ class ApiMetadata:
         """
         return self.api_client.catalog.metadata(metadata_id=metadata._id)
 
-    def list_conditions(self, metadata: Metadata) -> list:
-        """Returns asssociated conditions with a metadata.
-        Just a shortcut.
-
-        :param Metadata metadata: metadata object
-
-        :rtype: list
-        """
-        print(metadata._id)
-        return self.conditions.metadata(metadata_id=metadata._id)
-
     def keywords(
         self, metadata: Metadata, include: list = ["_abilities", "count", "thesaurus"]
     ) -> list:

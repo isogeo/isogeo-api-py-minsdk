@@ -135,7 +135,7 @@ class TestConditions(unittest.TestCase):
     # -- GET --
     def test_conditions_listing(self):
         """GET :metadata/{metadata_uuid}/conditions}"""
-        # retrieve workgroup conditions
+        # retrieve metadata conditions
         metadata_conditions = self.isogeo.metadata.conditions.list(
             self.fixture_metadata_existing._id
         )
@@ -152,6 +152,35 @@ class TestConditions(unittest.TestCase):
             # tests attributes value
             self.assertEqual(condition._id, i.get("_id"))
             self.assertEqual(condition.description, i.get("description"))
+
+    def test_conditions_get_detailed(self):
+        """GET :metadata/{metadata_uuid}/conditions/{conditions_uuid}"""
+        # retrieve workgroup licenses
+        workgroup_licenses = self.isogeo.license.listing(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID
+        )
+        # filter on licenses which have been already associated
+        license_associated = sample(
+            [lic for lic in workgroup_licenses if lic.get("count") > 0], 1
+        )[0]
+        # search metadata using this license as condition
+        search_filtered_license = self.isogeo.search(
+            query=license_associated.get("_tag"), include=("conditions",), page_size=5
+        )
+        # parse results
+        for md in search_filtered_license.results:
+            metadata = Metadata.clean_attributes(md)
+            # parse conditions
+            for cond in metadata.conditions:
+                condition = Condition(**cond)
+
+        # returns a detailed condition
+        condition_detailed = self.isogeo.metadata.conditions.get(
+            metadata_id=metadata._id, condition_id=condition._id
+        )
+
+        self.assertIsInstance(condition_detailed, Condition)
+        # print(condition_detailed)
 
 
 # ##############################################################################

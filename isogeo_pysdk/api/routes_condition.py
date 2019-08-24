@@ -15,10 +15,13 @@
 import logging
 from functools import lru_cache
 
+# 3rd party
+from requests import Response
+
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Condition
+from isogeo_pysdk.models import Condition, Metadata, License
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -94,22 +97,16 @@ class ApiCondition:
 
     @lru_cache()
     @ApiDecorators._check_bearer_validity
-    def get(
-        self,
-        workgroup_id: str,
-        condition_id: str,
-        include: list = ["_abilities", "count"],
-    ) -> Condition:
+    def get(self, metadata_id: str, condition_id: str) -> Condition:
         """Get details about a specific condition.
 
-        :param str workgroup_id: identifier of the owner workgroup
+        :param str metadata_id: identifier of the owner workgroup
         :param str condition_id: condition UUID
-        :param list include: additionnal subresource to include in the response
         """
         # check workgroup UUID
-        if not checker.check_is_uuid(workgroup_id):
+        if not checker.check_is_uuid(metadata_id):
             raise ValueError(
-                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+                "Metadata ID is not a correct UUID: {}".format(metadata_id)
             )
         else:
             pass
@@ -121,19 +118,15 @@ class ApiCondition:
         else:
             pass
 
-        # request parameter
-        payload = {"_include": include}
-
         # condition route
         url_condition = utils.get_request_base_url(
-            route="groups/{}/conditions/{}".format(workgroup_id, condition_id)
+            route="resources/{}/conditions/{}".format(metadata_id, condition_id)
         )
 
         # request
         req_condition = self.api_client.get(
             url=url_condition,
             headers=self.api_client.header,
-            params=payload,
             proxies=self.api_client.proxies,
             verify=self.api_client.ssl,
             timeout=self.api_client.timeout,
@@ -143,6 +136,13 @@ class ApiCondition:
         req_check = checker.check_api_response(req_condition)
         if isinstance(req_check, tuple):
             return req_check
+
+        # extend response with uuid of prent metadata
+        condition_returned = req_condition.json()
+        condition_returned["parent_resource"] = metadata_id
+
+        # end of method
+        return Condition(**condition_returned)
 
         # end of method
         return Condition.clean_attributes(req_condition.json())
