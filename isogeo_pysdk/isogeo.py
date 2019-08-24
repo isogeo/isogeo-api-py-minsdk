@@ -428,30 +428,6 @@ if __name__ == "__main__":
     # getting a token
     isogeo.connect()
 
-    # # for oAuth2 Backend (Client Credentials Grant) Flow
-    # isogeo = Isogeo(
-    #     auth_mode="user_public",
-    #     client_id=environ.get("ISOGEO_API_USER_PUBLIC_CLIENT_ID"),
-    #     client_secret=environ.get("ISOGEO_API_USER_PUBLIC_CLIENT_SECRET"),
-    #     auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
-    #     platform=environ.get("ISOGEO_PLATFORM", "qa"),
-    # )
-
-    # # getting a token
-    # isogeo.connect()
-
-    # for oAuth2 Backend (Client Credentials Grant) Flow
-    isogeo = Isogeo(
-        auth_mode="group",
-        client_id=environ.get("ISOGEO_API_GROUP_CLIENT_ID"),
-        client_secret=environ.get("ISOGEO_API_GROUP_CLIENT_SECRET"),
-        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
-        platform=environ.get("ISOGEO_PLATFORM", "qa"),
-    )
-
-    # getting a token
-    isogeo.connect()
-
     # misc
     discriminator = strftime("%Y-%m-%d_%H%M%S", gmtime())
     METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
