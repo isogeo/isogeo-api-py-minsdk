@@ -144,8 +144,100 @@ class ApiCondition:
         # end of method
         return Condition(**condition_returned)
 
+    @ApiDecorators._check_bearer_validity
+    def create(self, metadata: Metadata, condition: Condition) -> Condition:
+        """Add a new condition (license + specific description) to a metadata.
+
+        :param Metadata metadata: metadata object to update
+        :param Condition condition: condition to create
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # check license UUID
+        if not checker.check_is_uuid(condition.license._id):
+            raise ValueError(
+                "License ID is not a correct UUID: {}".format(condition.license._id)
+            )
+        else:
+            pass
+
+        # URL
+        url_condition_create = utils.get_request_base_url(
+            route="resources/{}/conditions".format(metadata._id)
+        )
+
+        # request
+        req_condition_create = self.api_client.post(
+            url=url_condition_create,
+            json=condition.to_dict_creation(),
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_condition_create)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # extend response with uuid of prent metadata
+        condition_returned = req_condition_create.json()
+        condition_returned["parent_resource"] = metadata._id
+
         # end of method
-        return Condition.clean_attributes(req_condition.json())
+        return Condition(**condition_returned)
+
+    @ApiDecorators._check_bearer_validity
+    def delete(self, metadata: Metadata, condition: Condition) -> Response:
+        """Removes a condition from a metadata.
+
+        :param Metadata metadata: metadata object to update
+        :param Condition condition: license model object to associate
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
+            )
+        else:
+            pass
+
+        # check license UUID
+        if not checker.check_is_uuid(condition._id):
+            raise ValueError(
+                "Condition ID is not a correct UUID: {}".format(condition._id)
+            )
+        else:
+            pass
+
+        # URL
+        url_condition_delete = utils.get_request_base_url(
+            route="resources/{}/conditions/{}".format(metadata._id, condition._id)
+        )
+
+        # request
+        req_condition_delete = self.api_client.delete(
+            url=url_condition_delete,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_condition_delete)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_condition_delete
 
 
 # ##############################################################################
