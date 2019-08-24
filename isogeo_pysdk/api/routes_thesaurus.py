@@ -34,7 +34,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiThesaurus:
-    """Routes as methods of Isogeo API used to manipulate thesauruss (conditions).
+    """Routes as methods of Isogeo API used to manipulate thesaurus.
     """
 
     def __init__(self, api_client=None):

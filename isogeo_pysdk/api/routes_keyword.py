@@ -36,7 +36,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiKeyword:
-    """Routes as methods of Isogeo API used to manipulate keywords (conditions).
+    """Routes as methods of Isogeo API used to manipulate keywords.
     """
 
     def __init__(self, api_client=None):
