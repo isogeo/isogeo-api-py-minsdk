@@ -46,7 +46,7 @@ if __name__ == "__main__":
         query="type:vector-dataset",  # filter only on vectors
         include=["feature-attributes"],  # ask for including feature attributes
         page_size=100,  # max metadata to download
-        whole_share=0,  # download only the first results page
+        whole_results=0,  # download only the first results page
     )
 
     if type(search) != dict:

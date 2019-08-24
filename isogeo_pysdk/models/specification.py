@@ -5,6 +5,7 @@
     Isogeo API v1 - Model of Specification entity
 
     See: http://help.isogeo.com/api/complete/index.html#definition-specification
+
 """
 
 # #############################################################################
@@ -24,28 +25,21 @@ from isogeo_pysdk.models.contact import Contact
 class Specification(object):
     """Specifications are entities defining rules of data creation.
 
+    :Example:
 
-    Sample:
+    .. code-block:: json
 
-    ```json
-    {
-        '_abilities': [],
-        '_id': '85526b48b85c49409e6050e605d2253c',
-        '_tag': 'specification:isogeo:85526b48b85c49409e6050e605d2253c',
-        'count': 14,
-        'link': 'http://cnig.gouv.fr/wp-content/uploads/2016/07/20160701_STANDARD_CNIG_SUP_V2016_vf.pdf',
-        'name': 'CNIG SUP v2016',
-        'published': '2016-06-30T00:00:00'
-    }
-    ```
+        {
+            '_abilities': [],
+            '_id': 'string (uuid)',
+            '_tag': 'specification:isogeo:string (uuid)',
+            'count': int,
+            'link': string,
+            'name': string,
+            'published': '2016-06-30T00:00:00'
+        }
     """
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of specification attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-      attr_map (dict): mapping between read and write attributes. {"attribute name - GET": "attribute type - POST"}
-    """
     attr_types = {
         "_abilities": str,
         "_id": str,

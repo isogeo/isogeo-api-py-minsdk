@@ -7,6 +7,7 @@ name = "pypi"
 black = "==19.3b0"
 codecov = "*"
 flake8 = "*"
+isogeo-pysdk = {editable = true,path = "."}
 pip = "*"
 pre-commit = "*"
 pycodestyle = "*"
@@ -19,10 +20,11 @@ pytest-random-order = "*"
 setuptools = "*"
 twine = "*"
 wheel = "*"
+sphinx = "*"
 
 [packages]
 requests = ">=2.20.0"
 requests-oauthlib = ">=1.2.0"
 
 [requires]
-python_version = "3.6"
+python_version = "3.7"

@@ -295,7 +295,7 @@ class ApiCoordinateSystem:
         >>> coordsys.alias = "World SRS"
         >>> # add it to the workgroup selection
         >>> isogeo.srs.associate_workgroup(
-            workgroup=isogeo.workgroup.workgroup(WORKGROUP_UUID),
+            workgroup=isogeo.workgroup.get(WORKGROUP_UUID),
             coordinate_system=coordsys
             )
         """

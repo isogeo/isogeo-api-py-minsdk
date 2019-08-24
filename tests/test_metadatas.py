@@ -17,43 +17,37 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
-from random import sample
-from socket import gethostname
-from sys import exit, _getframe
-from time import gmtime, sleep, strftime
 import unittest
 import urllib3
+from os import environ
+from pathlib import Path
+from random import sample
+from socket import gethostname
+from sys import _getframe, exit
+from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import (
-    IsogeoSession,
-    __version__ as pysdk_version,
-    Metadata,
-    MetadataSearch,
-)
+from isogeo_pysdk import Isogeo, IsogeoUtils, Metadata, MetadataSearch
 
 
 # #############################################################################
 # ######## Globals #################
 # ##################################
 
-load_dotenv("dev.env", override=True)
+utils = IsogeoUtils()
+
+if Path("dev.env").exists():
+    load_dotenv("dev.env", override=True)
 
 # host machine name - used as discriminator
 hostname = gethostname()
 
 # API access
-app_script_id = environ.get("ISOGEO_API_USER_CLIENT_ID")
-app_script_secret = environ.get("ISOGEO_API_USER_CLIENT_SECRET")
-platform = environ.get("ISOGEO_PLATFORM", "qa")
-user_email = environ.get("ISOGEO_USER_NAME")
-user_password = environ.get("ISOGEO_USER_PASSWORD")
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
@@ -80,7 +74,9 @@ class TestMetadatas(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not app_script_id or not app_script_secret:
+        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
+        ):
             logging.critical("No API credentials set as env variables.")
             exit()
         else:
@@ -94,9 +90,10 @@ class TestMetadatas(unittest.TestCase):
             urllib3.disable_warnings()
 
         # API connection
-        cls.isogeo = IsogeoSession(
-            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+        cls.isogeo = Isogeo(
+            auth_mode="user_legacy",
+            client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+            client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
@@ -139,7 +136,65 @@ class TestMetadatas(unittest.TestCase):
 
     # -- TESTS ---------------------------------------------------------
     # -- GET --
-    def test_metadatas_search_as_application(self):
+    def test_metadatas_in_search_results(self):
         """GET :resources/search"""
-        basic_search = self.isogeo.metadata.search()
-        self.assertIsInstance(basic_search.total, int)
+        search = self.isogeo.search(include="all")
+        for md in search.results:
+            metadata = Metadata.clean_attributes(md)
+            # compare values
+            self.assertEqual(md.get("_id"), metadata._id)
+            self.assertEqual(md.get("_created"), metadata._created)
+            self.assertEqual(md.get("modified"), metadata.modified)
+            self.assertEqual(md.get("created"), metadata.created)
+            self.assertEqual(md.get("modified"), metadata.modified)
+
+            # -- HELPERS
+            # dates
+            md_date_creation = utils.hlpr_datetimes(metadata._created)
+            self.assertEqual(int(metadata._created[:4]), md_date_creation.year)
+            md_date_modification = utils.hlpr_datetimes(metadata._modified)
+            self.assertEqual(int(metadata._modified[:4]), md_date_modification.year)
+            if metadata.created:
+                ds_date_creation = utils.hlpr_datetimes(metadata.created)
+                self.assertEqual(int(metadata.created[:4]), ds_date_creation.year)
+
+    # def test_search_specific_mds_bad(self):
+    #     """Searches filtering on specific metadata."""
+    #     # get random metadata within a small search
+    #     search = self.isogeo.metadata.search(
+    #         page_size=5,
+    #         # whole_results=0
+    #     )
+    #     metadata_id = sample(search.results, 1)[0].get("_id")
+
+    #     # # pass metadata UUID
+    #     # with self.assertRaises(TypeError):
+    #     #     self.isogeo.search(self.bearer,
+    #     #                         page_size=0,
+    #     #                         whole_results=0,
+    #     #                         specific_md=md)
+
+    def test_metadatas_get_detailed(self):
+        """GET :resources/{metadata_uuid}"""
+        # retrieve fixture metadata
+        metadata = self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID, include="all")
+        # check object
+        self.assertIsInstance(metadata, Metadata)
+        # check attributes
+        self.assertTrue(hasattr(metadata, "_id"))
+        self.assertTrue(hasattr(metadata, "_created"))
+        self.assertTrue(hasattr(metadata, "_creator"))
+        self.assertTrue(hasattr(metadata, "_modified"))
+        self.assertTrue(hasattr(metadata, "abstract"))
+        self.assertTrue(hasattr(metadata, "created"))
+        self.assertTrue(hasattr(metadata, "modified"))
+
+        # check method to dict
+        md_as_dict = metadata.to_dict()
+        self.assertIsInstance(md_as_dict, dict)
+        # compare values
+        self.assertEqual(md_as_dict.get("_id"), metadata._id)
+        self.assertEqual(md_as_dict.get("_created"), metadata._created)
+        self.assertEqual(md_as_dict.get("modified"), metadata.modified)
+        self.assertEqual(md_as_dict.get("created"), metadata.created)
+        self.assertEqual(md_as_dict.get("modified"), metadata.modified)

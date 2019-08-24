@@ -19,7 +19,6 @@ import logging
 import socket
 import warnings
 from collections import Counter
-from datetime import datetime
 from uuid import UUID
 
 # modules
@@ -79,23 +78,6 @@ EDIT_TABS = {
     "metadata": ",".join(FILTER_TYPES),
 }
 
-_SUBRESOURCES_MD = (
-    "_creator",
-    "conditions",
-    "contacts",
-    "coordinate-system",
-    "events",
-    "feature-attributes",
-    "keywords",
-    "layers",
-    "limitations",
-    "links",
-    "operations",
-    "serviceLayers",
-    "specifications",
-    "tags",
-)
-
 _SUBRESOURCES_KW = ("_abilities", "count", "thesaurus")
 
 _SUBRESOURCES_CT = ("count",)
@@ -135,35 +117,6 @@ class IsogeoChecker(object):
                 logging.debug("Proxy detected. Ignoring error...")
                 return True
             return False
-
-    def check_bearer_validity(self, token: dict, connect_mtd) -> dict:
-        """Check API Bearer token validity.
-
-        Isogeo ID delivers authentication bearers which are valid during
-        a certain time. So this method checks the validity of the token
-        with a 30 mn anticipation limit, and renews it if necessary.
-        See: http://tools.ietf.org/html/rfc6750#section-2
-
-        FI: 24h = 86400 seconds, 30 mn = 1800, 5 mn = 300
-
-        :param tuple token: auth bearer to check.
-         Structure: (bearer, expiration_date)
-        :param isogeo_pysdk.connect connect_mtd: method herited
-         from Isogeo PySDK to get new bearer
-        """
-        warnings.warn(
-            "Method is now executed as a decorator within the main SDK class. Will be removed in future versions.",
-            DeprecationWarning,
-        )
-        if datetime.now() < token.get("expires_at"):
-            token = connect_mtd
-            logging.debug("Token was about to expire, so has been renewed.")
-        else:
-            logging.debug("Token is still valid.")
-            pass
-
-        # end of method
-        return token
 
     def check_api_response(self, response) -> True or tuple:
         """Check API response and raise exceptions if needed.
@@ -305,7 +258,14 @@ class IsogeoChecker(object):
         """
         # check uuid type
         if not isinstance(uuid_str, str):
-            raise TypeError("'uuid_str' expected a str value. Got: {}".format(uuid_str))
+            logger.debug(
+                TypeError(
+                    "'uuid_str' parameter expects a str value. Got: {}".format(
+                        type(uuid_str)
+                    )
+                )
+            )
+            return False
         else:
             pass
         # handle Isogeo specific UUID in XML exports
@@ -318,8 +278,8 @@ class IsogeoChecker(object):
             uid = UUID(uuid_str)
             return uid.hex == uuid_str.replace("-", "").replace("urn:uuid:", "")
         except ValueError as e:
-            logging.error(
-                "uuid ValueError. {} ({})  -- {}".format(type(uuid_str), uuid_str, e)
+            logging.warning(
+                "uuid ValueError. {} ({}) -- {}".format(type(uuid_str), uuid_str, e)
             )
             return False
 
@@ -367,24 +327,29 @@ class IsogeoChecker(object):
             return True
 
     # -- FILTERS -------------------------------------------------------------
-    def _check_filter_specific_md(self, specific_md: list):
+    def _check_filter_specific_md(self, specific_md: tuple):
         """Check if specific_md parameter is valid.
 
-        :param list specific_md: list of specific metadata UUID to check
+        :param tuple specific_md: tuple of specific metadata UUID to check
         """
-        if isinstance(specific_md, list):
+        if isinstance(specific_md, (list, tuple)):
             if len(specific_md) > 0:
                 # checking UUIDs and poping bad ones
+                specific_md = list(specific_md)
                 for md in specific_md:
                     if not self.check_is_uuid(md):
                         specific_md.remove(md)
-                        logging.error("Metadata UUID is not correct: {}".format(md))
+                        logging.warning(
+                            "Incorrect metadata UUID has been removed: {}".format(md)
+                        )
                 # joining survivors
                 specific_md = ",".join(specific_md)
             else:
                 specific_md = ""
         else:
-            raise TypeError("'specific_md' expects a list")
+            raise TypeError(
+                "'specific_md' expects a tuple, not {}".format(type(specific_md))
+            )
         return specific_md
 
     def _check_filter_specific_tag(self, specific_tag: list):
@@ -425,7 +390,7 @@ class IsogeoChecker(object):
         # sub resources manager
         if isinstance(includes, str) and includes.lower() == "all":
             includes = ",".join(ref_subresources)
-        elif isinstance(includes, list):
+        elif isinstance(includes, (list, tuple)):
             if len(includes):
                 for subresource in includes:
                     if subresource not in ref_subresources:

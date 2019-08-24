@@ -23,12 +23,6 @@ class Contact(object):
     can be associated to metadata.
     """
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of contact attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-      attr_map (dict): mapping between read and write attributes. {"attribute name - GET": "attribute type - POST"}
-    """
     attr_types = {
         "_abilities": str,
         "_id": str,

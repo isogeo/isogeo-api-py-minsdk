@@ -39,8 +39,8 @@ if __name__ == "__main__":
 
     # instanciate
     isogeo = IsogeoSession(
-        client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-        client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+        client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+        client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
     )

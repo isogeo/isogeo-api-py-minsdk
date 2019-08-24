@@ -14,13 +14,14 @@
 # Standard library
 import logging
 
+
 # 3rd party
 from requests.models import Response
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Metadata, ResourceSearch
+from isogeo_pysdk.models import Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
 # other routes
@@ -74,7 +75,7 @@ class ApiMetadata:
         super(ApiMetadata, self).__init__()
 
     @ApiDecorators._check_bearer_validity
-    def get(self, metadata_id: str, include: list or str = []) -> Metadata:
+    def get(self, metadata_id: str, include: tuple or str = ()) -> Metadata:
         """Get complete or partial metadata about a specific metadata (= resource).
 
         :param str metadata_id: metadata UUID to get
@@ -104,7 +105,7 @@ class ApiMetadata:
         )
 
         # request
-        req_resource = self.api_client.get(
+        req_metadata = self.api_client.get(
             url=url_resource,
             headers=self.api_client.header,
             params=payload,
@@ -114,17 +115,12 @@ class ApiMetadata:
         )
 
         # checking response
-        req_check = checker.check_api_response(req_resource)
+        req_check = checker.check_api_response(req_metadata)
         if isinstance(req_check, tuple):
             return req_check
 
-        # handle bad JSON attribute
-        metadata = req_resource.json()
-        metadata["coordinateSystem"] = metadata.pop("coordinate-system", list)
-        metadata["featureAttributes"] = metadata.pop("feature-attributes", list)
-
         # end of method
-        return Metadata(**metadata)
+        return Metadata.clean_attributes(req_metadata.json())
 
     @ApiDecorators._check_bearer_validity
     def create(
@@ -277,26 +273,26 @@ class ApiMetadata:
 
     @ApiDecorators._check_bearer_validity
     def update(self, metadata: Metadata) -> Metadata:
-        """Check if the specified resource exists and is available for the authenticated user.
+        """Update a metadata, but **ONLY** the root attributes, not the subresources.
 
         :param Metadata metadata: metadata object to update
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):
             raise ValueError(
-                "Resource ID is not a correct UUID: {}".format(metadata._id)
+                "Metadata ID is not a correct UUID: {}".format(metadata._id)
             )
         else:
             pass
 
         # URL builder
-        url_metadata_exists = utils.get_request_base_url(
+        url_metadata_update = utils.get_request_base_url(
             route="resources/{}".format(metadata._id)
         )
 
         # request
-        req_metadata_exists = self.api_client.patch(
-            url=url_metadata_exists,
+        req_metadata_update = self.api_client.patch(
+            url=url_metadata_update,
             json=metadata.to_dict_creation(),
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
@@ -305,181 +301,12 @@ class ApiMetadata:
         )
 
         # checking response
-        req_check = checker.check_api_response(req_metadata_exists)
+        req_check = checker.check_api_response(req_metadata_update)
         if isinstance(req_check, tuple):
             return req_check
 
-        return True
-
-    # -- Routes to search --------------------------------------------------------------
-    @ApiDecorators._check_bearer_validity
-    def search(
-        self,
-        # semantic and objects filters
-        query: str = "",
-        share: str = None,
-        specific_md: list = [],
-        # results model
-        include: list = [],
-        # geographic filters
-        bbox: list = None,
-        poly: str = None,
-        georel: str = None,
-        # sorting
-        order_by: str = "_created",
-        order_dir: str = "desc",
-        # results size
-        page_size: int = 20,
-        offset: int = 0,
-        # specific options of implemention
-        # augment: bool = False,
-        check: bool = True,
-        # tags_as_dicts: bool = False,
-        # whole_share: bool = True,
-    ) -> ResourceSearch:
-        """Search within the resources shared to the application. It's the mainly used method to retrieve metadata.
-
-        :param str query: search terms and semantic filters. Equivalent of
-         **q** parameter in Isogeo API. It could be a simple
-         string like *oil* or a tag like *keyword:isogeo:formations*
-         or *keyword:inspire-theme:landcover*. The *AND* operator
-         is applied when various tags are passed.
-        :param list bbox: Bounding box to limit the search. Must be a 4 list of coordinates in WGS84 (EPSG 4326). Could be associated with *georel*.
-        :param str poly: Geographic criteria for the search, in WKT format. Could be associated with *georel*.
-        :param str georel: geometric operator to apply to the `bbox` or `poly` parameters. Available values:
-
-            * 'contains',
-            * 'disjoint',
-            * 'equals',
-            * 'intersects' - [APPLIED BY API if NOT SPECIFIED]
-            * 'overlaps',
-            * 'within'.
-
-        :param str order_by: sorting results. Available values:
-
-            * '_created': metadata creation date [DEFAULT if relevance is null]
-            * '_modified': metadata last update
-            * 'title': metadata title
-            * 'created': data creation date (possibly None)
-            * 'modified': data last update date
-            * 'relevance': relevance score calculated by API [DEFAULT].
-
-        :param str order_dir: sorting direction. Available values:
-
-            * 'desc': descending
-            * 'asc': ascending
-
-        :param int page_size: limits the number of results.
-         Useful to paginate results display. Default value: 100.
-        :param int offset: offset to start page size
-         from a specific results index
-        :param str share: share UUID to filter on
-        :param list specific_md: list of metadata UUIDs to filter on
-        :param list include: subresources that should be returned.
-         Must be a list of strings. Available values: *isogeo.SUBRESOURCES*
-        :param bool whole_share: option to return all results or only the
-         page size. *True* by DEFAULT.
-        :param bool check: option to check query parameters and avoid erros.
-         *True* by DEFAULT.
-        :param bool augment: option to improve API response by adding
-         some tags on the fly (like shares_id)
-        :param bool tags_as_dicts: option to store tags as key/values by filter.
-        """
-        # handling request parameters
-        payload = {
-            "_id": checker._check_filter_specific_md(specific_md),
-            "_include": checker._check_filter_includes(
-                includes=include, entity="metadata"
-            ),
-            "_limit": page_size,
-            "_offset": offset,
-            "box": bbox,
-            "geo": poly,
-            "rel": georel,
-            "ob": order_by,
-            "od": order_dir,
-            "q": query,
-            "s": share,
-        }
-
-        # check params
-        if check:
-            checker.check_request_parameters(payload)
-        else:
-            pass
-
-        # URL
-        url_resources_search = utils.get_request_base_url(route="resources/search")
-
-        # request
-        req_metadata_search = self.api_client.get(
-            url=url_resources_search,
-            headers=self.api_client.header,
-            params=payload,
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-            timeout=(5, 200),
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_metadata_search)
-        if isinstance(req_check, tuple):
-            return req_check
-
-        # end of method
-        return ResourceSearch(**req_metadata_search.json())
-
-    # def workgroup_metadata(
-    #     self,
-    #     workgroup_id: str,
-    #     order_by: str = "_created",
-    #     order_dir: str = "desc",
-    #     page_size: int = 100,
-    #     offset: int = 0,
-    # ) -> dict:
-    #     """List workgroup metadata.
-
-    #     :param str workgroup_id: identifier of the owner workgroup
-    #     """
-    #     # check workgroup UUID
-    #     if not checker.check_is_uuid(workgroup_id):
-    #         raise ValueError("Workgroup ID is not a correct UUID.")
-    #     else:
-    #         pass
-
-    #     # request parameters
-    #     payload = {
-    #         # "_include": include,
-    #         # "_lang": self.lang,
-    #         "_limit": page_size,
-    #         "_offset": offset,
-    #         "ob": order_by,
-    #         "od": order_dir,
-    #         # "q": query,
-    #         # "s": share,
-    #     }
-
-    #     # build request url
-    #     url_metadata_list = utils.get_request_base_url(
-    #         route="groups/{}/resources/search".format(workgroup_id)
-    #     )
-
-    #     wg_metadata = self.api_client.get(
-    #         url_metadata_list,
-    #         headers=self.api_client.header,
-    #         params=payload,
-    #         proxies=self.api_client.proxies,
-    #         verify=self.api_client.ssl,
-    #         timeout=self.api_client.timeout,
-    #     )
-
-    #     wg_metadata = wg_metadata.json()
-
-    #     # # if caching use or store the workgroup metadata
-    #     # if caching and not self._wg_apps_names:
-    #     #     self._wg_apps_names = {i.get("name"): i.get("_id") for i in wg_metadata}
-
-    #     return wg_metadata
+        # return updated object
+        return Metadata(**req_metadata_update.json())
 
     # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity
@@ -564,10 +391,10 @@ class ApiMetadata:
         :param Metadata metadata: metadata object
         :param list include: subresources that should be returned. Available values:
 
-          * '_abilities'
-          * 'count'
-          * 'thesaurus'
-        
+        * '_abilities'
+        * 'count'
+        * 'thesaurus'
+
         :rtype: list
         """
         return self.api_client.keyword.metadata(

@@ -15,6 +15,7 @@
 import pprint
 from uuid import UUID
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
@@ -25,23 +26,19 @@ class FeatureAttribute(object):
 
     :Example:
 
-    ```json
-    {
-        "_id": string (uuid),
-        "alias": string,
-        "dataType": string,
-        "description": string,
-        "language": string
-        "name": string,
-    }
-    ```
-    """
+    .. code-block:: json
+
+        {
+            "_id": string (uuid),
+            "alias": string,
+            "dataType": string,
+            "description": string,
+            "language": string
+            "name": string,
+        }
 
     """
-    Attributes:
-      attr_types (dict): basic structure of event attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-    """
+
     attr_types = {
         "_id": str,
         "alias": str,

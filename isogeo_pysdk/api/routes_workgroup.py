@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+from functools import lru_cache
 
 # 3rd party
 from requests.exceptions import Timeout
@@ -63,10 +64,10 @@ class ApiWorkgroup:
         super(ApiWorkgroup, self).__init__()
 
     # -- Routes to manage the  Workgroup objects ---------------------------------------
-
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
-        self, include: list = ["_abilities", "limits"], caching: bool = 1
+        self, include: tuple = ("_abilities", "limits"), caching: bool = 1
     ) -> list:
         """Get workgroups.
 
@@ -106,8 +107,9 @@ class ApiWorkgroup:
         # end of method
         return wg_workgroups
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
-    def workgroup(
+    def get(
         self, workgroup_id: str, include: list = ["_abilities", "limits"]
     ) -> Workgroup:
         """Get details about a specific workgroup.
@@ -148,16 +150,14 @@ class ApiWorkgroup:
         return Workgroup(**req_workgroup.json())
 
     @ApiDecorators._check_bearer_validity
-    def create(
-        self, workgroup: object = Workgroup(), check_exists: int = 1
-    ) -> Workgroup:
+    def create(self, workgroup: Workgroup, check_exists: int = 1) -> Workgroup:
         """Add a new workgroup to Isogeo.
 
         :param class workgroup: Workgroup model object to create
         :param int check_exists: check if a workgroup already exists:
 
-        - 0 = no check
-        - 1 = compare name [DEFAULT]
+            - 0 = no check
+            - 1 = compare name [DEFAULT]
 
         """
         # check if object has a correct contact
@@ -172,7 +172,7 @@ class ApiWorkgroup:
         if check_exists == 1:
             # retrieve workgroup workgroups
             if not self.api_client._workgroups_names:
-                self.listing(include=[])
+                self.listing(include=())
             # check
             if workgroup.contact.name in self.api_client._workgroups_names:
                 logger.debug(
@@ -338,6 +338,7 @@ class ApiWorkgroup:
             workgroup_id=workgroup_id, invitation=invitation
         )
 
+    @lru_cache()
     def invitations(self, workgroup_id: str) -> dict:
         """Returns active invitations (including expired) for the specified workgroup.
         Just a shortcut.
@@ -346,6 +347,7 @@ class ApiWorkgroup:
         """
         return self.api_client.invitation.listing(workgroup_id=workgroup_id)
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def limits(self, workgroup_id: str) -> dict:
         """Returns limits for the specified workgroup.
@@ -381,6 +383,7 @@ class ApiWorkgroup:
 
         return req_workgroup_limits.json()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def memberships(self, workgroup_id: str) -> dict:
         """Returns memberships for the specified workgroup.
@@ -416,6 +419,7 @@ class ApiWorkgroup:
 
         return req_workgroup_memberships.json()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics(self, workgroup_id: str) -> dict:
         """Returns statistics for the specified workgroup.
@@ -451,6 +455,7 @@ class ApiWorkgroup:
 
         return req_workgroup_statistics.json()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics_by_tag(self, workgroup_id: str, tag: str) -> dict:
         """Returns statistics for the specified workgroup.
@@ -506,6 +511,7 @@ class ApiWorkgroup:
         return req_workgroup_statistics.json()
 
     # -- Aliased methods ------------------------------------------------------
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def coordinate_systems(self, workgroup_id: str, caching: bool = 1) -> list:
         """Returns coordinate-systems for the specified workgroup.

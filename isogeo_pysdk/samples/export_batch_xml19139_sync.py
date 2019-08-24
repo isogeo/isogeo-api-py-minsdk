@@ -51,7 +51,7 @@ if __name__ == "__main__":
 
     # Process #########
     latest_data_modified = isogeo.search(
-        token, page_size=10, order_by="modified", whole_share=0
+        token, page_size=10, order_by="modified", whole_results=0
     )
 
     for md in latest_data_modified.get("results"):

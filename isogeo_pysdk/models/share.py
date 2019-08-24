@@ -27,67 +27,23 @@ class Share(object):
     """Shares are entities used to publish catalog(s) of metadata to applications.
 
 
-    Sample:
+    :Example:
 
-    ```json
-    {
-    "_created": "string (date-time)",
-    "_creator": {
-        "_abilities": [
-        "string"
-        ],
-        "_created": "string (date-time)",
-        "_id": "string (uuid)",
-        "_modified": "string (date-time)",
-        "areKeywordsRestricted": "boolean",
-        "canCreateMetadata": "boolean",
-        "catalogs": "string",
-        "contact": {
-        "_created": "string (date-time)",
-        "_id": "string (uuid)",
-        "_modified": "string (date-time)",
-        "addressLine1": "string",
-        "addressLine2": "string",
-        "addressLine3": "string",
-        "available": "string",
-        "city": "string",
-        "groups": "integer (int32)",
-        "groupsryCode": "string",
-        "email": "string",
-        "fax": "string",
-        "hash": "string",
-        "name": "string",
-        "organization": "string",
-        "phone": "string",
-        "type": "string",
-        "zipCode": "string"
-        },
-        "keywordsCasing": "string",
-        "metadataLanguage": "string",
-        "themeColor": "string"
-    },
-    "_id": "string (uuid)",
-    "_modified": "string (date-time)",
-    "applications": [
+    .. code-block:: json
+
         {
-        "_created": "string (date-time)",
-        "_id": "string (uuid)",
-        "_modified": "string (date-time)",
-        "canHaveManyGroups": "boolean",
-        "client_id": "string",
-        "client_secret": "string",
-        "groups": [
-            {
-            "_abilities": [
-                "string"
-            ],
             "_created": "string (date-time)",
-            "_id": "string (uuid)",
-            "_modified": "string (date-time)",
-            "areKeywordsRestricted": "boolean",
-            "canCreateMetadata": "boolean",
-            "catalogs": "string",
-            "contact": {
+            "_creator": {
+                "_abilities": [
+                "string"
+                ],
+                "_created": "string (date-time)",
+                "_id": "string (uuid)",
+                "_modified": "string (date-time)",
+                "areKeywordsRestricted": "boolean",
+                "canCreateMetadata": "boolean",
+                "catalogs": "string",
+                "contact": {
                 "_created": "string (date-time)",
                 "_id": "string (uuid)",
                 "_modified": "string (date-time)",
@@ -106,44 +62,84 @@ class Share(object):
                 "phone": "string",
                 "type": "string",
                 "zipCode": "string"
+                },
+                "keywordsCasing": "string",
+                "metadataLanguage": "string",
+                "themeColor": "string"
             },
-            "keywordsCasing": "string",
-            "metadataLanguage": "string",
-            "themeColor": "string"
-            }
-        ],
-        "kind": "string",
-        "name": "string",
-        "redirect_uris": [
-            "string"
-        ],
-        "scopes": [
-            "string"
-        ],
-        "staff": "boolean",
-        "url": "string"
+            "_id": "string (uuid)",
+            "_modified": "string (date-time)",
+            "applications": [
+                {
+                "_created": "string (date-time)",
+                "_id": "string (uuid)",
+                "_modified": "string (date-time)",
+                "canHaveManyGroups": "boolean",
+                "client_id": "string",
+                "client_secret": "string",
+                "groups": [
+                    {
+                    "_abilities": [
+                        "string"
+                    ],
+                    "_created": "string (date-time)",
+                    "_id": "string (uuid)",
+                    "_modified": "string (date-time)",
+                    "areKeywordsRestricted": "boolean",
+                    "canCreateMetadata": "boolean",
+                    "catalogs": "string",
+                    "contact": {
+                        "_created": "string (date-time)",
+                        "_id": "string (uuid)",
+                        "_modified": "string (date-time)",
+                        "addressLine1": "string",
+                        "addressLine2": "string",
+                        "addressLine3": "string",
+                        "available": "string",
+                        "city": "string",
+                        "groups": "integer (int32)",
+                        "groupsryCode": "string",
+                        "email": "string",
+                        "fax": "string",
+                        "hash": "string",
+                        "name": "string",
+                        "organization": "string",
+                        "phone": "string",
+                        "type": "string",
+                        "zipCode": "string"
+                    },
+                    "keywordsCasing": "string",
+                    "metadataLanguage": "string",
+                    "themeColor": "string"
+                    }
+                ],
+                "kind": "string",
+                "name": "string",
+                "redirect_uris": [
+                    "string"
+                ],
+                "scopes": [
+                    "string"
+                ],
+                "staff": "boolean",
+                "url": "string"
+                }
+            ],
+            "catalogs": [
+                {
+                "$scan": "boolean",
+                "_abilities": [
+                    "string"
+                ],
+                "_created": "string (date-time)",
+                "_id": "string (uuid)",
+                "_modified": "string (date-time)"
+                }
+            ]
         }
-    ],
-    "catalogs": [
-        {
-        "$scan": "boolean",
-        "_abilities": [
-            "string"
-        ],
-        "_created": "string (date-time)",
-        "_id": "string (uuid)",
-        "_modified": "string (date-time)"
-        }
-    ]
-    }
-    ```
-    """
 
     """
-    Attributes:
-      attr_types (dict): basic structure of share attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-    """
+
     attr_types = {
         "_created": str,
         "_creator": Workgroup,

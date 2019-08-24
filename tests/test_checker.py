@@ -19,21 +19,30 @@
 # Standard library
 import logging
 import unittest
-from datetime import datetime
+import urllib3
 from os import environ
-from sys import exit
+from pathlib import Path
+from random import sample
+from socket import gethostname
+from sys import _getframe, exit
+from time import gmtime, sleep, strftime
+
+# 3rd party
+from dotenv import load_dotenv
 
 # Isogeo
 from isogeo_pysdk import Isogeo, IsogeoChecker
-from isogeo_pysdk import __version__ as pysdk_version
+
 
 # #############################################################################
 # ######## Globals #################
 # ##################################
 
-# API access
-app_id = environ.get("ISOGEO_API_DEV_ID")
-app_token = environ.get("ISOGEO_API_DEV_SECRET")
+if Path("dev.env").exists():
+    load_dotenv("dev.env", override=True)
+
+# host machine name - used as discriminator
+hostname = gethostname()
 
 checker = IsogeoChecker()
 
@@ -45,9 +54,26 @@ checker = IsogeoChecker()
 class TestIsogeoChecker(unittest.TestCase):
     """Test authentication process."""
 
-    if not app_id or not app_token:
-        logging.critical("No API credentials set as env variables.")
-        exit()
+    # -- Standard methods --------------------------------------------------------
+    @classmethod
+    def setUpClass(cls):
+        """Executed when module is loaded before any test."""
+        # checks
+        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
+        ):
+            logging.critical("No API credentials set as env variables.")
+            exit()
+        else:
+            pass
+
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
+
+        # API credentials settings
+        cls.client_id = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID")
+        cls.client_secret = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET")
 
     # standard methods
     def setUp(self):
@@ -58,36 +84,7 @@ class TestIsogeoChecker(unittest.TestCase):
         """Executed after each test."""
         pass
 
-    # auth
-    def test_checker_validity_bearer_valid(self):
-        """When a search works, check the response structure."""
-        isogeo = Isogeo(client_id=app_id, client_secret=app_token)
-        isogeo.connect()
-        # check structure
-        self.assertIsInstance(
-            checker.check_bearer_validity(isogeo.token, isogeo.connect()), dict
-        )
-        self.assertEqual(
-            len(checker.check_bearer_validity(isogeo.token, isogeo.connect())), 4
-        )
-        # close
-        isogeo.close()
-
-    def test_checker_validity_bearer_expired(self):
-        """When a search works, check the response structure."""
-        isogeo = Isogeo(client_id=app_id, client_secret=app_token)
-        isogeo.connect()
-        # force the token expires_at value
-        isogeo.token["expires_at"] = datetime.now()
-        self.assertIsInstance(
-            checker.check_bearer_validity(isogeo.token, isogeo.connect()), dict
-        )
-        self.assertEqual(
-            len(checker.check_bearer_validity(isogeo.token, isogeo.connect())), 4
-        )
-        # close
-        isogeo.close()
-
+    # -- TESTS ---------------------------------------------------------
     # UUID
     def test_checker_uuid_valid(self):
         """Test if a valid UUID is matched."""
@@ -116,18 +113,18 @@ class TestIsogeoChecker(unittest.TestCase):
         uuid_bad_3 = checker.check_is_uuid(
             "urn:geonetwork:siret:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
         )
+        # type error
+        uuid_bad_type = checker.check_is_uuid(uuid_str=2018)
         # test type
         self.assertIsInstance(uuid_bad_1, bool)
         self.assertIsInstance(uuid_bad_2, bool)
         self.assertIsInstance(uuid_bad_3, bool)
+        self.assertIsInstance(uuid_bad_type, bool)
         # test value
         self.assertEqual(uuid_bad_1, 0)
         self.assertEqual(uuid_bad_2, 0)
         self.assertEqual(uuid_bad_3, 0)
-        # type error
-        uuid_int = 2018
-        with self.assertRaises(TypeError):
-            checker.check_is_uuid(uuid_str=uuid_int)
+        self.assertEqual(uuid_bad_type, 0)
 
     # Internet connection
     def test_checker_internet_ok(self):

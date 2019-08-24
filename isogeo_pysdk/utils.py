@@ -21,24 +21,49 @@ import quopri
 import re
 import uuid
 from configparser import ConfigParser
-from os import path
+from datetime import datetime
+from pathlib import Path
 from urllib.parse import urlparse
 
 # 3rd party
 import requests
 
 # modules
-try:
-    from . import checker
-except (ImportError, ValueError, SystemError):
-    import checker
+from isogeo_pysdk.checker import IsogeoChecker
 
 # ##############################################################################
 # ########## Globals ###############
 # ##################################
 
-checker = checker.IsogeoChecker()
+checker = IsogeoChecker()
 logger = logging.getLogger(__name__)
+
+# timestamps format helpers
+_regex_milliseconds = re.compile(r"\.(.*)\+")
+
+"""
+    For timestamps about metadata (_created, _modified):
+
+        - `2019-05-17T13:01:08.559123+00:00`: sometimes there are 6 digits in milliseconds, as accepted in `standard lib (%f) <https://docs.python.org/fr/3/library/datetime.html#strftime-strptime-behavior>`_
+        - `2019-08-21T16:07:42.9419347+00:00`: sometimes there are more than 6 digits in milliseconds
+"""
+_dtm_metadata = "%Y-%m-%dT%H:%M:%S.%f+00:00"
+
+"""
+    For timestamps about data (created, modified, published): `2018-06-04T00:00:00+00:00` without milliseconds.
+"""
+_dtm_data = "%Y-%m-%dT%H:%M:%S+00:00"  # 2018-06-04T00:00:00+00:00
+
+"""
+    For timestamps about metadata subresource (specifications...): `2018-06-04T00:00:00` with basic time.
+"""
+_dtm_time = "%Y-%m-%dT%H:%M:%S"  # 2018-06-04T00:00:00+00:00
+
+"""
+    For simple date. Used to add new events.
+"""
+_dtm_simple = "%Y-%m-%d"  # 2018-06-04
+
 
 # ##############################################################################
 # ########## Classes ###############
@@ -160,7 +185,8 @@ class IsogeoUtils(object):
             self.ssl,
         )
 
-    def _convert_octets(self, octets: int) -> str:
+    @classmethod
+    def convert_octets(self, octets: int) -> str:
         """Convert a mount of octets in readable size.
 
         :param int octets: mount of octets to convert
@@ -177,6 +203,7 @@ class IsogeoUtils(object):
 
         return "%s %s" % (s, size_name[i])
 
+    @classmethod
     def convert_uuid(self, in_uuid: str = str, mode: bool = 0):
         """Convert a metadata UUID to its URI equivalent. And conversely.
 
@@ -218,6 +245,7 @@ class IsogeoUtils(object):
         else:
             raise ValueError("'mode' must be  one of: 0 | 1 | 2")
 
+    @classmethod
     def encoded_words_to_text(self, in_encoded_words: str):
         """Pull out the character set, encoding, and encoded text from the input
         encoded words. Next, it decodes the encoded words into a byte string,
@@ -227,8 +255,8 @@ class IsogeoUtils(object):
 
         See:
 
-        - https://github.com/isogeo/isogeo-api-py-minsdk/issues/32
-        - https://dmorgan.info/posts/encoded-word-syntax/
+          - https://github.com/isogeo/isogeo-api-py-minsdk/issues/32
+          - https://dmorgan.info/posts/encoded-word-syntax/
 
         :param str in_encoded_words: base64 or quori encoded character string.
         """
@@ -270,13 +298,15 @@ class IsogeoUtils(object):
             version_url = "{}://v1.{}.isogeo.com/about/database".format(
                 prot, self.api_url
             )
-        elif component == "app" and self.platform == "prod":
+        elif component == "app" and self.platform == "prod" or self.platform is None:
             version_url = "https://app.isogeo.com/about"
         elif component == "app" and self.platform == "qa":
             version_url = "https://qa-isogeo-app.azurewebsites.net/about"
         else:
             raise ValueError(
-                "Component value must be one of: " "api [default], db, app."
+                "Incorrect component value: {} for platform {}. Must be one of: api [default], db, app.".format(
+                    component, self.platform
+                )
             )
 
         # send request
@@ -303,7 +333,7 @@ class IsogeoUtils(object):
         md_type: str = None,
         owner_id: str = None,
         tab: str = "identification",
-    ):
+    ) -> str:
         """Constructs the edition URL of a metadata.
 
         :param str md_id: metadata/resource UUID
@@ -315,8 +345,12 @@ class IsogeoUtils(object):
             raise ValueError("One of md_id or owner_id is not a correct UUID.")
         else:
             pass
-        if checker.check_edit_tab(tab, md_type=md_type):
-            pass
+        if not checker.check_edit_tab(tab, md_type=md_type):
+            logger.warning(
+                "Tab '{}' is not a valid tab for the is type '{}' of metadata. "
+                "It'll be replaced by default value.".format(tab, md_type)
+            )
+            tab = "identification"
         # construct URL
         return (
             "{}"
@@ -375,13 +409,26 @@ class IsogeoUtils(object):
         # register
         self.WEBAPPS[webapp_name] = {"args": webapp_args, "url": webapp_url}
 
+    @classmethod
     def get_url_base_from_url_token(
         self, url_api_token: str = "https://id.api.isogeo.com/oauth/token"
-    ):
-        """Returns the Isogeo API root URL (which is not included into
-        credentials file) from the token URL (which is always included).
+    ) -> str:
+        """Returns the Isogeo API root URL (not included into
+        credentials file) from the token or the auth URL (always included).
 
         :param url_api_token str: url to Isogeo API ID token generator
+
+        :rtype: str
+
+        :Example:
+
+        .. code-block:: python
+
+            IsogeoUtils.get_url_base_from_url_token()
+            >>> "https://api.isogeo.com"
+            IsogeoUtils.get_url_base_from_url_token(url_api_token="https://id.api.qa.isogeo.com/oauth/token")
+            >>> "https://api.qa.isogeo.com"
+
         """
         in_parsed = urlparse(url_api_token)
         api_url_base = in_parsed._replace(
@@ -389,7 +436,46 @@ class IsogeoUtils(object):
         )
         return api_url_base.geturl()
 
+    @classmethod
+    def guess_platform_from_url(self, url: str = "https://api.isogeo.com/") -> str:
+        """Returns the Isogeo platform from a given URL.
+
+        :param url str: URL string to guess from
+
+        :rtype: str
+        :returns: "prod" or "qa" or "unknown" 
+
+        :Example:
+
+        .. code-block:: python
+
+            IsogeoUtils.guess_platform_from_url("https://api.isogeo.com")
+            >>> "prod"
+            IsogeoUtils.guess_platform_from_url("https://api.qa.isogeo.com")
+            >>> "qa"
+            IsogeoUtils.guess_platform_from_url("https://api.isogeo.ratp.local")
+            >>> "unknown"
+
+        """
+        if "api.isogeo.com" in url:
+            api_platform = "prod"
+        elif "app.isogeo.com" in url:
+            api_platform = "prod"
+        elif "api.qa.isogeo.com" in url:
+            api_platform = "qa"
+        elif "qa." in url and "isogeo" in url:
+            api_platform = "qa"
+        elif "qa-" in url and "isogeo" in url:
+            # https://qa-isogeo-app.azurewebsites.net
+            # https://qa-isogeo-open.azurewebsites.net
+            api_platform = "qa"
+        else:
+            api_platform = "unknown"  # not recognized. on-premises?
+
+        return api_platform
+
     # -- SEARCH  --------------------------------------------------------------
+    @classmethod
     def pages_counter(self, total: int, page_size: int = 100) -> int:
         """Simple helper to handle pagination. Returns the number of pages for a
         given number of results.
@@ -690,28 +776,54 @@ class IsogeoUtils(object):
         return share
 
     # -- API AUTH ------------------------------------------------------------
+    @classmethod
     def credentials_loader(self, in_credentials: str = "client_secrets.json") -> dict:
         """Loads API credentials from a file, JSON or INI.
 
-        :param str in_credentials: path to the credentials file. By default,
-          look for a client_secrets.json file.
+        :param str in_credentials: path to the credentials file. By default, `./client_secrets.json`
+
+        :rtype: dict
+        :returns: a dictionary with credentials (ID, secret, URLs, platform...)
+
+        :Example:
+
+        .. code-block:: python
+
+            api_credentials = IsogeoUtils.credentials_loader("./_auth/client_secrets.json")
+            pprint.pprint(api_credentials)
+            >>> {
+                    'auth_mode': 'group',
+                    'client_id': 'python-minimalist-sdk-test-uuid-1a2b3c4d5e6f7g8h9i0j11k12l',
+                    'client_secret': 'application-secret-1a2b3c4d5e6f7g8h9i0j11k12l13m14n15o16p17Q18rS',
+                    'kind': None,
+                    'platform': 'prod',
+                    'scopes': ['resources:read'],
+                    'staff': None,
+                    'type': None,
+                    'uri_auth': 'https://id.api.isogeo.com/oauth/authorize',
+                    'uri_base': 'https://api.isogeo.com',
+                    'uri_redirect': None,
+                    'uri_token': 'https://id.api.isogeo.com/oauth/token'
+                }
+
+
         """
         accepted_extensions = (".ini", ".json")
+        in_credentials_path = Path(in_credentials)  # load path
+
         # checks
-        if not path.isfile(in_credentials):
+        if not in_credentials_path.is_file():
             raise IOError("Credentials file doesn't exist: {}".format(in_credentials))
-        else:
-            in_credentials = path.normpath(in_credentials)
-        if path.splitext(in_credentials)[1] not in accepted_extensions:
+
+        if in_credentials_path.suffix not in accepted_extensions:
             raise ValueError(
                 "Extension of credentials file must be one of {}".format(
                     accepted_extensions
                 )
             )
-        else:
-            kind = path.splitext(in_credentials)[1]
+
         # load, check and set
-        if kind == ".json":
+        if in_credentials_path.suffix == ".json":
             with open(in_credentials, "r") as f:
                 in_auth = json.loads(f.read())
             # check structure
@@ -737,6 +849,10 @@ class IsogeoUtils(object):
                         auth_settings.get("token_uri")
                     ),
                     "uri_redirect": None,
+                    # below, attributes added from 2019 august in Isogeo Manager
+                    "kind": auth_settings.get("kind"),
+                    "type": auth_settings.get("isogeo_type"),
+                    "staff": auth_settings.get("isogeo_staff"),
                 }
             else:
                 # assuming in_auth == 'installed'
@@ -753,6 +869,10 @@ class IsogeoUtils(object):
                         auth_settings.get("token_uri")
                     ),
                     "uri_redirect": auth_settings.get("redirect_uris", None),
+                    # below, attributes added from 2019 august in Isogeo Manager
+                    "kind": auth_settings.get("kind"),
+                    "type": auth_settings.get("isogeo_type"),
+                    "staff": auth_settings.get("isogeo_staff"),
                 }
         else:
             # assuming file is an .ini
@@ -778,8 +898,75 @@ class IsogeoUtils(object):
                 ),
                 "uri_redirect": auth_settings.get("URI_REDIRECT"),
             }
+
+        # add guessed platform
+        out_auth["platform"] = self.guess_platform_from_url(out_auth.get("uri_base"))
+
         # method ending
         return out_auth
+
+    # -- HELPERS ---------------------------------------------------------------
+    @classmethod
+    def hlpr_datetimes(cls, in_date: str, try_again: bool = 1) -> datetime:
+        """Helper to handle differnts dates formats.
+        See: https://github.com/isogeo/isogeo-api-py-minsdk/issues/85
+
+        :param dict raw_object: metadata dictionary returned by a request.json()
+        :param bool try_again: iterations on the method
+
+        :returns: a correct datetime object
+        :rtype: datetime
+
+        :Example:
+
+        .. code-block:: python
+
+            # for an event date
+            IsogeoUtils.hlpr_datetimes"2018-06-04T00:00:00+00:00")
+            >>> 2018-06-04 00:00:00
+            # for a metadata creation date with 6 digits as milliseconds
+            IsogeoUtils.hlpr_datetimes"2019-05-17T13:01:08.559123+00:00")
+            >>> 2019-05-17 13:01:08.559123
+            # for a metadata creation date with more than 6 digits as milliseconds
+            IsogeoUtils.hlpr_datetimes"2019-06-13T16:21:38.1917618+00:00")
+            >>> 2019-06-13 16:21:38.191761
+
+        """
+        if len(in_date) == 10:
+            out_date = datetime.strptime(in_date, _dtm_simple)  # basic dates
+        elif len(in_date) == 19:
+            out_date = datetime.strptime(
+                in_date, _dtm_time
+            )  # specification published dates
+        elif len(in_date) == 25:
+            out_date = datetime.strptime(
+                in_date, _dtm_data
+            )  # events datetimes (=dates)
+        elif len(in_date) > 25 and len(in_date) <= 32 and "." in in_date:
+            out_date = datetime.strptime(
+                in_date, _dtm_metadata
+            )  # metadata timestamps with 6 milliseconds
+        elif len(in_date) >= 32 and "." in in_date:
+            milliseconds = re.search(_regex_milliseconds, in_date)
+            return cls.hlpr_datetimes(
+                in_date.replace(milliseconds.group(1), milliseconds.group(1)[:6])
+            )
+        else:
+            if try_again and len(in_date) >= 10:
+                logger.warning(
+                    "Format of timestamp not recognized: {} ({})."
+                    " Trying again with only the 10 first characters: {}".format(
+                        in_date, len(in_date), in_date[:10]
+                    )
+                )
+                return cls.hlpr_datetimes(in_date[:10], try_again=0)
+            else:
+                logger.error(
+                    "Format of timestamp not recognized: {} ({}). Formatting failed."
+                )
+                out_date = None
+
+        return out_date
 
 
 # #############################################################################

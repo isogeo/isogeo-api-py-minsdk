@@ -51,7 +51,6 @@ class ApiDecorators(object):
                 logging.debug("Token was about to expire, so has been renewed.")
             else:
                 logging.debug("Token is still valid.")
-                pass
 
             # let continue running the original function
             return decorated_func(*args, **kwargs)

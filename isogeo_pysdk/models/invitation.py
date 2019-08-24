@@ -17,49 +17,45 @@ import pprint
 # others models
 from isogeo_pysdk.models.workgroup import Workgroup
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 class Invitation(object):
     """Invitations are CSW client entry-points.
 
-    Sample:
+    :Example:
 
-    ```json
-    {
-        "_id": "6c7c9e0c63a943f79ba1e00766d0082d",
-        "_created": "2019-07-25T09:23:37.0975771+00:00",
-        "_modified": "2019-07-25T09:23:37.0975771+00:00",
-        "role": "admin",
-        "email": "prenom.nom@organisation.code",
-        "expiresIn": 657364,
-        "group": {
-            "_id": "string (uuid)",
-            "_tag": "owner:string (uuid)",
-            "_created": "2019-05-07T15:11:08.5202923+00:00",
-            "_modified": "2019-07-25T09:13:29.7858081+00:00",
-            "contact": {
+    .. code-block:: json
+
+        {
+            "_id": "6c7c9e0c63a943f79ba1e00766d0082d",
+            "_created": "2019-07-25T09:23:37.0975771+00:00",
+            "_modified": "2019-07-25T09:23:37.0975771+00:00",
+            "role": "admin",
+            "email": "prenom.nom@organisation.code",
+            "expiresIn": 657364,
+            "group": {
                 "_id": "string (uuid)",
-                "_tag": "contact:group:string (uuid)",
-                "_deleted": false,
-                "type": "group",
-                "group": "Isogeo TEST",
-                "available": false
-            },
-            "canCreateMetadata": true,
-            "canCreateLegacyServiceLinks": false,
-            "areKeywordsRestricted": false,
-            "hasCswClient": false,
-            "hasScanFme": false,
-            "keywordsCasing": "lowercase"
-        }
-    ```
-    """
+                "_tag": "owner:string (uuid)",
+                "_created": "2019-05-07T15:11:08.5202923+00:00",
+                "_modified": "2019-07-25T09:13:29.7858081+00:00",
+                "contact": {
+                    "_id": "string (uuid)",
+                    "_tag": "contact:group:string (uuid)",
+                    "_deleted": false,
+                    "type": "group",
+                    "group": "Isogeo TEST",
+                    "available": false
+                },
+                "canCreateMetadata": true,
+                "canCreateLegacyServiceLinks": false,
+                "areKeywordsRestricted": false,
+                "hasCswClient": false,
+                "hasScanFme": false,
+                "keywordsCasing": "lowercase"
+            }
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of invitation attributes. {"attribute group": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute group": "attribute type"}
     """
 
     attr_types = {

@@ -18,15 +18,15 @@
 # Standard library
 import locale
 import logging
-from datetime import datetime
 from sys import platform as opersys
 
 # 3rd party library
-from oauthlib.oauth2 import LegacyApplicationClient
+from oauthlib.oauth2 import BackendApplicationClient, LegacyApplicationClient
 from requests_oauthlib import OAuth2Session
 
 # modules
-from isogeo_pysdk import api, version
+from isogeo_pysdk.__about__ import __version__ as version
+from isogeo_pysdk import api
 from isogeo_pysdk.api_hooks import IsogeoHooks
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.models import User
@@ -45,40 +45,118 @@ utils = IsogeoUtils()
 # ##################################
 
 
-class IsogeoSession(OAuth2Session):
+class Isogeo(OAuth2Session):
+    """Main class in Isogeo API Python wrapper. Manage authentication and requests to the REST API.
+    Inherits from :class:`requests_oauthlib.OAuth2Session`.
+
+    **Inherited:**
+
+    :param str client_id: Client id obtained during registration
+    :param str redirect_uri: Redirect URI you registered as callback
+    :param list auto_refresh_url: Refresh token endpoint URL, must be HTTPS. Supply
+                    this if you wish the client to automatically refresh
+                    your access tokens.
+
+    **Package specific:**
+
+    :param str client_secret: application oAuth2 secret
+    :param str auth_mode: oAuth2 authentication flow to use. Must be one of 'AUTH_MODES'
+    :param str platform: to request production or quality assurance
+    :param dict proxy: dictionary of proxy settings as described in `Requests <https://2.python-requests.org/en/master/user/advanced/#proxies>`_
+    :param str lang: API localization ("en" or "fr").
+    :param str app_name: to custom the application name and user-agent
+
+
+    :returns: authenticated requests Session you can use to send requests to the API.
+    :rtype: requests_oauthlib.OAuth2Session
+
+    :Example:
+
+    .. code-block:: python
+
+        # using oAuth2 Password Credentials Grant (Legacy Application)
+        #  (for scripts executed on the server-side with user credentials
+        #  but without requiring user action)
+        isogeo = Isogeo(
+            client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+            client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
+            auth_mode="user_legacy",
+            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+            platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        )
+
+        # getting a token
+        isogeo.connect(
+            username=environ.get("ISOGEO_USER_NAME"),
+            password=environ.get("ISOGEO_USER_PASSWORD"),
+        )
+
+        # using oAuth2 Client Credentials Grant (Backend Application)
+        #  (for scripts executed on the server-side with only application credentials
+        #  but limited to read-only in Isogeo API)
+        isogeo = Isogeo(
+            client_id=environ.get("ISOGEO_API_DEV_ID"),
+            client_secret=environ.get("ISOGEO_API_DEV_SECRET"),
+            auth_mode="group",
+            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+            platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        )
+    
+        # getting a token
+        isogeo.connect()
+
+    """
 
     # -- ATTRIBUTES -----------------------------------------------------------
-    AUTH_MODES = {"group", "user_private", "user_public"}
+    AUTH_MODES = {
+        "group": {"client_id": str, "client_secret": str},
+        "user_legacy": {
+            "client_id": str,
+            "client_secret": str,
+            "auto_refresh_url": str,
+        },
+        "user_private": {
+            "client_id": str,
+            "client_secret": str,
+            "auto_refresh_url": str,
+            "redirect_uris": list,
+        },
+        "user_public": {
+            "client_id": str,
+            "client_secret": str,
+            "auto_refresh_url": str,
+            "redirect_uris": list,
+        },
+        "guess": {},
+    }
 
     def __init__(
         self,
-        client_id=None,
-        auto_refresh_url=None,
-        redirect_uri=None,
-        scope=None,
-        state=None,
-        token=None,
-        token_updater=None,
         # custom
-        app_name: str = "isogeo-pysdk-writer/{}".format(version),
-        auth_mode: str = "user_private",
+        auth_mode: str = "group",
         client_secret: str = None,
-        lang: str = "en",
         platform: str = "qa",
         proxy: dict = None,
         timeout: tuple = (15, 45),
+        lang: str = "fr",
+        app_name: str = "isogeo-pysdk/{}".format(version),
         # additional
         **kwargs,
     ):
-
-        # custom hooks
-        self.custom_hooks = IsogeoHooks()
-
-        self.app_name = app_name
+        # some vars
+        self.app_name = app_name  # custom settings
+        client_id = kwargs.get("client_id")
         self.client_secret = client_secret
-        self.timeout = (
-            timeout
-        )  # default timeout (see: https://2.python-requests.org/en/master/user/advanced/#timeouts)
+        self.custom_hooks = IsogeoHooks()  # custom hooks
+        self.timeout = timeout  # default timeout
+
+        # auth mode
+        if auth_mode and auth_mode not in self.AUTH_MODES:
+            raise ValueError(
+                "Mode value must be one of: {}".format(" | ".join(self.AUTH_MODES))
+            )
+        else:
+            self.auth_mode = auth_mode
 
         # -- CACHE
         # platform
@@ -88,7 +166,7 @@ class IsogeoSession(OAuth2Session):
         self._formats_geo = []  # Isogeo formats for geographic data
         self._formats_nogeo = []  # Isogeo formats for non-geographic data
         self._links_kinds_actions = []  # Isogeo matrix for links kind/action
-        self._shares_names = {}  # Isogeo applications by names
+        self._shares = {}  # Isogeo applications by names
         self._thesauri_codes = {}  # Isogeo thesauri by codes
         self._workgroups_names = {}  # Isogeo workgroups by names
         # user
@@ -102,7 +180,7 @@ class IsogeoSession(OAuth2Session):
         self._wg_datasources_names = {}  # workgroup datasources by names
         self._wg_datasources_urls = {}  # workgroup datasources by urls (location)
         self._wg_licenses_names = {}  # workgroup licenses by names
-        self._wg_shares_names = {}  # workgroup shares by names
+        self._wg_shares = {}  # workgroup shares
         self._wg_specifications_names = {}  # workgroup specifications by names
 
         # checking internet connection
@@ -124,15 +202,6 @@ class IsogeoSession(OAuth2Session):
             raise ValueError(1, "Client Secret isn't good: it must be 64 chars.")
         else:
             pass
-
-        # auth mode
-        if auth_mode not in self.AUTH_MODES:
-            logger.error("Auth mode value is not good: {}".format(auth_mode))
-            raise ValueError(
-                "Mode value must be one of: {}".format(" | ".join(self.AUTH_MODES))
-            )
-        else:
-            self.auth_mode = auth_mode
 
         # platform to request
         self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
@@ -190,7 +259,15 @@ class IsogeoSession(OAuth2Session):
             "client_id": client_id,
             "client_secret": client_secret,
         }
-        self.client = LegacyApplicationClient(client_id=client_id)
+
+        if auth_mode == "user_legacy":
+            self.client = LegacyApplicationClient(client_id=client_id)
+        elif auth_mode == "group":
+            self.client = BackendApplicationClient(client_id=client_id)
+        else:
+            raise NotImplementedError(
+                "Mode {} is not implemented yet.".format(auth_mode)
+            )
 
         # load routes as subclass
         self.account = api.ApiAccount(self)
@@ -205,6 +282,7 @@ class IsogeoSession(OAuth2Session):
         self.invitation = api.ApiInvitation(self)
         self.license = api.ApiLicense(self)
         self.metadata = api.ApiMetadata(self)
+        self.search = api.ApiSearch(self).search
         self.services = api.ApiService(self)
         self.share = api.ApiShare(self)
         self.specification = api.ApiSpecification(self)
@@ -212,20 +290,15 @@ class IsogeoSession(OAuth2Session):
         self.user = api.ApiUser(self)
         self.workgroup = api.ApiWorkgroup(self)
 
-        return super().__init__(
-            client_id=client_id,
+        super().__init__(
+            # client_id=client_id,
             client=self.client,
-            auto_refresh_url=auto_refresh_url,
+            # auto_refresh_url=kwargs.get("auto_refresh_url"),
             auto_refresh_kwargs=self.auto_refresh_kwargs,
-            scope=scope,
-            redirect_uri=redirect_uri,
-            token=token,
-            state=state,
-            token_updater=token_updater,
             **kwargs,
         )
 
-    def connect(self, username: str, password: str):
+    def connect(self, username: str = None, password: str = None):
         """Authenticate application with user credentials and get token.
 
         Isogeo API uses oAuth 2.0 protocol (https://tools.ietf.org/html/rfc6749)
@@ -234,18 +307,26 @@ class IsogeoSession(OAuth2Session):
         :param str username: user login (email)
         :param str password: user password
         """
-        # get token
-        self.token = self.fetch_token(
-            token_url=self.auto_refresh_url,
-            username=username,
-            password=password,
-            client_id=self.client_id,
-            client_secret=self.client_secret,
-            verify=self.ssl,
-        )
-
-        # get authenticated user informations
-        self.account.account()
+        if self.auth_mode == "user_legacy":
+            # get token
+            self.token = self.fetch_token(
+                token_url=self.auto_refresh_url,
+                username=username,
+                password=password,
+                client_id=self.client_id,
+                client_secret=self.client_secret,
+                verify=self.ssl,
+            )
+            # get authenticated user informations
+            self.account.account()
+        elif self.auth_mode == "group":
+            # get token
+            self.token = self.fetch_token(
+                token_url=self.auto_refresh_url,
+                client_id=self.client_id,
+                client_secret=self.client_secret,
+                verify=self.ssl,
+            )
 
     # -- PROPERTIES -----------------------------------------------------------
     @property
@@ -255,7 +336,7 @@ class IsogeoSession(OAuth2Session):
                 "Authorization": "Bearer {}".format(self.token.get("access_token")),
                 "user-agent": self.app_name,
             }
-        elif self.auth_mode == "user_private":
+        elif self.auth_mode == "user_legacy":
             return {
                 "Accept-Encoding": "gzip, deflate, br",
                 "User-Agent": self.app_name,
@@ -264,6 +345,10 @@ class IsogeoSession(OAuth2Session):
             }
         else:
             pass
+
+    @classmethod
+    def guess_auth_mode(self):
+        raise NotImplementedError
 
 
 # ##############################################################################
@@ -354,6 +439,18 @@ if __name__ == "__main__":
 
     # # getting a token
     # isogeo.connect()
+
+    # for oAuth2 Backend (Client Credentials Grant) Flow
+    isogeo = Isogeo(
+        auth_mode="group",
+        client_id=environ.get("ISOGEO_API_GROUP_CLIENT_ID"),
+        client_secret=environ.get("ISOGEO_API_GROUP_CLIENT_SECRET"),
+        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+        platform=environ.get("ISOGEO_PLATFORM", "qa"),
+    )
+
+    # getting a token
+    isogeo.connect()
 
     # misc
     discriminator = strftime("%Y-%m-%d_%H%M%S", gmtime())

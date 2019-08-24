@@ -24,49 +24,44 @@ from isogeo_pysdk.models.contact import Contact
 class User(object):
     """Users in Isogeo platform.
 
-    Sample:
+    :Example:
 
-    ```json
-    {
-        "_abilities": [
-            "string"
-        ],
-        "_created": "string (date-time)",
-        "_id": "string (uuid)",
-        "_modified": "string (date-time)",
-        "contact": {
+    .. code-block:: json
+
+        {
+            "_abilities": [
+                "string"
+            ],
             "_created": "string (date-time)",
             "_id": "string (uuid)",
             "_modified": "string (date-time)",
-            "addressLine1": "string",
-            "addressLine2": "string",
-            "addressLine3": "string",
-            "available": "string",
-            "city": "string",
-            "count": "integer (int32)",
-            "countryCode": "string",
-            "email": "string",
-            "fax": "string",
-            "hash": "string",
-            "name": "string",
-            "organization": "string",
-            "phone": "string",
-            "type": "string",
-            "zipCode": "string"
-        },
-        "language": "string",
-        "staff": "boolean",
-        "timezone": "string"
+            "contact": {
+                "_created": "string (date-time)",
+                "_id": "string (uuid)",
+                "_modified": "string (date-time)",
+                "addressLine1": "string",
+                "addressLine2": "string",
+                "addressLine3": "string",
+                "available": "string",
+                "city": "string",
+                "count": "integer (int32)",
+                "countryCode": "string",
+                "email": "string",
+                "fax": "string",
+                "hash": "string",
+                "name": "string",
+                "organization": "string",
+                "phone": "string",
+                "type": "string",
+                "zipCode": "string"
+            },
+            "language": "string",
+            "staff": "boolean",
+            "timezone": "string"
         }
-    ```
-    """
 
     """
-    Attributes:
-      attr_types (dict): basic structure of user attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-      attr_map (dict): mapping between read and write attributes. {"attribute name - GET": "attribute type - POST"}
-    """
+
     attr_types = {
         "_abilities": list,
         "_created": str,
