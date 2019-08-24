@@ -5,6 +5,7 @@ from .routes_application import ApiApplication  # noqa: F401
 from .routes_account import ApiAccount  # noqa: F401
 from .routes_catalog import ApiCatalog  # noqa: F401
 from .routes_contact import ApiContact  # noqa: F401
+from .routes_condition import ApiCondition  # noqa: F401
 from .routes_coordinate_systems import ApiCoordinateSystem  # noqa: F401
 from .routes_datasource import ApiDatasource  # noqa: F401
 from .routes_directives import ApiDirective  # noqa: F401
