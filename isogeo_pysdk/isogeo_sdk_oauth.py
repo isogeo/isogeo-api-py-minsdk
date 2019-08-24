@@ -315,23 +315,60 @@ if __name__ == "__main__":
         urllib3.disable_warnings()
 
     # instanciate
-    isogeo = IsogeoSession(
-        client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-        client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+
+    # # for oAuth2 Legacy Flow
+    # isogeo = Isogeo(
+    #     auth_mode="user_legacy",
+    #     client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+    #     client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
+    #     auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+    #     platform=environ.get("ISOGEO_PLATFORM", "qa"),
+    # )
+
+    # # getting a token
+    # isogeo.connect(
+    #     username=environ.get("ISOGEO_USER_NAME"),
+    #     password=environ.get("ISOGEO_USER_PASSWORD"),
+    # )
+
+    # for oAuth2 Backend (Client Credentials Grant) Flow
+    isogeo = Isogeo(
+        auth_mode="group",
+        client_id=environ.get("ISOGEO_API_GROUP_CLIENT_ID"),
+        client_secret=environ.get("ISOGEO_API_GROUP_CLIENT_SECRET"),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
     )
 
     # getting a token
-    isogeo.connect(
-        username=environ.get("ISOGEO_USER_NAME"),
-        password=environ.get("ISOGEO_USER_PASSWORD"),
-    )
+    isogeo.connect()
+
+    # # for oAuth2 Backend (Client Credentials Grant) Flow
+    # isogeo = Isogeo(
+    #     auth_mode="user_public",
+    #     client_id=environ.get("ISOGEO_API_USER_PUBLIC_CLIENT_ID"),
+    #     client_secret=environ.get("ISOGEO_API_USER_PUBLIC_CLIENT_SECRET"),
+    #     auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+    #     platform=environ.get("ISOGEO_PLATFORM", "qa"),
+    # )
+
+    # # getting a token
+    # isogeo.connect()
 
     # misc
     discriminator = strftime("%Y-%m-%d_%H%M%S", gmtime())
     METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
     WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+
+    from isogeo_pysdk import Metadata
+
+    search_complete = isogeo.search(
+        whole_results=1,
+        query="type:dataset owner:f234550ff1d5412fb2c67ee98d826731",
+        include="all",
+        order_by="_modified",
+        order_dir="desc",
+    )
 
     # -- END -------
     isogeo.close()  # close session
