@@ -73,8 +73,10 @@ class Condition(object):
             self.__id = _id
         if description is not None:
             self._description = description
-        if license is not None:
+        if license is not None and isinstance(license, License):
             self._license = license
+        if license is not None and isinstance(license, dict):
+            self._license = License(**license)
         if parent_resource is not None:
             self._parent_resource = parent_resource
 
