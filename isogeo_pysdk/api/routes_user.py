@@ -33,7 +33,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiUser:
-    """Routes as methods of Isogeo API used to manipulate users (conditions).
+    """Routes as methods of Isogeo API used to manipulate users.
     """
 
     def __init__(self, api_client=None):

@@ -37,7 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiContact:
-    """Routes as methods of Isogeo API used to manipulate contacts (conditions).
+    """Routes as methods of Isogeo API used to manipulate contacts.
     """
 
     def __init__(self, api_client=None):

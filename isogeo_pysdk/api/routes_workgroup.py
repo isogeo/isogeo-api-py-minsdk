@@ -41,7 +41,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiWorkgroup:
-    """Routes as methods of Isogeo API used to manipulate workgroups (conditions).
+    """Routes as methods of Isogeo API used to manipulate workgroups.
     """
 
     def __init__(self, api_client=None):

@@ -366,16 +366,16 @@ class IsogeoChecker(object):
             raise TypeError("'specific_tag' expects a list")
         return specific_tag
 
-    def _check_filter_includes(self, includes: list, entity: str = "metadata") -> list:
+    def _check_filter_includes(self, includes: tuple, entity: str = "metadata") -> list:
         """Check if specific_resources parameter is valid.
 
-        :param list includes: sub resources to check
+        :param tuple includes: sub resources to check
         :param str entity: entity type to check sub resources. Must be one of: contact | metadata | keyword.
 
         :rtype: list
 
         :raises: ValueError if entity is not an accepted value
-        :raises: TypeError if includes is not a list
+        :raises: TypeError if includes is not a tuple or a str
         """
         # check entity parameter
         if entity == "metadata":
@@ -407,7 +407,11 @@ class IsogeoChecker(object):
             else:
                 includes = ""
         else:
-            raise TypeError("'includes' expect a list or a str='all'")
+            raise TypeError(
+                "'includes' expect a tuple or a str='all', not {}".format(
+                    type(includes)
+                )
+            )
         return includes
 
     def _check_subresource(self, subresource: str):
