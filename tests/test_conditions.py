@@ -132,6 +132,31 @@ class TestConditions(unittest.TestCase):
         cls.isogeo.close()
 
     # -- TESTS ---------------------------------------------------------
+    # -- POST --
+    def test_conditions_create(self):
+        """POST :metadata/{metadata_uuid}/conditions}"""
+        # retrieve workgroup licenses
+        workgroup_licenses = self.isogeo.license.listing(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID
+        )
+
+        # create object locally
+        condition = Condition(
+            description="bonjour", license=sample(workgroup_licenses, 1)[0]
+        )
+
+        # add it to a metadata
+        condition_created = self.isogeo.metadata.conditions.create(
+            metadata=self.fixture_metadata, condition=condition
+        )
+
+        # remove it from a metadata
+        condition_removed = self.isogeo.metadata.conditions.delete(
+            metadata=self.fixture_metadata, condition=condition_created
+        )
+
+        self.assertEqual(condition_removed.status_code, 204)
+
     # -- GET --
     def test_conditions_listing(self):
         """GET :metadata/{metadata_uuid}/conditions}"""

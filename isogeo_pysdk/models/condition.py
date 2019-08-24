@@ -48,7 +48,7 @@ class Condition(object):
         "parent_resource": str,
     }
 
-    attr_crea = {"description": "str", "license": "str"}
+    attr_crea = {"description": "str", "license": License}
 
     attr_map = {}
 
@@ -74,7 +74,7 @@ class Condition(object):
         if description is not None:
             self._description = description
         if license is not None:
-            self._license = License(**license)
+            self._license = license
         if parent_resource is not None:
             self._parent_resource = parent_resource
 
