@@ -15,6 +15,7 @@
 # Standard library
 import base64
 import json
+import locale
 import logging
 import math
 import quopri
@@ -23,6 +24,7 @@ import uuid
 from configparser import ConfigParser
 from datetime import datetime
 from pathlib import Path
+from sys import platform as opersys
 from urllib.parse import urlparse
 
 # 3rd party
@@ -133,6 +135,8 @@ class IsogeoUtils(object):
         },
     }
 
+    lang = "fr"
+
     def __init__(self, proxies: dict = dict()):
         """Instanciate IsogeoUtils module.
 
@@ -158,14 +162,9 @@ class IsogeoUtils(object):
         self.platform = platform
         if platform == "prod":
             self.ssl = True
-            logger.debug("Using production platform.")
         elif platform == "qa":
             self.ssl = False
-            logger.debug("Using Quality Assurance platform (reduced perfs).")
         else:
-            logging.error(
-                "Platform must be one of: {}".format(" | ".join(self.API_URLS.keys()))
-            )
             raise ValueError(
                 3,
                 "Platform must be one of: {}".format(" | ".join(self.API_URLS.keys())),
@@ -184,6 +183,34 @@ class IsogeoUtils(object):
             self.OC_URLS.get(platform),
             self.ssl,
         )
+
+    @classmethod
+    def set_lang_and_locale(self, lang: str):
+        """Set requests language and the matching locale.
+
+        :param str lang: language code to set API localization ("en" or "fr"). Defaults to 'fr'.
+        """
+        lang = lang.lower()
+
+        # setting locale according to the language passed and depending on OS
+        try:
+            if opersys == "win32":
+                if lang.lower() == "fr":
+                    locale.setlocale(locale.LC_ALL, "french")
+                else:
+                    locale.setlocale(locale.LC_ALL, "english")
+            else:
+                if lang.lower() == "fr":
+                    locale.setlocale(locale.LC_ALL, str("fr_FR.utf8"))
+                else:
+                    locale.setlocale(locale.LC_ALL, str("en_GB.utf8"))
+        except locale.Error as e:
+            logger.error(
+                "Selected locale ({}) is not installed: {}".format(lang.lower(), e)
+            )
+        logger.debug("Locale set to: {}".format(locale.getlocale()))
+
+        self.lang = lang
 
     @classmethod
     def convert_octets(self, octets: int) -> str:
@@ -325,7 +352,9 @@ class IsogeoUtils(object):
         :param str route: route to format
         :param str prot: https [DEFAULT] or http
         """
-        return "{}://{}.isogeo.com/{}/".format(prot, self.api_url, route)
+        return "{}://{}.isogeo.com/{}/?_lang={}".format(
+            prot, self.api_url, route, self.lang
+        )
 
     def get_edit_url(
         self,
@@ -443,7 +472,7 @@ class IsogeoUtils(object):
         :param url str: URL string to guess from
 
         :rtype: str
-        :returns: "prod" or "qa" or "unknown" 
+        :returns: "prod" or "qa" or "unknown"
 
         :Example:
 

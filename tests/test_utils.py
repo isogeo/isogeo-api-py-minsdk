@@ -212,7 +212,8 @@ class TestIsogeoUtils(unittest.TestCase):
         """Test URL request builder."""
         resource_url = self.utils.get_request_base_url("resources")
         self.assertEqual(
-            resource_url, "https://{}.isogeo.com/resources/".format(self.utils.api_url)
+            resource_url,
+            "https://{}.isogeo.com/resources/?_lang=fr".format(self.utils.api_url),
         )
 
     # -- URLs Builders - view on web app -------------------------------------
