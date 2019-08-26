@@ -344,8 +344,6 @@ if __name__ == "__main__":
     from time import sleep, gmtime, strftime
     import urllib3
 
-    from isogeo_pysdk.models import Keyword, Share
-
     # ------------ Log & debug ----------------
     logger = logging.getLogger()
     logging.captureWarnings(True)

@@ -8,7 +8,7 @@
     # for whole test
     python -m unittest tests.test_shares
     # for specific
-    python -m unittest tests.test_shares.TestShares.test_shares_create_basic
+    python -m unittest tests.test_shares.TestShares.test_shares_create_basic_application
     ```
 """
 
@@ -32,7 +32,7 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import Isogeo, Share, Catalog
+from isogeo_pysdk import Isogeo, Share
 
 
 # #############################################################################

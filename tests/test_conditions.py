@@ -173,7 +173,8 @@ class TestConditions(unittest.TestCase):
             self.assertTrue(hasattr(condition, "description"))
             self.assertTrue(hasattr(condition, "license"))
             # test attributes instances
-            self.assertIsInstance(condition.license, License)
+            if "license" in i:
+                self.assertIsInstance(condition.license, License)
             # tests attributes value
             self.assertEqual(condition._id, i.get("_id"))
             self.assertEqual(condition.description, i.get("description"))

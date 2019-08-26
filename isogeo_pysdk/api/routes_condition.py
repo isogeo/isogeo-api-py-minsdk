@@ -21,7 +21,7 @@ from requests import Response
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Condition, Metadata, License
+from isogeo_pysdk.models import Condition, Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
