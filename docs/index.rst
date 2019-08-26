@@ -29,22 +29,15 @@ Installation
 
 .. include:: installation.rst
 
-Package modules
-+++++++++++++++
-
-.. toctree::
-    _apidoc/modules
-
-
-API coverage and features
-+++++++++++++++++++++++++
-
-.. toctree::
-    api_coverage_features
-
 
 Cookbook
 ++++++++
 
 .. toctree::
     usage
+
+Package modules
++++++++++++++++
+
+.. toctree::
+    _apidoc/modules

@@ -12,16 +12,18 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-from datetime import date
+
 import os
 import sys
 
 sys.path.insert(0, os.path.abspath(r".."))
+
 from isogeo_pysdk import (
     Isogeo,
     IsogeoChecker,
     IsogeoTranslator,
     IsogeoUtils,
+    __about__,
     __version__,
 )
 
@@ -31,9 +33,9 @@ on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
 # -- Project information -----------------------------------------------------
 
-project = "Isogeo PySDK"
-author = "Julien M. @ Isogeo"
-copyright = u"2016 - {0}, {1}".format(date.today().year, author)
+project = __about__.__title__
+author = __about__.__author__
+copyright = __about__.__copyright__
 
 # The short X.Y version
 version = __version__
@@ -108,6 +110,7 @@ intersphinx_mapping = {
     "oauthlib": ("https://oauthlib.readthedocs.io/en/latest/", None),
     "requests_oauthlib": ("https://requests-oauthlib.readthedocs.io/en/latest/", None),
 }
+
 
 # -- Options for Sphinx API doc ----------------------------------------------
 # run api doc
