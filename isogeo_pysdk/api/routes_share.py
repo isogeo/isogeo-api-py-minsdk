@@ -246,12 +246,14 @@ class ApiShare:
         else:
             pass
 
-        # URL builder
-        url_share_exists = "{}{}".format(utils.get_request_base_url("shares"), share_id)
+        # URL
+        url_share_exists = utils.get_request_base_url(
+            route="shares/{}".format(share_id)
+        )
 
         # request
         req_share_exists = self.api_client.get(
-            url_share_exists,
+            url=url_share_exists,
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
             verify=self.api_client.ssl,
