@@ -253,6 +253,12 @@ class TestApplications(unittest.TestCase):
             self.assertEqual(application.name, i.get("name"))
             self.assertEqual(application.staff, i.get("staff"))
 
+            # check admin url
+            self.assertIsInstance(application.admin_url(self.isogeo.mng_url), str)
+            self.assertTrue(
+                application.admin_url(self.isogeo.mng_url).startswith("https")
+            )
+
     def test_application_workgroups(self):
         """GET :/applications/{application_uiid}/groups}"""
         # retrieve applications
@@ -305,15 +311,13 @@ class TestApplications(unittest.TestCase):
         self.assertTrue(self.isogeo.application.exists(application_group.get("_id")))
 
         # get and check
-        application_user_confidential = self.isogeo.application.application(
+        application_user_confidential = self.isogeo.application.get(
             application_user_confidential.get("_id")
         )
-        application_user_public = self.isogeo.application.application(
+        application_user_public = self.isogeo.application.get(
             application_user_public.get("_id")
         )
-        application_group = self.isogeo.application.application(
-            application_group.get("_id")
-        )
+        application_group = self.isogeo.application.get(application_group.get("_id"))
         self.assertIsInstance(application_user_confidential, Application)
         self.assertIsInstance(application_user_public, Application)
         self.assertIsInstance(application_group, Application)
@@ -335,7 +339,7 @@ class TestApplications(unittest.TestCase):
         application_fixture = self.isogeo.application.update(application_fixture)
 
         # check if the change is effective
-        application_fixture_updated = self.isogeo.application.application(
+        application_fixture_updated = self.isogeo.application.get(
             application_fixture._id
         )
         self.assertEqual(

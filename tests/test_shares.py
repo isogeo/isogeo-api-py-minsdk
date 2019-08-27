@@ -32,14 +32,12 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import Isogeo, Share, IsogeoUtils
+from isogeo_pysdk import Isogeo, Share
 
 
 # #############################################################################
 # ######## Globals #################
 # ##################################
-
-utils = IsogeoUtils()
 
 if Path("dev.env").exists():
     load_dotenv("dev.env", override=True)
@@ -101,8 +99,6 @@ class TestShares(unittest.TestCase):
             username=environ.get("ISOGEO_USER_NAME"),
             password=environ.get("ISOGEO_USER_PASSWORD"),
         )
-
-        utils.set_base_url(environ.get("ISOGEO_PLATFORM", "qa"))
 
     def setUp(self):
         """Executed before each test."""
@@ -323,11 +319,13 @@ class TestShares(unittest.TestCase):
             self.assertTrue(hasattr(share, "type"))
             self.assertTrue(hasattr(share, "urlToken"))
         # test methods
-        self.assertIn("app", share_appli.admin_url(utils.app_url))
-        self.assertIsInstance(share_appli.opencatalog_url(utils.oc_url), (str, None))
+        self.assertIn("app", share_appli.admin_url(self.isogeo.app_url))
+        self.assertIsInstance(
+            share_appli.opencatalog_url(self.isogeo.oc_url), (str, None)
+        )
 
-        self.assertIn("app", share_group.admin_url(utils.app_url))
-        self.assertFalse(share_group.opencatalog_url(utils.oc_url))
+        self.assertIn("app", share_group.admin_url(self.isogeo.app_url))
+        self.assertFalse(share_group.opencatalog_url(self.isogeo.oc_url))
 
     # -- PUT/PATCH --
     # def test_shares_update(self):
