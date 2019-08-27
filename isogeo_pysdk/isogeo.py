@@ -308,7 +308,7 @@ class Isogeo(OAuth2Session):
                 verify=self.ssl,
             )
             # get authenticated application informations
-            associated_shares = self.share.listing(caching=0)
+            associated_shares = self.share.listing(caching=1)
             if not len(associated_shares):
                 logger.warning("No shares are feeding this application.")
                 self.app_properties = None
