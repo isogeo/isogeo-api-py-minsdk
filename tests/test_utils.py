@@ -131,6 +131,7 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertIsInstance(ssl, bool)
         self.assertEqual(platform, "qa")
         self.assertEqual(api_url, self.utils.API_URLS.get("qa"))
+        self.assertEqual(oc_url, self.utils.OC_URLS.get("qa"))
         self.assertEqual(ssl, False)
 
     def test_set_base_url_bad_parameter(self):
