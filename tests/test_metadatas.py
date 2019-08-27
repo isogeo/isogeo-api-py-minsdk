@@ -158,6 +158,9 @@ class TestMetadatas(unittest.TestCase):
                 ds_date_creation = utils.hlpr_datetimes(metadata.created)
                 self.assertEqual(int(metadata.created[:4]), ds_date_creation.year)
 
+            # admin url
+            self.assertIsInstance(metadata.admin_url(self.isogeo.app_url), str)
+
     # def test_search_specific_mds_bad(self):
     #     """Searches filtering on specific metadata."""
     #     # get random metadata within a small search
