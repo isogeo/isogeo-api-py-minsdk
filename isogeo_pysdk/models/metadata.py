@@ -12,6 +12,7 @@
 # ##################################
 
 # standard library
+import logging
 import pprint
 import re
 import unicodedata
@@ -23,6 +24,8 @@ from isogeo_pysdk.enums import MetadataSubresources, MetadataTypes
 # #############################################################################
 # ########## Globals ###############
 # ##################################
+
+logger = logging.getLogger(__name__)
 
 # for slugified title
 _regex_slugify_strip = re.compile(r"[^\w\s-]")
@@ -1249,6 +1252,19 @@ class Metadata(object):
         self._validityComment = validityComment
 
     # -- METHODS -----------------------------------------------------------------------
+    def admin_url(self, url_base: str = "https://app.isogeo.com") -> str:
+        """Returns the administration URL (https://app.isogeo.com) for this metadata.
+
+        :param str url_base: base URL of admin site. Defaults to: https://app.isogeo.com
+
+        :rtype: str
+        """
+        if self._creator is None:
+            logger.warning("Creator is required to build admin URL")
+            return False
+
+        creator_id = self._creator.get("_id")
+        return "{}/groups/{}/resources/{}/".format(url_base, creator_id, self._id)
 
     def title_or_name(self, slugged: bool = False) -> str:
         """Gets the title of this Metadata or the name if there is no title.
