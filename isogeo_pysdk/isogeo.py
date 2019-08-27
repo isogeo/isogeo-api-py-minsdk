@@ -298,7 +298,7 @@ class Isogeo(OAuth2Session):
                 verify=self.ssl,
             )
             # get authenticated user informations
-            self.account.account()
+            self.account.get()
         elif self.auth_mode == "group":
             # get token
             self.token = self.fetch_token(
