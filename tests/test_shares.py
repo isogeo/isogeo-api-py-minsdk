@@ -32,13 +32,14 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import Isogeo, Share
+from isogeo_pysdk import Isogeo, Share, IsogeoUtils
 
 
 # #############################################################################
 # ######## Globals #################
 # ##################################
 
+utils = IsogeoUtils()
 
 if Path("dev.env").exists():
     load_dotenv("dev.env", override=True)
@@ -100,6 +101,8 @@ class TestShares(unittest.TestCase):
             username=environ.get("ISOGEO_USER_NAME"),
             password=environ.get("ISOGEO_USER_PASSWORD"),
         )
+
+        utils.set_base_url(environ.get("ISOGEO_PLATFORM", "qa"))
 
     def setUp(self):
         """Executed before each test."""
@@ -286,6 +289,45 @@ class TestShares(unittest.TestCase):
             self.assertEqual(share.rights, i.get("rights"))
             self.assertEqual(share.type, i.get("type"))
             self.assertEqual(share.urlToken, i.get("urlToken"))
+
+    def test_shares_get_detailed_basic(self):
+        """GET :groups/{workgroup_uuid}/shares}"""
+        # retrieve workgroup shares
+        wg_shares = self.isogeo.share.listing(workgroup_id=WORKGROUP_TEST_FIXTURE_UUID)
+
+        # pick a random share
+        share_id_app = sample(
+            [i for i in wg_shares if i.get("type") == "application"], 1
+        )[0].get("_id")
+        share_id_group = sample([i for i in wg_shares if i.get("type") == "group"], 1)[
+            0
+        ].get("_id")
+
+        # get the detailed shares
+        share_appli = self.isogeo.share.get(share_id=share_id_app)
+        share_group = self.isogeo.share.get(share_id=share_id_group)
+
+        # checks
+        for share in (share_appli, share_group):
+            self.assertIsInstance(share, Share)
+            # tests attributes structure
+            self.assertTrue(hasattr(share, "_created"))
+            self.assertTrue(hasattr(share, "_creator"))
+            self.assertTrue(hasattr(share, "_id"))
+            self.assertTrue(hasattr(share, "_modified"))
+            self.assertTrue(hasattr(share, "applications"))
+            self.assertTrue(hasattr(share, "catalogs"))
+            self.assertTrue(hasattr(share, "groups"))
+            self.assertTrue(hasattr(share, "name"))
+            self.assertTrue(hasattr(share, "rights"))
+            self.assertTrue(hasattr(share, "type"))
+            self.assertTrue(hasattr(share, "urlToken"))
+        # test methods
+        self.assertIn("app", share_appli.admin_url(utils.app_url))
+        self.assertIsInstance(share_appli.opencatalog_url(utils.app_url), (str, None))
+
+        self.assertIn("app", share_group.admin_url(utils.app_url))
+        self.assertFalse(share_group.opencatalog_url(utils.app_url))
 
     # -- PUT/PATCH --
     # def test_shares_update(self):
