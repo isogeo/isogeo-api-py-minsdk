@@ -54,7 +54,7 @@ class ApiAccount:
 
     @lru_cache()
     @ApiDecorators._check_bearer_validity
-    def account(self, include: list = ["_abilities"], caching: bool = 1) -> User:
+    def get(self, include: list = ["_abilities"], caching: bool = 1) -> User:
         """Get authenticated user account(= profile) informations.
 
         :param list include: additional parts of model to include in response
