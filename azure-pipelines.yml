@@ -151,6 +151,6 @@ jobs:
     inputs:
       externalFeeds: 'Python Package Index (PyPi)'
 
-  - script: twine upload -r 'Python Package Index (PyPi)' --config-file $(PYPIRC_PATH) dist/*
+  - script: twine upload $(System.DefaultWorkingDirectory)/dist/* -r 'Python Package Index (PyPi)' --config-file $(PYPIRC_PATH)
     continueOnError: true
     displayName: "Upload to PyPi"
