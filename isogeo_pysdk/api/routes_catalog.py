@@ -39,7 +39,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiCatalog:
-    """Routes as methods of Isogeo API used to manipulate catalogs (conditions).
+    """Routes as methods of Isogeo API used to manipulate catalogs.
     """
 
     def __init__(self, api_client=None):

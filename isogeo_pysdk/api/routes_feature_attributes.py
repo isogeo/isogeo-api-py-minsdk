@@ -13,7 +13,6 @@
 
 # Standard library
 import logging
-from datetime import datetime
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
@@ -97,6 +96,7 @@ class ApiFeatureAttribute:
         :param str attribute_id: feature-attribute UUID
 
         :Example:
+
         >>> # get a metadata
         >>> md = isogeo.metadata.get(METADATA_UUID)
         >>> # list all og its attributes
@@ -106,6 +106,7 @@ class ApiFeatureAttribute:
             metadata_id=md._id,
             attribute_id=md_attributes[0].get("_id")
             )
+
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata_id):
@@ -161,6 +162,7 @@ class ApiFeatureAttribute:
         :rtype: FeatureAttribute or tuple
 
         :Example:
+
         >>> # retrieve metadata
         >>> md = isogeo.metadata.get(METADATA_UUID)
         >>> # create the attribute locally
@@ -177,6 +179,7 @@ class ApiFeatureAttribute:
             )
         >>> # add it to the metadata
         >>> isogeo.metadata.attributes.create(md, new_attribute)
+
         """
         # check metadata type
         if metadata.type != "vectorDataset":

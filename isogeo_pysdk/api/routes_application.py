@@ -57,7 +57,7 @@ class ApiApplication:
     def listing(
         self,
         workgroup_id: str = None,
-        include: list = ["_abilities"],
+        include: list = ("_abilities"),
         caching: bool = 1,
     ) -> list:
         """Get all applications which are accessible by the authenticated user OR applications for a workgroup.
@@ -178,7 +178,7 @@ class ApiApplication:
         if check_exists == 1:
             # retrieve workgroup applications
             if not self.api_client._applications_names:
-                self.applications(include=[])
+                self.listing(include=())
             # check
             if application.name in self.api_client._applications_names:
                 logger.debug(

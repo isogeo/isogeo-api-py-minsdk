@@ -16,9 +16,7 @@
 # ##################################
 
 # Standard library
-import locale
 import logging
-from sys import platform as opersys
 
 # 3rd party library
 from oauthlib.oauth2 import BackendApplicationClient, LegacyApplicationClient
@@ -63,7 +61,7 @@ class Isogeo(OAuth2Session):
     :param str auth_mode: oAuth2 authentication flow to use. Must be one of 'AUTH_MODES'
     :param str platform: to request production or quality assurance
     :param dict proxy: dictionary of proxy settings as described in `Requests <https://2.python-requests.org/en/master/user/advanced/#proxies>`_
-    :param str lang: API localization ("en" or "fr").
+    :param str lang: API localization ("en" or "fr"). Defaults to 'fr'.
     :param str app_name: to custom the application name and user-agent
 
 
@@ -101,7 +99,7 @@ class Isogeo(OAuth2Session):
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
-    
+
         # getting a token
         isogeo.connect()
 
@@ -210,30 +208,12 @@ class Isogeo(OAuth2Session):
         # setting language
         if lang.lower() not in ("fr", "en"):
             logger.warning(
-                "Isogeo API is only available in English ('en', "
-                "default) or French ('fr'). "
-                "Language has been set on English."
+                "Isogeo API is only available in English ('en', default) or French ('fr'). Language has been set on English."
             )
             self.lang = "en"
         else:
             self.lang = lang.lower()
-
-        # setting locale according to the language passed
-        # try:
-        #     if opersys == "win32":
-        #         if lang.lower() == "fr":
-        #             locale.setlocale(locale.LC_ALL, str("fra_fra"))
-        #         else:
-        #             locale.setlocale(locale.LC_ALL, str("uk_UK"))
-        #     else:
-        #         if lang.lower() == "fr":
-        #             locale.setlocale(locale.LC_ALL, str("fr_FR.utf8"))
-        #         else:
-        #             locale.setlocale(locale.LC_ALL, str("en_GB.utf8"))
-        # except locale.Error as e:
-        #     logger.error(
-        #         "Selected locale ({}) is not installed: {}".format(lang.lower(), e)
-        #     )
+        utils.set_lang_and_locale(self.lang)
 
         # handling proxy parameters
         # see: http://docs.python-requests.org/en/latest/user/advanced/#proxies
@@ -364,8 +344,6 @@ if __name__ == "__main__":
     from time import sleep, gmtime, strftime
     import urllib3
 
-    from isogeo_pysdk.models import Keyword, Share
-
     # ------------ Log & debug ----------------
     logger = logging.getLogger()
     logging.captureWarnings(True)
@@ -401,20 +379,20 @@ if __name__ == "__main__":
 
     # instanciate
 
-    # for oAuth2 Legacy Flow
-    isogeo = Isogeo(
-        auth_mode="user_legacy",
-        client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
-        client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
-        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
-        platform=environ.get("ISOGEO_PLATFORM", "qa"),
-    )
+    # # for oAuth2 Legacy Flow
+    # isogeo = Isogeo(
+    #     auth_mode="user_legacy",
+    #     client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+    #     client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
+    #     auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+    #     platform=environ.get("ISOGEO_PLATFORM", "qa"),
+    # )
 
-    # getting a token
-    isogeo.connect(
-        username=environ.get("ISOGEO_USER_NAME"),
-        password=environ.get("ISOGEO_USER_PASSWORD"),
-    )
+    # # getting a token
+    # isogeo.connect(
+    #     username=environ.get("ISOGEO_USER_NAME"),
+    #     password=environ.get("ISOGEO_USER_PASSWORD"),
+    # )
 
     # for oAuth2 Backend (Client Credentials Grant) Flow
     isogeo = Isogeo(
@@ -432,6 +410,16 @@ if __name__ == "__main__":
     discriminator = strftime("%Y-%m-%d_%H%M%S", gmtime())
     METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
     WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+
+    from isogeo_pysdk import Metadata
+
+    search_complete = isogeo.search(
+        whole_results=1,
+        query="type:dataset owner:f234550ff1d5412fb2c67ee98d826731",
+        include="all",
+        order_by="_modified",
+        order_dir="desc",
+    )
 
     # -- END -------
     isogeo.close()  # close session

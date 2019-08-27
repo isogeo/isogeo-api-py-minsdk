@@ -13,17 +13,12 @@
 
 # Standard library
 import logging
-from functools import wraps
-from urllib.parse import urlparse, parse_qs, urlunparse
 
 
 # 3rd party
-import requests
-from requests.adapters import HTTPAdapter
 from requests.models import Response
 
 # submodules
-from isogeo_pysdk.exceptions import AlreadyExistError
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Metadata
@@ -31,6 +26,7 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 # other routes
 from .routes_event import ApiEvent
+from .routes_condition import ApiCondition
 from .routes_feature_attributes import ApiFeatureAttribute
 from .routes_limitation import ApiLimitation
 from .routes_link import ApiLink
@@ -68,6 +64,7 @@ class ApiMetadata:
 
         # sub routes
         self.attributes = ApiFeatureAttribute(self.api_client)
+        self.conditions = ApiCondition(self.api_client)
         self.events = ApiEvent(self.api_client)
         self.layers = ApiServiceLayer(self.api_client)
         self.limitations = ApiLimitation(self.api_client)
@@ -372,7 +369,7 @@ class ApiMetadata:
 
         :rtype: list
         """
-        return self.api_client.keyword.metadata(metadata_id=metadata._id)
+        return self.api_client.catalog.metadata(metadata_id=metadata._id)
 
     def keywords(
         self, metadata: Metadata, include: list = ["_abilities", "count", "thesaurus"]

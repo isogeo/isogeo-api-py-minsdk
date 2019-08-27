@@ -1,8 +1,9 @@
 # Isogeo API Python SDK
 
-![PyPI](https://img.shields.io/pypi/v/isogeo-pysdk.svg) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/isogeo-pysdk.svg)
+![PyPI](https://img.shields.io/pypi/v/isogeo-pysdk.svg?style=flat-square) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/isogeo-pysdk?style=flat-square)
 
-[![Build Status](https://dev.azure.com/isogeo/Python%20SDK/_apis/build/status/isogeo.isogeo-api-py-minsdk?branchName=master)](https://dev.azure.com/isogeo/Python%20SDK/_build/latest?definitionId=3&branchName=master)
+[![Build Status](https://dev.azure.com/isogeo/Python%20SDK/_apis/build/status/isogeo.isogeo-api-py-minsdk?branchName=master)](https://dev.azure.com/isogeo/Python%20SDK/_build/latest?definitionId=3)
+![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/isogeo/Python%20SDK/3?style=flat-square)
 
 [![Documentation Status](https://readthedocs.org/projects/isogeo-api-pysdk/badge/?version=latest)](https://isogeo-api-pysdk.readthedocs.io/en/latest/?badge=latest) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/python/black)
 
@@ -12,7 +13,7 @@ A Python package to use Isogeo REST API.
 
 Isogeo API requires oAuth2 authentication. To obtain credentials, send us your request by email [projects+api@isogeo.com](mailto:projects+api@isogeo.com).
 
-Based on the well known [`requests`](https://github.com/requests/requests) package.
+Based on the well known [`requests`](https://github.com/requests/requests) package and the extension [`requests-oauthlib`](https://github.com/requests/requests-oauthlib).
 
 ## Documentation
 
@@ -22,10 +23,10 @@ Based on the well known [`requests`](https://github.com/requests/requests) packa
 
 ## Usage in a nutshell
 
-```python
-pip install --user isogeo-pysdk
-# using pipenv
-pipenv install isogeo-pysdk
+```powershell
+python -m pip install --user isogeo-pysdk
+# or using pipenv
+python -m pipenv install isogeo-pysdk
 ```
 
 ### Quickstart
@@ -44,10 +45,9 @@ isogeo.connect()
 search = isogeo.search()
 
 # print some statements
-print("Search __dict__ keys: ", search.keys())  # search response basic structure
-print("Search query parameters: ", search.get('query'))  # search response query passed
-print("Total count of metadatas shared: ", search.get("total"))  # total of available resources
-print("Count of resources got by request: {}\n".format(len(search.get("results"))))  # total of resources returned by search request
+print("Search query parameters: ", search.query)
+print("Total count of metadatas shared: ", search.total)
+print("Count of resources got by request: {}\n".format(len(search.results)))
 
 # close the session when you finish
 isogeo.close()
@@ -61,8 +61,8 @@ Tests are performed for each published commit:
 
 - by [Azure Pipelines](https://dev.azure.com/isogeo/Python%20SDK/_build)
 
-```python
-pip install --upgrade -r tests/requirements_test.txt
+```powershell
+python -m pip install --upgrade -r tests/requirements_test.txt
 python -m unittest discover
 ```
 

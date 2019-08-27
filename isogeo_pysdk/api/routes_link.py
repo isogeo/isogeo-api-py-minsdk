@@ -442,7 +442,7 @@ class ApiLink:
             filename = re.sub(r"[^\w\-_\. ]", "", filename)
 
         # end of method
-        return (req_download_hosted, filename, utils._convert_octets(link.size))
+        return (req_download_hosted, filename, utils.convert_octets(link.size))
 
     @ApiDecorators._check_bearer_validity
     def upload_hosted(

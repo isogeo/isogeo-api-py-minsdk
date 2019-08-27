@@ -12,6 +12,7 @@
 # ##################################
 
 # standard library
+import logging
 import pprint
 
 # other model
@@ -19,6 +20,11 @@ from isogeo_pysdk.models.application import Application
 from isogeo_pysdk.models.catalog import Catalog
 from isogeo_pysdk.models.workgroup import Workgroup
 
+# #############################################################################
+# ########## Globals ###############
+# ##################################
+
+logger = logging.getLogger(__name__)
 
 # #############################################################################
 # ########## Classes ###############
@@ -357,6 +363,43 @@ class Share(object):
         return self._urlToken
 
     # -- METHODS -----------------------------------------------------------------------
+    def admin_url(self, url_base: str = "https://app.isogeo.com") -> str:
+        """Returns the administration URL (https://app.isogeo.com) for this share.
+
+        :param str url_base: base URL of admin site. Defaults to: https://app.isogeo.com
+
+        :rtype: str
+        """
+        creator_id = self._creator.get("_tag")[6:]
+        return "{}/groups/{}/admin/shares/{}".format(url_base, creator_id, self._id)
+
+    def opencatalog_url(
+        self, url_base: str = "https://open.isogeo.com"
+    ) -> str or bool or None:
+        """Returns the OpenCatalog URL for this share or None if OpenCatalog is not enabled.
+
+        :param str url_base: base URL of OpenCatalog. Defaults to: https://open.isogeo.com
+
+        :returns:
+
+            - False if the share type is not 'application'
+            - None if OpenCatalog is not enabled in the share
+            - URL of the OpenCatalog when everything is fine
+
+        """
+        # opencatalog URL is valid only for share's of type 'application'
+        if self.type != "application":
+            logger.warning(
+                "Only shares of type 'application' can have an OpenCatalog URL, "
+                "not '{}'.".format(self.type)
+            )
+            return False
+        # check if the urlToken exists which means that OpenCatalog URL is not allowed
+        if self.urlToken is None:
+            return None
+
+        return "{}/s/{}/{}".format(url_base, self._id, self.urlToken)
+
     def to_dict(self) -> dict:
         """Returns the model properties as a dict"""
         result = {}

@@ -260,10 +260,6 @@ class TestLicenses(unittest.TestCase):
         self.fixture_metadata = self.isogeo.metadata.get(
             metadata_id=self.fixture_metadata._id, include=["conditions"]
         )
-        for condition in self.fixture_metadata.conditions:
-            self.isogeo.license.dissociate_metadata(
-                metadata=self.fixture_metadata, condition_id=condition.get("_id")
-            )
 
         # add created license to deletion
         self.li_fixtures_to_delete.append(license_new._id)

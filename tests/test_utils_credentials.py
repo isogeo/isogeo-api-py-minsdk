@@ -77,12 +77,12 @@ class TestIsogeoUtilsCredentials(unittest.TestCase):
 
         # credentials
         self.credentials_group_json = [
-            path.normpath(
-                r"tests/fixtures/client_secrets_group_old.json"
-            ),  # without scopes
-            path.normpath(
-                r"tests/fixtures/client_secrets_group_new.json"
-            ),  # with scopes
+            # without scopes
+            path.normpath(r"tests/fixtures/client_secrets_group_old.json"),
+            # with scopes, kind, type and staff
+            path.normpath(r"tests/fixtures/client_secrets_group_new.json"),
+            # qa with scopes, kind, type and staff
+            path.normpath(r"tests/fixtures/client_secrets_group_new_qa.json"),
         ]
         self.credentials_user_json = [
             path.normpath(
@@ -155,18 +155,35 @@ class TestIsogeoUtilsCredentials(unittest.TestCase):
             self.assertIn("kind", creds_json_group)
             self.assertIn("type", creds_json_group)
             self.assertIn("staff", creds_json_group)
+            self.assertIn("platform", creds_json_group)
             # values
             self.assertEqual(creds_json_group.get("auth_mode"), "group")
-            self.assertEqual(
-                creds_json_group.get("uri_auth"),
-                "https://id.api.isogeo.com/oauth/authorize",
-            )
-            self.assertEqual(
-                creds_json_group.get("uri_token"),
-                "https://id.api.isogeo.com/oauth/token",
-            )
-            self.assertEqual(creds_json_group.get("uri_base"), "https://api.isogeo.com")
             self.assertIsNone(creds_json_group.get("uri_redirect"))
+
+            if creds_json_group.get("platform") == "prod":
+                self.assertEqual(
+                    creds_json_group.get("uri_auth"),
+                    "https://id.api.isogeo.com/oauth/authorize",
+                )
+                self.assertEqual(
+                    creds_json_group.get("uri_token"),
+                    "https://id.api.isogeo.com/oauth/token",
+                )
+                self.assertEqual(
+                    creds_json_group.get("uri_base"), "https://api.isogeo.com"
+                )
+            elif creds_json_group.get("platform") == "qa":
+                self.assertEqual(
+                    creds_json_group.get("uri_auth"),
+                    "https://id.api.qa.isogeo.com/oauth/authorize",
+                )
+                self.assertEqual(
+                    creds_json_group.get("uri_token"),
+                    "https://id.api.qa.isogeo.com/oauth/token",
+                )
+                self.assertEqual(
+                    creds_json_group.get("uri_base"), "https://api.qa.isogeo.com"
+                )
 
     def test_credentials_loader_ini(self):
         """Test credentials loader for an group application from an INI file"""
