@@ -324,10 +324,10 @@ class TestShares(unittest.TestCase):
             self.assertTrue(hasattr(share, "urlToken"))
         # test methods
         self.assertIn("app", share_appli.admin_url(utils.app_url))
-        self.assertIsInstance(share_appli.opencatalog_url(utils.app_url), (str, None))
+        self.assertIsInstance(share_appli.opencatalog_url(utils.oc_url), (str, None))
 
         self.assertIn("app", share_group.admin_url(utils.app_url))
-        self.assertFalse(share_group.opencatalog_url(utils.app_url))
+        self.assertFalse(share_group.opencatalog_url(utils.oc_url))
 
     # -- PUT/PATCH --
     # def test_shares_update(self):
