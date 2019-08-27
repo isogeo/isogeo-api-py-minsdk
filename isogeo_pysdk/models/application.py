@@ -443,7 +443,7 @@ class Application(object):
     def admin_url(self, url_base: str = "https://manage.isogeo.com") -> str:
         """Returns the administration URL (https://manage.isogeo.com) for this application.
 
-        :param str url_base: base URL of admin site. Defaults to: https://app.isogeo.com
+        :param str url_base: base URL of admin site. Defaults to: https://manage.isogeo.com
 
         :rtype: str
         """
