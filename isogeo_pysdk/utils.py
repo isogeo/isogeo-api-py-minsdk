@@ -780,8 +780,8 @@ class IsogeoUtils(object):
         return tags_as_dicts, query_as_dicts
 
     # -- SHARES MANAGEMENT ----------------------------------------------------
-    def share_extender(self, share: dict, results_filtered: dict):
-        """Extend share model with additional informations.
+    def share_extender(self, share: dict, results_filtered: dict) -> dict:
+        """Extends a share model with additional informations.
 
         :param dict share: share returned by API
         :param dict results_filtered: filtered search result
