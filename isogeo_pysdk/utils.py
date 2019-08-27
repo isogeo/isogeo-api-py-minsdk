@@ -172,6 +172,9 @@ class IsogeoUtils(object):
         # set values
         self.api_url = self.API_URLS.get(platform)
         self.app_url = self.APP_URLS.get(platform)
+        self.csw_url = self.CSW_URLS.get(platform)
+        self.mng_url = self.MNG_URLS.get(platform)
+        self.oc_url = self.OC_URLS.get(platform)
 
         # method ending
         return (
