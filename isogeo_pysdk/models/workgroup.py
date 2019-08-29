@@ -430,6 +430,17 @@ class Workgroup(object):
 
         self._themeColor = themeColor
 
+    # -- SPECIFIC TO IMPLEMENTATION ----------------------------------------------------
+    @property
+    def name(self) -> str:
+        """Shortcut to get the name of the workgroup."""
+        if isinstance(self.contact, dict):
+            return self.contact.get("name")
+        elif isinstance(self.contact, Contact):
+            return self.contact.name
+        else:
+            return None
+
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
         """Returns the model properties as a dict"""
