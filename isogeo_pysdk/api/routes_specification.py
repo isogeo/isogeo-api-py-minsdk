@@ -108,8 +108,8 @@ class ApiSpecification:
         return wg_specifications
 
     @ApiDecorators._check_bearer_validity
-    def specification(self, specification_id: str) -> Specification:
-        """Get details about a specific specification.
+    def get(self, specification_id: str) -> Specification:
+        """Get a specification.
 
         :param str specification_id: specification UUID
         """
@@ -355,7 +355,7 @@ class ApiSpecification:
                 metadata_id=my_metadata_uuid,
                 include=['specifications']
             )
-        >>> spec = isogeo.specification.specification(my_specification_uuid)
+        >>> spec = isogeo.specification.get(my_specification_uuid)
         >>> # associate them
         >>> isogeo.specification.associate_metadata(
                 metadata=md,

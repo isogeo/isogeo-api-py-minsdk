@@ -305,12 +305,13 @@ class TestSpecifications(unittest.TestCase):
         )
 
         # get and check both
-        specification_isogeo = self.isogeo.specification.specification(
+        specification_isogeo = self.isogeo.specification.get(
             specification_isogeo.get("_id")
         )
-        specification_specific = self.isogeo.specification.specification(
+        specification_specific = self.isogeo.specification.get(
             specification_specific.get("_id")
         )
+        # check object
         self.assertIsInstance(specification_isogeo, Specification)
         self.assertIsInstance(specification_specific, Specification)
 
@@ -344,7 +345,7 @@ class TestSpecifications(unittest.TestCase):
         specification_fixture = self.isogeo.specification.update(specification_fixture)
 
         # check if the change is effective
-        specification_fixture_updated = self.isogeo.specification.specification(
+        specification_fixture_updated = self.isogeo.specification.get(
             specification_fixture._id
         )
         self.assertEqual(
