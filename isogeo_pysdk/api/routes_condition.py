@@ -57,7 +57,7 @@ class ApiCondition:
 
     @lru_cache()
     @ApiDecorators._check_bearer_validity
-    def list(self, metadata_id: str) -> list:
+    def listing(self, metadata_id: str) -> list:
         """List metadata's conditions with complete information.
 
         :param str metadata_id: metadata UUID

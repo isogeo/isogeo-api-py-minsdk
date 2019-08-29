@@ -130,12 +130,12 @@ class Condition(object):
         elif isinstance(license, dict):
             self._license = License(**license)
         else:
+            self._license = license
             raise Warning(
                 "Invalid license parameter ({}) to set as license for this condition.".format(
                     license
                 )
             )
-            self._license = license
 
     # parent metadata
     @property
