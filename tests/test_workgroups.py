@@ -211,6 +211,9 @@ class TestWorkgroups(unittest.TestCase):
             self.assertTrue(hasattr(workgroup, "keywordsCasing"))
             self.assertTrue(hasattr(workgroup, "metadataLanguage"))
             self.assertTrue(hasattr(workgroup, "themeColor"))
+
+            # specific
+            self.assertTrue(hasattr(workgroup, "name"))
             # tests attributes value
 
     def test_workgroup_detailed(self):

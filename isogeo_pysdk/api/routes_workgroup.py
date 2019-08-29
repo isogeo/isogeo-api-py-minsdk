@@ -110,12 +110,12 @@ class ApiWorkgroup:
     @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(
-        self, workgroup_id: str, include: list = ["_abilities", "limits"]
+        self, workgroup_id: str, include: tuple = ("_abilities", "limits")
     ) -> Workgroup:
         """Get details about a specific workgroup.
 
         :param str workgroup_id: workgroup UUID
-        :param list include: additionnal subresource to include in the response
+        :param tuple include: additionnal subresource to include in the response
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
