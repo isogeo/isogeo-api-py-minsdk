@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+from functools import lru_cache
 
 # 3rd party
 from requests.models import Response
@@ -54,17 +55,18 @@ class ApiSpecification:
         # initialize
         super(ApiSpecification, self).__init__()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
         self,
         workgroup_id: str = None,
-        include: list = ["_abilities", "count"],
+        include: tuple = ("_abilities", "count"),
         caching: bool = 1,
     ) -> list:
         """Get workgroup specifications.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param list include: additional parts of model to include in response
+        :param tuple include: additional parts of model to include in response
         :param bool caching: option to cache the response
         """
         # check workgroup UUID
