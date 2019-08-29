@@ -116,7 +116,7 @@ class TestAccount(unittest.TestCase):
     def test_account(self):
         """GET :/account/}"""
         # compare account objects
-        me = self.isogeo.account.account(caching=0)  # Account route
+        me = self.isogeo.account.get(caching=0)  # Account route
         self.assertIsInstance(me, User)
 
     def test_account_memberships(self):

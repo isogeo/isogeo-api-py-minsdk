@@ -440,6 +440,15 @@ class Application(object):
         self._url = url
 
     # -- METHODS -----------------------------------------------------------------------
+    def admin_url(self, url_base: str = "https://manage.isogeo.com") -> str:
+        """Returns the administration URL (https://manage.isogeo.com) for this application.
+
+        :param str url_base: base URL of admin site. Defaults to: https://manage.isogeo.com
+
+        :rtype: str
+        """
+        return "{}/applications/{}".format(url_base, self._id)
+
     def to_dict(self) -> dict:
         """Returns the model properties as a dict"""
         result = {}

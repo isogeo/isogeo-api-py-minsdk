@@ -1,6 +1,9 @@
 # coding: utf-8
 #! python3  # noqa: E265
 
+# models which are a dependency for others
+from .workgroup import Workgroup  # noqa: F401
+
 from .application import Application  # noqa: F401
 from .catalog import Catalog  # noqa: F401
 
@@ -25,12 +28,13 @@ from .service_operation import ServiceOperation  # noqa: F401
 from .specification import Specification  # noqa: F401
 from .thesaurus import Thesaurus  # noqa: F401
 from .user import User  # noqa: F401
-from .workgroup import Workgroup  # noqa: F401
+
 
 # depending on previous models
 from .condition import Condition  # noqa: F401
 
 # shortcuts or confusion reducers
 Account = User
+Group = Workgroup
 Resource = Metadata
 ResourceSearch = MetadataSearch

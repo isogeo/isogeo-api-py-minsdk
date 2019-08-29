@@ -27,7 +27,7 @@ from isogeo_pysdk.__about__ import __version__ as version
 from isogeo_pysdk import api
 from isogeo_pysdk.api_hooks import IsogeoHooks
 from isogeo_pysdk.checker import IsogeoChecker
-from isogeo_pysdk.models import User
+from isogeo_pysdk.models import Application, User
 from isogeo_pysdk.utils import IsogeoUtils
 
 # ##############################################################################
@@ -298,7 +298,7 @@ class Isogeo(OAuth2Session):
                 verify=self.ssl,
             )
             # get authenticated user informations
-            self.account.account()
+            self.account.get()
         elif self.auth_mode == "group":
             # get token
             self.token = self.fetch_token(
@@ -307,6 +307,21 @@ class Isogeo(OAuth2Session):
                 client_secret=self.client_secret,
                 verify=self.ssl,
             )
+            # get authenticated application informations
+            associated_shares = self.share.listing(caching=1)
+            if not len(associated_shares):
+                logger.warning("No shares are feeding this application.")
+                self.app_properties = None
+            else:
+                # if application has associated shares, then retrieve informations
+                logger.info(
+                    "This application is feeded by {} share(s).".format(
+                        len(associated_shares)
+                    )
+                )
+                self.app_properties = Application(
+                    **self.share.listing()[0].get("applications")[0]
+                )
 
     # -- PROPERTIES -----------------------------------------------------------
     @property

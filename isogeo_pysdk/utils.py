@@ -32,6 +32,7 @@ import requests
 
 # modules
 from isogeo_pysdk.checker import IsogeoChecker
+from isogeo_pysdk.models import Metadata
 
 # ##############################################################################
 # ########## Globals ###############
@@ -359,37 +360,33 @@ class IsogeoUtils(object):
             prot, self.api_url, route, self.lang
         )
 
-    def get_edit_url(
-        self,
-        md_id: str = None,
-        md_type: str = None,
-        owner_id: str = None,
-        tab: str = "identification",
-    ) -> str:
-        """Constructs the edition URL of a metadata.
+    def get_edit_url(self, metadata: Metadata, tab: str = "identification") -> str:
+        """Returns the edition URL of a metadata.
 
-        :param str md_id: metadata/resource UUID
-        :param str owner_id: owner UUID
-        :param str tab: target tab in the web form
+        :param Metadata metadata: metadata
+        :param str tab: target tab in the web form. Optionnal. Defaults to 'identification'.
         """
         # checks inputs
-        if not checker.check_is_uuid(md_id) or not checker.check_is_uuid(owner_id):
-            raise ValueError("One of md_id or owner_id is not a correct UUID.")
-        else:
-            pass
-        if not checker.check_edit_tab(tab, md_type=md_type):
+        if not isinstance(metadata, Metadata):
+            raise TypeError(
+                "Method expects a metadata object, no {}".format(type(metadata))
+            )
+        if not checker.check_is_uuid(metadata._id):
+            raise ValueError(
+                "Metadata _id is not a correct UUID: {}".format(metadata._id)
+            )
+
+        # base edit URL
+        edit_url = metadata.admin_url(self.app_url)
+        # add tab
+        if not checker.check_edit_tab(tab, md_type=metadata.type):
             logger.warning(
                 "Tab '{}' is not a valid tab for the is type '{}' of metadata. "
-                "It'll be replaced by default value.".format(tab, md_type)
+                "It'll be replaced by default value.".format(tab, metadata.type)
             )
             tab = "identification"
         # construct URL
-        return (
-            "{}"
-            "/groups/{}"
-            "/resources/{}"
-            "/{}".format(self.APP_URLS.get(self.platform), owner_id, md_id, tab)
-        )
+        return edit_url + tab
 
     def get_view_url(self, webapp: str = "oc", **kwargs):
         """Constructs the view URL of a metadata.

@@ -292,11 +292,13 @@ class IsogeoChecker(object):
         """
         # check parameters types
         if not isinstance(tab, str):
-            raise TypeError("'tab' expected a str value.")
+            raise TypeError("'tab' expected a str value, not {}".format(type(tab)))
         else:
             pass
         if not isinstance(md_type, str):
-            raise TypeError("'md_type' expected a str value.")
+            raise TypeError(
+                "'md_type' expected a str value, not {}".format(type(md_type))
+            )
         else:
             pass
         # check parameters values

@@ -149,8 +149,8 @@ jobs:
   - task: TwineAuthenticate@0
     # see: https://dev.azure.com/isogeo/Python%20SDK/_settings/adminservices?resourceId=7650b333-6c8a-4c56-a839-a33242255c16&resource=%5Bobject%20Object%5D&_a=resources
     inputs:
-      externalFeeds: 'Python Package Index (PyPi)'
+      externalFeeds: 'PyPi'
 
-  - script: twine upload -r 'Python Package Index (PyPi)' --config-file $(PYPIRC_PATH) dist/*
+  - script: twine upload $(System.DefaultWorkingDirectory)/dist/* -r 'pypi' --config-file $(PYPIRC_PATH)
     continueOnError: true
     displayName: "Upload to PyPi"

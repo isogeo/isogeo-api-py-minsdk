@@ -109,11 +109,11 @@ class ApiShare:
         return shares
 
     @ApiDecorators._check_bearer_validity
-    def share(self, share_id: str, include: list = ["_abilities", "groups"]) -> Share:
-        """Get details about a specific share.
+    def get(self, share_id: str, include: tuple = ("_abilities", "groups")) -> Share:
+        """Returns details about a specific share.
 
         :param str share_id: share UUID
-        :param list include: additionnal subresource to include in the response
+        :param tuple inlude: additionnal subresource to include in the response
         """
         # check share UUID
         if not checker.check_is_uuid(share_id):
@@ -153,7 +153,7 @@ class ApiShare:
 
         :param str workgroup_id: identifier of the owner workgroup
         :param Share share: Share model object to create
-        :param int check_exists: check if a share already exists inot the workgroup:
+        :param int check_exists: check if a share already exists into the workgroup:
 
         - 0 = no check
         - 1 = compare name [DEFAULT]
