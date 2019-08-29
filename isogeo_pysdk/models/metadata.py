@@ -20,6 +20,9 @@ import unicodedata
 # package
 from isogeo_pysdk.enums import MetadataSubresources, MetadataTypes
 
+# others models
+from isogeo_pysdk.models import Workgroup
+
 
 # #############################################################################
 # ########## Globals ###############
@@ -1250,6 +1253,27 @@ class Metadata(object):
         """
 
         self._validityComment = validityComment
+
+    # -- SPECIFIC TO IMPLEMENTATION ----------------------------------------------------
+    @property
+    def groupName(self) -> str:
+        """Shortcut to get the name of the workgroup which owns the Metadata."""
+        if isinstance(self._creator, dict):
+            return self._creator.get("contact").get("name")
+        elif isinstance(self._creator, Workgroup):
+            return self._creator.contact.get("name")
+        else:
+            return None
+
+    @property
+    def groupId(self) -> str:
+        """Shortcut to get the UUID of the workgroup which owns the Metadata."""
+        if isinstance(self._creator, dict):
+            return self._creator.get("_id")
+        elif isinstance(self._creator, Workgroup):
+            return self._creator._id
+        else:
+            return None
 
     # -- METHODS -----------------------------------------------------------------------
     def admin_url(self, url_base: str = "https://app.isogeo.com") -> str:
