@@ -21,7 +21,7 @@ from requests.models import Response
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Metadata, Specification
+from isogeo_pysdk.models import Conformity, Metadata, Specification
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -365,14 +365,6 @@ class ApiSpecification:
                 conformity=1
             )
         """
-        # check metadata UUID
-        if not checker.check_is_uuid(metadata._id):
-            raise ValueError(
-                "Metadata ID is not a correct UUID: {}".format(metadata._id)
-            )
-        else:
-            pass
-
         # check specification UUID
         if not checker.check_is_uuid(specification._id):
             raise ValueError(
@@ -381,30 +373,15 @@ class ApiSpecification:
         else:
             pass
 
-        # URL
-        url_specification_association = utils.get_request_base_url(
-            route="resources/{}/specifications/{}".format(
-                metadata._id, specification._id
-            )
+        # create the conformity object to add to the metadata
+        conformity_to_create = Conformity(
+            conformant=conformity, specification=specification
         )
-
-        # request
-        req_specification_association = self.api_client.put(
-            url=url_specification_association,
-            json={"conformant": conformity, "specification": specification.to_dict()},
-            headers=self.api_client.header,
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-            timeout=self.api_client.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_specification_association)
-        if isinstance(req_check, tuple):
-            return req_check
 
         # end of method
-        return req_specification_association
+        return self.api_client.metadata.conformity.create(
+            metadata=metadata, conformity=conformity_to_create
+        )
 
     @ApiDecorators._check_bearer_validity
     def dissociate_metadata(
@@ -415,47 +392,11 @@ class ApiSpecification:
         If the specified specification is not associated, the response is 404.
 
         :param Metadata metadata: metadata object to update
-        :param Specification specification: specification model object to associate
+        :param Specification specification_id: specification model object to associate
         """
-        # check metadata UUID
-        if not checker.check_is_uuid(metadata._id):
-            raise ValueError(
-                "Metadata ID is not a correct UUID: {}".format(metadata._id)
-            )
-        else:
-            pass
-
-        # check specification UUID
-        if not checker.check_is_uuid(specification_id):
-            raise ValueError(
-                "Specification ID is not a correct UUID: {}".format(specification_id)
-            )
-        else:
-            pass
-
-        # URL
-        url_specification_dissociation = utils.get_request_base_url(
-            route="resources/{}/specifications/{}".format(
-                metadata._id, specification_id
-            )
+        return self.api_client.metadata.conformity.delete(
+            metadata=metadata, specification_id=specification_id
         )
-
-        # request
-        req_specification_dissociation = self.api_client.delete(
-            url=url_specification_dissociation,
-            headers=self.api_client.header,
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-            timeout=self.api_client.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_specification_dissociation)
-        if isinstance(req_check, tuple):
-            return req_check
-
-        # end of method
-        return req_specification_dissociation
 
 
 # ##############################################################################
