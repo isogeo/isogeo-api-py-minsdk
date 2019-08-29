@@ -314,6 +314,10 @@ class TestSpecifications(unittest.TestCase):
         self.assertIsInstance(specification_isogeo, Specification)
         self.assertIsInstance(specification_specific, Specification)
 
+        # check isLocked status
+        self.assertTrue(specification_isogeo.isLocked)
+        self.assertFalse(specification_specific.isLocked)
+
     # -- PUT/PATCH --
     def test_specifications_update(self):
         """PUT :groups/{workgroup_uuid}/specifications/{specification_uuid}}"""
