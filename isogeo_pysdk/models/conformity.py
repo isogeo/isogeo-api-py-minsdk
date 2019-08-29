@@ -2,9 +2,9 @@
 #! python3
 
 """
-    Isogeo API v1 - Model of Condition entity
+    Isogeo API v1 - Model of Conformity entity
 
-    See: http://help.isogeo.com/api/complete/index.html#definition-resourceCondition
+    See: http://help.isogeo.com/api/complete/index.html#definition-resourceConformity
 """
 
 # #############################################################################
@@ -15,143 +15,127 @@
 import pprint
 
 # others related models
-from isogeo_pysdk.models import License
+from isogeo_pysdk.models import Specification
 
 
 # #############################################################################
 # ########## Classes ###############
 # ##################################
-class Condition(object):
-    """Conditions are entities defining general conditions of use (CGUs) of a data.
-    It's mainly composed by a license and a description.
+class Conformity(object):
+    """Conformity is an entity defining if a data respects a specification. It's a quality indicator.
+    It's mainly composed by a specification and a boolean.
 
     :param str _id: object UUID
-    :param str description: description of the condition
-    :param dict license: license object or dict linked to the condition
-    :param str parent_resource: UUID of the metadata containing the condition
+    :param bool conformant: conformity with the specification
+    :param dict specification: specification object or dict linked to the conformity
+    :param str parent_resource: UUID of the metadata containing the conformity
 
     :Example:
 
     .. code-block:: json
 
         {
-            "_id": "string (uuid)",
-            "description": "string",
-            "license": "string",
+            "conformant": "bool",
+            "specification": "string",
         }
     """
 
     attr_types = {
-        "_id": str,
-        "description": str,
-        "license": License,
+        "conformant": bool,
+        "specification": Specification,
         "parent_resource": str,
     }
 
-    attr_crea = {"description": "str", "license": License}
+    attr_crea = {"conformant": "bool", "specification": Specification}
 
     attr_map = {}
 
     def __init__(
         self,
-        _id: str = None,
-        description: str = None,
-        license: dict or License = None,
+        conformant: bool = None,
+        specification: dict or Specification = None,
         # specific implementation
         parent_resource: str = None,
     ):
 
         # default values for the object attributes/properties
-        self.__id = None
-        self._description = None
-        self._license = None
+        self._conformant = None
+        self._specification = None
         self._parent_resource = None
 
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
-        if _id is not None:
-            self.__id = _id
-        if description is not None:
-            self._description = description
-        if license is not None and isinstance(license, License):
-            self._license = license
-        if license is not None and isinstance(license, dict):
-            self._license = License(**license)
+        if conformant is not None:
+            self._conformant = conformant
+        if specification is not None and isinstance(specification, Specification):
+            self._specification = specification
+        if specification is not None and isinstance(specification, dict):
+            self._specification = Specification(**specification)
         if parent_resource is not None:
             self._parent_resource = parent_resource
 
     # -- PROPERTIES --------------------------------------------------------------------
-    # condition UUID
+    # conformant
     @property
-    def _id(self) -> str:
-        """Gets the id of this Condition.
+    def conformant(self) -> bool:
+        """Gets the conformant status.
 
-        :return: The id of this Condition.
-        :rtype: str
+        :return: The conformant status
+        :rtype: bool
         """
-        return self.__id
+        return self._conformant
 
-    # description
-    @property
-    def description(self) -> str:
-        """Gets the description of this Condition.
+    @conformant.setter
+    def conformant(self, conformant: bool):
+        """Sets the conformant status.
 
-        :return: The description of this Condition.
-        :rtype: str
-        """
-        return self._description
-
-    @description.setter
-    def description(self, description: str):
-        """Sets the description of this Condition.
-
-        :param str description: The description of this Condition. Accept markdown syntax.
+        :param bool conformant: The conformant status for the specification.
         """
 
-        self._description = description
+        self._conformant = conformant
 
     @property
-    def license(self) -> str:
-        """Gets the license of this Condition.
+    def specification(self) -> Specification:
+        """Gets the specification of this Conformity.
 
-        :return: The license of this Condition.
-        :rtype: str
+        :return: The specification of this Conformity.
+        :rtype: Specification
         """
-        return self._license
+        return self._specification
 
-    @license.setter
-    def license(self, license: dict or License):
-        """Sets the license of this Condition.
+    @specification.setter
+    def specification(self, specification: dict or Specification):
+        """Sets the specification of this Conformity.
 
-        :param dict license: The license of this Condition.
+        :param dict specification: The specification of this Conformity.
         """
-        if isinstance(license, License):
-            self._license = license
-        elif isinstance(license, dict):
-            self._license = License(**license)
+        if isinstance(specification, Specification):
+            self._specification = specification
+        elif isinstance(specification, dict):
+            self._specification = Specification(**specification)
         else:
-            self._license = license
+            self._specification = specification
             raise Warning(
-                "Invalid license parameter ({}) to set as license for this condition.".format(
-                    license
+                "Invalid specification parameter ({}) to set as specification for this conformity.".format(
+                    specification
                 )
             )
 
     # parent metadata
     @property
     def parent_resource(self):
-        """Gets the parent_resource of this Condition.
+        """Gets the parent_resource of this Conformity.
 
-        :return: The parent_resource of this Condition.
+        :return: The parent_resource of this Conformity.
         :rtype: UUID
         """
         return self._parent_resource
 
     @parent_resource.setter
     def parent_resource(self, parent_resource_UUID):
-        """Sets the parent metadata UUID of this Condition.
+        """Sets the parent metadata UUID of this Conformity.
 
-        :return: The parent_resource of this Condition.
+        :return: The parent_resource of this Conformity.
         :rtype: UUID
         """
         self._parent_resource = parent_resource_UUID
@@ -180,7 +164,7 @@ class Condition(object):
                 )
             else:
                 result[attr] = value
-        if issubclass(Condition, dict):
+        if issubclass(Conformity, dict):
             for key, value in self.items():
                 result[key] = value
 
@@ -213,7 +197,7 @@ class Condition(object):
                 )
             else:
                 result[attr] = value
-        if issubclass(Condition, dict):
+        if issubclass(Conformity, dict):
             for key, value in self.items():
                 result[key] = value
 
@@ -229,7 +213,7 @@ class Condition(object):
 
     def __eq__(self, other) -> bool:
         """Returns true if both objects are equal"""
-        if not isinstance(other, Condition):
+        if not isinstance(other, Conformity):
             return False
 
         return self.__dict__ == other.__dict__
@@ -244,5 +228,5 @@ class Condition(object):
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    lic = Condition(name="Condition Test", description="Test condition description")
-    print(lic)
+    fixture = Conformity(conformant=1, specification=Specification())
+    print(fixture)

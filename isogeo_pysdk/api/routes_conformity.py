@@ -2,7 +2,7 @@
 #! python3
 
 """
-    Isogeo API v1 - API Routes for Conditions entities
+    Isogeo API v1 - API Routes for Conformity entities
 
     See: http://help.isogeo.com/api/complete/index.html
 """
@@ -21,7 +21,7 @@ from requests import Response
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Condition, Metadata
+from isogeo_pysdk.models import Conformity, Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -36,8 +36,8 @@ utils = IsogeoUtils()
 # #############################################################################
 # ########## Classes ###############
 # ##################################
-class ApiCondition:
-    """Routes as methods of Isogeo API used to manipulate conditions.
+class ApiConformity:
+    """Routes as methods of Isogeo API used to manipulate conformity with specifications.
     """
 
     def __init__(self, api_client=None):
@@ -53,16 +53,16 @@ class ApiCondition:
             self.api_client.platform
         )
         # initialize
-        super(ApiCondition, self).__init__()
+        super(ApiConformity, self).__init__()
 
     @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(self, metadata_id: str) -> list:
-        """List metadata's conditions with complete information.
+        """List metadata's conformity specifications with complete information.
 
         :param str metadata_id: metadata UUID
 
-        :returns: the list of conditions associated with the metadata
+        :returns: the list of specifications + conformity status associated with the metadata
         :rtype: list
         """
         # check metadata UUID
@@ -74,13 +74,13 @@ class ApiCondition:
             pass
 
         # URL
-        url_metadata_conditions = utils.get_request_base_url(
-            route="resources/{}/conditions/".format(metadata_id)
+        url_metadata_conformities = utils.get_request_base_url(
+            route="resources/{}/specifications/".format(metadata_id)
         )
 
         # request
-        req_metadata_conditions = self.api_client.get(
-            url=url_metadata_conditions,
+        req_metadata_conformities = self.api_client.get(
+            url=url_metadata_conformities,
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
             verify=self.api_client.ssl,
@@ -88,68 +88,19 @@ class ApiCondition:
         )
 
         # checking response
-        req_check = checker.check_api_response(req_metadata_conditions)
+        req_check = checker.check_api_response(req_metadata_conformities)
         if isinstance(req_check, tuple):
             return req_check
 
         # end of method
-        return req_metadata_conditions.json()
-
-    @lru_cache()
-    @ApiDecorators._check_bearer_validity
-    def get(self, metadata_id: str, condition_id: str) -> Condition:
-        """Get details about a specific condition.
-
-        :param str metadata_id: identifier of the owner workgroup
-        :param str condition_id: condition UUID
-        """
-        # check workgroup UUID
-        if not checker.check_is_uuid(metadata_id):
-            raise ValueError(
-                "Metadata ID is not a correct UUID: {}".format(metadata_id)
-            )
-        else:
-            pass
-        # check condition UUID
-        if not checker.check_is_uuid(condition_id):
-            raise ValueError(
-                "Condition ID is not a correct UUID: {}".format(condition_id)
-            )
-        else:
-            pass
-
-        # condition route
-        url_condition = utils.get_request_base_url(
-            route="resources/{}/conditions/{}".format(metadata_id, condition_id)
-        )
-
-        # request
-        req_condition = self.api_client.get(
-            url=url_condition,
-            headers=self.api_client.header,
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-            timeout=self.api_client.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_condition)
-        if isinstance(req_check, tuple):
-            return req_check
-
-        # extend response with uuid of prent metadata
-        condition_returned = req_condition.json()
-        condition_returned["parent_resource"] = metadata_id
-
-        # end of method
-        return Condition(**condition_returned)
+        return req_metadata_conformities.json()
 
     @ApiDecorators._check_bearer_validity
-    def create(self, metadata: Metadata, condition: Condition) -> Condition:
-        """Add a new condition (license + specific description) to a metadata.
+    def create(self, metadata: Metadata, conformity: Conformity) -> Conformity:
+        """Add a new conformity (specification + specific conformant) to a metadata.
 
         :param Metadata metadata: metadata object to update
-        :param Condition condition: condition to create
+        :param Conformity conformity: conformity to create
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):
@@ -159,23 +110,27 @@ class ApiCondition:
         else:
             pass
 
-        # check license UUID
-        if not checker.check_is_uuid(condition.license._id):
+        # check specification UUID
+        if not checker.check_is_uuid(conformity.specification._id):
             raise ValueError(
-                "License ID is not a correct UUID: {}".format(condition.license._id)
+                "Specification ID is not a correct UUID: {}".format(
+                    conformity.specification._id
+                )
             )
         else:
             pass
 
         # URL
-        url_condition_create = utils.get_request_base_url(
-            route="resources/{}/conditions".format(metadata._id)
+        url_conformity_create = utils.get_request_base_url(
+            route="resources/{}/specifications/{}".format(
+                metadata._id, conformity.specification._id
+            )
         )
 
         # request
-        req_condition_create = self.api_client.post(
-            url=url_condition_create,
-            json=condition.to_dict_creation(),
+        req_conformity_create = self.api_client.put(
+            url=url_conformity_create,
+            json=conformity.to_dict_creation(),
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
             verify=self.api_client.ssl,
@@ -183,23 +138,29 @@ class ApiCondition:
         )
 
         # checking response
-        req_check = checker.check_api_response(req_condition_create)
+        req_check = checker.check_api_response(req_conformity_create)
         if isinstance(req_check, tuple):
             return req_check
 
         # extend response with uuid of prent metadata
-        condition_returned = req_condition_create.json()
-        condition_returned["parent_resource"] = metadata._id
+        conformity_returned = req_conformity_create.json()
+        conformity_returned["parent_resource"] = metadata._id
 
         # end of method
-        return Condition(**condition_returned)
+        return Conformity(**conformity_returned)
 
     @ApiDecorators._check_bearer_validity
-    def delete(self, metadata: Metadata, condition: Condition) -> Response:
-        """Removes a condition from a metadata.
+    def delete(
+        self,
+        metadata: Metadata,
+        conformity: Conformity = None,
+        specification_id: str = None,
+    ) -> Response:
+        """Removes a conformity from a metadata.
 
         :param Metadata metadata: metadata object to update
-        :param Condition condition: license model object to associate
+        :param Conformity conformity: specification model object to associate. If empty, the specification_id must be passed.
+        :param Specification specification_id: specification model object to associate. If empty, the conformity must be passed.
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):
@@ -209,22 +170,38 @@ class ApiCondition:
         else:
             pass
 
-        # check license UUID
-        if not checker.check_is_uuid(condition._id):
+        # get the specification UUID from the Conformity object
+        if isinstance(conformity, Conformity):
+            if not checker.check_is_uuid(conformity.specification._id):
+                raise ValueError(
+                    "Specification ID into the Conformity is not a correct UUID: {}".format(
+                        conformity.specification._id
+                    )
+                )
+            else:
+                specification_id = conformity.specification._id
+                pass
+
+        # or use the passed specification UUID
+        if not checker.check_is_uuid(specification_id):
             raise ValueError(
-                "Condition ID is not a correct UUID: {}".format(condition._id)
+                "Specification ID into the Conformity is not a correct UUID: {}".format(
+                    conformity.specification._id
+                )
             )
         else:
             pass
 
         # URL
-        url_condition_delete = utils.get_request_base_url(
-            route="resources/{}/conditions/{}".format(metadata._id, condition._id)
+        url_conformity_delete = utils.get_request_base_url(
+            route="resources/{}/specifications/{}".format(
+                metadata._id, specification_id
+            )
         )
 
         # request
-        req_condition_delete = self.api_client.delete(
-            url=url_condition_delete,
+        req_conformity_delete = self.api_client.delete(
+            url=url_conformity_delete,
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
             verify=self.api_client.ssl,
@@ -232,12 +209,12 @@ class ApiCondition:
         )
 
         # checking response
-        req_check = checker.check_api_response(req_condition_delete)
+        req_check = checker.check_api_response(req_conformity_delete)
         if isinstance(req_check, tuple):
             return req_check
 
         # end of method
-        return req_condition_delete
+        return req_conformity_delete
 
 
 # ##############################################################################
@@ -245,4 +222,4 @@ class ApiCondition:
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    api_condition = ApiCondition()
+    api_conformity = ApiConformity()
