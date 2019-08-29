@@ -157,7 +157,7 @@ class TestConformity(unittest.TestCase):
             metadata=self.fixture_metadata, conformity=conformity_created
         )
 
-        # self.assertEqual(conformity_removed.status_code, 204)
+        self.assertEqual(conformity_removed.status_code, 204)
 
     # -- GET --
     def test_conformity_listing(self):
@@ -171,13 +171,11 @@ class TestConformity(unittest.TestCase):
         for i in metadata_conformity:
             conformity = Conformity(**i)
             # tests attributes structure
-            self.assertTrue(hasattr(conformity, "_id"))
             self.assertTrue(hasattr(conformity, "conformant"))
             self.assertTrue(hasattr(conformity, "specification"))
             # test attributes instances
             self.assertIsInstance(conformity.specification, Specification)
             # tests attributes value
-            self.assertEqual(conformity._id, i.get("_id"))
             self.assertEqual(conformity.conformant, i.get("conformant"))
 
 
