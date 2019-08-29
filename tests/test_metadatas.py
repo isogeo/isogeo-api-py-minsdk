@@ -19,7 +19,6 @@
 # Standard library
 import logging
 import unittest
-import urllib3
 from os import environ
 from pathlib import Path
 from random import sample
@@ -29,11 +28,10 @@ from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
-
+import urllib3
 
 # module target
-from isogeo_pysdk import Isogeo, IsogeoUtils, Metadata, MetadataSearch
-
+from isogeo_pysdk import Isogeo, IsogeoUtils, Metadata, MetadataSearch, Workgroup
 
 # #############################################################################
 # ######## Globals #################
@@ -161,6 +159,14 @@ class TestMetadatas(unittest.TestCase):
             # admin url
             self.assertIsInstance(metadata.admin_url(self.isogeo.app_url), str)
 
+            # group name and _id
+            self.assertIsInstance(metadata.groupName, str)
+            self.assertIsInstance(metadata.groupId, str)
+            group = self.isogeo.workgroup.get(metadata.groupId, include=None)
+            self.assertIsInstance(group, Workgroup)
+            self.assertEqual(metadata.groupId, group._id)
+            self.assertEqual(metadata.groupName, group.name)
+
     # def test_search_specific_mds_bad(self):
     #     """Searches filtering on specific metadata."""
     #     # get random metadata within a small search
@@ -191,6 +197,9 @@ class TestMetadatas(unittest.TestCase):
         self.assertTrue(hasattr(metadata, "abstract"))
         self.assertTrue(hasattr(metadata, "created"))
         self.assertTrue(hasattr(metadata, "modified"))
+        # specific to implementation
+        self.assertTrue(hasattr(metadata, "groupId"))
+        self.assertTrue(hasattr(metadata, "groupName"))
 
         # check method to dict
         md_as_dict = metadata.to_dict()
