@@ -60,6 +60,8 @@ class ApiSearch:
     @ApiDecorators._check_bearer_validity
     def search(
         self,
+        # application or group
+        group: str = None,
         # semantic and objects filters
         query: str = "",
         share: str = None,
@@ -85,6 +87,7 @@ class ApiSearch:
     ) -> MetadataSearch:
         """Search within the resources shared to the application. It's the mainly used method to retrieve metadata.
 
+        :param str group: context to search. Pass a workgroup UUID to search within a group or pass None (default) to search in a global context.
         :param str query: search terms and semantic filters. Equivalent of
          **q** parameter in Isogeo API. It could be a simple
          string like *oil* or a tag like *keyword:isogeo:formations*
@@ -181,7 +184,16 @@ class ApiSearch:
             pass
 
         # URL
-        url_resources_search = utils.get_request_base_url(route="resources/search")
+        if group is None:
+            logger.debug("Searching as application")
+            url_resources_search = utils.get_request_base_url(route="resources/search")
+        elif checker.check_is_uuid(group):
+            logger.debug("Searching as group")
+            url_resources_search = utils.get_request_base_url(
+                route="groups/{}/resources/search".format(group)
+            )
+        else:
+            raise ValueError
 
         # SEARCH CASES
 
@@ -192,6 +204,8 @@ class ApiSearch:
             if expected_total is None:
                 # make an empty request with same filters
                 total_results = self.search(
+                    # search context: application or group
+                    group=group,
                     # filters
                     query=query,
                     share=share,
@@ -217,6 +231,8 @@ class ApiSearch:
                     )
                 )
                 return self.search(
+                    # search context: application or group
+                    group=group,
                     # filters
                     query=query,
                     share=share,
@@ -238,6 +254,8 @@ class ApiSearch:
             else:
                 # store search args as dict
                 search_params = {
+                    # search context: application or group
+                    "group": group,
                     # filters
                     "query": query,
                     "include": include,
@@ -264,7 +282,7 @@ class ApiSearch:
                     asyncio.set_event_loop(loop)
 
                 future_searches_concatenated = asyncio.ensure_future(
-                    self._search_metadata_asynchronous(
+                    self.search_metadata_asynchronous(
                         total_results=total_results, **search_params
                     )
                 )
@@ -329,17 +347,14 @@ class ApiSearch:
         return req_metadata_search
 
     # -- SEARCH SUBMETHODS
-    async def _search_metadata_asynchronous(
+    async def search_metadata_asynchronous(
         self, total_results: int, max_workers: int = 10, **kwargs
     ) -> MetadataSearch:
         """Meta async method used to request big searches (> 100 results), using asyncio.
         It's a private method launched by the main search method.
 
-        Arguments:
-            total_results {int} -- total of results to retrieve
-
-        Keyword Arguments:
-            max_workers {int} -- maximum of workers to use as threads (default: {10})
+        :param int total_results: total of results to retrieve
+        :param int max_workers: maximum number of thread to use :class:`python.concurrent.futures`
 
         :rtype: MetadataSearch
         """
@@ -358,6 +373,8 @@ class ApiSearch:
                     executor,
                     partial(
                         self.search,
+                        # search context: application or group
+                        group=kwargs.get("group"),
                         # filters
                         query=kwargs.get("query"),
                         include=kwargs.get("include"),
