@@ -32,7 +32,7 @@ jobs:
   - script: |
       python -m pip install -U pip
       python -m pip install -U black flake8
-    displayName: 'Install black dependencies'
+    displayName: 'Install black and flake8 dependencies'
 
   - script: |
       python -m black --target-version=py37 .\isogeo_pysdk
