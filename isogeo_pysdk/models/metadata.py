@@ -1301,8 +1301,13 @@ class Metadata(object):
         """
         if self._title:
             title_or_name = self._title
-        else:
+        elif self._name:
             title_or_name = self._name
+        else:
+            logger.warning(
+                "Metadata has no title nor name. So this method is useless..."
+            )
+            return None
 
         # slugify
         if slugged:
