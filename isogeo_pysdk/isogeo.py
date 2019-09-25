@@ -17,6 +17,7 @@ import logging
 
 # 3rd party library
 from oauthlib.oauth2 import BackendApplicationClient, LegacyApplicationClient
+from requests.adapters import HTTPAdapter
 from requests_oauthlib import OAuth2Session
 
 # modules
@@ -60,6 +61,8 @@ class Isogeo(OAuth2Session):
     :param dict proxy: dictionary of proxy settings as described in `Requests <https://2.python-requests.org/en/master/user/advanced/#proxies>`_
     :param str lang: API localization ("en" or "fr"). Defaults to 'fr'.
     :param str app_name: to custom the application name and user-agent
+    :param int max_retries: custom the maximum number of retries each connection should attempt.\
+        See: `Requests <http://2.python-requests.org/en/master/api/#requests.adapters.HTTPAdapter>`_
 
 
     :returns: authenticated requests Session you can use to send requests to the API.
@@ -135,6 +138,7 @@ class Isogeo(OAuth2Session):
         timeout: tuple = (15, 45),
         lang: str = "fr",
         app_name: str = "isogeo-pysdk/{}".format(version),
+        max_retries: int = 2,
         # additional
         **kwargs,
     ):
@@ -202,6 +206,13 @@ class Isogeo(OAuth2Session):
         self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
             platform
         )
+
+        # max retries
+        if max_retries > 0:
+            self.max_retries = max_retries
+        else:
+            self.max_retries = 0
+
         # setting language
         if lang.lower() not in ("fr", "en"):
             logger.warning(
@@ -284,6 +295,16 @@ class Isogeo(OAuth2Session):
         :param str username: user login (email)
         :param str password: user password
         """
+        # customize HTTPAdapter
+        if self.max_retries:
+            adapter = HTTPAdapter(max_retries=self.max_retries)
+            self.mount("https://", adapter)
+            self.mount("http://", adapter)
+            logger.debug(
+                "HTTP(S) requests will retry until {} attempts".format(self.max_retries)
+            )
+
+        # use
         if self.auth_mode == "user_legacy":
             # get token
             self.token = self.fetch_token(
