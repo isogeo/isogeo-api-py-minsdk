@@ -106,7 +106,6 @@ jobs:
     inputs:
       codeCoverageTool: Cobertura
       summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
-      reportDirectory: '$(System.DefaultWorkingDirectory)/**/htmlcov'
 
 # BUILD and PUBLISH
 # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
