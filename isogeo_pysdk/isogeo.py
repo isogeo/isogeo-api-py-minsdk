@@ -19,10 +19,11 @@ import logging
 from oauthlib.oauth2 import BackendApplicationClient, LegacyApplicationClient
 from requests.adapters import HTTPAdapter
 from requests_oauthlib import OAuth2Session
+from urllib3.util import Retry
 
 # modules
-from isogeo_pysdk.__about__ import __version__ as version
 from isogeo_pysdk import api
+from isogeo_pysdk.__about__ import __version__ as version
 from isogeo_pysdk.api_hooks import IsogeoHooks
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.models import Application, User
@@ -63,7 +64,10 @@ class Isogeo(OAuth2Session):
     :param str app_name: to custom the application name and user-agent
     :param int max_retries: custom the maximum number of retries each connection should attempt.\
         See: `Requests <http://2.python-requests.org/en/master/api/#requests.adapters.HTTPAdapter>`_
-
+    :param int pool_connections: custom the number of urllib3 connection pools to cache.\
+        See: `Requests <http://2.python-requests.org/en/master/api/#requests.adapters.HTTPAdapter>`_
+    :param int pool_maxsize: custom the maximum number of connections to save in the pool.\
+        See: `Requests <http://2.python-requests.org/en/master/api/#requests.adapters.HTTPAdapter>`_
 
     :returns: authenticated requests Session you can use to send requests to the API.
     :rtype: requests_oauthlib.OAuth2Session
@@ -139,6 +143,8 @@ class Isogeo(OAuth2Session):
         lang: str = "fr",
         app_name: str = "isogeo-pysdk/{}".format(version),
         max_retries: int = 2,
+        pool_connections: int = 20,
+        pool_maxsize: int = 50,
         # additional
         **kwargs,
     ):
@@ -212,6 +218,10 @@ class Isogeo(OAuth2Session):
             self.max_retries = max_retries
         else:
             self.max_retries = 0
+
+        # pool settings
+        self.pool_connections = pool_connections
+        self.pool_maxsize = pool_maxsize
 
         # setting language
         if lang.lower() not in ("fr", "en"):
@@ -287,24 +297,35 @@ class Isogeo(OAuth2Session):
         )
 
     def connect(self, username: str = None, password: str = None):
-        """Authenticate application with user credentials and get token.
+        """Custom the HTTP client and authenticate application with user credentials \
+            and fetch token.
 
         Isogeo API uses oAuth 2.0 protocol (https://tools.ietf.org/html/rfc6749)
         see: http://help.isogeo.com/api/fr/authentication/concepts.html
 
-        :param str username: user login (email)
-        :param str password: user password
+        :param str username: user login (email). Not required for group apps (Client Credentials).
+        :param str password: user password. Not required for group apps (Client Credentials).
         """
         # customize HTTPAdapter
-        if self.max_retries:
-            adapter = HTTPAdapter(max_retries=self.max_retries)
-            self.mount("https://", adapter)
-            self.mount("http://", adapter)
-            logger.debug(
-                "HTTP(S) requests will retry until {} attempts".format(self.max_retries)
+        adapter = HTTPAdapter(
+            max_retries=Retry(
+                total=self.max_retries,
+                backoff_factor=1,
+                status_forcelist=[502, 503, 504],
+            ),
+            pool_connections=self.pool_connections,
+            pool_maxsize=self.pool_maxsize,
+        )
+        self.mount("https://", adapter)
+        self.mount("http://", adapter)
+        logger.debug(
+            "HTTP(S) requests will use the following configuration: "
+            "pool connections={} - pool max size={} - max retries={}".format(
+                self.pool_connections, self.pool_maxsize, self.max_retries
             )
+        )
 
-        # use
+        # authenticate
         if self.auth_mode == "user_legacy":
             # get token
             self.token = self.fetch_token(
@@ -433,6 +454,7 @@ if __name__ == "__main__":
         client_secret=environ.get("ISOGEO_API_GROUP_CLIENT_SECRET"),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        max_retries=1,
     )
 
     # getting a token
