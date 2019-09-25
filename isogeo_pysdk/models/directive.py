@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Directive entity
@@ -118,7 +118,7 @@ class Directive(object):
 
     def to_str(self) -> str:
         """Returns the string representation of the model"""
-        return pprint.pdirective(self.to_dict())
+        return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
         """For `print` and `pprint`"""

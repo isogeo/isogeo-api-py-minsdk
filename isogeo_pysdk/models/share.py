@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Share entity
@@ -16,8 +16,6 @@ import logging
 import pprint
 
 # other model
-from isogeo_pysdk.models.application import Application
-from isogeo_pysdk.models.catalog import Catalog
 from isogeo_pysdk.models.workgroup import Workgroup
 
 # #############################################################################
@@ -25,6 +23,7 @@ from isogeo_pysdk.models.workgroup import Workgroup
 # ##################################
 
 logger = logging.getLogger(__name__)
+
 
 # #############################################################################
 # ########## Classes ###############

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of FeatureAttributes entity
@@ -13,7 +13,6 @@
 
 # standard library
 import pprint
-from uuid import UUID
 
 
 # #############################################################################
@@ -71,7 +70,7 @@ class FeatureAttribute(object):
         parent_resource: str = None,
     ):
         """Metadata Feature Attribute model.
-        
+
         :param str _id: UUID, defaults to None
         :param str alias: [description], defaults to None
         :param str dataType: [description], defaults to None

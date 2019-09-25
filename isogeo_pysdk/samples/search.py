@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # -----------------------------------------------------------------------------
 # Name:         Isogeo
@@ -51,16 +51,16 @@ if __name__ == "__main__":
 
     # get one random resource
     hatnumber = randrange(0, len(search.get("results")))
-    my_resource = isogeo.resource(
-        search.get("results")[hatnumber].get("_id"), include="all", prot="https"
+    my_resource = isogeo.metadata.get(
+        search.results[hatnumber].get("_id"), include="all"
     )
 
-    print(sorted(my_resource.keys()))
+    print(sorted(my_resource))
 
     # use integrated translator
     tr = IsogeoTranslator("FR")
-    if my_resource.get("contacts"):
-        ct = my_resource.get("contacts")[0]
+    if my_resource.contacts:
+        ct = my_resource.contacts[0]
         print("\nRaw contact role: " + ct.get("role"))
         # English
         tr = IsogeoTranslator("EN")

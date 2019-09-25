@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Specification entity
@@ -14,9 +14,6 @@
 
 # standard library
 import pprint
-
-# submodels
-from isogeo_pysdk.models.contact import Contact
 
 
 # #############################################################################

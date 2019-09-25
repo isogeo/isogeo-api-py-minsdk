@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Event entity
@@ -13,7 +13,6 @@
 
 # standard library
 import pprint
-from datetime import datetime
 
 # submodules
 from isogeo_pysdk.enums import EventKinds

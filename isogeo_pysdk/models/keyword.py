@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Keyword entity
@@ -45,7 +45,7 @@ class Keyword(object):
             'description': None,
             'text': 'tests unitaires',
             'thesaurus': {
-                '_id': '1616597fbc4348c8b11ef9d59cf594c8', 
+                '_id': '1616597fbc4348c8b11ef9d59cf594c8',
                 'code': 'isogeo'
                 }
         }
@@ -329,6 +329,5 @@ class Keyword(object):
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    cat = Keyword(name="youpi", text=1)
-    to_crea = cat.to_dict_creation()
-    print(type(to_crea.get("IsScanSink")))
+    fixture = Keyword(description="keyword text")
+    to_crea = fixture.to_dict_creation()

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Metadata of Services (web geo services)
@@ -17,8 +17,6 @@ from urllib.parse import urlparse, parse_qs, urlunparse
 
 # 3rd party
 import requests
-from requests.adapters import HTTPAdapter
-from requests.models import Response
 
 # submodules
 from isogeo_pysdk.exceptions import AlreadyExistError
@@ -255,11 +253,11 @@ class ApiService:
         if service_format not in srv_formats_codes:
             raise Warning(
                 "Service format '{}' is not an accepted one: {}".format(
-                    " | ".join(srv_formats_codes)
+                    service_format, " | ".join(srv_formats_codes)
                 )
             )
 
-        ## -- SERVICE TITLE
+        # -- SERVICE TITLE
         # check service title
         if service_title is None:
             service_title = "{} - {}".format(url_parsed.netloc, service_format)

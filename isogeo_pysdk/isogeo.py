@@ -1,15 +1,12 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-# -----------------------------------------------------------------------------
-# Name:         Isogeo
-# Purpose:      Python minimalist SDK to use Isogeo API
-#
-# Author:       Julien Moura (@geojulien) for Isogeo
-#
-# Python:       3.6.x
-# Created:      22/12/2015
-# -----------------------------------------------------------------------------
+
+"""
+    Python SDK wrapping the  Isogeo API
+
+    Author: Julien Moura (@geojulien) for @Isogeo
+"""
 
 # #############################################################################
 # ########## Libraries #############
@@ -355,8 +352,7 @@ if __name__ == "__main__":
     from dotenv import load_dotenv
     from logging.handlers import RotatingFileHandler
     from os import environ
-    import pprint
-    from time import sleep, gmtime, strftime
+    from time import gmtime, strftime
     import urllib3
 
     # ------------ Log & debug ----------------
@@ -425,16 +421,6 @@ if __name__ == "__main__":
     discriminator = strftime("%Y-%m-%d_%H%M%S", gmtime())
     METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
     WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
-
-    from isogeo_pysdk import Metadata
-
-    search_complete = isogeo.search(
-        whole_results=1,
-        query="type:dataset owner:f234550ff1d5412fb2c67ee98d826731",
-        include="all",
-        order_by="_modified",
-        order_dir="desc",
-    )
 
     # -- END -------
     isogeo.close()  # close session

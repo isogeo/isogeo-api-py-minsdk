@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes to manage metadata links.
@@ -328,7 +328,7 @@ class ApiLink:
     @ApiDecorators._check_bearer_validity
     def update(self, link: Link, metadata: Metadata = None) -> Link:
         """Update a link.
-        
+
         :param Link link: Link model object to update
         :param Metadata metadata: parent metadata (resource) containing the link. Optional if the link contains the 'parent_resource' attribute.
         """
@@ -463,10 +463,10 @@ class ApiLink:
         .. code-block:: python
 
             from pathlib import Path
-            
+
             # define metadata
             md = isogeo.metadata.get(METADATA_UUID)
-            
+
             # localize the file on the OS
             my_file = Path("./upload/documentation.zip")
 
@@ -474,7 +474,7 @@ class ApiLink:
             lk = Link(
                 title=my_file.name
                 )
-            
+
             # add it to the metadata
             send = isogeo.metadata.links.upload_hosted(
                 metadata=md,
