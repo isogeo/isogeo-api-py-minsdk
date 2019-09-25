@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for ServiceOperations entities
@@ -13,9 +13,6 @@
 
 # Standard library
 import logging
-
-# 3rd party
-from requests.models import Response
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker

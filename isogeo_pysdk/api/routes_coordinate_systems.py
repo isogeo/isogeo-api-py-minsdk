@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes to retrieve CoordinateSystems
@@ -30,6 +30,7 @@ from isogeo_pysdk.utils import IsogeoUtils
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
 utils = IsogeoUtils()
+
 
 # #############################################################################
 # ########## Classes ###############

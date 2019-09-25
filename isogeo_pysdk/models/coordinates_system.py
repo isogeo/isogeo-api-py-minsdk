@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of CoordinateSystem entity
@@ -199,7 +199,5 @@ class CoordinateSystem(object):
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    atasource = CoordinateSystem(
-        name="CoordinateSystem Test", _modified="Test datasource _modified"
-    )
-    print(atasource)
+    fixture = CoordinateSystem(name="CoordinateSystem Test")
+    print(fixture)

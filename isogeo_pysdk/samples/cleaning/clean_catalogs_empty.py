@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Remove catalogs whithin a workgroup which no contain metadata
@@ -33,6 +33,7 @@ from isogeo_pysdk import Isogeo
 # environment vars
 load_dotenv("dev.env", override=True)
 WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+
 
 # ############################################################################
 # ######## Export functions ###########
@@ -107,7 +108,7 @@ if __name__ == "__main__":
     print("Authentication succeeded at {:5.2f}s".format(default_timer() - START_TIME))
 
     # get some object identifiers required for certain routes
-    wg_catalogs = isogeo.catalog.catalogs(
+    wg_catalogs = isogeo.catalog.listing(
         workgroup_id=WG_TEST_UUID, include=["count"], caching=0
     )
 

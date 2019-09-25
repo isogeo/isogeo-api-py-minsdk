@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Metadata (= Resource) entity
@@ -18,7 +18,7 @@ import re
 import unicodedata
 
 # package
-from isogeo_pysdk.enums import MetadataSubresources, MetadataTypes
+from isogeo_pysdk.enums import MetadataTypes
 
 # others models
 from isogeo_pysdk.models import Workgroup

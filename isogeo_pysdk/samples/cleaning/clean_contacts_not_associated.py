@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Remove contacts whithin a workgroup which are not associated
@@ -34,6 +34,7 @@ from isogeo_pysdk import Isogeo
 # environment vars
 load_dotenv("dev.env", override=True)
 WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+
 
 # ############################################################################
 # ######## Export functions ###########

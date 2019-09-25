@@ -1,14 +1,9 @@
 # -*- coding: UTF-8 -*-
-#! python3
-
-# ----------------------------------------------------------------------------
+#! python3  # noqa E265
 
 """
     Complementary set of tools to make some checks on requests to Isogeo API.
 """
-
-# Created:      18/08/2017
-# ---------------------------------------------------------------------------
 
 # #############################################################################
 # ########## Libraries #############
@@ -143,7 +138,7 @@ class IsogeoChecker(object):
             )
             return False, response.status_code
 
-    def check_request_parameters(self, parameters: dict = dict):
+    def check_request_parameters(self, parameters: dict = {}):
         """Check parameters passed to avoid errors and help debug.
 
         :param dict response: search request parameters
@@ -372,7 +367,11 @@ class IsogeoChecker(object):
         """Check if specific_resources parameter is valid.
 
         :param tuple includes: sub resources to check
-        :param str entity: entity type to check sub resources. Must be one of: contact | metadata | keyword.
+        :param str entity: entity type to check sub resources. Must be one of:
+
+          - contact
+          - metadata
+          - keyword
 
         :rtype: list
 
@@ -397,7 +396,8 @@ class IsogeoChecker(object):
                 for subresource in includes:
                     if subresource not in ref_subresources:
                         logger.warning(
-                            "'{}' is not a valid subresource to include. Must be one of: {}. It will be removed or ignored.".format(
+                            "'{}' is not a valid subresource to include. "
+                            "Must be one of: {}. It will be removed or ignored.".format(
                                 subresource, " | ".join(ref_subresources)
                             )
                         )

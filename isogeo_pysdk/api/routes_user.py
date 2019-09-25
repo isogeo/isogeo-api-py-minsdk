@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Users entities
@@ -17,7 +17,7 @@ import logging
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Contact, User
+from isogeo_pysdk.models import User
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################

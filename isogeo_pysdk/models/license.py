@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of License entity
@@ -13,6 +13,7 @@
 
 # standard library
 import pprint
+
 
 # #############################################################################
 # ########## Classes ###############
@@ -64,7 +65,7 @@ class License(object):
         owner: dict = None,
     ):
         """License model.
-        
+
         :param list _abilities: list of attached abilities, defaults to None
         :param str _id: object UUID, defaults to None
         :param str _tag: search tag code, defaults to None

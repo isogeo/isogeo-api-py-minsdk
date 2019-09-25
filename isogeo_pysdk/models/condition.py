@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Condition entity
@@ -244,5 +244,5 @@ class Condition(object):
 # ##################################
 if __name__ == "__main__":
     """ standalone execution """
-    lic = Condition(name="Condition Test", description="Test condition description")
-    print(lic)
+    fixture = Condition(description="Test condition description")
+    print(fixture)
