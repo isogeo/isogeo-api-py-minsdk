@@ -135,6 +135,35 @@ class TestMetadatas(unittest.TestCase):
 
     # -- TESTS ---------------------------------------------------------
     # -- MODEL --
+    def test_metadatas_title_or_name(self):
+        """Model integrated method to retrive title or name"""
+        # title but no name
+        md_title_no_name = Metadata(
+            title="BD Topo® - My title really inspires the masses - Villenave d'Ornon"
+        )
+        self.assertEqual(
+            md_title_no_name.title_or_name(),
+            "BD Topo® - My title really inspires the masses - Villenave d'Ornon",
+        )
+        self.assertEqual(
+            md_title_no_name.title_or_name(1),
+            "bd-topo-my-title-really-inspires-the-masses-villenave-dornon",
+        )
+
+        # no title but name - 1
+        md_no_title_name = Metadata(name="reference.roads_primary")
+        self.assertEqual(md_no_title_name.title_or_name(), "reference.roads_primary")
+
+        # no title but name - 2
+        md_no_title_name = Metadata(name="reference chemins de forêt.shp")
+        self.assertEqual(
+            md_no_title_name.title_or_name(1), "reference-chemins-de-foretshp"
+        )
+
+        # no title nor name
+        md_no_title_no_name = Metadata()
+        self.assertIsNone(md_no_title_no_name.title_or_name(0))
+        self.assertIsNone(md_no_title_no_name.title_or_name(1))
 
     # -- GET --
     def test_metadatas_exists(self):
