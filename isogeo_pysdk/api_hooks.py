@@ -1,24 +1,9 @@
 # -*- coding: UTF-8 -*-
 #! python3
-# ----------------------------------------------------------------------------
 
 """
     Complementary set of hooks to use with Isogeo API.
 """
-
-# ---------------------------------------------------------------------------
-
-# #############################################################################
-# ########## Libraries #############
-# ##################################
-
-# standard library
-import json
-
-# ##############################################################################
-# ########## Globals ###############
-# ##################################
-
 
 # ##############################################################################
 # ########## Classes ###############
@@ -28,8 +13,8 @@ import json
 class IsogeoHooks(object):
     """Custom requests event hooks for Isogeo API.
 
-    Requests has a hook system that you can use to manipulate portions of the request 
-    process, or signal event handling. This module is a set of custom hooks to handle Isogeo API responses.
+    Requests has a hook system that you can use to manipulate portions of the request\
+        process, or signal event handling. This module is a set of custom hooks to handle Isogeo API responses.
     """
 
     def __init__(self):
