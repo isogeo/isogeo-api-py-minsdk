@@ -195,7 +195,7 @@ class ApiInvitation:
         # load new invitation and save it to the cache
         new_invitation = Invitation(**req_new_invitation.json())
         self.api_client._invitations_names[
-            new_invitation.contact.get("name")
+            new_invitation.group.get("name")
         ] = new_invitation._id
 
         # end of method
@@ -231,7 +231,7 @@ class ApiInvitation:
         # load new invitation and save it to the cache
         new_invitation = Invitation(**req_new_invitation.json())
         self.api_client._invitations_names[
-            new_invitation.contact.get("name")
+            new_invitation.group.get("name")
         ] = new_invitation._id
 
         # end of method
