@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 # -----------------------------------------------------------------------------
 # Name:         UData Python Client
 # Purpose:      Abstraction class to manipulate data.gouv.fr API
@@ -16,7 +16,6 @@
 # Standard library
 import logging
 from os import environ
-from sys import platform as opersys
 
 # 3rd party library
 import requests

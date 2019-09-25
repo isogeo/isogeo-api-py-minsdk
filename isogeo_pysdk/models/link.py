@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Link entity
@@ -15,7 +15,7 @@
 import pprint
 
 # package
-from isogeo_pysdk.enums import LinkActions, LinkKinds, LinkTypes
+from isogeo_pysdk.enums import LinkKinds, LinkTypes
 
 
 # #############################################################################

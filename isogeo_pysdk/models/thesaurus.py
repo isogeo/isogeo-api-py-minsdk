@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Thesaurus entity
@@ -13,9 +13,6 @@
 
 # standard library
 import pprint
-
-# other model
-from isogeo_pysdk.models.workgroup import Workgroup
 
 
 # #############################################################################
