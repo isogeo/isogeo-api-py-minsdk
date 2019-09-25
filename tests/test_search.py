@@ -20,7 +20,6 @@
 # Standard library
 import logging
 import unittest
-import urllib3
 from os import environ
 from pathlib import Path
 from random import randint, sample
@@ -30,6 +29,7 @@ from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
+import urllib3
 
 
 # module target
