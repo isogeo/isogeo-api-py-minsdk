@@ -252,9 +252,9 @@ class ApiMetadata:
         else:
             pass
 
-        # URL builder
-        url_metadata_exists = "{}{}".format(
-            utils.get_request_base_url("resources"), resource_id
+        # request URL
+        url_metadata_exists = utils.get_request_base_url(
+            route="resources/{}".format(resource_id)
         )
 
         # request
@@ -269,7 +269,7 @@ class ApiMetadata:
         # checking response
         req_check = checker.check_api_response(req_metadata_exists)
         if isinstance(req_check, tuple):
-            return req_check
+            return False
 
         return True
 
