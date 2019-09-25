@@ -18,6 +18,7 @@
 
 # Standard library
 import logging
+import uuid
 import unittest
 from os import environ
 from pathlib import Path
@@ -133,7 +134,22 @@ class TestMetadatas(unittest.TestCase):
         cls.isogeo.close()
 
     # -- TESTS ---------------------------------------------------------
+    # -- MODEL --
+
     # -- GET --
+    def test_metadatas_exists(self):
+        """GET :resources/{metadata_uuid}"""
+        # must be true
+        exists = self.isogeo.metadata.exists(resource_id=self.fixture_metadata._id)
+        self.assertIsInstance(exists, bool)
+        self.assertEqual(exists, True)
+
+        # must be false
+        fake_uuid = uuid.uuid4()
+        exists = self.isogeo.metadata.exists(resource_id=fake_uuid.hex)
+        self.assertIsInstance(exists, bool)
+        self.assertEqual(exists, False)
+
     def test_metadatas_in_search_results(self):
         """GET :resources/search"""
         search = self.isogeo.search(include="all")
