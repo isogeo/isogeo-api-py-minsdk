@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Shares entities
@@ -37,8 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiShare:
-    """Routes as methods of Isogeo API used to manipulate shares.
-    """
+    """Routes as methods of Isogeo API used to manipulate shares."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -74,11 +73,7 @@ class ApiShare:
                     route="groups/{}/shares".format(workgroup_id)
                 )
         else:
-            logger.debug(
-                "Listing shares for the authenticated user: {}".format(
-                    self.api_client._user.contact.name
-                )
-            )
+            logger.debug("Listing shares for the authenticated application/user")
             url_shares = utils.get_request_base_url(route="shares")
 
         # request
@@ -698,5 +693,5 @@ class ApiShare:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_share = ApiShare()

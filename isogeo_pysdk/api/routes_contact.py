@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Contacts entities
@@ -37,8 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiContact:
-    """Routes as methods of Isogeo API used to manipulate contacts.
-    """
+    """Routes as methods of Isogeo API used to manipulate contacts."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -159,9 +158,6 @@ class ApiContact:
 
         :returns: the created contact or False if a similar cataog already exists or a tuple with response error code
         :rtype: Contact
-
-
-
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -465,6 +461,6 @@ class ApiContact:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_contact = ApiContact()
     print(api_contact)

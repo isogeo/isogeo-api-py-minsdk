@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Event entity
@@ -13,7 +13,6 @@
 
 # standard library
 import pprint
-from datetime import datetime
 
 # submodules
 from isogeo_pysdk.enums import EventKinds
@@ -25,7 +24,6 @@ from isogeo_pysdk.enums import EventKinds
 class Event(object):
     """Events are entities included as subresource into metadata for data history description.
 
-
     :Example:
 
     .. code-block:: json
@@ -36,8 +34,7 @@ class Event(object):
             'description': string,
             'kind': string
         }
-
-        """
+    """
 
     attr_types = {
         "_id": str,
@@ -60,7 +57,7 @@ class Event(object):
         parent_resource: str = None,
         waitForSync: bool = 1,
     ):
-        """Event model"""
+        """Event model."""
 
         # default values for the object attributes/properties
         self.__id = None
@@ -154,7 +151,6 @@ class Event(object):
         - creation
         - publication
         - update
-
         """
 
         # check type value
@@ -169,7 +165,7 @@ class Event(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -231,7 +227,7 @@ class Event(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -239,14 +235,14 @@ class Event(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Event):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -254,5 +250,5 @@ class Event(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     ct = Event()

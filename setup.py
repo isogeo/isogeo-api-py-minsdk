@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/env python3
+#! python3  # noqa E265
 
 """
     Setup script to package Isogeo PySDK Python module

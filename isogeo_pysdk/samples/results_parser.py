@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Offline parser
@@ -146,7 +146,7 @@ def search_tags_as_filters(tags):
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # check file presence
     if not path.isfile("out_api_search_empty.json"):
         print("Input file not found." "You should first execute store_api_responses.py")

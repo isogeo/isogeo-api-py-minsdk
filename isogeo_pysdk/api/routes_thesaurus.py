@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Thesaurus entities
@@ -34,8 +34,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiThesaurus:
-    """Routes as methods of Isogeo API used to manipulate thesaurus.
-    """
+    """Routes as methods of Isogeo API used to manipulate thesaurus."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -54,8 +53,7 @@ class ApiThesaurus:
 
     @ApiDecorators._check_bearer_validity
     def thesauri(self, caching: bool = 1) -> list:
-        """Get all thesauri.
-        """
+        """Get all thesauri."""
         # URL builder
         url_thesauri = utils.get_request_base_url(route="thesauri")
 
@@ -135,5 +133,5 @@ class ApiThesaurus:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_thesaurus = ApiThesaurus()

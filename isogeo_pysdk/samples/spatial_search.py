@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Geographic search
@@ -16,11 +16,6 @@
 # ########## Libraries #############
 # ##################################
 
-# Standard library
-import json
-from os import path
-from urllib.parse import quote
-
 # Isogeo
 from isogeo_pysdk import Isogeo
 
@@ -30,7 +25,7 @@ from isogeo_pysdk import Isogeo
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
 

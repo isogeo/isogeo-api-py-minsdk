@@ -1,12 +1,12 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo sample - Check if OpenCatalog exists in shares, then build a matching table between metadata and opencatalog URL
 
     To use it from the repository root:
 
-        :python:`python .\isogeo_pysdk\samples\get_OpenCatalog.py`
+        `python ./isogeo_pysdk/samples/get_OpenCatalog.py`
 """
 
 # ##############################################################################
@@ -14,19 +14,16 @@
 # ##################################
 
 # standard
-import asyncio
 import logging
-from concurrent.futures import ProcessPoolExecutor, ThreadPoolExecutor
-from functools import partial
 
 # Isogeo
-from isogeo_pysdk import Isogeo, IsogeoUtils, Share
+from isogeo_pysdk import Isogeo, Share
 
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # standard
     from os import environ
 

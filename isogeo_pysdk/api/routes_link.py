@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes to manage metadata links.
@@ -40,8 +40,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiLink:
-    """Routes as methods of Isogeo API used to manipulate metadata links (CGUs).
-    """
+    """Routes as methods of Isogeo API used to manipulate metadata links (CGUs)."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -183,7 +182,6 @@ class ApiLink:
                 type="link",
                 link=Link(_id=LINK_UUID)
                 )
-
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):
@@ -288,7 +286,6 @@ class ApiLink:
         :param Metadata metadata: parent metadata (resource) containing the link. Optional if the link contains the 'parent_resource' attribute.
 
         :rtype: Response
-
         """
         # check link UUID
         if not checker.check_is_uuid(link._id):
@@ -328,7 +325,7 @@ class ApiLink:
     @ApiDecorators._check_bearer_validity
     def update(self, link: Link, metadata: Metadata = None) -> Link:
         """Update a link.
-        
+
         :param Link link: Link model object to update
         :param Metadata metadata: parent metadata (resource) containing the link. Optional if the link contains the 'parent_resource' attribute.
         """
@@ -401,7 +398,6 @@ class ApiLink:
             with open("./" + dl_stream[1], "wb") as fd:
                 for block in dl_stream[0].iter_content(1024):
                     fd.write(block)
-
         """
         # check resource link type
         if link.type != "hosted":
@@ -463,10 +459,10 @@ class ApiLink:
         .. code-block:: python
 
             from pathlib import Path
-            
+
             # define metadata
             md = isogeo.metadata.get(METADATA_UUID)
-            
+
             # localize the file on the OS
             my_file = Path("./upload/documentation.zip")
 
@@ -474,7 +470,7 @@ class ApiLink:
             lk = Link(
                 title=my_file.name
                 )
-            
+
             # add it to the metadata
             send = isogeo.metadata.links.upload_hosted(
                 metadata=md,
@@ -603,10 +599,9 @@ class ApiLink:
 
     # -- Helpers -----------------------------------------------------------------------
     def clean_kind_action_liability(self, link_actions: list, link_kind: str) -> list:
-        """Link available actions depend on link kind.\
-            Relationships between kinds and actions are described in the `/link-kinds` route.
-            This is a helper checking the liability between kind/actions/type and cleaning if needed.
-            Useful before creating or updating a link.
+        """Link available actions depend on link kind. Relationships between kinds and actions are
+        described in the `/link-kinds` route. This is a helper checking the liability between
+        kind/actions/type and cleaning if needed. Useful before creating or updating a link.
 
         :param list link_actions: link actions
         :param str link_kind: link kind
@@ -645,5 +640,5 @@ class ApiLink:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_test = ApiLink()

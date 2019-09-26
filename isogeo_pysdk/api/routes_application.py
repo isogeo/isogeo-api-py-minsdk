@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Applications entities
@@ -34,8 +34,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiApplication:
-    """Routes as methods of Isogeo API used to manipulate applications.
-    """
+    """Routes as methods of Isogeo API used to manipulate applications."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -60,7 +59,8 @@ class ApiApplication:
         include: list = ("_abilities"),
         caching: bool = 1,
     ) -> list:
-        """Get all applications which are accessible by the authenticated user OR applications for a workgroup.
+        """Get all applications which are accessible by the authenticated user OR applications for a
+        workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup. If `None`, then list applications for the autenticated user
         :param list include: additionnal subresource to include in the response.
@@ -528,5 +528,5 @@ class ApiApplication:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_application = ApiApplication()

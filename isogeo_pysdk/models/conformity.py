@@ -2,9 +2,9 @@
 #! python3  # noqa E265
 
 """
-    Isogeo API v1 - Model of Thesaurus entity
+    Isogeo API v1 - Model of Conformity entity
 
-    See: http://help.isogeo.com/api/complete/index.html#definition-thesaurus
+    See: http://help.isogeo.com/api/complete/index.html#definition-resourceConformity
 """
 
 # #############################################################################
@@ -14,126 +14,131 @@
 # standard library
 import pprint
 
+# others related models
+from isogeo_pysdk.models import Specification
+
 
 # #############################################################################
 # ########## Classes ###############
 # ##################################
-class Thesaurus(object):
-    """Thesaurus are entities which can be used in shares.
+class Conformity(object):
+    """Conformity is an entity defining if a data respects a specification. It's a quality
+    indicator. It's mainly composed by a specification and a boolean.
+
+    :param str _id: object UUID
+    :param bool conformant: conformity with the specification
+    :param dict specification: specification object or dict linked to the conformity
+    :param str parent_resource: UUID of the metadata containing the conformity
 
     :Example:
 
-    .. code-block:: JSON
+    .. code-block:: json
 
         {
-            '_abilities': [],
-            '_id': '926f969ee2bb470a84066625f68b96bb',
-            'code': 'iso19115-topic',
-            'name': 'MD_TopicCategoryCode'
+            "conformant": "bool",
+            "specification": "string",
         }
     """
 
-    attr_types = {"_abilities": list, "_id": str, "code": str, "name": str}
+    attr_types = {
+        "conformant": bool,
+        "specification": Specification,
+        "parent_resource": str,
+    }
 
-    attr_crea = {"name": str}
+    attr_crea = {"conformant": "bool", "specification": Specification}
 
     attr_map = {}
 
     def __init__(
         self,
-        _abilities: list = None,
-        _id: str = None,
-        code: str = None,
-        name: str = None,
+        conformant: bool = None,
+        specification: dict or Specification = None,
+        # specific implementation
+        parent_resource: str = None,
     ):
-        """Thesaurus model."""
 
         # default values for the object attributes/properties
-        self.__abilities = None
-        self.__id = None
-        self._code = None
-        self._name = None
+        self._conformant = None
+        self._specification = None
+        self._parent_resource = None
 
         # if values have been passed, so use them as objects attributes.
         # attributes are prefixed by an underscore '_'
-        if _abilities is not None:
-            self.__abilities = _abilities
-        if _id is not None:
-            self.__id = _id
-        if code is not None:
-            self._code = code
-        if name is not None:
-            self._name = name
+        if conformant is not None:
+            self._conformant = conformant
+        if specification is not None and isinstance(specification, Specification):
+            self._specification = specification
+        if specification is not None and isinstance(specification, dict):
+            self._specification = Specification(**specification)
+        if parent_resource is not None:
+            self._parent_resource = parent_resource
 
     # -- PROPERTIES --------------------------------------------------------------------
-    # thesaurus abilities
+    # conformant
     @property
-    def _abilities(self) -> str:
-        """Gets the abilities of this Thesaurus.
+    def conformant(self) -> bool:
+        """Gets the conformant status.
 
-        :return: The abilities of this Thesaurus.
-        :rtype: str
+        :return: The conformant status
+        :rtype: bool
         """
-        return self.__abilities
+        return self._conformant
 
-    # thesaurus UUID
+    @conformant.setter
+    def conformant(self, conformant: bool):
+        """Sets the conformant status.
+
+        :param bool conformant: The conformant status for the specification.
+        """
+
+        self._conformant = conformant
+
     @property
-    def _id(self) -> str:
-        """Gets the id of this Thesaurus.
+    def specification(self) -> Specification:
+        """Gets the specification of this Conformity.
 
-        :return: The id of this Thesaurus.
-        :rtype: str
+        :return: The specification of this Conformity.
+        :rtype: Specification
         """
-        return self.__id
+        return self._specification
 
-    @_id.setter
-    def _id(self, _id: str):
-        """Sets the id of this Thesaurus.
+    @specification.setter
+    def specification(self, specification: dict or Specification):
+        """Sets the specification of this Conformity.
 
-        :param str id: The id of this Thesaurus.
+        :param dict specification: The specification of this Conformity.
         """
-        if _id is None:
-            raise ValueError("Invalid value for `_id`, must not be `None`")
+        if isinstance(specification, Specification):
+            self._specification = specification
+        elif isinstance(specification, dict):
+            self._specification = Specification(**specification)
+        else:
+            self._specification = specification
+            raise Warning(
+                "Invalid specification parameter ({}) to set as specification for this conformity.".format(
+                    specification
+                )
+            )
 
-        self.__id = _id
-
-    # code
+    # parent metadata
     @property
-    def code(self) -> str:
-        """Gets the code of this Thesaurus.
+    def parent_resource(self):
+        """Gets the parent_resource of this Conformity.
 
-        :return: The code of this Thesaurus.
-        :rtype: str
+        :return: The parent_resource of this Conformity.
+        :rtype: UUID
         """
-        return self._code
+        return self._parent_resource
 
-    @code.setter
-    def code(self, code: str):
-        """Sets the code of this Thesaurus.
+    @parent_resource.setter
+    def parent_resource(self, parent_resource_UUID):
+        """Sets the parent metadata UUID of this Conformity.
 
-        :param str code: The code of this Thesaurus.
+        :return: The parent_resource of this Conformity.
+        :rtype: UUID
         """
-
-        self._code = code
-
-    # name
-    @property
-    def name(self) -> str:
-        """Gets the name of this Thesaurus.
-
-        :return: The name of this Thesaurus.
-        :rtype: str
-        """
-        return self._name
-
-    @name.setter
-    def name(self, name: str):
-        """Sets the name of this Thesaurus.
-
-        :param str name: The name of this Thesaurus.
-        """
-
-        self._name = name
+        self._parent_resource = parent_resource_UUID
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
@@ -159,7 +164,7 @@ class Thesaurus(object):
                 )
             else:
                 result[attr] = value
-        if issubclass(Thesaurus, dict):
+        if issubclass(Conformity, dict):
             for key, value in self.items():
                 result[key] = value
 
@@ -175,9 +180,7 @@ class Thesaurus(object):
             # switch attribute name for creation purpose
             if attr in self.attr_map:
                 attr = self.attr_map.get(attr)
-            # process value depending on attr type
             if isinstance(value, list):
-
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)
                 )
@@ -194,7 +197,7 @@ class Thesaurus(object):
                 )
             else:
                 result[attr] = value
-        if issubclass(Thesaurus, dict):
+        if issubclass(Conformity, dict):
             for key, value in self.items():
                 result[key] = value
 
@@ -210,7 +213,7 @@ class Thesaurus(object):
 
     def __eq__(self, other) -> bool:
         """Returns true if both objects are equal."""
-        if not isinstance(other, Thesaurus):
+        if not isinstance(other, Conformity):
             return False
 
         return self.__dict__ == other.__dict__
@@ -225,5 +228,5 @@ class Thesaurus(object):
 # ##################################
 if __name__ == "__main__":
     """standalone execution."""
-    thesaurus = Thesaurus(name="GEMET - INSPIRE themes")
-    to_crea = thesaurus.to_dict_creation()
+    fixture = Conformity(conformant=1, specification=Specification())
+    print(fixture)

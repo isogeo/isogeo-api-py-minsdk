@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Account entities
@@ -34,8 +34,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiAccount:
-    """Routes as methods of Isogeo API used to manipulate account (user).
-    """
+    """Routes as methods of Isogeo API used to manipulate account (user)."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -171,5 +170,5 @@ class ApiAccount:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_account = ApiAccount()

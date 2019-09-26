@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Condition entity
@@ -22,8 +22,8 @@ from isogeo_pysdk.models import License
 # ########## Classes ###############
 # ##################################
 class Condition(object):
-    """Conditions are entities defining general conditions of use (CGUs) of a data.
-    It's mainly composed by a license and a description.
+    """Conditions are entities defining general conditions of use (CGUs) of a data. It's mainly
+    composed by a license and a description.
 
     :param str _id: object UUID
     :param str description: description of the condition
@@ -130,12 +130,12 @@ class Condition(object):
         elif isinstance(license, dict):
             self._license = License(**license)
         else:
+            self._license = license
             raise Warning(
                 "Invalid license parameter ({}) to set as license for this condition.".format(
                     license
                 )
             )
-            self._license = license
 
     # parent metadata
     @property
@@ -158,7 +158,7 @@ class Condition(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -220,7 +220,7 @@ class Condition(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -228,14 +228,14 @@ class Condition(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Condition):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -243,6 +243,6 @@ class Condition(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
-    lic = Condition(name="Condition Test", description="Test condition description")
-    print(lic)
+    """standalone execution."""
+    fixture = Condition(description="Test condition description")
+    print(fixture)

@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
-#!/usr/bin/env python
-from __future__ import absolute_import, print_function, unicode_literals
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Attributes analisis
@@ -27,7 +26,7 @@ from isogeo_pysdk import Isogeo
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
 

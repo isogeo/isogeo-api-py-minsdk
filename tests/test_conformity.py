@@ -5,9 +5,9 @@
 
 ```python
 # for whole test
-python -m unittest tests.test_feature_attributes
-# for specific
-python -m unittest tests.test_feature_attributes.TestFeatureAttributes.test_featureAttributes_create_basic
+python -m unittest tests.test_conformity
+# for licific
+python -m unittest tests.test_conformity.TestConformity.test_conformity_listing
 ```
 """
 
@@ -17,10 +17,11 @@ python -m unittest tests.test_feature_attributes.TestFeatureAttributes.test_feat
 
 # Standard library
 import logging
-import urllib3
 import unittest
+import urllib3
 from os import environ
 from pathlib import Path
+from random import sample
 from socket import gethostname
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
@@ -28,15 +29,13 @@ from time import gmtime, sleep, strftime
 # 3rd party
 from dotenv import load_dotenv
 
-
 # module target
-from isogeo_pysdk import Isogeo, FeatureAttribute, Metadata
+from isogeo_pysdk import Isogeo, Conformity, Specification, Metadata
 
 
 # #############################################################################
 # ######## Globals #################
 # ##################################
-
 
 if Path("dev.env").exists():
     load_dotenv("dev.env", override=True)
@@ -55,7 +54,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 def get_test_marker():
     """Returns the function name."""
-    return "TEST_PySDK - FeatureAttributes {}".format(_getframe(1).f_code.co_name)
+    return "TEST_PySDK - Conformitys - {}".format(_getframe(1).f_code.co_name)
 
 
 # #############################################################################
@@ -63,8 +62,8 @@ def get_test_marker():
 # ##################################
 
 
-class TestFeatureAttributes(unittest.TestCase):
-    """Test FeatureAttribute model of Isogeo API."""
+class TestConformity(unittest.TestCase):
+    """Test Conformity model of Isogeo API."""
 
     # -- Standard methods --------------------------------------------------------
     @classmethod
@@ -79,6 +78,9 @@ class TestFeatureAttributes(unittest.TestCase):
         else:
             pass
 
+        # class vars and attributes
+        cls.li_fixtures_to_delete = []
+
         # ignore warnings related to the QA self-signed cert
         if environ.get("ISOGEO_PLATFORM").lower() == "qa":
             urllib3.disable_warnings()
@@ -91,21 +93,21 @@ class TestFeatureAttributes(unittest.TestCase):
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
+
         # getting a token
         cls.isogeo.connect(
             username=environ.get("ISOGEO_USER_NAME"),
             password=environ.get("ISOGEO_USER_PASSWORD"),
         )
 
-        # class vars and attributes
-        cls.li_fixtures_to_delete = []
+        # fixture metadata
+        cls.fixture_metadata_existing = cls.isogeo.metadata.get(
+            METADATA_TEST_FIXTURE_UUID, include=["specifications"]
+        )
 
         md = Metadata(title=get_test_marker(), type="vectorDataset")
-        cls.metadata_fixture_created = cls.isogeo.metadata.create(
+        cls.fixture_metadata = cls.isogeo.metadata.create(
             WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
-        )
-        cls.metadata_fixture_existing = cls.isogeo.metadata.get(
-            metadata_id=METADATA_TEST_FIXTURE_UUID
         )
 
     def setUp(self):
@@ -123,46 +125,61 @@ class TestFeatureAttributes(unittest.TestCase):
     def tearDownClass(cls):
         """Executed after the last test."""
         # clean created metadata
-        cls.isogeo.metadata.delete(cls.metadata_fixture_created._id)
-        # clean created licenses
-        if len(cls.li_fixtures_to_delete):
-            for i in cls.li_fixtures_to_delete:
-                cls.isogeo.metadata.featureAttributes.delete(featureAttribute=i)
+        cls.isogeo.metadata.delete(cls.fixture_metadata._id)
+
         # close sessions
         cls.isogeo.close()
 
     # -- TESTS ---------------------------------------------------------
+    # -- POST --
+    def test_conformity_create(self):
+        """POST :metadata/{metadata_uuid}/conformity}"""
+        # retrieve workgroup specifications
+        workgroup_specifications = self.isogeo.specification.listing(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID
+        )
+
+        # create object locally
+        conformity = Conformity(
+            conformant=1, specification=sample(workgroup_specifications, 1)[0]
+        )
+
+        # add it to a metadata
+        conformity_created = self.isogeo.metadata.conformity.create(
+            metadata=self.fixture_metadata, conformity=conformity
+        )
+
+        self.assertIsInstance(conformity_created, Conformity)
+
+        # remove it from a metadata
+        conformity_removed = self.isogeo.metadata.conformity.delete(
+            metadata=self.fixture_metadata, conformity=conformity_created
+        )
+
+        self.assertEqual(conformity_removed.status_code, 204)
 
     # -- GET --
-    def test_featureAttributes_listing(self):
-        """GET :resources/{metadata_uuid}/featureAttributes/}"""
-        # retrieve workgroup featureAttributes
-        md_featureAttributes = self.isogeo.metadata.attributes.listing(
-            self.metadata_fixture_existing
+    def test_conformity_listing(self):
+        """GET :metadata/{metadata_uuid}/conformity}"""
+        # retrieve metadata conformity
+        metadata_conformity = self.isogeo.metadata.conformity.listing(
+            self.fixture_metadata_existing._id
         )
+        self.assertIsInstance(metadata_conformity, list)
         # parse and test object loader
-        for i in md_featureAttributes:
-            # load it
-            attribute = FeatureAttribute(**i)
+        for i in metadata_conformity:
+            conformity = Conformity(**i)
             # tests attributes structure
-            self.assertTrue(hasattr(attribute, "_id"))
-            self.assertTrue(hasattr(attribute, "alias"))
-            self.assertTrue(hasattr(attribute, "dataType"))
-            self.assertTrue(hasattr(attribute, "description"))
-            self.assertTrue(hasattr(attribute, "language"))
-            self.assertTrue(hasattr(attribute, "name"))
-            self.assertTrue(hasattr(attribute, "parent_resource"))
+            self.assertTrue(hasattr(conformity, "conformant"))
+            self.assertTrue(hasattr(conformity, "specification"))
+            # test attributes instances
+            self.assertIsInstance(conformity.specification, Specification)
             # tests attributes value
-            self.assertEqual(attribute._id, i.get("_id"))
-            self.assertEqual(attribute.alias, i.get("alias"))
-            self.assertEqual(attribute.dataType, i.get("dataType"))
-            self.assertEqual(attribute.description, i.get("description"))
-            self.assertEqual(attribute.name, i.get("name"))
-            self.assertEqual(attribute.parent_resource, i.get("parent_resource"))
+            self.assertEqual(conformity.conformant, i.get("conformant"))
 
 
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
-if __name__ == "__main__":
+if get_test_marker() == "__main__":
     unittest.main()

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of ServiceLayer entity
@@ -24,7 +24,6 @@ import pprint
 class ServiceLayer(object):
     """ServiceLayers are entities defining rules of data creation.
 
-
     :Example:
 
     .. code-block:: json
@@ -42,7 +41,6 @@ class ServiceLayer(object):
                 }
             ]
         }
-
     """
 
     attr_types = {
@@ -68,7 +66,7 @@ class ServiceLayer(object):
         # additional parameters
         parent_resource: str = None,
     ):
-        """ServiceLayer model"""
+        """ServiceLayer model."""
 
         # default values for the object attributes/properties
         self.__id = None
@@ -186,7 +184,7 @@ class ServiceLayer(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -248,7 +246,7 @@ class ServiceLayer(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -256,14 +254,14 @@ class ServiceLayer(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, ServiceLayer):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -271,7 +269,7 @@ class ServiceLayer(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     test_model = ServiceLayer()
     print(test_model.__dict__)
     print(test_model._id)

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Resources (= Metadata) entity
@@ -27,6 +27,7 @@ from isogeo_pysdk.utils import IsogeoUtils
 # other routes
 from .routes_event import ApiEvent
 from .routes_condition import ApiCondition
+from .routes_conformity import ApiConformity
 from .routes_feature_attributes import ApiFeatureAttribute
 from .routes_limitation import ApiLimitation
 from .routes_link import ApiLink
@@ -46,8 +47,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiMetadata:
-    """Routes as methods of Isogeo API used to manipulate metadatas (resources).
-    """
+    """Routes as methods of Isogeo API used to manipulate metadatas (resources)."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -65,6 +65,7 @@ class ApiMetadata:
         # sub routes
         self.attributes = ApiFeatureAttribute(self.api_client)
         self.conditions = ApiCondition(self.api_client)
+        self.conformity = ApiConformity(self.api_client)
         self.events = ApiEvent(self.api_client)
         self.layers = ApiServiceLayer(self.api_client)
         self.limitations = ApiLimitation(self.api_client)
@@ -147,7 +148,6 @@ class ApiMetadata:
           - 1 = complete (make an addtionnal request)
 
         :rtype: Metadata
-
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -250,9 +250,9 @@ class ApiMetadata:
         else:
             pass
 
-        # URL builder
-        url_metadata_exists = "{}{}".format(
-            utils.get_request_base_url("resources"), resource_id
+        # request URL
+        url_metadata_exists = utils.get_request_base_url(
+            route="resources/{}".format(resource_id)
         )
 
         # request
@@ -267,7 +267,7 @@ class ApiMetadata:
         # checking response
         req_check = checker.check_api_response(req_metadata_exists)
         if isinstance(req_check, tuple):
-            return req_check
+            return False
 
         return True
 
@@ -327,7 +327,6 @@ class ApiMetadata:
             with open("./{}.xml".format("metadata_exported_as_xml"), "wb") as fd:
                 for block in xml_stream.iter_content(1024):
                     fd.write(block)
-
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):
@@ -362,8 +361,7 @@ class ApiMetadata:
 
     # -- Routes to manage subresources -------------------------------------------------
     def catalogs(self, metadata: Metadata) -> list:
-        """Returns asssociated catalogs with a metadata.
-        Just a shortcut.
+        """Returns asssociated catalogs with a metadata. Just a shortcut.
 
         :param Metadata metadata: metadata object
 
@@ -374,8 +372,7 @@ class ApiMetadata:
     def keywords(
         self, metadata: Metadata, include: list = ["_abilities", "count", "thesaurus"]
     ) -> list:
-        """Returns asssociated keywords with a metadata.
-        Just a shortcut.
+        """Returns asssociated keywords with a metadata. Just a shortcut.
 
         :param Metadata metadata: metadata object
         :param list include: subresources that should be returned. Available values:
@@ -395,6 +392,6 @@ class ApiMetadata:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_metadata = ApiMetadata()
     print(api_metadata)

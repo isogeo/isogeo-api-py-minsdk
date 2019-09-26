@@ -1,12 +1,7 @@
 # -*- coding: UTF-8 -*-
-#! python3
-# ----------------------------------------------------------------------------
+#! python3  # noqa E265
 
-"""
-    Complementary set of utils to use with Isogeo API.
-"""
-
-# ---------------------------------------------------------------------------
+"""Complementary set of utils to use with Isogeo API."""
 
 # #############################################################################
 # ########## Libraries #############
@@ -74,9 +69,7 @@ _dtm_simple = "%Y-%m-%d"  # 2018-06-04
 
 
 class IsogeoUtils(object):
-    """Complementary set of utilitary methods and functions to make it easier
-    using Isogeo API.
-    """
+    """Complementary set of utilitary methods and functions to make it easier using Isogeo API."""
 
     API_URLS = {"prod": "api", "qa": "api.qa"}
 
@@ -244,7 +237,6 @@ class IsogeoUtils(object):
           * 0 to HEX
           * 1 to URN (RFC4122)
           * 2 to URN (Isogeo specific style)
-
         """
         # parameters check
         if not isinstance(in_uuid, str):
@@ -278,10 +270,9 @@ class IsogeoUtils(object):
 
     @classmethod
     def encoded_words_to_text(self, in_encoded_words: str):
-        """Pull out the character set, encoding, and encoded text from the input
-        encoded words. Next, it decodes the encoded words into a byte string,
-        using either the quopri module or base64 module as determined by the
-        encoding. Finally, it decodes the byte string using the
+        """Pull out the character set, encoding, and encoded text from the input encoded words.
+        Next, it decodes the encoded words into a byte string, using either the quopri module or
+        base64 module as determined by the encoding. Finally, it decodes the byte string using the
         character set and returns the result.
 
         See:
@@ -320,7 +311,6 @@ class IsogeoUtils(object):
           * api [default]
           * db
           * app
-
         """
         # which component
         if component == "api":
@@ -442,8 +432,8 @@ class IsogeoUtils(object):
     def get_url_base_from_url_token(
         self, url_api_token: str = "https://id.api.isogeo.com/oauth/token"
     ) -> str:
-        """Returns the Isogeo API root URL (not included into
-        credentials file) from the token or the auth URL (always included).
+        """Returns the Isogeo API root URL (not included into credentials file) from the token or
+        the auth URL (always included).
 
         :param url_api_token str: url to Isogeo API ID token generator
 
@@ -457,7 +447,6 @@ class IsogeoUtils(object):
             >>> "https://api.isogeo.com"
             IsogeoUtils.get_url_base_from_url_token(url_api_token="https://id.api.qa.isogeo.com/oauth/token")
             >>> "https://api.qa.isogeo.com"
-
         """
         in_parsed = urlparse(url_api_token)
         api_url_base = in_parsed._replace(
@@ -484,7 +473,6 @@ class IsogeoUtils(object):
             >>> "qa"
             IsogeoUtils.guess_platform_from_url("https://api.isogeo.ratp.local")
             >>> "unknown"
-
         """
         if "api.isogeo.com" in url:
             api_platform = "prod"
@@ -506,8 +494,8 @@ class IsogeoUtils(object):
     # -- SEARCH  --------------------------------------------------------------
     @classmethod
     def pages_counter(self, total: int, page_size: int = 100) -> int:
-        """Simple helper to handle pagination. Returns the number of pages for a
-        given number of results.
+        """Simple helper to handle pagination. Returns the number of pages for a given number of
+        results.
 
         :param int total: count of metadata in a search request
         :param int page_size: count of metadata to display in each page
@@ -523,8 +511,8 @@ class IsogeoUtils(object):
         return int(count_pages)
 
     def tags_to_dict(self, tags=dict, prev_query=dict, duplicated: str = "rename"):
-        """Reverse search tags dictionary to values as keys.
-        Useful to populate filters comboboxes for example.
+        """Reverse search tags dictionary to values as keys. Useful to populate filters comboboxes
+        for example.
 
         :param dict tags: tags dictionary from a search request
         :param dict prev_query: query parameters returned after a search request. Typically `search.get("query")`.
@@ -809,8 +797,6 @@ class IsogeoUtils(object):
                     'uri_redirect': None,
                     'uri_token': 'https://id.api.isogeo.com/oauth/token'
                 }
-
-
         """
         accepted_extensions = (".ini", ".json")
         in_credentials_path = Path(in_credentials)  # load path

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # -----------------------------------------------------------------------------
 # Name:         Isogeo
@@ -28,7 +28,7 @@ from isogeo_pysdk import Isogeo
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
 
