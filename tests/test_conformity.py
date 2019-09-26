@@ -125,7 +125,7 @@ class TestConformity(unittest.TestCase):
     def tearDownClass(cls):
         """Executed after the last test."""
         # clean created metadata
-        # cls.isogeo.metadata.delete(cls.fixture_metadata._id)
+        cls.isogeo.metadata.delete(cls.fixture_metadata._id)
 
         # close sessions
         cls.isogeo.close()
