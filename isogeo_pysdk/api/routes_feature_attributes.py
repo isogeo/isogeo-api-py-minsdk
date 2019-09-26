@@ -33,8 +33,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiFeatureAttribute:
-    """Routes as methods of Isogeo API used to manipulate feature attributes into a Metadata.
-    """
+    """Routes as methods of Isogeo API used to manipulate feature attributes into a Metadata."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -106,7 +105,6 @@ class ApiFeatureAttribute:
             metadata_id=md._id,
             attribute_id=md_attributes[0].get("_id")
             )
-
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata_id):
@@ -179,7 +177,6 @@ class ApiFeatureAttribute:
             )
         >>> # add it to the metadata
         >>> isogeo.metadata.attributes.create(md, new_attribute)
-
         """
         # check metadata type
         if metadata.type != "vectorDataset":
@@ -349,7 +346,6 @@ class ApiFeatureAttribute:
 
             # launch import
             isogeo.metadata.attributes.import_from_dataset(md_source, md_dest, "add")
-
         """
         accepted_modes = ("add", "update", "update_or_add")
 
@@ -451,5 +447,5 @@ class ApiFeatureAttribute:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_feature_attribute = ApiFeatureAttribute()

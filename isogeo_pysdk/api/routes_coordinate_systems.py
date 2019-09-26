@@ -36,8 +36,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiCoordinateSystem:
-    """Routes as methods of Isogeo API used to manipulate coordinate-systems
-    """
+    """Routes as methods of Isogeo API used to manipulate coordinate-systems."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -122,8 +121,8 @@ class ApiCoordinateSystem:
     def coordinate_system(
         self, coordinate_system_code: str, workgroup_id: str = None
     ) -> CoordinateSystem:
-        """Get details about a specific coordinate_system, from the whole Isogeo database or
-        into a specific workgroup (to get the SRS alias for example).
+        """Get details about a specific coordinate_system, from the whole Isogeo database or into a
+        specific workgroup (to get the SRS alias for example).
 
         :param str workgroup_id: identifier of the owner workgroup. OPTIONNAL: if present, list SRS slected into the workgroup.
         :param str coordinate_system_code: EPSG code of the coordinate system
@@ -388,5 +387,5 @@ class ApiCoordinateSystem:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_coordinate_system = ApiCoordinateSystem()

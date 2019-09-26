@@ -24,7 +24,7 @@ from isogeo_pysdk import Isogeo
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # standard library
     from os import environ
 

@@ -33,8 +33,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiKeyword:
-    """Routes as methods of Isogeo API used to manipulate keywords.
-    """
+    """Routes as methods of Isogeo API used to manipulate keywords."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -197,7 +196,7 @@ class ApiKeyword:
         include: list = ["_abilities", "count", "thesaurus"],
         caching: bool = 1,
     ) -> KeywordSearch:
-        """Search for keywords within a specific group's used thesauri
+        """Search for keywords within a specific group's used thesauri.
 
         :param str thesaurus_id: thesaurus UUID to filter on
         :param str query: search terms, equivalent of **q** parameter in API.
@@ -441,7 +440,6 @@ class ApiKeyword:
             md = isogeo.metadata.get(METADATA_UUID)
             # retrieve a keyword
             keyword = isogeo.keyword.get(KEYWORD_UUID)
-
         """
         # check contact UUID
         if not checker.check_is_uuid(metadata._id):
@@ -578,5 +576,5 @@ class ApiKeyword:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_keyword = ApiKeyword()

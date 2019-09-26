@@ -37,8 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiShare:
-    """Routes as methods of Isogeo API used to manipulate shares.
-    """
+    """Routes as methods of Isogeo API used to manipulate shares."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -694,5 +693,5 @@ class ApiShare:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_share = ApiShare()

@@ -34,8 +34,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiEvent:
-    """Routes as methods of Isogeo API used to manipulate events.
-    """
+    """Routes as methods of Isogeo API used to manipulate events."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -301,5 +300,5 @@ class ApiEvent:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_event = ApiEvent()

@@ -41,8 +41,7 @@ class DataGouvFr(object):
     base_url = "https://www.data.gouv.fr/api/1/"
 
     def __init__(self, api_key=environ.get("DATAGOUV_API_KEY", None)):
-        """
-        """
+        """"""
         super(DataGouvFr, self).__init__()
         if api_key:
             self.api_key = api_key
@@ -170,7 +169,7 @@ class DataGouvFr(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     # some organizations to play with
     orgas = {
         "ign": "534fff80a3a7292c64a77e41",

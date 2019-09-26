@@ -36,7 +36,7 @@ out_dir.mkdir(exist_ok=True)
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     chrono_start = default_timer()  # chrono
 
     # Authentication #########

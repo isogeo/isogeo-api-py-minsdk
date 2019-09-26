@@ -32,8 +32,8 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiDirective:
-    """Routes as methods of Isogeo API used to manipulate directives (Europe Environment code for INSPIRE limitations).
-    """
+    """Routes as methods of Isogeo API used to manipulate directives (Europe Environment code for
+    INSPIRE limitations)."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -87,5 +87,5 @@ class ApiDirective:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_directive = ApiDirective()

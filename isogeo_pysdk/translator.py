@@ -1,9 +1,7 @@
 # -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
-"""
-    Additionnal strings to be translated from Isogeo API.
-"""
+"""Additionnal strings to be translated from Isogeo API."""
 
 # ##############################################################################
 # ########## Globals ###############

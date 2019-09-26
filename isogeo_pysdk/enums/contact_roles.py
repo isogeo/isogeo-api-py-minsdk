@@ -60,7 +60,7 @@ class ContactRoles(Enum):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     print("{0:<30} {1:>20}".format("Enum", "Value"))
     for role in ContactRoles:
         print("{0:<30} {1:>20}".format(role, role.value))

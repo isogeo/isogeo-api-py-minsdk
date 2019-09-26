@@ -23,7 +23,7 @@ from isogeo_pysdk import Isogeo, Share
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # standard
     from os import environ
 

@@ -52,7 +52,7 @@ class ContactTypes(Enum):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     print("{0:<30} {1:>20}".format("Enum", "Value"))
     for i in ContactTypes:
         print("{0:<30} {1:>20}".format(i, i.value))

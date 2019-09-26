@@ -32,7 +32,7 @@ out_dir.mkdir(exist_ok=True)
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
 

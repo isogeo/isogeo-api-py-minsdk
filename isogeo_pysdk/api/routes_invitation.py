@@ -33,8 +33,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiInvitation:
-    """Routes as methods of Isogeo API used to manipulate invitations.
-    """
+    """Routes as methods of Isogeo API used to manipulate invitations."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -314,5 +313,5 @@ class ApiInvitation:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_invitation = ApiInvitation()

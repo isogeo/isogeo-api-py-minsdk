@@ -47,7 +47,7 @@ WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 # ######## Export functions ###########
 # ###########################################################################
 def _meta_get_resource_sync(func_outname_params: dict):
-    """Meta function"""
+    """Meta function."""
     route_method = func_outname_params.get("route")
     out_filename = Path(outdir, func_outname_params.get("output_json_name") + ".json")
 

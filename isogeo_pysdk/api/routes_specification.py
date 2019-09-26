@@ -37,8 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiSpecification:
-    """Routes as methods of Isogeo API used to manipulate specifications.
-    """
+    """Routes as methods of Isogeo API used to manipulate specifications."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -342,7 +341,8 @@ class ApiSpecification:
     def associate_metadata(
         self, metadata: Metadata, specification: Specification, conformity: bool = 0
     ) -> Response:
-        """Associate a specification (specification + conformity) to a metadata. When a specification is associated to a metadata, it becomes a ResourceConformity object.
+        """Associate a specification (specification + conformity) to a metadata. When a
+        specification is associated to a metadata, it becomes a ResourceConformity object.
 
         If the specified specification is already associated, the API responses is still a 200.
 
@@ -403,6 +403,6 @@ class ApiSpecification:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_specification = ApiSpecification()
     print(api_specification)
