@@ -231,7 +231,7 @@ class ApiCatalog:
         if check_exists == 1:
             # retrieve workgroup catalogs
             if not self.api_client._wg_catalogs_names:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if catalog.name in self.api_client._wg_catalogs_names:
                 logger.debug(

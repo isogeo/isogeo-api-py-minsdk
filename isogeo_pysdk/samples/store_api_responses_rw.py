@@ -124,7 +124,7 @@ if __name__ == "__main__":
     print("Authentication succeeded at {:5.2f}s".format(default_timer() - START_TIME))
 
     # get some object identifiers required for certain routes
-    app_id = sample(isogeo.application.listing(include=[]), 1)[0].get("_id")
+    app_id = sample(isogeo.application.listing(include=()), 1)[0].get("_id")
     # resource_id = sample(isogeo.search(whole_results=0, page_size=50).get("results"), 1)[
     #     0
     # ].get("_id")

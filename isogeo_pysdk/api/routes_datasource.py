@@ -178,7 +178,7 @@ class ApiDatasource:
         if check_exists == 1:  # check names
             # retrieve workgroup datasources
             if not self.api_client._wg_datasources_names:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if datasource.name in self.api_client._wg_datasources_names:
                 logger.debug(
@@ -190,7 +190,7 @@ class ApiDatasource:
         elif check_exists == 2:  # check URL (location)
             # retrieve workgroup datasources
             if not self.api_client._wg_datasources_urls:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if datasource.location in self.api_client._wg_datasources_urls:
                 logging.debug(

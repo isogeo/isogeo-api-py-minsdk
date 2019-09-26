@@ -234,7 +234,7 @@ class TestLicenses(unittest.TestCase):
 
         # refresh fixture metadata
         self.fixture_metadata = self.isogeo.metadata.get(
-            metadata_id=self.fixture_metadata._id, include=("conditions")
+            metadata_id=self.fixture_metadata._id, include=("conditions",)
         )
 
         # try to associate the same license = error

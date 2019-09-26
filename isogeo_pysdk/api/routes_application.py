@@ -412,18 +412,18 @@ class ApiApplication:
             For dev memory, there are two main cases:
 
             Case 1 - application with no groups associated yet:
-            - self.get(application_id=app_uuid, include=[]).groups[0] is None
-            - len(self.get(application_id=app_uuid, include=[]).groups) == 1
+            - self.get(application_id=app_uuid, include=()).groups[0] is None
+            - len(self.get(application_id=app_uuid, include=()).groups) == 1
 
             Case 2 - application with some groups already associated but without include:
-            - self.get(application_id=app_uuid, include=[]).groups[0] is None
-            - len(self.get(application_id=app_uuid, include=[]).groups) == 1
+            - self.get(application_id=app_uuid, include=()).groups[0] is None
+            - len(self.get(application_id=app_uuid, include=()).groups) == 1
         """
         if len(application.groups) and application.groups[0] is None:
             logger.debug(
                 "Application doesn't contain its included workgroups. Let's make a new request..."
             )
-            application = self.get(application_id=application._id, include=["groups"])
+            application = self.get(application_id=application._id, include=("groups",))
         else:
             pass
 

@@ -177,7 +177,7 @@ class ApiContact:
         if check_exists == 1:
             # retrieve workgroup contacts
             if not self.api_client._wg_contacts_names:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if contact.name in self.api_client._wg_contacts_names:
                 logger.debug(
@@ -189,7 +189,7 @@ class ApiContact:
         elif check_exists == 2:
             # retrieve workgroup contacts
             if not self.api_client._wg_contacts_emails:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if contact.email in self.api_client._wg_contacts_emails:
                 logging.debug(

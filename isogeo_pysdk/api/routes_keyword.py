@@ -284,7 +284,7 @@ class ApiKeyword:
         :Example:
 
         >>> # get a metadata with its tags (or keywords)
-        >>> md = isogeo.metadata.get(METADATA_UUID, include=["tags"])
+        >>> md = isogeo.metadata.get(METADATA_UUID, include=("tags",))
         >>> # list Isogeo keywords
         >>> li_keywords_uuids = [
             tag[8:] for tag in self.metadata_source.tags
@@ -357,7 +357,7 @@ class ApiKeyword:
                 # try to return the most probably matching keyword
                 search_for_closest_keyword = self.thesaurus(
                     caching=0,
-                    include=[],
+                    include=(),
                     order_dir="asc",
                     page_size=1,
                     query=keyword.text,
@@ -469,7 +469,7 @@ class ApiKeyword:
             else:
                 # if not, make a new request to perform the check
                 metadata_existing_keywords = self.metadata(
-                    metadata_id=metadata._id, include=[]
+                    metadata_id=metadata._id, include=()
                 )
 
                 metadata_existing_keywords = [

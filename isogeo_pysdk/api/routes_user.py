@@ -150,7 +150,7 @@ class ApiUser:
     #     if check_exists == 1:
     #         # retrieve user users
     #         if not self.api_client._users_names:
-    #             self.listing(include=[])
+    #             self.listing(include=())
     #         # check
     #         if user.contact.name in self.api_client._users_names:
     #             logger.debug(

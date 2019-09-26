@@ -161,7 +161,7 @@ class ApiMetadata:
             logger.debug(NotImplemented)
         #     # retrieve workgroup metadatas
         #     if not self.api_client._wg_metadatas_names:
-        #         self.metadatas(workgroup_id=workgroup_id, include=[])
+        #         self.metadatas(workgroup_id=workgroup_id, include=())
         #     # check
         #     if metadata.name in self.api_client._wg_metadatas_names:
         #         logger.debug(
