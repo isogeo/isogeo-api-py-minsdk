@@ -52,7 +52,7 @@ class EventKinds(Enum):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     print("{0:<30} {1:>20}".format("Enum", "Value"))
     for md_kind in EventKinds:
         print("{0:<30} {1:>20}".format(md_kind, md_kind.value))

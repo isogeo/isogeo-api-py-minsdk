@@ -87,9 +87,10 @@ virtualenv/
 *env*
 !.env.example
 
-# tests
+# tests and PEP8
 junit/*
 .pytest_cache/
+dev_flake8_report.txt
 
 # logs
 *.log.*

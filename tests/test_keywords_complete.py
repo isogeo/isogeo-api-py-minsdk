@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_keywords_complete
-    # for specific
-    python -m unittest tests.test_keywords_complete.TestKeywordsComplete.test_keywords_create_basic
-    ```
+```python
+# for whole test
+python -m unittest tests.test_keywords_complete
+# for specific
+python -m unittest tests.test_keywords_complete.TestKeywordsComplete.test_keywords_create_basic
+```
 """
 
 # #############################################################################
@@ -32,7 +31,7 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import Isogeo, Keyword, KeywordSearch
+from isogeo_pysdk import Isogeo, Keyword
 
 
 # #############################################################################
@@ -56,7 +55,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -150,7 +149,7 @@ class TestKeywordsComplete(unittest.TestCase):
 
     def test_keywords_create_similar(self):
         """POST :thesauri/{isogeo_thesaurus_uuid}/keywords/}
-        
+
         Handling case when the keyword already exists
         """
         # var

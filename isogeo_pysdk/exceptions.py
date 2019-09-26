@@ -32,6 +32,6 @@ class IsogeoSdkError(Exception):
 
 
 class AlreadyExistError(IsogeoSdkError):
-    """An object with similar properties already exists in Isogeo database"""
+    """An object with similar properties already exists in Isogeo database."""
 
     pass

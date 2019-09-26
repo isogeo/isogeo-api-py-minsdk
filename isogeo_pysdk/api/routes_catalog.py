@@ -39,8 +39,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiCatalog:
-    """Routes as methods of Isogeo API used to manipulate catalogs.
-    """
+    """Routes as methods of Isogeo API used to manipulate catalogs."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -219,7 +218,6 @@ class ApiCatalog:
 
         :returns: the created catalog or False if a similar cataog already exists or a tuple with response error code
         :rtype: Catalog
-
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -631,5 +629,5 @@ class ApiCatalog:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_catalog = ApiCatalog()

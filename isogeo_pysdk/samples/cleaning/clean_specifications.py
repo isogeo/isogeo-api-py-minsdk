@@ -36,7 +36,7 @@ WG_TEST_UUID = ""
 # ######## Export functions ###########
 # ###########################################################################
 def _meta_dissociate_specification(metadata: Metadata):
-    """Meta function"""
+    """Meta function."""
     # parse metadata specifications
     for s in metadata.specifications:
         spec = Specification(**s.get("specification"))

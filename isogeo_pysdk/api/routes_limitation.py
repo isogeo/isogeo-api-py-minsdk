@@ -33,8 +33,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiLimitation:
-    """Routes as methods of Isogeo API used to manipulate metadata limitations (CGUs).
-    """
+    """Routes as methods of Isogeo API used to manipulate metadata limitations (CGUs)."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -311,5 +310,5 @@ class ApiLimitation:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_directive = ApiLimitation()

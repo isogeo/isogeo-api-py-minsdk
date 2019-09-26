@@ -37,8 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiCondition:
-    """Routes as methods of Isogeo API used to manipulate conditions.
-    """
+    """Routes as methods of Isogeo API used to manipulate conditions."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -244,5 +243,5 @@ class ApiCondition:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_condition = ApiCondition()

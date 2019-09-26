@@ -1,16 +1,15 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_translator
-    # for specific
-    python -m unittest tests.test_translator.TestIsogeoTranslator.test_translation_fr
-    ```
+```python
+# for whole test
+python -m unittest tests.test_translator
+# for specific
+python -m unittest tests.test_translator.TestIsogeoTranslator.test_translation_fr
+```
 """
 
 # #############################################################################

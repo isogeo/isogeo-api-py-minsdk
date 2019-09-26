@@ -47,8 +47,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiMetadata:
-    """Routes as methods of Isogeo API used to manipulate metadatas (resources).
-    """
+    """Routes as methods of Isogeo API used to manipulate metadatas (resources)."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -149,7 +148,6 @@ class ApiMetadata:
           - 1 = complete (make an addtionnal request)
 
         :rtype: Metadata
-
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -329,7 +327,6 @@ class ApiMetadata:
             with open("./{}.xml".format("metadata_exported_as_xml"), "wb") as fd:
                 for block in xml_stream.iter_content(1024):
                     fd.write(block)
-
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):
@@ -364,8 +361,7 @@ class ApiMetadata:
 
     # -- Routes to manage subresources -------------------------------------------------
     def catalogs(self, metadata: Metadata) -> list:
-        """Returns asssociated catalogs with a metadata.
-        Just a shortcut.
+        """Returns asssociated catalogs with a metadata. Just a shortcut.
 
         :param Metadata metadata: metadata object
 
@@ -376,8 +372,7 @@ class ApiMetadata:
     def keywords(
         self, metadata: Metadata, include: list = ["_abilities", "count", "thesaurus"]
     ) -> list:
-        """Returns asssociated keywords with a metadata.
-        Just a shortcut.
+        """Returns asssociated keywords with a metadata. Just a shortcut.
 
         :param Metadata metadata: metadata object
         :param list include: subresources that should be returned. Available values:
@@ -397,6 +392,6 @@ class ApiMetadata:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_metadata = ApiMetadata()
     print(api_metadata)

@@ -43,6 +43,7 @@ utils = IsogeoUtils()
 # ##################################
 class ApiService:
     """Routes as methods of Isogeo API used to manipulate metadatas of web geo services (services).
+
     It's a set of helpers and shortcuts to make easier the sevrice management with the isogeo API.
     """
 
@@ -117,7 +118,6 @@ class ApiService:
                 workgroup_id=WORKGROUP_UUID,
                 service_url="https://api-carto.dijon.fr/arcgis/rest/services/SIGNALISATION/signalisation_MAJ/FeatureServer?f=pjson",
             )
-
         """
         # CHECKS PARAMS
         # check workgroup UUID
@@ -396,5 +396,5 @@ class ApiService:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_metadata = ApiService()

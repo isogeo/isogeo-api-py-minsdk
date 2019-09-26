@@ -50,7 +50,7 @@ class ApplicationTypes(Enum):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     print("{0:<30} {1:>20}".format("Enum", "Value"))
     for md_kind in ApplicationTypes:
         print("{0:<30} {1:>20}".format(md_kind, md_kind.value))

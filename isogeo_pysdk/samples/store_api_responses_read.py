@@ -45,7 +45,7 @@ load_dotenv("dev.env", override=True)
 # ######## Export functions ###########
 # ###########################################################################
 def _meta_get_resource_sync(func_outname_params: dict):
-    """Meta function"""
+    """Meta function."""
     route_method = func_outname_params.get("route")
     out_filename = Path(outdir, func_outname_params.get("output_json_name") + ".json")
 

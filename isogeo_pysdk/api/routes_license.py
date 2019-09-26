@@ -36,8 +36,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiLicense:
-    """Routes as methods of Isogeo API used to manipulate licenses (conditions).
-    """
+    """Routes as methods of Isogeo API used to manipulate licenses (conditions)."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -323,8 +322,8 @@ class ApiLicense:
     def associate_metadata(
         self, metadata: Metadata, license: License, description: str, force: bool = 0
     ) -> Response:
-        """Associate a condition (license + specific description) to a metadata.
-        When a license is associated to a metadata, it becomes a condition.
+        """Associate a condition (license + specific description) to a metadata. When a license is
+        associated to a metadata, it becomes a condition.
 
         By default, if the specified license is already associated, the method won't duplicate the association.
         Use `force` option to overpass this behavior.
@@ -419,5 +418,5 @@ class ApiLicense:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_license = ApiLicense()

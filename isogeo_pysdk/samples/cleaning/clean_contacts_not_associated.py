@@ -40,7 +40,7 @@ WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 # ######## Export functions ###########
 # ###########################################################################
 def _meta_delete_contact(contact: dict):
-    """Meta function"""
+    """Meta function."""
     try:
         isogeo.contact.delete(
             workgroup_id=contact.get("owner").get("_id"), contact_id=contact.get("_id")

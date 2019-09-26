@@ -2,10 +2,9 @@
 #! python3  # noqa E265
 
 
-"""
-    Python SDK wrapping the  Isogeo API
+"""Python SDK wrapping the  Isogeo API.
 
-    Author: Julien Moura (@geojulien) for @Isogeo
+Author: Julien Moura (@geojulien) for @Isogeo
 """
 
 # #############################################################################
@@ -106,7 +105,6 @@ class Isogeo(OAuth2Session):
 
         # getting a token
         isogeo.connect()
-
     """
 
     # -- ATTRIBUTES -----------------------------------------------------------
@@ -389,7 +387,7 @@ class Isogeo(OAuth2Session):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     # ------------ Specific imports ----------------
     from dotenv import load_dotenv
     from logging.handlers import RotatingFileHandler

@@ -41,8 +41,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiWorkgroup:
-    """Routes as methods of Isogeo API used to manipulate workgroups.
-    """
+    """Routes as methods of Isogeo API used to manipulate workgroups."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -158,7 +157,6 @@ class ApiWorkgroup:
 
             - 0 = no check
             - 1 = compare name [DEFAULT]
-
         """
         # check if object has a correct contact
         if not hasattr(workgroup, "contact") or not isinstance(
@@ -328,8 +326,7 @@ class ApiWorkgroup:
 
     # -- Routes to manage the related objects ------------------------------------------
     def invite(self, workgroup_id: str, invitation: Invitation) -> dict:
-        """Invite new user to a workgroup.
-        Just a shortcut.
+        """Invite new user to a workgroup. Just a shortcut.
 
         :param str workgroup_id: workgroup UUID
         :param Invitation invitation: Invitation object to send
@@ -340,8 +337,8 @@ class ApiWorkgroup:
 
     @lru_cache()
     def invitations(self, workgroup_id: str) -> dict:
-        """Returns active invitations (including expired) for the specified workgroup.
-        Just a shortcut.
+        """Returns active invitations (including expired) for the specified workgroup. Just a
+        shortcut.
 
         :param str workgroup_id: workgroup UUID
         """
@@ -514,8 +511,8 @@ class ApiWorkgroup:
     @lru_cache()
     @ApiDecorators._check_bearer_validity
     def coordinate_systems(self, workgroup_id: str, caching: bool = 1) -> list:
-        """Returns coordinate-systems for the specified workgroup.
-        It's just an alias for the ApiCoordinateSystem.listing method.
+        """Returns coordinate-systems for the specified workgroup. It's just an alias for the
+        ApiCoordinateSystem.listing method.
 
         :param str workgroup_id: workgroup UUID
         :param bool caching: option to cache the response
@@ -529,5 +526,5 @@ class ApiWorkgroup:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_workgroup = ApiWorkgroup()

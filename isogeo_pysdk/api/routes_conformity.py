@@ -37,8 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiConformity:
-    """Routes as methods of Isogeo API used to manipulate conformity with specifications.
-    """
+    """Routes as methods of Isogeo API used to manipulate conformity with specifications."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -221,5 +220,5 @@ class ApiConformity:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_conformity = ApiConformity()
