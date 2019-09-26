@@ -102,7 +102,7 @@ class TestConformity(unittest.TestCase):
 
         # fixture metadata
         cls.fixture_metadata_existing = cls.isogeo.metadata.get(
-            METADATA_TEST_FIXTURE_UUID, include=["specifications"]
+            METADATA_TEST_FIXTURE_UUID, include=("specifications",)
         )
 
         md = Metadata(title=get_test_marker(), type="vectorDataset")

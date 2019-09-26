@@ -102,7 +102,7 @@ class TestConditions(unittest.TestCase):
 
         # fixture metadata
         cls.fixture_metadata_existing = cls.isogeo.metadata.get(
-            METADATA_TEST_FIXTURE_UUID, include=["conditions"]
+            METADATA_TEST_FIXTURE_UUID, include=("conditions",)
         )
 
         md = Metadata(title=get_test_marker(), type="vectorDataset")

@@ -188,7 +188,7 @@ class TestServiceOperations(unittest.TestCase):
 
     #     # check association result
     #     service_updated = self.isogeo.metadata.get(
-    #         metadata_id=metadata_service._id, include=["operations"]
+    #         metadata_id=metadata_service._id, include=("operations",)
     #     )
 
     #     li_operations_datasets = list(
