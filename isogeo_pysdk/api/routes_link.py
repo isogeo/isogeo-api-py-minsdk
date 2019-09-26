@@ -58,7 +58,6 @@ class ApiLink:
         # initialize
         super(ApiLink, self).__init__()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(self, metadata: Metadata) -> list:
         """Get links of a metadata.
@@ -228,7 +227,7 @@ class ApiLink:
 
         # check relation between link kind/actions
         link.actions = self.clean_kind_action_liability(
-            link_actions=link.actions, link_kind=link.kind
+            link_actions=tuple(link.actions), link_kind=link.kind
         )
 
         # deprecation warnings

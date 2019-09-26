@@ -278,9 +278,9 @@ class TestLinks(unittest.TestCase):
     def test_links_matrix_cleaner(self):
         """Using the links kind/actions cleaner."""
         cleaned_actions_data = self.isogeo.metadata.links.clean_kind_action_liability(
-            link_kind="data", link_actions=["download", "other", "view"]
+            link_kind="data", link_actions=("download", "other", "view")
         )
-        self.assertListEqual(cleaned_actions_data, ["download", "other"])
+        self.assertTupleEqual(cleaned_actions_data, ("download", "other"))
 
 
 # ##############################################################################

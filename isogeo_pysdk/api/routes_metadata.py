@@ -371,7 +371,6 @@ class ApiMetadata:
         """
         return self.api_client.catalog.metadata(metadata_id=metadata._id)
 
-    @lru_cache()
     def keywords(
         self, metadata: Metadata, include: tuple = ("_abilities", "count", "thesaurus")
     ) -> list:
