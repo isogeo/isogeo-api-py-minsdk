@@ -67,6 +67,14 @@ class TestEnums(unittest.TestCase):
         for i in ApplicationTypes:
             self.assertIsInstance(i.value, int)
 
+    def test_catalog_statistic_tags(self):
+        """Check catalog stats tags list"""
+        self.assertEqual(len(CatalogStatisticsTags), 5)
+        self.assertTrue("contact" in CatalogStatisticsTags.__members__)
+        self.assertFalse("Format" in CatalogStatisticsTags.__members__)
+        for i in CatalogStatisticsTags:
+            self.assertIsInstance(i.value, str)
+
     def test_contact_roles(self):
         """Check contact's roles list"""
         self.assertEqual(len(ContactRoles), 11)
