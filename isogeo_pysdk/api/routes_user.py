@@ -95,7 +95,7 @@ class ApiUser:
         return req_users.json()
 
     @ApiDecorators._check_bearer_validity
-    def user(self, user_id: str, include: list = ["_abilities"]) -> User:
+    def user(self, user_id: str, include: tuple = ("_abilities")) -> User:
         """Get details about a specific user.
 
         :param str user_id: user UUID

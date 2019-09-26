@@ -13,7 +13,7 @@
 
 # Standard library
 import logging
-
+from functools import lru_cache
 
 # 3rd party
 from requests.models import Response
@@ -75,12 +75,13 @@ class ApiMetadata:
         # initialize
         super(ApiMetadata, self).__init__()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(self, metadata_id: str, include: tuple or str = ()) -> Metadata:
         """Get complete or partial metadata about a specific metadata (= resource).
 
         :param str metadata_id: metadata UUID to get
-        :param list include: subresources that should be included. Available values:
+        :param tuple include: subresources that should be included. Available values:
 
           - one or various from MetadataSubresources (Enum)
           - "all" to get complete metadata with every subresource included
@@ -360,6 +361,7 @@ class ApiMetadata:
         return req_metadata_dl_xml
 
     # -- Routes to manage subresources -------------------------------------------------
+    @lru_cache()
     def catalogs(self, metadata: Metadata) -> list:
         """Returns asssociated catalogs with a metadata. Just a shortcut.
 
@@ -369,13 +371,14 @@ class ApiMetadata:
         """
         return self.api_client.catalog.metadata(metadata_id=metadata._id)
 
+    @lru_cache()
     def keywords(
-        self, metadata: Metadata, include: list = ["_abilities", "count", "thesaurus"]
+        self, metadata: Metadata, include: tuple = ("_abilities", "count", "thesaurus")
     ) -> list:
         """Returns asssociated keywords with a metadata. Just a shortcut.
 
         :param Metadata metadata: metadata object
-        :param list include: subresources that should be returned. Available values:
+        :param tuple include: subresources that should be returned. Available values:
 
         * '_abilities'
         * 'count'

@@ -61,13 +61,13 @@ class ApiCatalog:
     def listing(
         self,
         workgroup_id: str = None,
-        include: list = ["_abilities", "count"],
+        include: tuple = ("_abilities", "count"),
         caching: bool = 1,
     ) -> list:
         """Get workgroup catalogs.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param list include: additionnal subresource to include in the response
+        :param tuple include: additionnal subresource to include in the response
         :param bool caching: option to cache the response
         """
         # check workgroup UUID
@@ -77,7 +77,7 @@ class ApiCatalog:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        payload = {"_include": ",".join(include)}
 
         # request URL
         url_catalogs = utils.get_request_base_url(
@@ -156,7 +156,7 @@ class ApiCatalog:
         self,
         workgroup_id: str,
         catalog_id: str,
-        include: list = ["_abilities", "count"],
+        include: tuple = ("_abilities", "count"),
     ) -> Catalog:
         """Get details about a specific catalog.
 
@@ -178,7 +178,7 @@ class ApiCatalog:
             pass
 
         # request parameter
-        payload = {"_include": include}
+        payload = {"_include": ",".join(include)}
 
         # catalog route
         url_catalog = utils.get_request_base_url(

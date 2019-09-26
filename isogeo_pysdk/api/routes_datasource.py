@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+from functools import lru_cache
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
@@ -50,9 +51,10 @@ class ApiDatasource:
         # initialize
         super(ApiDatasource, self).__init__()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
-    def datasources(
-        self, workgroup_id: str = None, include: list = [], caching: bool = 1
+    def listing(
+        self, workgroup_id: str = None, include: tuple = None, caching: bool = 1
     ) -> list:
         """Get workgroup datasources.
 
@@ -67,7 +69,7 @@ class ApiDatasource:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        payload = {"_include": ",".join(include)}
 
         # request URL
         url_datasources = utils.get_request_base_url(
@@ -176,7 +178,7 @@ class ApiDatasource:
         if check_exists == 1:  # check names
             # retrieve workgroup datasources
             if not self.api_client._wg_datasources_names:
-                self.datasources(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=[])
             # check
             if datasource.name in self.api_client._wg_datasources_names:
                 logger.debug(
@@ -188,7 +190,7 @@ class ApiDatasource:
         elif check_exists == 2:  # check URL (location)
             # retrieve workgroup datasources
             if not self.api_client._wg_datasources_urls:
-                self.datasources(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=[])
             # check
             if datasource.location in self.api_client._wg_datasources_urls:
                 logging.debug(

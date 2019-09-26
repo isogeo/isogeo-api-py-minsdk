@@ -56,18 +56,18 @@ class ApiApplication:
     def listing(
         self,
         workgroup_id: str = None,
-        include: list = ("_abilities"),
+        include: tuple = ("_abilities",),
         caching: bool = 1,
     ) -> list:
         """Get all applications which are accessible by the authenticated user OR applications for a
         workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup. If `None`, then list applications for the autenticated user
-        :param list include: additionnal subresource to include in the response.
+        :param tuple include: additionnal subresource to include in the response.
         :param bool caching: option to cache the response
         """
         # handling request parameters
-        payload = {"_include": include}
+        payload = {"_include": ",".join(include)}
 
         # URL
         if workgroup_id is not None:
@@ -122,12 +122,12 @@ class ApiApplication:
 
     @ApiDecorators._check_bearer_validity
     def get(
-        self, application_id: str, include: list = ["_abilities", "groups"]
+        self, application_id: str, include: tuple = ("_abilities", "groups")
     ) -> Application:
         """Get details about a specific application.
 
         :param str application_id: application UUID
-        :param list include: additionnal subresource to include in the response
+        :param tuple include: additionnal subresource to include in the response
         """
         # check application UUID
         if not checker.check_is_uuid(application_id):
@@ -136,7 +136,7 @@ class ApiApplication:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        payload = {"_include": ",".join(include)}
 
         # URL
         url_application = utils.get_request_base_url(
@@ -347,7 +347,7 @@ class ApiApplication:
             pass
 
         # handling request parameters
-        # payload = {"_include": include}
+        # payload = {"_include": ",".join(include)}
 
         # URL
         url_application_groups = utils.get_request_base_url(

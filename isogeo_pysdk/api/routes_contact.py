@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+from functools import lru_cache
 
 # 3rd party
 from requests.models import Response
@@ -54,14 +55,15 @@ class ApiContact:
         # initialize
         super(ApiContact, self).__init__()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
-        self, workgroup_id: str = None, include: list = ["count"], caching: bool = 1
+        self, workgroup_id: str = None, include: tuple = ("count",), caching: bool = 1
     ) -> list:
         """Get workgroup contacts.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param list include: identifier of the owner workgroup
+        :param tuple include: identifier of the owner workgroup
         :param bool caching: option to cache the response
         """
         # check workgroup UUID
@@ -72,7 +74,7 @@ class ApiContact:
 
         # handling request parameters
         include = checker._check_filter_includes(include, "contact")
-        payload = {"_include": include}
+        payload = {"_include": ",".join(include)}
 
         # request URL
         url_contacts = utils.get_request_base_url(

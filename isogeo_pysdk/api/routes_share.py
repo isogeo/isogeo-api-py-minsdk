@@ -117,7 +117,7 @@ class ApiShare:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        payload = {"_include": ",".join(include)}
 
         # URL
         url_share = utils.get_request_base_url(route="shares/{}".format(share_id))

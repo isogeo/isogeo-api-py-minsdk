@@ -75,7 +75,7 @@ class ApiSpecification:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        payload = {"_include": ",".join(include)}
 
         # request URL
         url_specifications = utils.get_request_base_url(
