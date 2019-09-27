@@ -170,7 +170,7 @@ class TestEnums(unittest.TestCase):
 
     def test_search_georelations(self):
         """Check geometric relations list."""
-        self.assertEqual(len(SearchGeoRelations), 5)
+        self.assertEqual(len(SearchGeoRelations), 6)
         self.assertTrue("contains" in SearchGeoRelations.__members__)
         self.assertFalse("Overlaps" in SearchGeoRelations.__members__)
         for i in SearchGeoRelations:
