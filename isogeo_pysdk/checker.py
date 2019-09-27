@@ -15,7 +15,7 @@ from collections import Counter
 from uuid import UUID
 
 # modules
-from isogeo_pysdk.enums import MetadataSubresources
+from isogeo_pysdk.enums import LinkActions, MetadataSubresources
 
 # ##############################################################################
 # ########## Globals ###############
@@ -42,8 +42,6 @@ FILTER_KEYS = {
     "type": [],
 }
 
-FILTER_ACTIONS = ("download", "other", "view")
-
 FILTER_PROVIDERS = ("manual", "auto")
 
 FILTER_TYPES = {
@@ -55,8 +53,6 @@ FILTER_TYPES = {
 }
 
 GEORELATIONS = ("contains", "disjoint", "equal", "intersects", "overlaps", "within")
-
-WG_KEYWORDS_CASING = ("capitalized", "lowercase", "mixedCase", "uppercase")
 
 EDIT_TABS = {
     "identification": ",".join(FILTER_TYPES),
@@ -216,9 +212,14 @@ class IsogeoChecker(object):
             raise ValueError(
                 "type value must be one of: {}".format(" | ".join(FILTER_TYPES))
             )
-        elif dico_filters.get("action", ("download",))[0].lower() not in FILTER_ACTIONS:
+        elif (
+            dico_filters.get("action", ("download",))[0].lower()
+            not in LinkActions.__members__
+        ):
             raise ValueError(
-                "action value must be one of: {}".format(" | ".join(FILTER_ACTIONS))
+                "action value must be one of: {}".format(
+                    " | ".join(LinkActions.__members__)
+                )
             )
         elif (
             dico_filters.get("provider", ("manual",))[0].lower() not in FILTER_PROVIDERS

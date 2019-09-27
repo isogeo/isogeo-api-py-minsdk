@@ -157,7 +157,7 @@ class ApiEvent:
         if event.kind == "creation":
             # retrieve metadata events
             metadata_events = self.api_client.metadata.get(
-                metadata._id, include=["events"]
+                metadata._id, include=("events",)
             )
             # filter on creation events
             events_creation = [

@@ -95,7 +95,7 @@ class ApiUser:
         return req_users.json()
 
     @ApiDecorators._check_bearer_validity
-    def user(self, user_id: str, include: list = ["_abilities"]) -> User:
+    def user(self, user_id: str, include: tuple = ("_abilities")) -> User:
         """Get details about a specific user.
 
         :param str user_id: user UUID
@@ -108,7 +108,10 @@ class ApiUser:
             pass
 
         # handling request parameters
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         url_user = utils.get_request_base_url(route="users/{}".format(user_id))
@@ -150,7 +153,7 @@ class ApiUser:
     #     if check_exists == 1:
     #         # retrieve user users
     #         if not self.api_client._users_names:
-    #             self.listing(include=[])
+    #             self.listing(include=())
     #         # check
     #         if user.contact.name in self.api_client._users_names:
     #             logger.debug(

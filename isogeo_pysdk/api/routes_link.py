@@ -15,6 +15,7 @@
 import logging
 import mimetypes
 import re
+from functools import lru_cache
 from pathlib import Path
 
 # 3rd party
@@ -85,6 +86,7 @@ class ApiLink:
         # end of method
         return req_links.json()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(self, metadata_id: str, link_id: str) -> Link:
         """Get details about a specific link.
@@ -225,7 +227,7 @@ class ApiLink:
 
         # check relation between link kind/actions
         link.actions = self.clean_kind_action_liability(
-            link_actions=link.actions, link_kind=link.kind
+            link_actions=tuple(link.actions), link_kind=link.kind
         )
 
         # deprecation warnings
@@ -565,13 +567,71 @@ class ApiLink:
         return Link(**link_augmented)
 
     # -- Routes to manage the related objects ------------------------------------------
+    @lru_cache(maxsize=512)
     @ApiDecorators._check_bearer_validity
     def kinds_actions(self, caching: bool = 1) -> list:
         """Get the relation between kinds and action for links.
 
         :param bool caching: cache the response into the main API client instance. Defaults to True.
 
+        :returns: list of dictionaries per link kinds
         :rtype: list
+
+        :Example:
+
+        .. code-block:: python
+
+            import pprint
+            pprint.pprint(isogeo.metadata.links.kinds_actions())
+
+            >>> [
+                    {
+                        'actions':
+                        [
+                            'download',
+                            'view',
+                            'other'
+                        ],
+                        'kind': 'url',
+                        'name': 'Lien'
+                    },
+                    {
+                        'actions': ['download', 'view', 'other'],
+                        'kind': 'wfs',
+                        'name': 'Service WFS'
+                    },
+                    {
+                        'actions': ['view', 'other'],
+                        'kind': 'wms',
+                        'name': 'Service WMS'
+                    },
+                    {
+                        'actions': ['view', 'other'],
+                        'kind': 'wmts',
+                        'name': 'Service WMTS'
+                    },
+                    {
+                        'actions': ['download', 'view', 'other'],
+                        'kind': 'esriFeatureService',
+                        'name': 'Service ESRI Feature'
+                    },
+                    {
+                        'actions': ['view', 'other'],
+                        'kind': 'esriMapService',
+                        'name': 'Service ESRI Map'
+                    },
+                    {
+                        'actions': ['view', 'other'],
+                        'kind': 'esriTileService',
+                        'name': 'Service ESRI Tile'
+                    },
+                    {
+                        'actions': ['download', 'other'],
+                        'kind': 'data',
+                        'name': 'Donnée brute'
+                    }
+                ]
+
         """
         # request URL
         url_links = utils.get_request_base_url(route="link-kinds/")
@@ -598,7 +658,8 @@ class ApiLink:
         return req_links.json()
 
     # -- Helpers -----------------------------------------------------------------------
-    def clean_kind_action_liability(self, link_actions: list, link_kind: str) -> list:
+    @lru_cache(maxsize=512)
+    def clean_kind_action_liability(self, link_actions: tuple, link_kind: str) -> tuple:
         """Link available actions depend on link kind. Relationships between kinds and actions are
         described in the `/link-kinds` route. This is a helper checking the liability between
         kind/actions/type and cleaning if needed. Useful before creating or updating a link.
@@ -606,7 +667,20 @@ class ApiLink:
         :param list link_actions: link actions
         :param str link_kind: link kind
 
-        :rtype: list
+        :rtype: tuple
+
+        :Example:
+
+        .. code-block:: python
+
+            # invalid action will be removed
+            print(isogeo.metadata.links.clean_kind_action_liability(
+                link_actions=("download", "stream"),
+                link_kind="url"
+                )
+            )
+            >>> ('download',)
+
         """
         # get matrix kinds/actions as dict - use cache if exists
         if self.api_client._links_kinds_actions:
@@ -633,7 +707,7 @@ class ApiLink:
                 if action in matrix_kind_actions.get(link_kind)
             ]
 
-        return link_actions
+        return tuple(link_actions)
 
 
 # ##############################################################################

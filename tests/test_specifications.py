@@ -228,7 +228,7 @@ class TestSpecifications(unittest.TestCase):
 
         # refresh fixture metadata
         self.fixture_metadata = self.isogeo.metadata.get(
-            metadata_id=self.fixture_metadata._id, include=["specifications"]
+            metadata_id=self.fixture_metadata._id, include=("specifications",)
         )
 
         # try to associate the same specification = error
@@ -241,7 +241,7 @@ class TestSpecifications(unittest.TestCase):
         # # -- dissociate
         # refresh fixture metadata
         self.fixture_metadata = self.isogeo.metadata.get(
-            metadata_id=self.fixture_metadata._id, include=["specifications"]
+            metadata_id=self.fixture_metadata._id, include=("specifications",)
         )
         for specification in self.fixture_metadata.specifications:
             self.isogeo.specification.dissociate_metadata(

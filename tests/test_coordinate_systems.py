@@ -152,7 +152,8 @@ class TestCoordinateSystems(unittest.TestCase):
 
         # refresh fixture metadata
         self.metadata_updated = self.isogeo.metadata.get(
-            metadata_id=self.metadata_fixture_created._id, include=["coordinate-system"]
+            metadata_id=self.metadata_fixture_created._id,
+            include=("coordinate-system",),
         )
 
         # -- dissociate

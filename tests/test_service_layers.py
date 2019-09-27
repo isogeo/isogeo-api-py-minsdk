@@ -195,7 +195,7 @@ class TestServiceLayers(unittest.TestCase):
 
         # check association result
         service_updated = self.isogeo.metadata.get(
-            metadata_id=metadata_service._id, include=["layers"]
+            metadata_id=metadata_service._id, include=("layers",)
         )
 
         li_associated_layers = [

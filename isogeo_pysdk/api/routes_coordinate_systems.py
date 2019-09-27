@@ -198,7 +198,7 @@ class ApiCoordinateSystem:
                 # retrieve metadata
                 md = isogeo.metadata.get(
                         metadata_id=METADATA_UUID,
-                        include=[]
+                        include=()
                 )
                 # retrieve one of the SRS selected in the workgroup of the metadata
                 wg_srs = self.isogeo.coordinate_system.listing(md._creator.get("_id"))

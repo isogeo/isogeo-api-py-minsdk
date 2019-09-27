@@ -18,7 +18,6 @@ python -m unittest tests.test_licenses.TestLicenses.test_licenses_create_basic
 # Standard library
 import logging
 import unittest
-import urllib3
 from os import environ
 from pathlib import Path
 from random import sample
@@ -28,10 +27,10 @@ from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
+import urllib3
 
 # module target
-from isogeo_pysdk import Isogeo, License, Metadata
-
+from isogeo_pysdk import Isogeo, IsogeoUtils, License, Metadata
 
 # #############################################################################
 # ######## Globals #################
@@ -46,6 +45,8 @@ hostname = gethostname()
 # API access
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+
+utils = IsogeoUtils()
 
 # #############################################################################
 # ########## Helpers ###############
@@ -233,8 +234,9 @@ class TestLicenses(unittest.TestCase):
         )
 
         # refresh fixture metadata
+        utils.cache_clearer(0)
         self.fixture_metadata = self.isogeo.metadata.get(
-            metadata_id=self.fixture_metadata._id, include=["conditions"]
+            metadata_id=self.fixture_metadata._id, include=("conditions",)
         )
 
         # try to associate the same license = error
@@ -257,7 +259,7 @@ class TestLicenses(unittest.TestCase):
         # -- dissociate
         # refresh fixture metadata
         self.fixture_metadata = self.isogeo.metadata.get(
-            metadata_id=self.fixture_metadata._id, include=["conditions"]
+            metadata_id=self.fixture_metadata._id, include=("conditions",)
         )
 
         # add created license to deletion

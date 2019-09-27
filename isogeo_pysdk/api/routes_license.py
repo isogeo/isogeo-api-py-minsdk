@@ -57,13 +57,13 @@ class ApiLicense:
     def listing(
         self,
         workgroup_id: str = None,
-        include: list = ["_abilities", "count"],
+        include: tuple = ("_abilities", "count"),
         caching: bool = 1,
     ) -> list:
         """Get workgroup licenses.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param list include: additionnal subresource to include in the response
+        :param tuple include: additionnal subresource to include in the response
         :param bool caching: option to cache the response
         """
         # check workgroup UUID
@@ -73,7 +73,10 @@ class ApiLicense:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_licenses = utils.get_request_base_url(
@@ -162,7 +165,7 @@ class ApiLicense:
         if check_exists == 1:
             # retrieve workgroup licenses
             if not self.api_client._wg_licenses_names:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if license.name in self.api_client._wg_licenses_names:
                 logger.debug(
@@ -390,7 +393,7 @@ class ApiLicense:
                     "Conditions have not been included during request. So, let's renew it!"
                 )
                 metadata_with_conditions = self.api_client.metadata.get(
-                    metadata_id=metadata._id, include=["conditions"]
+                    metadata_id=metadata._id, include=("conditions",)
                 )
                 return self.associate_metadata(
                     metadata=metadata_with_conditions,

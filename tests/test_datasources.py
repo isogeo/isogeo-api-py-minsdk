@@ -243,7 +243,7 @@ class TestDatasources(unittest.TestCase):
     def test_datasources_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/datasources}"""
         # retrieve workgroup datasources
-        wg_datasources = self.isogeo.datasource.datasources(
+        wg_datasources = self.isogeo.datasource.listing(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
         )
         # parse and test object loader

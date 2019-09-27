@@ -75,7 +75,10 @@ class ApiSpecification:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_specifications = utils.get_request_base_url(
@@ -169,7 +172,7 @@ class ApiSpecification:
         if check_exists == 1:
             # retrieve workgroup specifications
             if not self.api_client._wg_specifications_names:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if specification.name in self.api_client._wg_specifications_names:
                 logger.debug(

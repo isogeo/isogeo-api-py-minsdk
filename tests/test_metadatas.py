@@ -205,7 +205,7 @@ class TestMetadatas(unittest.TestCase):
             # group name and _id
             self.assertIsInstance(metadata.groupName, str)
             self.assertIsInstance(metadata.groupId, str)
-            group = self.isogeo.workgroup.get(metadata.groupId, include=None)
+            group = self.isogeo.workgroup.get(metadata.groupId, include=())
             self.assertIsInstance(group, Workgroup)
             self.assertEqual(metadata.groupId, group._id)
             self.assertEqual(metadata.groupName, group.name)

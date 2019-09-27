@@ -117,7 +117,10 @@ class ApiShare:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         url_share = utils.get_request_base_url(route="shares/{}".format(share_id))

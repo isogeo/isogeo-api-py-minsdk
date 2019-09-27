@@ -86,7 +86,7 @@ class ApiThesaurus:
     def thesaurus(
         self,
         thesaurus_id: UUID = "1616597fbc4348c8b11ef9d59cf594c8",
-        include: list = ["_abilities"],
+        include: tuple = ("_abilities",),
     ) -> Thesaurus:
         """Get a thesaurus.
 
@@ -103,7 +103,10 @@ class ApiThesaurus:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL builder
         url_thesaurus = utils.get_request_base_url(

@@ -317,7 +317,7 @@ class ApiService:
         self.api_client.metadata.update(new_metadata_service)
 
         new_md = self.api_client.metadata.get(
-            metadata_id=new_metadata_service._id, include=["layers", "operations"]
+            metadata_id=new_metadata_service._id, include=("layers", "operations")
         )
 
         return new_md
@@ -343,7 +343,7 @@ class ApiService:
                 "Let's retrieve these subresources..."
             )
             service = self.api_client.metadata.get(
-                metadata_id=service._id, include=["layers", "operations"]
+                metadata_id=service._id, include=("layers", "operations")
             )
 
         # list all layers which have been associated
@@ -388,7 +388,7 @@ class ApiService:
             )
 
         return self.api_client.metadata.get(
-            metadata_id=service._id, include=["layers", "operations"]
+            metadata_id=service._id, include=("layers", "operations")
         )
 
 

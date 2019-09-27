@@ -43,7 +43,7 @@ if __name__ == "__main__":
     # search
     search = isogeo.search(
         query="type:vector-dataset",  # filter only on vectors
-        include=["feature-attributes"],  # ask for including feature attributes
+        include=("feature-attributes",),  # ask for including feature attributes
         page_size=100,  # max metadata to download
         whole_results=0,  # download only the first results page
     )
