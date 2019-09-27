@@ -108,7 +108,10 @@ class ApiUser:
             pass
 
         # handling request parameters
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         url_user = utils.get_request_base_url(route="users/{}".format(user_id))

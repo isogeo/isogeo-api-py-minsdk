@@ -67,7 +67,10 @@ class ApiApplication:
         :param bool caching: option to cache the response
         """
         # handling request parameters
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         if workgroup_id is not None:
@@ -136,7 +139,10 @@ class ApiApplication:
             pass
 
         # handling request parameters
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         url_application = utils.get_request_base_url(
@@ -347,7 +353,10 @@ class ApiApplication:
             pass
 
         # handling request parameters
-        # payload = {"_include": ",".join(include)}
+        # if isinstance(include, (tuple, list)):
+        #     payload = {"_include": ",".join(include)}
+        # else:
+        #     payload = None
 
         # URL
         url_application_groups = utils.get_request_base_url(

@@ -69,7 +69,10 @@ class ApiDatasource:
             pass
 
         # handling request parameters
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_datasources = utils.get_request_base_url(

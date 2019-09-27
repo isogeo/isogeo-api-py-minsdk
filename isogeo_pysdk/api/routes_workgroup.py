@@ -74,7 +74,10 @@ class ApiWorkgroup:
         :param bool caching: option to cache the response
         """
         # handling request parameters
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_workgroups = utils.get_request_base_url(route="groups")
@@ -123,7 +126,10 @@ class ApiWorkgroup:
             pass
 
         # handling request parameters
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         url_workgroup = utils.get_request_base_url(

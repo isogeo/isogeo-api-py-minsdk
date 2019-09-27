@@ -60,7 +60,10 @@ class ApiAccount:
         :param bool caching: option to cache the response
         """
         # handling request parameters
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_account = utils.get_request_base_url(route="account")

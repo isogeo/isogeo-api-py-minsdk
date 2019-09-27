@@ -77,7 +77,10 @@ class ApiKeyword:
             pass
 
         # handling request parameters
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         url_metadata_keywords = utils.get_request_base_url(
@@ -296,7 +299,10 @@ class ApiKeyword:
         >>> keyword = isogeo.keyword.get(random_keyword)
         """
         # request parameter
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # keyword route
         url_keyword = utils.get_request_base_url(route="keywords/{}".format(keyword_id))
