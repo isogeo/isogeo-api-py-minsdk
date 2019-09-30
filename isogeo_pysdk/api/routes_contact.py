@@ -73,8 +73,10 @@ class ApiContact:
             pass
 
         # handling request parameters
-        include = checker._check_filter_includes(include, "contact")
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_contacts = utils.get_request_base_url(
