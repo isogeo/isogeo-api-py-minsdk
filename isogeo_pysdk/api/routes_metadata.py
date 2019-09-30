@@ -276,13 +276,41 @@ class ApiMetadata:
     def update(self, metadata: Metadata) -> Metadata:
         """Update a metadata, but **ONLY** the root attributes, not the subresources.
 
+        Certain attributes of the Metadata object to update are required:
+
+          - _id
+          - editionProfile
+          - type
+
+        See: https://github.com/isogeo/isogeo-api-py-minsdk/issues/116
+
         :param Metadata metadata: metadata object to update
+
+        :rtype: Metadata
+        :returns: the updated metadata or the request error
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):
             raise ValueError(
                 "Metadata ID is not a correct UUID: {}".format(metadata._id)
             )
+        else:
+            pass
+
+        # check metadata required editionProfile
+        if not metadata.type:
+            raise ValueError("Metadata type is required: {}".format(metadata.type))
+        else:
+            pass
+
+        # check metadata required editionProfile
+        if not metadata.editionProfile:
+            logger.warning(
+                "Metadata to update is missing a required attribute 'editionProfile'. "
+                "It'll be set to 'manual'."
+                "See: https://github.com/isogeo/isogeo-api-py-minsdk/issues/116."
+            )
+            metadata.editionProfile = "manual"
         else:
             pass
 
