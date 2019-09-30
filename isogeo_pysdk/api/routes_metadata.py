@@ -273,7 +273,7 @@ class ApiMetadata:
         return True
 
     @ApiDecorators._check_bearer_validity
-    def update(self, metadata: Metadata) -> Metadata:
+    def update(self, metadata: Metadata, _http_method: str = "PATCH") -> Metadata:
         """Update a metadata, but **ONLY** the root attributes, not the subresources.
 
         Certain attributes of the Metadata object to update are required:
@@ -285,9 +285,23 @@ class ApiMetadata:
         See: https://github.com/isogeo/isogeo-api-py-minsdk/issues/116
 
         :param Metadata metadata: metadata object to update
+        :param str _http_method: HTTP method (verb) to use. \
+            Default to 'PATCH' but can be set to 'PUT' in certain cases (services).
 
         :rtype: Metadata
-        :returns: the updated metadata or the request error
+        :returns: the updated metadata or the request error.
+
+        :Example:
+
+        .. code-block:: python
+
+            # get a metadata
+            my_metadata = isogeo.metadata.get(metadata_id=METADATA_UUID)
+            # add an updated watermark in the abstract
+            my_metadata.abstract += '**Updated!**'
+            # push it online
+            isogeo.metadata.update(my_metadata)
+
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):
@@ -297,7 +311,7 @@ class ApiMetadata:
         else:
             pass
 
-        # check metadata required editionProfile
+        # check metadata required type
         if not metadata.type:
             raise ValueError("Metadata type is required: {}".format(metadata.type))
         else:
@@ -319,8 +333,13 @@ class ApiMetadata:
             route="resources/{}".format(metadata._id)
         )
 
+        # HTTP method according to the metadata.type
+        if metadata.type == "service" and _http_method != "PUT":
+            return self.update(metadata=metadata, _http_method="PUT")
+
         # request
-        req_metadata_update = self.api_client.patch(
+        req_metadata_update = self.api_client.request(
+            method=_http_method,
             url=url_metadata_update,
             json=metadata.to_dict_creation(),
             headers=self.api_client.header,
