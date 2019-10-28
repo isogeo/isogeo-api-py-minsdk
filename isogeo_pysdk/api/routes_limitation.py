@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes to manage metadata limitations.
@@ -17,7 +17,7 @@ import logging
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Directive, Limitation, Metadata
+from isogeo_pysdk.models import Limitation, Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -33,8 +33,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiLimitation:
-    """Routes as methods of Isogeo API used to manipulate metadata limitations (CGUs).
-    """
+    """Routes as methods of Isogeo API used to manipulate metadata limitations (CGUs)."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -311,5 +310,5 @@ class ApiLimitation:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_directive = ApiLimitation()

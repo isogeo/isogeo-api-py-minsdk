@@ -1,16 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # #############################################################################
 # ########## Libraries #############
 # ##################################
 
 # standard library
-import asyncio
 import logging
 import urllib3
 
-from concurrent.futures import ThreadPoolExecutor
 from os import environ
 from timeit import default_timer
 
@@ -18,7 +16,7 @@ from timeit import default_timer
 from dotenv import load_dotenv
 
 # Isogeo
-from isogeo_pysdk import IsogeoSession
+from isogeo_pysdk import Isogeo
 
 # #############################################################################
 # ##### Stand alone program ########
@@ -38,9 +36,9 @@ if __name__ == "__main__":
         urllib3.disable_warnings()
 
     # instanciate
-    isogeo = IsogeoSession(
-        client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-        client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+    isogeo = Isogeo(
+        client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+        client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
     )

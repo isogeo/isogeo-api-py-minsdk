@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Metadata (= Resource) entity
@@ -12,12 +12,28 @@
 # ##################################
 
 # standard library
+import logging
 import pprint
+import re
+import unicodedata
 
 # package
-from isogeo_pysdk.enums import MetadataSubresources, MetadataTypes
+from isogeo_pysdk.enums import MetadataTypes
 
-# from isogeo_pysdk.models.directive import Directive
+# others models
+from isogeo_pysdk.models import Workgroup
+
+
+# #############################################################################
+# ########## Globals ###############
+# ##################################
+
+logger = logging.getLogger(__name__)
+
+# for slugified title
+_regex_slugify_strip = re.compile(r"[^\w\s-]")
+_regex_slugify_hyphenate = re.compile(r"[-\s]+")
+
 
 # #############################################################################
 # ########## Classes ###############
@@ -132,10 +148,10 @@ class Metadata(object):
                 {}
             ]
         }
-
     """
 
-    attr_types = {
+    # -- ATTRIBUTES --------------------------------------------------------------------
+    ATTR_TYPES = {
         "_abilities": list,
         "_created": str,
         "_creator": dict,
@@ -152,8 +168,8 @@ class Metadata(object):
         "editionProfile": str,
         "encoding": str,
         "envelope": dict,
-        "events": dict,
-        "featureAttributes": dict,
+        "events": list,
+        "featureAttributes": list,
         "features": int,
         "format": str,
         "formatVersion": str,
@@ -183,7 +199,7 @@ class Metadata(object):
         "validityComment": str,
     }
 
-    attr_crea = {
+    ATTR_CREA = {
         "abstract": str,
         "collectionContext": str,
         "collectionMethod": str,
@@ -210,10 +226,27 @@ class Metadata(object):
         "validityComment": str,
     }
 
-    attr_map = {
+    ATTR_MAP = {
         "coordinateSystem": "coordinate-system",
         "featureAttributes": "feature-attributes",
     }
+
+    # -- CLASS METHODS -----------------------------------------------------------------
+    @classmethod
+    def clean_attributes(cls, raw_object: dict):
+        """Renames attributes which are incompatible with Python (hyphens...). See related issue:
+        https://github.com/isogeo/isogeo-api-py-minsdk/issues/82.
+
+        :param dict raw_object: metadata dictionary returned by a request.json()
+
+        :returns: the metadata with correct attributes
+        :rtype: Metadata
+        """
+        for k, v in cls.ATTR_MAP.items():
+            raw_object[k] = raw_object.pop(v, [])
+        return cls(**raw_object)
+
+    # -- CLASS INSTANCIATION -----------------------------------------------------------
 
     def __init__(
         self,
@@ -233,8 +266,8 @@ class Metadata(object):
         editionProfile: str = None,
         encoding: str = None,
         envelope: dict = None,
-        events: dict = None,
-        featureAttributes: dict = None,
+        events: list = None,
+        featureAttributes: list = None,
         features: int = None,
         format: str = None,
         formatVersion: str = None,
@@ -263,7 +296,7 @@ class Metadata(object):
         validTo: str = None,
         validityComment: str = None,
     ):
-        """Metadata model"""
+        """Metadata model."""
 
         # default values for the object attributes/properties
         self.__abilities = None
@@ -277,7 +310,7 @@ class Metadata(object):
         self._conditions = None
         self._contacts = None
         self._coordinateSystem = None
-        self._created = None
+        self._creation = None  # = created
         self._distance = None
         self._editionProfile = None
         self._encoding = None
@@ -293,7 +326,7 @@ class Metadata(object):
         self._layers = None
         self._limitations = None
         self._links = None
-        self._modified = None
+        self._modification = None  # = modified
         self._name = None
         self._operations = None
         self._path = None
@@ -337,7 +370,7 @@ class Metadata(object):
         if coordinateSystem is not None:
             self._coordinateSystem = coordinateSystem
         if created is not None:
-            self._created = created
+            self._creation = created
         if distance is not None:
             self._distance = distance
         if editionProfile is not None:
@@ -369,7 +402,7 @@ class Metadata(object):
         if links is not None:
             self._links = links
         if modified is not None:
-            self._modified = modified
+            self._modification = modified
         if name is not None:
             self._name = name
         if operations is not None:
@@ -413,6 +446,28 @@ class Metadata(object):
         :rtype: list
         """
         return self.__abilities
+
+    # _created
+    @property
+    def _created(self) -> str:
+        """Gets the creation datetime of the Metadata. Datetime format is:
+        `%Y-%m-%dT%H:%M:%S+00:00`.
+
+        :return: The created of this Metadata.
+        :rtype: str
+        """
+        return self.__created
+
+    # _modified
+    @property
+    def _modified(self) -> str:
+        """Gets the last modification datetime of this Metadata. Datetime format is:
+        `%Y-%m-%dT%H:%M:%S+00:00`.
+
+        :return: The modified of this Metadata.
+        :rtype: str
+        """
+        return self.__modified
 
     # metadata owner
     @property
@@ -540,19 +595,19 @@ class Metadata(object):
 
     # coordinateSystem
     @property
-    def coordinateSystem(self) -> str:
+    def coordinateSystem(self) -> dict:
         """Gets the coordinateSystem of this Metadata.
 
         :return: The coordinateSystem of this Metadata.
-        :rtype: str
+        :rtype: dict
         """
         return self._coordinateSystem
 
     @coordinateSystem.setter
-    def coordinateSystem(self, coordinateSystem: str):
+    def coordinateSystem(self, coordinateSystem: dict):
         """Sets the coordinate systems of this Metadata.
 
-        :param str coordinateSystem: to be set
+        :param dict coordinateSystem: to be set
         """
 
         self._coordinateSystem = coordinateSystem
@@ -560,21 +615,15 @@ class Metadata(object):
     # created
     @property
     def created(self) -> str:
-        """Gets the created of this Metadata.
+        """Gets the creation date of the data described by the Metadata. It's the equivalent of the
+        `created` original attribute (renamed to avoid conflicts with the _created` one).
 
-        :return: The created of this Metadata.
+        Date format is: `%Y-%m-%dT%H:%M:%S+00:00`.
+
+        :return: The creation of this Metadata.
         :rtype: str
         """
-        return self._created
-
-    @created.setter
-    def created(self, created: str):
-        """Sets the  of this Metadata.
-
-        :param str created: to be set
-        """
-
-        self._created = created
+        return self._creation
 
     # distance
     @property
@@ -654,57 +703,57 @@ class Metadata(object):
 
     # events
     @property
-    def events(self) -> str:
+    def events(self) -> list:
         """Gets the events of this Metadata.
 
         :return: The events of this Metadata.
-        :rtype: str
+        :rtype: list
         """
         return self._events
 
     @events.setter
-    def events(self, events: str):
+    def events(self, events: list):
         """Sets the  of this Metadata.
 
-        :param str events: to be set
+        :param list events: to be set
         """
 
         self._events = events
 
     # featureAttributes
     @property
-    def featureAttributes(self) -> str:
+    def featureAttributes(self) -> list:
         """Gets the featureAttributes of this Metadata.
 
         :return: The featureAttributes of this Metadata.
-        :rtype: str
+        :rtype: list
         """
         return self._featureAttributes
 
     @featureAttributes.setter
-    def featureAttributes(self, featureAttributes: str):
+    def featureAttributes(self, featureAttributes: list):
         """Sets the  of this Metadata.
 
-        :param str featureAttributes: to be set
+        :param list featureAttributes: to be set
         """
 
         self._featureAttributes = featureAttributes
 
     # features
     @property
-    def features(self) -> str:
+    def features(self) -> int:
         """Gets the features of this Metadata.
 
         :return: The features of this Metadata.
-        :rtype: str
+        :rtype: int
         """
         return self._features
 
     @features.setter
-    def features(self, features: str):
+    def features(self, features: int):
         """Sets the  of this Metadata.
 
-        :param str features: to be set
+        :param int features: to be set
         """
 
         self._features = features
@@ -861,24 +910,17 @@ class Metadata(object):
 
         self._links = links
 
-    # modified
+    # modification
     @property
     def modified(self) -> str:
-        """Gets the modified of this Metadata.
+        """Gets the last modification date of the data described by this Metadata.
 
-        :return: The modified of this Metadata.
+        It's the equivalent of the `created` original attribute (renamed to avoid conflicts with the _created` one).
+
+        :return: The modification of this Metadata.
         :rtype: str
         """
-        return self._modified
-
-    @modified.setter
-    def modified(self, modified: str):
-        """Sets the  of this Metadata.
-
-        :param str modified: to be set
-        """
-
-        self._modified = modified
+        return self._modification
 
     # name
     @property
@@ -1125,6 +1167,14 @@ class Metadata(object):
         :param str type: The type of this Metadata.
         """
 
+        # check type value
+        if type not in MetadataTypes.__members__:
+            raise ValueError(
+                "Metadata type '{}' is not an accepted value. Must be one of: {}.".format(
+                    type, " | ".join([e.name for e in MetadataTypes])
+                )
+            )
+
         self._type = type
 
     # updateFrequency
@@ -1203,12 +1253,78 @@ class Metadata(object):
 
         self._validityComment = validityComment
 
+    # -- SPECIFIC TO IMPLEMENTATION ----------------------------------------------------
+    @property
+    def groupName(self) -> str:
+        """Shortcut to get the name of the workgroup which owns the Metadata."""
+        if isinstance(self._creator, dict):
+            return self._creator.get("contact").get("name")
+        elif isinstance(self._creator, Workgroup):
+            return self._creator.contact.get("name")
+        else:
+            return None
+
+    @property
+    def groupId(self) -> str:
+        """Shortcut to get the UUID of the workgroup which owns the Metadata."""
+        if isinstance(self._creator, dict):
+            return self._creator.get("_id")
+        elif isinstance(self._creator, Workgroup):
+            return self._creator._id
+        else:
+            return None
+
     # -- METHODS -----------------------------------------------------------------------
+    def admin_url(self, url_base: str = "https://app.isogeo.com") -> str:
+        """Returns the administration URL (https://app.isogeo.com) for this metadata.
+
+        :param str url_base: base URL of admin site. Defaults to: https://app.isogeo.com
+
+        :rtype: str
+        """
+        if self._creator is None:
+            logger.warning("Creator is required to build admin URL")
+            return False
+
+        creator_id = self._creator.get("_id")
+        return "{}/groups/{}/resources/{}/".format(url_base, creator_id, self._id)
+
+    def title_or_name(self, slugged: bool = False) -> str:
+        """Gets the title of this Metadata or the name if there is no title. It can return a
+        slugified value.
+
+        :param bool slugged: slugify title. Defaults to `False`.
+
+        :returns: the title or the name of this Metadata.
+        :rtype: str
+        """
+        if self._title:
+            title_or_name = self._title
+        elif self._name:
+            title_or_name = self._name
+        else:
+            logger.warning(
+                "Metadata has no title nor name. So this method is useless..."
+            )
+            return None
+
+        # slugify
+        if slugged:
+            title_or_name = (
+                unicodedata.normalize("NFKD", title_or_name)
+                .encode("ascii", "ignore")
+                .decode("ascii")
+            )
+            title_or_name = _regex_slugify_strip.sub("", title_or_name).strip().lower()
+            title_or_name = _regex_slugify_hyphenate.sub("-", title_or_name)
+
+        return title_or_name
+
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -1237,12 +1353,12 @@ class Metadata(object):
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
-        for attr, _ in self.attr_crea.items():
+        for attr, _ in self.ATTR_CREA.items():
             # get attribute value
             value = getattr(self, attr)
             # switch attribute name for creation purpose
-            if attr in self.attr_map:
-                attr = self.attr_map.get(attr)
+            if attr in self.ATTR_MAP:
+                attr = self.ATTR_MAP.get(attr)
             if isinstance(value, list):
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)
@@ -1267,7 +1383,7 @@ class Metadata(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -1275,14 +1391,14 @@ class Metadata(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Metadata):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -1290,6 +1406,6 @@ class Metadata(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     md = Metadata()
     print(md)

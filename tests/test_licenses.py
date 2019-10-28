@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_licenses
-    # for licific
-    python -m unittest tests.test_licenses.TestLicenses.test_licenses_create_basic
-    ```
+```python
+# for whole test
+python -m unittest tests.test_licenses
+# for licific
+python -m unittest tests.test_licenses.TestLicenses.test_licenses_create_basic
+```
 """
 
 # #############################################################################
@@ -19,7 +18,6 @@
 # Standard library
 import logging
 import unittest
-import urllib3
 from os import environ
 from pathlib import Path
 from random import sample
@@ -29,10 +27,10 @@ from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
+import urllib3
 
 # module target
-from isogeo_pysdk import IsogeoSession, License, Metadata
-from isogeo_pysdk import __version__ as pysdk_version
+from isogeo_pysdk import Isogeo, IsogeoUtils, License, Metadata
 
 # #############################################################################
 # ######## Globals #################
@@ -48,13 +46,15 @@ hostname = gethostname()
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
+utils = IsogeoUtils()
+
 # #############################################################################
 # ########## Helpers ###############
 # ##################################
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - Licenses - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -71,8 +71,8 @@ class TestLicenses(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
-            "ISOGEO_API_USER_CLIENT_SECRET"
+        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
         ):
             logging.critical("No API credentials set as env variables.")
             exit()
@@ -87,9 +87,10 @@ class TestLicenses(unittest.TestCase):
             urllib3.disable_warnings()
 
         # API connection
-        cls.isogeo = IsogeoSession(
-            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+        cls.isogeo = Isogeo(
+            auth_mode="user_legacy",
+            client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+            client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
@@ -233,8 +234,9 @@ class TestLicenses(unittest.TestCase):
         )
 
         # refresh fixture metadata
+        utils.cache_clearer(0)
         self.fixture_metadata = self.isogeo.metadata.get(
-            metadata_id=self.fixture_metadata._id, include=["conditions"]
+            metadata_id=self.fixture_metadata._id, include=("conditions",)
         )
 
         # try to associate the same license = error
@@ -257,12 +259,8 @@ class TestLicenses(unittest.TestCase):
         # -- dissociate
         # refresh fixture metadata
         self.fixture_metadata = self.isogeo.metadata.get(
-            metadata_id=self.fixture_metadata._id, include=["conditions"]
+            metadata_id=self.fixture_metadata._id, include=("conditions",)
         )
-        for condition in self.fixture_metadata.conditions:
-            self.isogeo.license.dissociate_metadata(
-                metadata=self.fixture_metadata, condition_id=condition.get("_id")
-            )
 
         # add created license to deletion
         self.li_fixtures_to_delete.append(license_new._id)

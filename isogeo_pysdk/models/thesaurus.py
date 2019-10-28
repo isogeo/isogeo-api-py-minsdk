@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Thesaurus entity
@@ -14,9 +14,6 @@
 # standard library
 import pprint
 
-# other model
-from isogeo_pysdk.models.workgroup import Workgroup
-
 
 # #############################################################################
 # ########## Classes ###############
@@ -24,24 +21,18 @@ from isogeo_pysdk.models.workgroup import Workgroup
 class Thesaurus(object):
     """Thesaurus are entities which can be used in shares.
 
+    :Example:
 
-    Sample:
+    .. code-block:: JSON
 
-    ```json
-    {
-        '_abilities': [],
-        '_id': '926f969ee2bb470a84066625f68b96bb',
-        'code': 'iso19115-topic',
-        'name': 'MD_TopicCategoryCode'
-    }
-    ```
+        {
+            '_abilities': [],
+            '_id': '926f969ee2bb470a84066625f68b96bb',
+            'code': 'iso19115-topic',
+            'name': 'MD_TopicCategoryCode'
+        }
     """
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of thesaurus attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-    """
     attr_types = {"_abilities": list, "_id": str, "code": str, "name": str}
 
     attr_crea = {"name": str}
@@ -55,7 +46,7 @@ class Thesaurus(object):
         code: str = None,
         name: str = None,
     ):
-        """Thesaurus model"""
+        """Thesaurus model."""
 
         # default values for the object attributes/properties
         self.__abilities = None
@@ -146,7 +137,7 @@ class Thesaurus(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -210,7 +201,7 @@ class Thesaurus(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -218,14 +209,14 @@ class Thesaurus(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Thesaurus):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -233,6 +224,6 @@ class Thesaurus(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     thesaurus = Thesaurus(name="GEMET - INSPIRE themes")
     to_crea = thesaurus.to_dict_creation()

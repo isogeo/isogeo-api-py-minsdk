@@ -1,69 +1,89 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-# ------------------------------------------------------------------------------
-# Name:         Isogeo sample - Get OpenCatalog if exists in shares
+"""
+    Isogeo sample - Check if OpenCatalog exists in shares, then build a matching table between metadata and opencatalog URL
 
-# Author:       Julien Moura (@geojulien)
-#
-# Python:       2.7.x
-# Created:      14/02/2016
-# Updated:      18/02/2016
-# ------------------------------------------------------------------------------
+    To use it from the repository root:
+
+        `python ./isogeo_pysdk/samples/get_OpenCatalog.py`
+"""
 
 # ##############################################################################
 # ########## Libraries #############
 # ##################################
 
-# 3rd party library
-import requests
+# standard
+import logging
 
 # Isogeo
-from isogeo_pysdk import Isogeo
+from isogeo_pysdk import Isogeo, Share
 
-# ############################################################################
-# ######### Main program ###########
+# ##############################################################################
+# ##### Stand alone program ########
 # ##################################
-
 if __name__ == "__main__":
-    """Standalone execution"""
-    # ------------ Specific imports ----------------
+    """Standalone execution."""
+    # standard
     from os import environ
 
-    # ------------Authentication credentials ----------------
-    client_id = environ.get("ISOGEO_API_DEV_ID")
-    client_secret = environ.get("ISOGEO_API_DEV_SECRET")
+    # 3rd party
+    from dotenv import load_dotenv
+    import urllib3
 
-    # ------------ Real start ----------------
-    # instanciating the class
-    isogeo = Isogeo(client_id=client_id, client_secret=client_secret, lang="fr")
+    logger = logging.getLogger()
+    log_console_handler = logging.StreamHandler()
+    log_console_handler.setLevel(logging.DEBUG)
+    logger.addHandler(log_console_handler)
+
+    # get user ID as environment variables
+    load_dotenv("prod.env")
+
+    # ignore warnings related to the QA self-signed cert
+    if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+        urllib3.disable_warnings()
+
+    # for oAuth2 Backend (Client Credentials Grant) Flow
+    isogeo = Isogeo(
+        auth_mode="group",
+        client_id=environ.get("ISOGEO_API_GROUP_CLIENT_ID"),
+        client_secret=environ.get("ISOGEO_API_GROUP_CLIENT_SECRET"),
+        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+        platform=environ.get("ISOGEO_PLATFORM", "qa"),
+    )
+
+    # getting a token
     isogeo.connect()
 
-    # ------------ REAL START ----------------------------
-    shares = isogeo.shares()
-    print("This application is supplied by {} shares: ".format(len(shares)))
+    # Check OpenCatalog URLS
+    print(
+        "This application is authenticated as {} and supplied by {} shares.".format(
+            isogeo.app_properties.name, len(isogeo._shares)
+        )
+    )
 
-    for share in shares:
-        # Share caracteristics
-        name = share.get("name").encode("utf8")
-        creator_name = share.get("_creator").get("contact").get("name")
-        creator_id = share.get("_creator").get("_tag")[6:]
-        print("\nShare name: ", name, " owned by workgroup ", creator_name)
-
-        # OpenCatalog URL construction
-        share_details = isogeo.share(share_id=share.get("_id"))
-        url_OC = "http://open.isogeo.com/s/{}/{}".format(
-            share.get("_id"), share_details.get("urlToken")
+    for s in isogeo._shares:
+        share = Share(**s)
+        print(
+            "\nShare {} owned by {}".format(
+                share.name, share._creator.get("contact").get("name")
+            )
         )
 
-        # Testing URL
-        request = requests.get(url_OC)
-        if request.status_code == 200:
-            print("OpenCatalog available at: ", url_OC)
+        # OpenCatalog status
+        opencatalog_url = share.opencatalog_url(isogeo.oc_url)
+        if isogeo.head(opencatalog_url):
+            print("OpenCatalog available at: {}".format(opencatalog_url))
         else:
             print(
-                "OpenCatalog is not set for this share."
-                "\nGo and add it: https://app.isogeo.com/groups/{}/admin/shares/{}".format(
-                    creator_id, share.get("_id")
+                "OpenCatalog not enabled yet. Go to the administration to add it: {}".format(
+                    share.admin_url(isogeo.app_url)
                 )
             )
+
+        # get metadata present into the share
+        share_mds = isogeo.search(whole_results=1, share=share._id)
+        print("{} metadata are available through this share.".format(share_mds.total))
+
+    # closing the connection
+    isogeo.close()

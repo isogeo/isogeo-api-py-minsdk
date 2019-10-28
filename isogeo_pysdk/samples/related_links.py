@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # -----------------------------------------------------------------------------
 # Name:         Isogeo
@@ -28,7 +28,7 @@ from isogeo_pysdk import Isogeo
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
 
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     search = isogeo.search(
         query="owner:b81e0b3bc3124deeadbf59ad05c71a2a",
         page_size=10,
-        whole_share=0,
+        whole_results=0,
         include=["layers", "links", "operations", "serviceLayers"],
     )
 

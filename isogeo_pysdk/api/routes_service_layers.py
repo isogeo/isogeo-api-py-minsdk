@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for ServiceLayers entities
@@ -36,8 +36,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiServiceLayer:
-    """Routes as methods of Isogeo API used to manipulate service_layers.
-    """
+    """Routes as methods of Isogeo API used to manipulate service_layers."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -491,5 +490,5 @@ class ApiServiceLayer:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_service_layer = ApiServiceLayer()

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Invitation entity
@@ -17,49 +17,44 @@ import pprint
 # others models
 from isogeo_pysdk.models.workgroup import Workgroup
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 class Invitation(object):
     """Invitations are CSW client entry-points.
 
-    Sample:
+    :Example:
 
-    ```json
-    {
-        "_id": "6c7c9e0c63a943f79ba1e00766d0082d",
-        "_created": "2019-07-25T09:23:37.0975771+00:00",
-        "_modified": "2019-07-25T09:23:37.0975771+00:00",
-        "role": "admin",
-        "email": "prenom.nom@organisation.code",
-        "expiresIn": 657364,
-        "group": {
-            "_id": "string (uuid)",
-            "_tag": "owner:string (uuid)",
-            "_created": "2019-05-07T15:11:08.5202923+00:00",
-            "_modified": "2019-07-25T09:13:29.7858081+00:00",
-            "contact": {
+    .. code-block:: json
+
+        {
+            "_id": "6c7c9e0c63a943f79ba1e00766d0082d",
+            "_created": "2019-07-25T09:23:37.0975771+00:00",
+            "_modified": "2019-07-25T09:23:37.0975771+00:00",
+            "role": "admin",
+            "email": "prenom.nom@organisation.code",
+            "expiresIn": 657364,
+            "group": {
                 "_id": "string (uuid)",
-                "_tag": "contact:group:string (uuid)",
-                "_deleted": false,
-                "type": "group",
-                "group": "Isogeo TEST",
-                "available": false
-            },
-            "canCreateMetadata": true,
-            "canCreateLegacyServiceLinks": false,
-            "areKeywordsRestricted": false,
-            "hasCswClient": false,
-            "hasScanFme": false,
-            "keywordsCasing": "lowercase"
-        }
-    ```
-    """
-
-    """
-    Attributes:
-      attr_types (dict): basic structure of invitation attributes. {"attribute group": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute group": "attribute type"}
+                "_tag": "owner:string (uuid)",
+                "_created": "2019-05-07T15:11:08.5202923+00:00",
+                "_modified": "2019-07-25T09:13:29.7858081+00:00",
+                "contact": {
+                    "_id": "string (uuid)",
+                    "_tag": "contact:group:string (uuid)",
+                    "_deleted": false,
+                    "type": "group",
+                    "group": "Isogeo TEST",
+                    "available": false
+                },
+                "canCreateMetadata": true,
+                "canCreateLegacyServiceLinks": false,
+                "areKeywordsRestricted": false,
+                "hasCswClient": false,
+                "hasScanFme": false,
+                "keywordsCasing": "lowercase"
+            }
     """
 
     attr_types = {
@@ -86,7 +81,7 @@ class Invitation(object):
         group: str = None,
         role: bool = None,
     ):
-        """Invitation model"""
+        """Invitation model."""
 
         # default values for the object attributes/properties
         self.__created = None
@@ -224,7 +219,7 @@ class Invitation(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -286,7 +281,7 @@ class Invitation(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -294,14 +289,14 @@ class Invitation(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Invitation):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -309,7 +304,7 @@ class Invitation(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     atasource = Invitation(
         group="Invitation Test", _modified="Test invitation _modified"
     )

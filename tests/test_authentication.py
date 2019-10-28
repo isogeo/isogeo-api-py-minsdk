@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_authentication
-    # for specific
-    python -m unittest tests.test_authentication.TestAuthentication.test_other_language
-    ```
+```python
+# for whole test
+python -m unittest tests.test_authentication
+# for specific
+python -m unittest tests.test_authentication.TestAuthentication.test_other_language
+```
 """
 
 # #############################################################################
@@ -17,21 +16,29 @@
 # ##################################
 
 # Standard library
-from os import environ
 import logging
-from sys import exit
 import unittest
+import urllib3
+from os import environ
+from pathlib import Path
+from socket import gethostname
+from sys import exit
+
+# 3rd party
+from dotenv import load_dotenv
 
 # Isogeo
-from isogeo_pysdk import Isogeo, IsogeoChecker, __version__ as pysdk_version
+from isogeo_pysdk import Isogeo, IsogeoChecker
 
 # #############################################################################
 # ######## Globals #################
 # ##################################
 
-# API access
-app_id = environ.get("ISOGEO_API_DEV_ID")
-app_token = environ.get("ISOGEO_API_DEV_SECRET")
+if Path("dev.env").exists():
+    load_dotenv("dev.env", override=True)
+
+# host machine name - used as discriminator
+hostname = gethostname()
 
 checker = IsogeoChecker()
 
@@ -43,9 +50,26 @@ checker = IsogeoChecker()
 class TestAuthentication(unittest.TestCase):
     """Test authentication process."""
 
-    if not app_id or not app_token:
-        logging.critical("No API credentials set as env variables.")
-        exit()
+    # -- Standard methods --------------------------------------------------------
+    @classmethod
+    def setUpClass(cls):
+        """Executed when module is loaded before any test."""
+        # checks
+        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
+        ):
+            logging.critical("No API credentials set as env variables.")
+            exit()
+        else:
+            pass
+
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
+
+        # API credentials settings
+        cls.client_id = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID")
+        cls.client_secret = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET")
 
     # standard methods
     def setUp(self):
@@ -56,7 +80,13 @@ class TestAuthentication(unittest.TestCase):
         """Executed after each test."""
         pass
 
-    # tests
+    @classmethod
+    def tearDownClass(cls):
+        """Executed after the last test."""
+        # close sessions
+        pass
+
+    # -- TESTS ---------------------------------------------------------
     def test_bad_secret_length(self):
         """API secret must be 64 length."""
         with self.assertRaises(ValueError):
@@ -68,13 +98,17 @@ class TestAuthentication(unittest.TestCase):
 
     def test_bad_id_secret(self):
         """Bad API ID and secret."""
-        isogeo = Isogeo(client_id=app_id[:-2], client_secret=app_token)
         with self.assertRaises(ValueError):
+            isogeo = Isogeo(
+                client_id=self.client_id[:-2], client_secret=self.client_secret
+            )
             isogeo.connect()
 
     def test_other_language(self):
         """Try to get other language."""
-        isogeo = Isogeo(client_id=app_id, client_secret=app_token, lang="ES")
+        isogeo = Isogeo(
+            client_id=self.client_id, client_secret=self.client_secret, lang="ES"
+        )
         # if other language passed the English is applied
         self.assertEqual(isogeo.lang, "en")
 
@@ -85,7 +119,9 @@ class TestAuthentication(unittest.TestCase):
         """Bad platform value."""
         with self.assertRaises(ValueError):
             isogeo = Isogeo(
-                client_id=app_id, client_secret=app_token, platform="skynet"
+                client_id=self.client_id,
+                client_secret=self.client_secret,
+                platform="skynet",
             )
             del isogeo
 
@@ -93,7 +129,9 @@ class TestAuthentication(unittest.TestCase):
         """Bad auth mode value."""
         with self.assertRaises(ValueError):
             isogeo = Isogeo(
-                client_id=app_id, client_secret=app_token, auth_mode="fingerprint"
+                client_id=self.client_id,
+                client_secret=self.client_secret,
+                auth_mode="fingerprint",
             )
             del isogeo
 
@@ -101,8 +139,8 @@ class TestAuthentication(unittest.TestCase):
     def test_proxy(self):
         """Simulate proxy settings assignment."""
         isogeo = Isogeo(
-            client_id=app_id,
-            client_secret=app_token,
+            client_id=self.client_id,
+            client_secret=self.client_secret,
             proxy={
                 "http": "http://proxy.localhost:8888",
                 "https": "http://proxy.localhost:8888",
@@ -116,27 +154,45 @@ class TestAuthentication(unittest.TestCase):
         """Bad proxy settings."""
         with self.assertRaises(TypeError):
             Isogeo(
-                client_id=app_id,
-                client_secret=app_token,
+                client_id=self.client_id,
+                client_secret=self.client_secret,
                 proxy="this_is_my_string_proxy",
             )
 
-    def test_successed_auth_prod(self):
+    def test_successed_auth_legacy_prod(self):
         """When a search works, check the response structure."""
-        isogeo = Isogeo(client_id=app_id, client_secret=app_token)
-        bearer = isogeo.connect()
-        self.assertIsInstance(bearer, dict)
-        self.assertEqual(len(bearer), 4)
+        isogeo = Isogeo(
+            auth_mode="user_legacy",
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+            platform="qa",
+        )
+        isogeo.connect(
+            username=environ.get("ISOGEO_USER_NAME"),
+            password=environ.get("ISOGEO_USER_PASSWORD"),
+        )
+        self.assertIsInstance(isogeo.token, dict)
+        self.assertEqual(len(isogeo.token), 5)
 
         # close
         isogeo.close()
 
-    def test_successed_auth_qa(self):
+    def test_successed_auth_legacy_qa(self):
         """Try to connect to QA platform."""
-        isogeo = Isogeo(client_id=app_id, client_secret=app_token, platform="qa")
-        bearer = isogeo.connect()
-        self.assertIsInstance(bearer, dict)
-        self.assertEqual(len(bearer), 4)
+        isogeo = Isogeo(
+            auth_mode="user_legacy",
+            client_id=self.client_id,
+            client_secret=self.client_secret,
+            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+            platform="qa",
+        )
+        isogeo.connect(
+            username=environ.get("ISOGEO_USER_NAME"),
+            password=environ.get("ISOGEO_USER_PASSWORD"),
+        )
+        self.assertIsInstance(isogeo.token, dict)
+        self.assertEqual(len(isogeo.token), 5)
 
         # close
         isogeo.close()

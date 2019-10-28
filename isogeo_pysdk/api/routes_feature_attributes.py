@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for FeatureAttributes entities
@@ -13,7 +13,6 @@
 
 # Standard library
 import logging
-from datetime import datetime
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
@@ -34,8 +33,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiFeatureAttribute:
-    """Routes as methods of Isogeo API used to manipulate feature attributes into a Metadata.
-    """
+    """Routes as methods of Isogeo API used to manipulate feature attributes into a Metadata."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -97,6 +95,7 @@ class ApiFeatureAttribute:
         :param str attribute_id: feature-attribute UUID
 
         :Example:
+
         >>> # get a metadata
         >>> md = isogeo.metadata.get(METADATA_UUID)
         >>> # list all og its attributes
@@ -161,6 +160,7 @@ class ApiFeatureAttribute:
         :rtype: FeatureAttribute or tuple
 
         :Example:
+
         >>> # retrieve metadata
         >>> md = isogeo.metadata.get(METADATA_UUID)
         >>> # create the attribute locally
@@ -321,25 +321,33 @@ class ApiFeatureAttribute:
 
     # -- Extra methods as helpers --------------------------------------------------
     def import_from_dataset(
-        self, metadata_source: Metadata, metadata_dest: Metadata, mode: str = "simple"
+        self, metadata_source: Metadata, metadata_dest: Metadata, mode: str = "add"
     ) -> bool:
         """Import feature-attributes from another vector metadata.
 
         :param Metadata metadata_source: metadata from which to import the attributes
         :param Metadata metadata_dest: metadata where to import the attributes
-        :param str mode: [description], defaults to "simple"
+        :param str mode: mode of import, defaults to 'add':
+
+            - 'add': add the attributes except those with a duplicated name
+            - 'update': update only the attributes with the same name
+            - 'update_or_add': update the attributes with the same name or create
 
         :raises TypeError: if one metadata is not a vector
         :raises ValueError: if mode is not one of accepted value
 
         :Example:
-        >>> # get the metadata objects
-        >>> md_source = isogeo.metadata.get(METADATA_UUID_SOURCE)
-        >>> md_dest = isogeo.metadata.get(METADATA_UUID_DEST)
-        >>> # launch import
-        >>> isogeo.metadata.attributes.import_from_dataset(md_source, md_dest, "simple")
+
+        .. code-block:: python
+
+            # get the metadata objects
+            md_source = isogeo.metadata.get(METADATA_UUID_SOURCE)
+            md_dest = isogeo.metadata.get(METADATA_UUID_DEST)
+
+            # launch import
+            isogeo.metadata.attributes.import_from_dataset(md_source, md_dest, "add")
         """
-        accepted_modes = ("simple", "update")
+        accepted_modes = ("add", "update", "update_or_add")
 
         # check metadata type
         if (
@@ -360,7 +368,7 @@ class ApiFeatureAttribute:
         attributes_dest_names = [attr.get("name") for attr in attributes_dest]
 
         # according to the selected mode
-        if mode == "simple":
+        if mode == "add":
             for attribute in attributes_source:
                 attribute = FeatureAttribute(**attribute)
                 # check if an attribute with the same name already exists and ignore it
@@ -380,13 +388,46 @@ class ApiFeatureAttribute:
                 )
         elif mode == "update":
             for attribute in attributes_source:
-                attribute = FeatureAttribute(**attribute)
+                attr_src = FeatureAttribute(**attribute)
                 # check if an attribute with the same name already exists, then update it
-                if attribute.name in attributes_dest_names:
-                    self.update(metadata=metadata_dest, attribute=attribute)
+                if attr_src.name in attributes_dest_names:
+                    attr_dst = FeatureAttribute(
+                        **[
+                            attr
+                            for attr in attributes_dest
+                            if attr.get("name") == attr_src.name
+                        ][0]
+                    )
+                    attr_dst.alias = attr_src.alias
+                    attr_dst.dataType = attr_src.dataType
+                    attr_dst.description = attr_src.description
+                    attr_dst.language = attr_src.language
+                    self.update(metadata=metadata_dest, attribute=attr_dst)
                     logger.debug(
                         "Attribute with the same name ({}) spotted. It has been updated.".format(
-                            attribute.name
+                            attr_dst.name
+                        )
+                    )
+        elif mode == "update_or_add":
+            for attribute in attributes_source:
+                attr_src = FeatureAttribute(**attribute)
+                # check if an attribute with the same name already exists, then update it
+                if attr_src.name in attributes_dest_names:
+                    attr_dst = FeatureAttribute(
+                        **[
+                            attr
+                            for attr in attributes_dest
+                            if attr.get("name") == attr_src.name
+                        ][0]
+                    )
+                    attr_dst.alias = attr_src.alias
+                    attr_dst.dataType = attr_src.dataType
+                    attr_dst.description = attr_src.description
+                    attr_dst.language = attr_src.language
+                    self.update(metadata=metadata_dest, attribute=attr_dst)
+                    logger.debug(
+                        "Attribute with the same name ({}) spotted. It has been updated.".format(
+                            attr_dst.name
                         )
                     )
                 else:
@@ -406,5 +447,5 @@ class ApiFeatureAttribute:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_feature_attribute = ApiFeatureAttribute()

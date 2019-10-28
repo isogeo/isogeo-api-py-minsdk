@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Remove catalogs whithin a workgroup which no contain metadata
@@ -24,7 +24,7 @@ from timeit import default_timer
 from dotenv import load_dotenv
 
 # Isogeo
-from isogeo_pysdk import IsogeoSession
+from isogeo_pysdk import Isogeo
 
 # #############################################################################
 # ######## Globals #################
@@ -34,11 +34,12 @@ from isogeo_pysdk import IsogeoSession
 load_dotenv("dev.env", override=True)
 WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
+
 # ############################################################################
 # ######## Export functions ###########
 # ###########################################################################
 def _meta_delete_catalog(catalog: dict):
-    """Meta function"""
+    """Meta function."""
     try:
         isogeo.catalog.delete(
             workgroup_id=catalog.get("owner").get("_id"), catalog_id=catalog.get("_id")
@@ -90,9 +91,9 @@ if __name__ == "__main__":
 
     # -- Authentication and connection ---------------------------------
     # Isogeo client
-    isogeo = IsogeoSession(
-        client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-        client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+    isogeo = Isogeo(
+        client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+        client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
     )
@@ -107,7 +108,7 @@ if __name__ == "__main__":
     print("Authentication succeeded at {:5.2f}s".format(default_timer() - START_TIME))
 
     # get some object identifiers required for certain routes
-    wg_catalogs = isogeo.catalog.catalogs(
+    wg_catalogs = isogeo.catalog.listing(
         workgroup_id=WG_TEST_UUID, include=["count"], caching=0
     )
 

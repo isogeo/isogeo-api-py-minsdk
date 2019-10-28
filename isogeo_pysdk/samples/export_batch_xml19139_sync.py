@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Batch export to XML ISO19139
@@ -21,7 +21,7 @@ from pathlib import Path
 from timeit import default_timer
 
 # Isogeo
-from isogeo_pysdk import Isogeo
+from isogeo_pysdk import Isogeo, Metadata
 
 # #############################################################################
 # ########## Globals ###############
@@ -36,7 +36,7 @@ out_dir.mkdir(exist_ok=True)
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     chrono_start = default_timer()  # chrono
 
     # Authentication #########
@@ -47,16 +47,17 @@ if __name__ == "__main__":
     isogeo = Isogeo(client_id=app_id, client_secret=app_token)
 
     # getting a token
-    token = isogeo.connect()
+    isogeo.connect()
 
     # Process #########
     latest_data_modified = isogeo.search(
-        token, page_size=10, order_by="modified", whole_share=0
+        page_size=10, order_by="modified", whole_results=0
     )
 
     for md in latest_data_modified.get("results"):
-        title = md.get("title")
-        xml_stream = isogeo.xml19139(token, md.get("_id"))
+        metadata = Metadata.clean_attributes(md)
+        title = metadata.title
+        xml_stream = isogeo.metadata.download_xml(metadata)
 
         with open(out_dir / "{}.xml".format(title), "wb") as fd:
             for block in xml_stream.iter_content(1024):

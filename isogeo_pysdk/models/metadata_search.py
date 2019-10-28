@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Metadata search entity
@@ -18,28 +18,20 @@ import pprint
 # from isogeo_pysdk.models.resource import Metadata
 # from isogeo_pysdk.models.tag import Tag
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 class MetadataSearch(object):
-    """Metadata searchs are entities used to organize and shares metadata of a workgroup.
+    """Metadata searchs are entities used to organize and shares metadata of a workgroup."""
 
-    ```json
-
-    ```
-    """
-
-    """
-    Attributes:
-      attr_types (dict): basic structure of search attributes. {"attribute name": "attribute type"}.
-    """
     attr_types = {
         "envelope": object,
         "limit": int,
         "offset": int,
-        "query": str,
+        "query": dict,
         "results": list,
-        "tags": list,
+        "tags": dict,
         "total": int,
     }
 
@@ -48,12 +40,15 @@ class MetadataSearch(object):
         envelope: dict = None,
         limit: int = None,
         offset: int = None,
-        query: str = None,
+        query: dict = None,
         results: list = None,
-        tags: list = None,
+        tags: dict = None,
         total: int = None,
     ):
-        """resource/search? model"""
+        """resource/search?
+
+        model
+        """
 
         # default values for the object attributes/properties
         self._envelope = None
@@ -88,7 +83,7 @@ class MetadataSearch(object):
         """Gets the abilities of this Metadata search.
 
         :return: The abilities of this Metadata search.
-        :rtype: str
+        :rtype: dict
         """
         return self._envelope
 
@@ -118,7 +113,6 @@ class MetadataSearch(object):
     def limit(self, limit: int):
         """Sets the limit of this InlineResponse2001.
 
-
         :param int limit: The limit of this Metadata Search
         """
 
@@ -145,18 +139,17 @@ class MetadataSearch(object):
 
     # search last modification date
     @property
-    def query(self) -> str:
+    def query(self) -> dict:
         """Gets the modified of this Metadata search.
 
         :return: The modified of this Metadata search.
-        :rtype: str
+        :rtype: dict
         """
         return self._query
 
     @query.setter
-    def query(self, query: str):
+    def query(self, query: dict):
         """Sets the query of this InlineResponse2001.
-
 
         :param query: The query of this InlineResponse2001.  # noqa: E501
         :type: object
@@ -178,7 +171,6 @@ class MetadataSearch(object):
     def results(self, results: list):
         """Sets the results of this InlineResponse2001.
 
-
         :param results: The results of this InlineResponse2001.  # noqa: E501
         :type: list[Metadata]
         """
@@ -187,16 +179,16 @@ class MetadataSearch(object):
 
     # tags
     @property
-    def tags(self) -> list:
+    def tags(self) -> dict:
         """Gets the tags of this Metadata search.
 
         :return: The tags of this Metadata search.
-        :rtype: str
+        :rtype: dict
         """
         return self._tags
 
     @tags.setter
-    def tags(self, tags: list):
+    def tags(self, tags: dict):
         """Sets the tags of this InlineResponse2001.
 
         The aggregated set of tags for the entire search results  # noqa: E501
@@ -228,7 +220,7 @@ class MetadataSearch(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -257,7 +249,7 @@ class MetadataSearch(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -265,14 +257,14 @@ class MetadataSearch(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, MetadataSearch):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -280,5 +272,5 @@ class MetadataSearch(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     search = MetadataSearch()

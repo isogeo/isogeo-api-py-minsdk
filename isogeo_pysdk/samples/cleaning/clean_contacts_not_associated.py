@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Remove contacts whithin a workgroup which are not associated
@@ -25,7 +25,7 @@ from dotenv import load_dotenv
 
 
 # Isogeo
-from isogeo_pysdk import IsogeoSession
+from isogeo_pysdk import Isogeo
 
 # #############################################################################
 # ######## Globals #################
@@ -35,11 +35,12 @@ from isogeo_pysdk import IsogeoSession
 load_dotenv("dev.env", override=True)
 WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
+
 # ############################################################################
 # ######## Export functions ###########
 # ###########################################################################
 def _meta_delete_contact(contact: dict):
-    """Meta function"""
+    """Meta function."""
     try:
         isogeo.contact.delete(
             workgroup_id=contact.get("owner").get("_id"), contact_id=contact.get("_id")
@@ -91,9 +92,9 @@ if __name__ == "__main__":
 
     # -- Authentication and connection ---------------------------------
     # Isogeo client
-    isogeo = IsogeoSession(
-        client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-        client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+    isogeo = Isogeo(
+        client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+        client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
     )

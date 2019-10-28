@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_catalogs
-    # for specific
-    python -m unittest tests.test_catalogs.TestCatalogs.test_catalogs_create_basic
-    ```
+```python
+# for whole test
+python -m unittest tests.test_catalogs
+# for specific
+python -m unittest tests.test_catalogs.TestCatalogs.test_catalogs_create_basic
+```
 """
 
 # #############################################################################
@@ -31,8 +30,8 @@ from time import gmtime, sleep, strftime
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import Catalog, IsogeoSession, Share
-from isogeo_pysdk import __version__ as pysdk_version
+from isogeo_pysdk import Catalog, Isogeo, Share
+
 from isogeo_pysdk.enums import CatalogStatisticsTags
 
 # #############################################################################
@@ -55,7 +54,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -72,8 +71,8 @@ class TestCatalogs(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
-            "ISOGEO_API_USER_CLIENT_SECRET"
+        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
         ):
             logging.critical("No API credentials set as env variables.")
             exit()
@@ -88,9 +87,10 @@ class TestCatalogs(unittest.TestCase):
             urllib3.disable_warnings()
 
         # API connection
-        cls.isogeo = IsogeoSession(
-            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+        cls.isogeo = Isogeo(
+            auth_mode="user_legacy",
+            client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+            client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
@@ -237,7 +237,7 @@ class TestCatalogs(unittest.TestCase):
             self.assertEqual(catalog.name, i.get("name"))
 
     def test_catalog_shares(self):
-        """GET :catalogs/{catalog_uuid}/shares"""
+        """GET :catalogs/{catalog_uuid}/shares."""
         # pick a random catalog
         wg_catalogs = self.isogeo.catalog.listing(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
@@ -253,7 +253,7 @@ class TestCatalogs(unittest.TestCase):
                 Share(**i)
 
     def test_catalog_statistics(self):
-        """GET :catalogs/{catalog_uuid}/statistics"""
+        """GET :catalogs/{catalog_uuid}/statistics."""
         wg_catalogs = self.isogeo.catalog.listing(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=1
         )
@@ -302,7 +302,8 @@ class TestCatalogs(unittest.TestCase):
 
         # check if the change is effective
         catalog_fixture_updated = self.isogeo.catalog.get(
-            catalog_fixture.owner.get("_id"), catalog_fixture._id
+            workgroup_id=catalog_fixture.owner.get("_id"),
+            catalog_id=catalog_fixture._id,
         )
         self.assertEqual(
             catalog_fixture_updated.name,

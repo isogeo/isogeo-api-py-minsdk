@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_service_layers
-    # for specific
-    python -m unittest tests.test_service_layers.TestServiceLayers.test_layers_create
-    ```
+```python
+# for whole test
+python -m unittest tests.test_service_layers
+# for specific
+python -m unittest tests.test_service_layers.TestServiceLayers.test_layers_create
+```
 """
 
 # #############################################################################
@@ -31,8 +30,8 @@ from time import gmtime, sleep, strftime
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import IsogeoSession, Metadata, ServiceLayer
-from isogeo_pysdk import __version__ as pysdk_version
+from isogeo_pysdk import Isogeo, Metadata, ServiceLayer
+
 
 # #############################################################################
 # ######## Globals #################
@@ -54,7 +53,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - ServiceLayers - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -71,8 +70,8 @@ class TestServiceLayers(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
-            "ISOGEO_API_USER_CLIENT_SECRET"
+        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
         ):
             logging.critical("No API credentials set as env variables.")
             exit()
@@ -87,9 +86,10 @@ class TestServiceLayers(unittest.TestCase):
             urllib3.disable_warnings()
 
         # API connection
-        cls.isogeo = IsogeoSession(
-            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+        cls.isogeo = Isogeo(
+            auth_mode="user_legacy",
+            client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+            client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
@@ -149,7 +149,8 @@ class TestServiceLayers(unittest.TestCase):
         self.li_fixtures_to_delete.append(layer_new)
 
     def test_layers_association(self):
-        """POST :resources/{service_uuid}/layers/{layer_uuid}/dataset/{dataset_uuid}"""
+        """POST
+        :resources/{service_uuid}/layers/{layer_uuid}/dataset/{dataset_uuid}"""
         # fixtures
         metadata_service = self.isogeo.services.create(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
@@ -194,7 +195,7 @@ class TestServiceLayers(unittest.TestCase):
 
         # check association result
         service_updated = self.isogeo.metadata.get(
-            metadata_id=metadata_service._id, include=["layers"]
+            metadata_id=metadata_service._id, include=("layers",)
         )
 
         li_associated_layers = [

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Catalogs entities
@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+from functools import lru_cache
 
 # 3rd party
 from requests.exceptions import Timeout
@@ -38,8 +39,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiCatalog:
-    """Routes as methods of Isogeo API used to manipulate catalogs (conditions).
-    """
+    """Routes as methods of Isogeo API used to manipulate catalogs."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -56,17 +56,18 @@ class ApiCatalog:
         # initialize
         super(ApiCatalog, self).__init__()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
         self,
         workgroup_id: str = None,
-        include: list = ["_abilities", "count"],
+        include: tuple = ("_abilities", "count"),
         caching: bool = 1,
     ) -> list:
         """Get workgroup catalogs.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param list include: additionnal subresource to include in the response
+        :param tuple include: additionnal subresource to include in the response
         :param bool caching: option to cache the response
         """
         # check workgroup UUID
@@ -76,7 +77,10 @@ class ApiCatalog:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_catalogs = utils.get_request_base_url(
@@ -109,12 +113,53 @@ class ApiCatalog:
         # end of method
         return wg_catalogs
 
+    @lru_cache()
+    @ApiDecorators._check_bearer_validity
+    def metadata(self, metadata_id: str) -> list:
+        """List metadata's catalogs with complete information.
+
+        :param str metadata_id: metadata UUID
+
+        :returns: the list of catalogs associated with the metadata
+        :rtype: list
+        """
+        # check metadata UUID
+        if not checker.check_is_uuid(metadata_id):
+            raise ValueError(
+                "Metadata ID is not a correct UUID: {}".format(metadata_id)
+            )
+        else:
+            pass
+
+        # URL
+        url_metadata_catalogs = utils.get_request_base_url(
+            route="resources/{}/catalogs/".format(metadata_id)
+        )
+
+        # request
+        req_metadata_catalogs = self.api_client.get(
+            url=url_metadata_catalogs,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_metadata_catalogs)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_metadata_catalogs.json()
+
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(
         self,
         workgroup_id: str,
         catalog_id: str,
-        include: list = ["_abilities", "count"],
+        include: tuple = ("_abilities", "count"),
     ) -> Catalog:
         """Get details about a specific catalog.
 
@@ -131,12 +176,15 @@ class ApiCatalog:
             pass
         # check catalog UUID
         if not checker.check_is_uuid(catalog_id):
-            raise ValueError("Catalog ID is not a correct UUID.")
+            raise ValueError("Catalog ID is not a correct UUID: {}".format(catalog_id))
         else:
             pass
 
         # request parameter
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # catalog route
         url_catalog = utils.get_request_base_url(
@@ -158,30 +206,30 @@ class ApiCatalog:
         if isinstance(req_check, tuple):
             return req_check
 
-        # handle bad JSON attribute
-        catalog = req_catalog.json()
-        catalog["scan"] = catalog.pop("$scan")
-
         # end of method
-        return Catalog(**catalog)
+        return Catalog.clean_attributes(req_catalog.json())
 
     @ApiDecorators._check_bearer_validity
     def create(
-        self, workgroup_id: str, check_exists: int = 1, catalog: object = Catalog()
+        self, workgroup_id: str, catalog: Catalog, check_exists: bool = 1
     ) -> Catalog:
         """Add a new catalog to a workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param int check_exists: check if a catalog already exists inot the workgroup:
-
-        - 0 = no check
-        - 1 = compare name [DEFAULT]
-
         :param class catalog: Catalog model object to create
+        :param bool check_exists: check if a catalog already exists into the workgroup:
+
+            - 0 = no check
+            - 1 = compare name [DEFAULT]
+
+        :returns: the created catalog or False if a similar cataog already exists or a tuple with response error code
+        :rtype: Catalog
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
-            raise ValueError("Workgroup ID is not a correct UUID.")
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+            )
         else:
             pass
 
@@ -189,7 +237,7 @@ class ApiCatalog:
         if check_exists == 1:
             # retrieve workgroup catalogs
             if not self.api_client._wg_catalogs_names:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if catalog.name in self.api_client._wg_catalogs_names:
                 logger.debug(
@@ -459,6 +507,7 @@ class ApiCatalog:
         # end of method
         return req_catalog_dissociation
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def shares(self, catalog_id: str) -> list:
         """Returns shares for the specified catalog.
@@ -495,6 +544,7 @@ class ApiCatalog:
 
         return req_catalog_shares.json()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics(self, catalog_id: str) -> dict:
         """Returns statistics for the specified catalog.
@@ -528,6 +578,7 @@ class ApiCatalog:
 
         return req_catalog_statistics.json()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics_by_tag(self, catalog_id: str, tag: str) -> dict:
         """Returns statistics on a specific tag for the specified catalog.
@@ -584,5 +635,5 @@ class ApiCatalog:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_catalog = ApiCatalog()

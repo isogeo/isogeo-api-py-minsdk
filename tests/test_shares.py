@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_shares
-    # for specific
-    python -m unittest tests.test_shares.TestShares.test_shares_create_basic
-    ```
+```python
+# for whole test
+python -m unittest tests.test_shares
+# for specific
+python -m unittest tests.test_shares.TestShares.test_shares_create_basic_application
+```
 """
 
 # #############################################################################
@@ -32,13 +31,12 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Share, Catalog
+from isogeo_pysdk import Isogeo, Share
 
 
 # #############################################################################
 # ######## Globals #################
 # ##################################
-
 
 if Path("dev.env").exists():
     load_dotenv("dev.env", override=True)
@@ -55,7 +53,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -72,8 +70,8 @@ class TestShares(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
-            "ISOGEO_API_USER_CLIENT_SECRET"
+        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
         ):
             logging.critical("No API credentials set as env variables.")
             exit()
@@ -88,9 +86,10 @@ class TestShares(unittest.TestCase):
             urllib3.disable_warnings()
 
         # API connection
-        cls.isogeo = IsogeoSession(
-            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+        cls.isogeo = Isogeo(
+            auth_mode="user_legacy",
+            client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+            client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
@@ -110,7 +109,6 @@ class TestShares(unittest.TestCase):
     def tearDown(self):
         """Executed after each test."""
         sleep(0.5)
-        pass
 
     @classmethod
     def tearDownClass(cls):
@@ -222,7 +220,7 @@ class TestShares(unittest.TestCase):
     def test_shares_get_user(self):
         """GET :/shares}"""
         # retrieve workgroup shares
-        shares = self.isogeo.share.shares(caching=0)
+        shares = self.isogeo.share.listing(caching=0)
         # parse and test object loader
         for i in shares[:50]:
             # load it
@@ -255,7 +253,7 @@ class TestShares(unittest.TestCase):
     def test_shares_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/shares}"""
         # retrieve workgroup shares
-        wg_shares = self.isogeo.share.shares(
+        wg_shares = self.isogeo.share.listing(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
         )
         # parse and test object loader
@@ -287,6 +285,47 @@ class TestShares(unittest.TestCase):
             self.assertEqual(share.type, i.get("type"))
             self.assertEqual(share.urlToken, i.get("urlToken"))
 
+    def test_shares_get_detailed_basic(self):
+        """GET :groups/{workgroup_uuid}/shares}"""
+        # retrieve workgroup shares
+        wg_shares = self.isogeo.share.listing(workgroup_id=WORKGROUP_TEST_FIXTURE_UUID)
+
+        # pick a random share
+        share_id_app = sample(
+            [i for i in wg_shares if i.get("type") == "application"], 1
+        )[0].get("_id")
+        share_id_group = sample([i for i in wg_shares if i.get("type") == "group"], 1)[
+            0
+        ].get("_id")
+
+        # get the detailed shares
+        share_appli = self.isogeo.share.get(share_id=share_id_app)
+        share_group = self.isogeo.share.get(share_id=share_id_group)
+
+        # checks
+        for share in (share_appli, share_group):
+            self.assertIsInstance(share, Share)
+            # tests attributes structure
+            self.assertTrue(hasattr(share, "_created"))
+            self.assertTrue(hasattr(share, "_creator"))
+            self.assertTrue(hasattr(share, "_id"))
+            self.assertTrue(hasattr(share, "_modified"))
+            self.assertTrue(hasattr(share, "applications"))
+            self.assertTrue(hasattr(share, "catalogs"))
+            self.assertTrue(hasattr(share, "groups"))
+            self.assertTrue(hasattr(share, "name"))
+            self.assertTrue(hasattr(share, "rights"))
+            self.assertTrue(hasattr(share, "type"))
+            self.assertTrue(hasattr(share, "urlToken"))
+        # test methods
+        self.assertIn("app", share_appli.admin_url(self.isogeo.app_url))
+        self.assertIsInstance(
+            share_appli.opencatalog_url(self.isogeo.oc_url), (str, None)
+        )
+
+        self.assertIn("app", share_group.admin_url(self.isogeo.app_url))
+        self.assertFalse(share_group.opencatalog_url(self.isogeo.oc_url))
+
     # -- PUT/PATCH --
     # def test_shares_update(self):
     #     """PUT :groups/{workgroup_uuid}/shares/{share_uuid}}"""
@@ -304,7 +343,7 @@ class TestShares(unittest.TestCase):
     #     share_fixture = self.isogeo.share.update(share_fixture)
 
     #     # check if the change is effective
-    #     share_fixture_updated = self.isogeo.share.share(
+    #     share_fixture_updated = self.isogeo.share.get(
     #         share_fixture.owner.get("_id"), share_fixture._id
     #     )
     #     self.assertEqual(

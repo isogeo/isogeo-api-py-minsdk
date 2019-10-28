@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Licenses (= CGUs, conditions) entities
@@ -20,7 +20,7 @@ from requests.models import Response
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import License, Metadata
+from isogeo_pysdk.models import Condition, License, Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -36,8 +36,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiLicense:
-    """Routes as methods of Isogeo API used to manipulate licenses (conditions).
-    """
+    """Routes as methods of Isogeo API used to manipulate licenses (conditions)."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -58,13 +57,13 @@ class ApiLicense:
     def listing(
         self,
         workgroup_id: str = None,
-        include: list = ["_abilities", "count"],
+        include: tuple = ("_abilities", "count"),
         caching: bool = 1,
     ) -> list:
         """Get workgroup licenses.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param list include: additionnal subresource to include in the response
+        :param tuple include: additionnal subresource to include in the response
         :param bool caching: option to cache the response
         """
         # check workgroup UUID
@@ -74,7 +73,10 @@ class ApiLicense:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_licenses = utils.get_request_base_url(
@@ -163,7 +165,7 @@ class ApiLicense:
         if check_exists == 1:
             # retrieve workgroup licenses
             if not self.api_client._wg_licenses_names:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if license.name in self.api_client._wg_licenses_names:
                 logger.debug(
@@ -323,7 +325,8 @@ class ApiLicense:
     def associate_metadata(
         self, metadata: Metadata, license: License, description: str, force: bool = 0
     ) -> Response:
-        """Associate a condition (license + specific description) to a metadata. Wehn a license is associated to a metadata, it become a condition.
+        """Associate a condition (license + specific description) to a metadata. When a license is
+        associated to a metadata, it becomes a condition.
 
         By default, if the specified license is already associated, the method won't duplicate the association.
         Use `force` option to overpass this behavior.
@@ -390,7 +393,7 @@ class ApiLicense:
                     "Conditions have not been included during request. So, let's renew it!"
                 )
                 metadata_with_conditions = self.api_client.metadata.get(
-                    metadata_id=metadata._id, include=["conditions"]
+                    metadata_id=metadata._id, include=("conditions",)
                 )
                 return self.associate_metadata(
                     metadata=metadata_with_conditions,
@@ -405,80 +408,18 @@ class ApiLicense:
                 "Force option enabled. Ignoring existing associated licenses. Risk of duplicated association."
             )
 
-        # URL
-        url_license_association = utils.get_request_base_url(
-            route="resources/{}/conditions".format(metadata._id)
-        )
-
-        # request
-        req_license_association = self.api_client.post(
-            url=url_license_association,
-            json={"description": description, "license": license.to_dict()},
-            headers=self.api_client.header,
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-            timeout=self.api_client.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_license_association)
-        if isinstance(req_check, tuple):
-            return req_check
+        # pass it to the conditions route
+        condition_to_create = Condition(description=description, license=license)
 
         # end of method
-        return req_license_association
-
-    @ApiDecorators._check_bearer_validity
-    def dissociate_metadata(self, metadata: Metadata, condition_id: str) -> Response:
-        """Removes the association between a metadata and a license.
-
-        If the specified license is not associated, the response is 404.
-
-        :param Metadata metadata: metadata object to update
-        :param License license: license model object to associate
-        """
-        # check metadata UUID
-        if not checker.check_is_uuid(metadata._id):
-            raise ValueError(
-                "Metadata ID is not a correct UUID: {}".format(metadata._id)
-            )
-        else:
-            pass
-
-        # check license UUID
-        if not checker.check_is_uuid(condition_id):
-            raise ValueError(
-                "Condition ID is not a correct UUID: {}".format(condition_id)
-            )
-        else:
-            pass
-
-        # URL
-        url_license_dissociation = utils.get_request_base_url(
-            route="resources/{}/conditions/{}".format(metadata._id, condition_id)
+        return self.api_client.metadata.conditions.create(
+            metadata=metadata, condition=condition_to_create
         )
-
-        # request
-        req_license_dissociation = self.api_client.delete(
-            url=url_license_dissociation,
-            headers=self.api_client.header,
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-            timeout=self.api_client.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_license_dissociation)
-        if isinstance(req_check, tuple):
-            return req_check
-
-        # end of method
-        return req_license_dissociation
 
 
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_license = ApiLicense()

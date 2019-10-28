@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Latest modified datasets
@@ -24,7 +24,7 @@ from isogeo_pysdk import Isogeo
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # standard library
     from os import environ
 
@@ -39,7 +39,7 @@ if __name__ == "__main__":
 
     # ------------ REAL START ----------------------------
     latest_data_modified = isogeo.search(
-        page_size=10, order_by="modified", whole_share=0, include=["events"]
+        page_size=10, order_by="modified", whole_results=0, include=["events"]
     )
 
     print("Last 10 data updated \nTitle | datetime\n\t description")

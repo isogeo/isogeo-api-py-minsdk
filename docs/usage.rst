@@ -4,37 +4,6 @@ Usage
 
 .. RST cheatsheet: https://github.com/ralsina/rst-cheatsheet/blob/master/rst-cheatsheet.rst
 
-Get application properties as attributes
-----------------------------------------
-
-.. code-block:: python
-
-    from isogeo_pysdk import Isogeo
-
-    # authenticate your client application
-    isogeo = Isogeo(client_id=app_id,
-                    client_secret=app_secret)
-
-    # get the token
-    token = isogeo.connect()
-
-    # add properties as attribute
-    isogeo.get_app_properties(token)
-
-	# accessing properties
-    print(isogeo.app_properties)
-
-
-    # structure of returned dict
-    app = {"admin_url": str,
-           "creation_date": str,
-           "last_update": str,
-           "name": str,
-           "type": str,
-           "kind": str,
-           "url": str
-           }
-
 
 Add shares tags to search response and as attributes
 ----------------------------------------------------
@@ -48,10 +17,10 @@ Add shares tags to search response and as attributes
                     client_secret=app_secret)
 
     # get the token
-    token = isogeo.connect()
+    isogeo.connect()
 
     # set augment option on True
-    search = isogeo.search(token, page_size=0, whole_share=0, augment=1)
+    search = isogeo.search(page_size=0, whole_results=0, augment=1)
 
     # through search tags
     print(search.get("tags"))
@@ -79,20 +48,20 @@ The share UUID is required: 2 methods are proposed to retrieve it.
                     client_secret=app_secret)
 
     # get the token
-    token = isogeo.connect()
+    isogeo.connect()
 
     ## -- METHOD 1 - by shares route ------------------------------------------
     # get shares
-    shares = isogeo.shares(token)
+    shares = isogeo.shares()
 
     # get first share id
     share_id = shares[0].get("_id")
 
     ## -- METHOD 2 - by augmented search --------------------------------------
     # empty search
-    search = isogeo.search(token,
+    search = isogeo.search(
                            page_size=0,     # get only tags, not results
-                           whole_share=0,   # do not retrieve the whole application scope
+                           whole_results=0,   # do not retrieve the whole application scope
                            augment=1    # -> this parameter is what we need
                            )
 
@@ -102,7 +71,7 @@ The share UUID is required: 2 methods are proposed to retrieve it.
     ## -- ONCE SHARE ID RETRIEVED ---------------------------------------------
 
     # make an augmented share request
-    share_augmented = isogeo.share(token, share_id, augment=1)
+    share_augmented = isogeo.share(share_id, augment=1)
 
     if "oc_url" in share_augmented:
         print("OpenCatalog is set: {}"
@@ -121,9 +90,9 @@ With the augmented share, it's also possible to check if a metadata is present w
 
     # -- see above to get augmented share
     # get a metadata
-    search = isogeo.search(token,
+    search = isogeo.search(
                            page_size=1,     # get only one result
-                           whole_share=0    # do not retrieve the whole application scope
+                           whole_results=0    # do not retrieve the whole application scope
                            )
     md = search.get("results")[0]
 
@@ -175,7 +144,7 @@ The module isogeo_pysdk.utils comes with a method to load automatically credenti
                     )
 
     # get the token
-    token = isogeo.connect()
+    isogeo.connect()
 
 Keys of returned dict:
        
@@ -239,9 +208,9 @@ Get CSW GetCapabilities for a share
                                         share_id="1e07910d365449b59b6596a9b428ecd9",
                                         share_token="TokenOhDearToken")
 
---------------------------------
+------------------------------
 Get CSW GetRecords for a share
---------------------------------
+------------------------------
 
 .. code-block:: python
 
@@ -252,9 +221,9 @@ Get CSW GetRecords for a share
                                             share_id="ShareUniqueIdentifier",
                                             share_token="TokenOhDearToken")
 
---------------------------------
+------------------------------------
 Get CSW GetRecordById for a metadata
---------------------------------
+------------------------------------
 
 .. code-block:: python
 
@@ -301,19 +270,19 @@ In Isogeo, every metadata resource can be downloaded in its XML version (ISO 191
                     client_secret=app_secret)
 
     # get the token
-    token = isogeo.connect()
+    isogeo.connect()
 
     # search metadata
-    search_to_be_exported = isogeo.search(token,
+    search_to_be_exported = isogeo.search(
                                           page_size=10,
                                           query="type:dataset",
-                                          whole_share=0
+                                          whole_results=0
                                           )
 
     # loop on results and export
     for md in search_to_be_exported.get("results"):
         title = md.get('title')
-        xml_stream = isogeo.xml19139(token,
+        xml_stream = isogeo.xml19139(
                                      md.get("_id")
                                      )
 
@@ -342,13 +311,13 @@ Administrators and editors can link raw data and docs (.zip, .pdf...) to metadat
                     client_secret=app_secret)
 
     # get the token
-    token = isogeo.connect()
+    isogeo.connect()
 
     # search with _include = links and action = download
-    latest_data_modified = isogeo.search(token,
+    latest_data_modified = isogeo.search(
                                          page_size=10,
                                          order_by="modified",
-                                         whole_share=0,
+                                         whole_results=0,
                                          query="action:download",
                                          include=["links"],
                                          )
@@ -356,7 +325,7 @@ Administrators and editors can link raw data and docs (.zip, .pdf...) to metadat
     # parse links and download hosted data recursively
     for md in latest_data_modified.get("results"):
         for link in filter(lambda x: x.get("type") == "hosted", md.get("links")):
-            dl_stream = isogeo.dl_hosted(token,
+            dl_stream = isogeo.dl_hosted(
                                          resource_link=link)
             filename = re.sub(r'[\\/*?:"<>|]', "", dl_stream[1])
             with open(filename, 'wb') as fd:

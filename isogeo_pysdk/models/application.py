@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Application entity
@@ -16,7 +16,6 @@ import pprint
 
 # package
 from isogeo_pysdk.enums import ApplicationTypes
-from isogeo_pysdk.models.workgroup import Workgroup
 
 
 # #############################################################################
@@ -25,67 +24,61 @@ from isogeo_pysdk.models.workgroup import Workgroup
 class Application(object):
     """Applications are entities which can be used in shares.
 
+    :Example:
 
-    Sample:
+    .. code-block:: json
 
-    ```json
-    {
-        "_abilities": [
-            "application:delete",
-            "application:manage",
-            "application:update"
-        ],
-        "_created": "2018-02-13T16:53:37.4622+00:00",
-        "_id": "2ad9ccd2c76a4fc3be9f8de4239701df",
-        "_modified": "2018-02-13T16:53:43.085621+00:00",
-        "canHaveManyGroups": true,
-        "client_id": "plugin-arcmap-client-987a654z321e234r567t890y987u654i",
-        "client_secret": "LoremipsumdolorsitametconsecteturadipiscingelitDonecmaurismauris",
-        "groups": [
-            'groups': [{'_created': '2015-05-21T12:08:16.4295098+00:00',
-            '_id': '32f7e95ec4e94ca3bc1afda960003882',
-            '_modified': '2019-05-03T10:31:01.4796052+00:00',
-            'canHaveManyGroups': 'groups:32f7e95ec4e94ca3bc1afda960003882',
-            'areKeywordsRestricted': True,
-            'canCreateLegacyServiceLinks': True,
-            'canCreateMetadata': True,
-            'contact': {'_deleted': False,
-                        '_id': '2a3aefc4f80347f590afe58127f6cb0f',
-                        'canHaveManyGroups': 'contact:group:2a3aefc4f80347f590afe58127f6cb0f',
-                        'addressLine1': '26 rue du faubourg Saint-Antoine',
-                        'addressLine2': '4 éme étage',
-                        'available': True,
-                        'city': 'Paris',
-                        'client_secretryCode': 'FR',
-                        'email': 'dev@isogeo.com',
-                        'fax': '33 (0)9 67 46 50 06',
-                        'name': 'Isogeo Test',
-                        'phone': '33 (0)9 67 46 50 06',
-                        'type': 'group',
-                        'zipCode': '75012'},
-            'hasCswClient': True,
-            'hasScanFme': True,
-            'keywordsCasing': 'lowercase',
-            'metadataLanguage': 'fr',
-            'themeColor': '#4499A1'}
-        ],
-        "kind": "public",
-        "name": "Plugin ArcMap - DEV",
-        "scopes": [
-            "resources:read"
-        ],
-        "staff": false,
-        "type": "group",
-        "url": "http://help.isogeo.com/arcmap/"
-    }
-    ```
+        {
+            "_abilities": [
+                "application:delete",
+                "application:manage",
+                "application:update"
+            ],
+            "_created": "2018-02-13T16:53:37.4622+00:00",
+            "_id": "2ad9ccd2c76a4fc3be9f8de4239701df",
+            "_modified": "2018-02-13T16:53:43.085621+00:00",
+            "canHaveManyGroups": true,
+            "client_id": "plugin-arcmap-client-987a654z321e234r567t890y987u654i",
+            "client_secret": "LoremipsumdolorsitametconsecteturadipiscingelitDonecmaurismauris",
+            "groups": [
+                'groups': [{'_created': '2015-05-21T12:08:16.4295098+00:00',
+                '_id': '32f7e95ec4e94ca3bc1afda960003882',
+                '_modified': '2019-05-03T10:31:01.4796052+00:00',
+                'canHaveManyGroups': 'groups:32f7e95ec4e94ca3bc1afda960003882',
+                'areKeywordsRestricted': True,
+                'canCreateLegacyServiceLinks': True,
+                'canCreateMetadata': True,
+                'contact': {'_deleted': False,
+                            '_id': '2a3aefc4f80347f590afe58127f6cb0f',
+                            'canHaveManyGroups': 'contact:group:2a3aefc4f80347f590afe58127f6cb0f',
+                            'addressLine1': '26 rue du faubourg Saint-Antoine',
+                            'addressLine2': '4 éme étage',
+                            'available': True,
+                            'city': 'Paris',
+                            'client_secretryCode': 'FR',
+                            'email': 'dev@isogeo.com',
+                            'fax': '33 (0)9 67 46 50 06',
+                            'name': 'Isogeo Test',
+                            'phone': '33 (0)9 67 46 50 06',
+                            'type': 'group',
+                            'zipCode': '75012'},
+                'hasCswClient': True,
+                'hasScanFme': True,
+                'keywordsCasing': 'lowercase',
+                'metadataLanguage': 'fr',
+                'themeColor': '#4499A1'}
+            ],
+            "kind": "public",
+            "name": "Plugin ArcMap - DEV",
+            "scopes": [
+                "resources:read"
+            ],
+            "staff": false,
+            "type": "group",
+            "url": "http://help.isogeo.com/arcmap/"
+        }
     """
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of application attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-    """
     attr_types = {
         "_abilities": list,
         "_created": str,
@@ -134,7 +127,7 @@ class Application(object):
         type: str = None,
         url: str = None,
     ):
-        """Application model"""
+        """Application model."""
 
         # default values for the object attributes/properties
         self.__abilities = None
@@ -279,8 +272,7 @@ class Application(object):
 
     @property
     def groups(self):
-        """Gets the groups of this Application.  # noqa: E501
-
+        """Gets the groups of this Application.  # noqa: E501.
 
         :return: The groups of this Application.  # noqa: E501
         :rtype: Workgroup
@@ -290,7 +282,6 @@ class Application(object):
     @groups.setter
     def groups(self, groups):
         """Sets the groups of this Application.
-
 
         :param groups: The groups of this Application.  # noqa: E501
         :type: Workgroup
@@ -358,8 +349,7 @@ class Application(object):
     # scopes
     @property
     def scopes(self):
-        """Gets the scopes of this Application.  # noqa: E501
-
+        """Gets the scopes of this Application.  # noqa: E501.
 
         :return: The scopes of this Application.  # noqa: E501
         :rtype: Workgroup
@@ -369,7 +359,6 @@ class Application(object):
     @scopes.setter
     def scopes(self, scopes):
         """Sets the scopes of this Application.
-
 
         :param scopes: The scopes of this Application.  # noqa: E501
         :type: Workgroup
@@ -399,8 +388,7 @@ class Application(object):
     # type
     @property
     def type(self):
-        """Gets the type of this Application.  # noqa: E501
-
+        """Gets the type of this Application.  # noqa: E501.
 
         :return: The type of this Application.  # noqa: E501
         :rtype: str
@@ -410,7 +398,6 @@ class Application(object):
     @type.setter
     def type(self, type):
         """Sets the type of this Application.
-
 
         :param type: The type of this Application.  # noqa: E501
         :type: str
@@ -446,8 +433,17 @@ class Application(object):
         self._url = url
 
     # -- METHODS -----------------------------------------------------------------------
+    def admin_url(self, url_base: str = "https://manage.isogeo.com") -> str:
+        """Returns the administration URL (https://manage.isogeo.com) for this application.
+
+        :param str url_base: base URL of admin site. Defaults to: https://manage.isogeo.com
+
+        :rtype: str
+        """
+        return "{}/applications/{}".format(url_base, self._id)
+
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -511,7 +507,7 @@ class Application(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -519,14 +515,14 @@ class Application(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Application):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -534,5 +530,5 @@ class Application(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     application = Application(name="My App to test")

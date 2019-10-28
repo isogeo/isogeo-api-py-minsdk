@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_datasources
-    # for specific
-    python -m unittest tests.test_datasources.TestDatasources.test_datasources_create_basic
-    ```
+```python
+# for whole test
+python -m unittest tests.test_datasources
+# for specific
+python -m unittest tests.test_datasources.TestDatasources.test_datasources_create_basic
+```
 """
 
 # #############################################################################
@@ -30,7 +29,7 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import IsogeoSession, __version__ as pysdk_version, Datasource
+from isogeo_pysdk import Isogeo, Datasource
 
 
 # #############################################################################
@@ -53,7 +52,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -70,8 +69,8 @@ class TestDatasources(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
-            "ISOGEO_API_USER_CLIENT_SECRET"
+        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
         ):
             logging.critical("No API credentials set as env variables.")
             exit()
@@ -82,9 +81,10 @@ class TestDatasources(unittest.TestCase):
         cls.li_fixtures_to_delete = []
 
         # API connection
-        cls.isogeo = IsogeoSession(
-            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+        cls.isogeo = Isogeo(
+            auth_mode="user_legacy",
+            client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+            client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
@@ -243,7 +243,7 @@ class TestDatasources(unittest.TestCase):
     def test_datasources_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/datasources}"""
         # retrieve workgroup datasources
-        wg_datasources = self.isogeo.datasource.datasources(
+        wg_datasources = self.isogeo.datasource.listing(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
         )
         # parse and test object loader

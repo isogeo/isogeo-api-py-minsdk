@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Workgroups entities
@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+from functools import lru_cache
 
 # 3rd party
 from requests.exceptions import Timeout
@@ -40,8 +41,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiWorkgroup:
-    """Routes as methods of Isogeo API used to manipulate workgroups (conditions).
-    """
+    """Routes as methods of Isogeo API used to manipulate workgroups."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -63,10 +63,10 @@ class ApiWorkgroup:
         super(ApiWorkgroup, self).__init__()
 
     # -- Routes to manage the  Workgroup objects ---------------------------------------
-
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
-        self, include: list = ["_abilities", "limits"], caching: bool = 1
+        self, include: tuple = ("_abilities", "limits"), caching: bool = 1
     ) -> list:
         """Get workgroups.
 
@@ -74,7 +74,10 @@ class ApiWorkgroup:
         :param bool caching: option to cache the response
         """
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_workgroups = utils.get_request_base_url(route="groups")
@@ -106,14 +109,15 @@ class ApiWorkgroup:
         # end of method
         return wg_workgroups
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
-    def workgroup(
-        self, workgroup_id: str, include: list = ["_abilities", "limits"]
+    def get(
+        self, workgroup_id: str, include: tuple = ("_abilities", "limits")
     ) -> Workgroup:
         """Get details about a specific workgroup.
 
         :param str workgroup_id: workgroup UUID
-        :param list include: additionnal subresource to include in the response
+        :param tuple include: additionnal subresource to include in the response
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -122,7 +126,10 @@ class ApiWorkgroup:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         url_workgroup = utils.get_request_base_url(
@@ -148,17 +155,14 @@ class ApiWorkgroup:
         return Workgroup(**req_workgroup.json())
 
     @ApiDecorators._check_bearer_validity
-    def create(
-        self, workgroup: object = Workgroup(), check_exists: int = 1
-    ) -> Workgroup:
+    def create(self, workgroup: Workgroup, check_exists: int = 1) -> Workgroup:
         """Add a new workgroup to Isogeo.
 
         :param class workgroup: Workgroup model object to create
         :param int check_exists: check if a workgroup already exists:
 
-        - 0 = no check
-        - 1 = compare name [DEFAULT]
-
+            - 0 = no check
+            - 1 = compare name [DEFAULT]
         """
         # check if object has a correct contact
         if not hasattr(workgroup, "contact") or not isinstance(
@@ -172,7 +176,7 @@ class ApiWorkgroup:
         if check_exists == 1:
             # retrieve workgroup workgroups
             if not self.api_client._workgroups_names:
-                self.listing(include=[])
+                self.listing(include=())
             # check
             if workgroup.contact.name in self.api_client._workgroups_names:
                 logger.debug(
@@ -328,8 +332,7 @@ class ApiWorkgroup:
 
     # -- Routes to manage the related objects ------------------------------------------
     def invite(self, workgroup_id: str, invitation: Invitation) -> dict:
-        """Invite new user to a workgroup.
-        Just a shortcut.
+        """Invite new user to a workgroup. Just a shortcut.
 
         :param str workgroup_id: workgroup UUID
         :param Invitation invitation: Invitation object to send
@@ -338,14 +341,16 @@ class ApiWorkgroup:
             workgroup_id=workgroup_id, invitation=invitation
         )
 
+    @lru_cache()
     def invitations(self, workgroup_id: str) -> dict:
-        """Returns active invitations (including expired) for the specified workgroup.
-        Just a shortcut.
+        """Returns active invitations (including expired) for the specified workgroup. Just a
+        shortcut.
 
         :param str workgroup_id: workgroup UUID
         """
         return self.api_client.invitation.listing(workgroup_id=workgroup_id)
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def limits(self, workgroup_id: str) -> dict:
         """Returns limits for the specified workgroup.
@@ -381,6 +386,7 @@ class ApiWorkgroup:
 
         return req_workgroup_limits.json()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def memberships(self, workgroup_id: str) -> dict:
         """Returns memberships for the specified workgroup.
@@ -416,6 +422,7 @@ class ApiWorkgroup:
 
         return req_workgroup_memberships.json()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics(self, workgroup_id: str) -> dict:
         """Returns statistics for the specified workgroup.
@@ -451,6 +458,7 @@ class ApiWorkgroup:
 
         return req_workgroup_statistics.json()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics_by_tag(self, workgroup_id: str, tag: str) -> dict:
         """Returns statistics for the specified workgroup.
@@ -506,10 +514,11 @@ class ApiWorkgroup:
         return req_workgroup_statistics.json()
 
     # -- Aliased methods ------------------------------------------------------
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def coordinate_systems(self, workgroup_id: str, caching: bool = 1) -> list:
-        """Returns coordinate-systems for the specified workgroup.
-        It's just an alias for the ApiCoordinateSystem.listing method.
+        """Returns coordinate-systems for the specified workgroup. It's just an alias for the
+        ApiCoordinateSystem.listing method.
 
         :param str workgroup_id: workgroup UUID
         :param bool caching: option to cache the response
@@ -523,5 +532,5 @@ class ApiWorkgroup:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_workgroup = ApiWorkgroup()

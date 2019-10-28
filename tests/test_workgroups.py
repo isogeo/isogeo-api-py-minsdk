@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_workgroups
-    # for specific
-    python -m unittest tests.test_workgroups.TestWorkgroups.test_workgroups_create_basic
-    ```
+```python
+# for whole test
+python -m unittest tests.test_workgroups
+# for specific
+python -m unittest tests.test_workgroups.TestWorkgroups.test_workgroups_create_basic
+```
 """
 
 # #############################################################################
@@ -31,8 +30,8 @@ from time import gmtime, sleep, strftime
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import Contact, IsogeoSession, Workgroup
-from isogeo_pysdk import __version__ as pysdk_version
+from isogeo_pysdk import Contact, Isogeo, Workgroup
+
 from isogeo_pysdk.enums import WorkgroupStatisticsTags
 
 # #############################################################################
@@ -55,7 +54,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -70,8 +69,8 @@ class TestWorkgroups(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
-            "ISOGEO_API_USER_CLIENT_SECRET"
+        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
         ):
             logging.critical("No API credentials set as env variables.")
             exit()
@@ -86,9 +85,10 @@ class TestWorkgroups(unittest.TestCase):
             urllib3.disable_warnings()
 
         # API connection
-        cls.isogeo = IsogeoSession(
-            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+        cls.isogeo = Isogeo(
+            auth_mode="user_legacy",
+            client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+            client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
@@ -210,6 +210,9 @@ class TestWorkgroups(unittest.TestCase):
             self.assertTrue(hasattr(workgroup, "keywordsCasing"))
             self.assertTrue(hasattr(workgroup, "metadataLanguage"))
             self.assertTrue(hasattr(workgroup, "themeColor"))
+
+            # specific
+            self.assertTrue(hasattr(workgroup, "name"))
             # tests attributes value
 
     def test_workgroup_detailed(self):
@@ -224,12 +227,12 @@ class TestWorkgroups(unittest.TestCase):
         self.assertTrue(self.isogeo.workgroup.exists(workgroup_id.get("_id")))
 
         # get and check both
-        workgroup = self.isogeo.workgroup.workgroup(workgroup_id.get("_id"))
+        workgroup = self.isogeo.workgroup.get(workgroup_id.get("_id"))
 
         self.assertIsInstance(workgroup, Workgroup)
 
     def test_workgroup_coordinate_systems(self):
-        """GET :groups/{workgroup_uuid}/coordinate-systems"""
+        """GET :groups/{workgroup_uuid}/coordinate-systems."""
         # get
         workgroup_coordinate_systems = self.isogeo.workgroup.coordinate_systems(
             WORKGROUP_TEST_FIXTURE_UUID
@@ -239,7 +242,7 @@ class TestWorkgroups(unittest.TestCase):
         self.assertIsInstance(workgroup_coordinate_systems, list)
 
     def test_workgroup_invitations(self):
-        """GET :groups/{workgroup_uuid}/invitations"""
+        """GET :groups/{workgroup_uuid}/invitations."""
         # get
         workgroup_invitations = self.isogeo.workgroup.invitations(
             WORKGROUP_TEST_FIXTURE_UUID
@@ -248,14 +251,14 @@ class TestWorkgroups(unittest.TestCase):
         self.assertIsInstance(workgroup_invitations, list)
 
     def test_workgroup_limits(self):
-        """GET :groups/{workgroup_uuid}/limits"""
+        """GET :groups/{workgroup_uuid}/limits."""
         # get
         workgroup_limits = self.isogeo.workgroup.limits(WORKGROUP_TEST_FIXTURE_UUID)
         # check
         self.assertIsInstance(workgroup_limits, dict)
 
     def test_workgroup_memberships(self):
-        """GET :groups/{workgroup_uuid}/memberships"""
+        """GET :groups/{workgroup_uuid}/memberships."""
         # get
         workgroup_memberships = self.isogeo.workgroup.memberships(
             WORKGROUP_TEST_FIXTURE_UUID
@@ -264,7 +267,7 @@ class TestWorkgroups(unittest.TestCase):
         self.assertIsInstance(workgroup_memberships, list)
 
     def test_workgroup_statistics(self):
-        """GET :groups/{workgroup_uuid}/statistics"""
+        """GET :groups/{workgroup_uuid}/statistics."""
         # get
         workgroup_statistics = self.isogeo.workgroup.statistics(
             WORKGROUP_TEST_FIXTURE_UUID
@@ -314,7 +317,7 @@ class TestWorkgroups(unittest.TestCase):
     #     )
 
     #     # check if the change is effective
-    #     workgroup_fixture_updated = self.isogeo.workgroup.workgroup(
+    #     workgroup_fixture_updated = self.isogeo.workgroup.get(
     #         workgroup_fixture._id
     #     )
     #     self.assertEqual(

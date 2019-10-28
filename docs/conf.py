@@ -12,16 +12,18 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
-from datetime import date
+
 import os
 import sys
 
 sys.path.insert(0, os.path.abspath(r".."))
+
 from isogeo_pysdk import (
     Isogeo,
     IsogeoChecker,
     IsogeoTranslator,
     IsogeoUtils,
+    __about__,
     __version__,
 )
 
@@ -31,9 +33,9 @@ on_rtd = os.environ.get("READTHEDOCS", None) == "True"
 
 # -- Project information -----------------------------------------------------
 
-project = "Isogeo PySDK"
-author = "Julien M. @ Isogeo"
-copyright = u"2016 - {0}, {1}".format(date.today().year, author)
+project = __about__.__title__
+author = __about__.__author__
+copyright = __about__.__copyright__
 
 # The short X.Y version
 version = __version__
@@ -46,7 +48,7 @@ release = __version__
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.viewcode"]
+extensions = ["sphinx.ext.autodoc", "sphinx.ext.intersphinx", "sphinx.ext.viewcode"]
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -75,88 +77,12 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-# html_theme = 'alabaster'
-
-if on_rtd:
-    html_theme = "default"
-else:
-    import guzzle_sphinx_theme
-
-    html_theme = "guzzle_sphinx_theme"
-    html_theme_path = guzzle_sphinx_theme.html_theme_path()
-    extensions.append("guzzle_sphinx_theme")
-    # Guzzle theme options
-    html_theme_options = {
-        "project_nav_name": project,
-        # Path to a touch icon
-        "touch_icon": "",
-        # Specify a base_url used to generate sitemap.xml links. If not
-        # specified, then no sitemap will be built.
-        "base_url": "http://isogeo-api-pysdk.readthedocs.io",
-        # Allow a separate homepage from the master_doc
-        # "homepage": "index",
-        # Allow the project link to be overriden to a custom URL.
-        "projectlink": "https://github.com/Isogeo/isogeo-api-py-minsdk/",
-    }
-
-# Add any paths that contain custom static files (such as style sheets) here,
-# relative to this directory. They are copied after the builtin static files,
-# so a file named "default.css" will overwrite the builtin "default.css".
-# html_static_path = ['_static']
-
-# Custom sidebar templates, must be a dictionary that maps document names
-# to template names.
-#
-# The default sidebars (for documents that don't match any pattern) are
-# defined by theme itself.  Builtin themes are using these templates by
-# default: ``['localtoc.html', 'relations.html', 'sourcelink.html',
-# 'searchbox.html']``.
-#
-# html_sidebars = {}
-
+html_theme = "default"
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
 htmlhelp_basename = "IsogeoPySDK_doc"
-
-
-# -- Options for LaTeX output ------------------------------------------------
-
-latex_elements = {
-    # The paper size ('letterpaper' or 'a4paper').
-    #
-    # 'papersize': 'letterpaper',
-    # The font size ('10pt', '11pt' or '12pt').
-    #
-    # 'pointsize': '10pt',
-    # Additional stuff for the LaTeX preamble.
-    #
-    # 'preamble': '',
-    # Latex figure (float) alignment
-    #
-    # 'figure_align': 'htbp',
-}
-
-# Grouping the document tree into LaTeX files. List of tuples
-# (source start file, target name, title,
-#  author, documentclass [howto, manual, or own class]).
-latex_documents = [
-    (
-        master_doc,
-        "IsogeoPySDK.tex",
-        "Isogeo PySDK Documentation",
-        "Isogeo PySDK",
-        "manual",
-    )
-]
-
-
-# -- Options for manual page output ------------------------------------------
-
-# One entry per manual page. List of tuples
-# (source start file, name, description, authors, manual section).
-man_pages = [(master_doc, "isogeopysdk", "Isogeo PySDK Documentation", [author], 1)]
 
 
 # -- Options for Texinfo output ----------------------------------------------
@@ -175,6 +101,15 @@ texinfo_documents = [
         "Miscellaneous",
     )
 ]
+
+
+# Example configuration for intersphinx: refer to the Python standard library.
+intersphinx_mapping = {
+    "python": ("https://python.readthedocs.io/en/latest/", None),
+    "requests": ("https://requests.readthedocs.io/en/latest/", None),
+    "oauthlib": ("https://oauthlib.readthedocs.io/en/latest/", None),
+    "requests_oauthlib": ("https://requests-oauthlib.readthedocs.io/en/latest/", None),
+}
 
 
 # -- Options for Sphinx API doc ----------------------------------------------

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Shares entities
@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+from functools import lru_cache
 
 # 3rd party
 from requests.models import Response
@@ -36,8 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiShare:
-    """Routes as methods of Isogeo API used to manipulate shares.
-    """
+    """Routes as methods of Isogeo API used to manipulate shares."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -55,8 +55,9 @@ class ApiShare:
         super(ApiShare, self).__init__()
 
     # -- Routes to manage the object ---------------------------------------------------
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
-    def shares(self, workgroup_id: str = None, caching: bool = 1) -> list:
+    def listing(self, workgroup_id: str = None, caching: bool = 1) -> list:
         """Get all shares which are accessible by the authenticated user OR shares for a workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup. If `None`, then list shares for the autenticated user
@@ -72,11 +73,7 @@ class ApiShare:
                     route="groups/{}/shares".format(workgroup_id)
                 )
         else:
-            logger.debug(
-                "Listing shares for the authenticated user: {}".format(
-                    self.api_client._user.contact.name
-                )
-            )
+            logger.debug("Listing shares for the authenticated application/user")
             url_shares = utils.get_request_base_url(route="shares")
 
         # request
@@ -97,13 +94,9 @@ class ApiShare:
 
         # if caching use or store the workgroup shares
         if caching and workgroup_id is None:
-            self.api_client._shares_names = {
-                i.get("name"): i.get("_id") for i in shares
-            }
+            self.api_client._shares = shares
         elif caching:
-            self.api_client._wg_shares_names = {
-                i.get("name"): i.get("_id") for i in shares
-            }
+            self.api_client._wg_shares = shares
         else:
             pass
 
@@ -111,11 +104,11 @@ class ApiShare:
         return shares
 
     @ApiDecorators._check_bearer_validity
-    def share(self, share_id: str, include: list = ["_abilities", "groups"]) -> Share:
-        """Get details about a specific share.
+    def get(self, share_id: str, include: tuple = ("_abilities", "groups")) -> Share:
+        """Returns details about a specific share.
 
         :param str share_id: share UUID
-        :param list include: additionnal subresource to include in the response
+        :param tuple inlude: additionnal subresource to include in the response
         """
         # check share UUID
         if not checker.check_is_uuid(share_id):
@@ -124,7 +117,10 @@ class ApiShare:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         url_share = utils.get_request_base_url(route="shares/{}".format(share_id))
@@ -155,7 +151,7 @@ class ApiShare:
 
         :param str workgroup_id: identifier of the owner workgroup
         :param Share share: Share model object to create
-        :param int check_exists: check if a share already exists inot the workgroup:
+        :param int check_exists: check if a share already exists into the workgroup:
 
         - 0 = no check
         - 1 = compare name [DEFAULT]
@@ -163,10 +159,10 @@ class ApiShare:
         # check if share already exists in workgroup
         if check_exists == 1:
             # retrieve workgroup shares
-            if not self.api_client._wg_shares_names:
-                self.shares()
+            if not self.api_client._wg_shares:
+                share.listing()
             # check
-            if share.name in self.api_client._wg_shares_names:
+            if share.name in self.api_client._wg_shares:
                 logger.debug(
                     "Share with the same name already exists: {}. Use 'share_update' instead.".format(
                         share.name
@@ -198,7 +194,7 @@ class ApiShare:
 
         # load new share and save it to the cache
         new_share = Share(**req_new_share.json())
-        self.api_client._shares_names[new_share.name] = new_share._id
+        self.api_client._shares[new_share.name] = new_share._id
 
         # end of method
         return new_share
@@ -248,12 +244,14 @@ class ApiShare:
         else:
             pass
 
-        # URL builder
-        url_share_exists = "{}{}".format(utils.get_request_base_url("shares"), share_id)
+        # URL
+        url_share_exists = utils.get_request_base_url(
+            route="shares/{}".format(share_id)
+        )
 
         # request
         req_share_exists = self.api_client.get(
-            url_share_exists,
+            url=url_share_exists,
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
             verify=self.api_client.ssl,
@@ -303,7 +301,7 @@ class ApiShare:
         # update share in cache
         new_share = Share(**req_share_update.json())
         if caching:
-            self.api_client._shares_names[new_share.name] = new_share._id
+            self.api_client._shares[new_share.name] = new_share._id
 
         # end of method
         return new_share
@@ -698,5 +696,5 @@ class ApiShare:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_share = ApiShare()

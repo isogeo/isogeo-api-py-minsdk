@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Datasource entity
@@ -21,39 +21,33 @@ import pprint
 class Datasource(object):
     """Datasources are CSW client entry-points.
 
-    Sample:
+    :Example:
 
-    ```json
-    {
-        '_created': '2019-05-17T13:56:56.6162418+00:00',
-        '_id': '2c891ce8692146c4901115a4232b13a2',
-        '_modified': '2019-05-17T13:57:50.4434219+00:00',
-        '_tag': 'data-source:2c891ce8692146c4901115a4232b13a2',
-        'enabled': True,
-        'lastSession': {
-            '_created': '2019-05-17T13:58:06.5165889+00:00',
-            '_id': 'ea99c37d809c4b1b9b4f257326ad1975',
-            '_modified': '2019-05-17T13:58:28.5554966+00:00',
-            'status': 'failed'
-            },
-        'location': 'http://ogc.geo-ide.developpement-durable.gouv.fr/csw/all-harvestable',
-        'name': 'TEST - CSW entrypoint (datasource)',
-        'resourceCount': 0,
-        'sessions': [
-            {
+    .. code-block:: json
+
+        {
+            '_created': '2019-05-17T13:56:56.6162418+00:00',
+            '_id': '2c891ce8692146c4901115a4232b13a2',
+            '_modified': '2019-05-17T13:57:50.4434219+00:00',
+            '_tag': 'data-source:2c891ce8692146c4901115a4232b13a2',
+            'enabled': True,
+            'lastSession': {
                 '_created': '2019-05-17T13:58:06.5165889+00:00',
                 '_id': 'ea99c37d809c4b1b9b4f257326ad1975',
                 '_modified': '2019-05-17T13:58:28.5554966+00:00',
                 'status': 'failed'
-            }]
+                },
+            'location': 'http://ogc.geo-ide.developpement-durable.gouv.fr/csw/all-harvestable',
+            'name': 'TEST - CSW entrypoint (datasource)',
+            'resourceCount': 0,
+            'sessions': [
+                {
+                    '_created': '2019-05-17T13:58:06.5165889+00:00',
+                    '_id': 'ea99c37d809c4b1b9b4f257326ad1975',
+                    '_modified': '2019-05-17T13:58:28.5554966+00:00',
+                    'status': 'failed'
+                }]
         }
-    ```
-    """
-
-    """
-    Attributes:
-      attr_types (dict): basic structure of datasource attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
     """
 
     attr_types = {
@@ -86,7 +80,7 @@ class Datasource(object):
         resourceCount: int = None,
         sessions: list = None,
     ):
-        """Datasource model"""
+        """Datasource model."""
 
         # default values for the object attributes/properties
         self.__created = None
@@ -262,7 +256,7 @@ class Datasource(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -324,7 +318,7 @@ class Datasource(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -332,14 +326,14 @@ class Datasource(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Datasource):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -347,7 +341,7 @@ class Datasource(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     atasource = Datasource(
         name="Datasource Test", _modified="Test datasource _modified"
     )

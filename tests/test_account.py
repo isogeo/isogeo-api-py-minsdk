@@ -1,15 +1,11 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_account
-    # for specific
-    python -m unittest tests.test_account.TestAccount.test_account_update
-    ```
+```python # for whole test python -m unittest tests.test_account # for
+specific python -m unittest
+tests.test_account.TestAccount.test_account_update ```
 """
 
 # #############################################################################
@@ -22,7 +18,6 @@ import unittest
 import urllib3
 from os import environ
 from pathlib import Path
-from random import sample
 from socket import gethostname
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
@@ -31,8 +26,8 @@ from time import gmtime, sleep, strftime
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import IsogeoSession, User
-from isogeo_pysdk import __version__ as pysdk_version
+from isogeo_pysdk import Isogeo, User
+
 
 # #############################################################################
 # ######## Globals #################
@@ -50,7 +45,7 @@ hostname = gethostname()
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -67,8 +62,8 @@ class TestAccount(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not environ.get("ISOGEO_API_USER_CLIENT_ID") or not environ.get(
-            "ISOGEO_API_USER_CLIENT_SECRET"
+        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
         ):
             logging.critical("No API credentials set as env variables.")
             exit()
@@ -80,9 +75,10 @@ class TestAccount(unittest.TestCase):
             urllib3.disable_warnings()
 
         # API connection
-        cls.isogeo = IsogeoSession(
-            client_id=environ.get("ISOGEO_API_USER_CLIENT_ID"),
-            client_secret=environ.get("ISOGEO_API_USER_CLIENT_SECRET"),
+        cls.isogeo = Isogeo(
+            auth_mode="user_legacy",
+            client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+            client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
             auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
             platform=environ.get("ISOGEO_PLATFORM", "qa"),
         )
@@ -115,7 +111,7 @@ class TestAccount(unittest.TestCase):
     def test_account(self):
         """GET :/account/}"""
         # compare account objects
-        me = self.isogeo.account.account(caching=0)  # Account route
+        me = self.isogeo.account.get(caching=0)  # Account route
         self.assertIsInstance(me, User)
 
     def test_account_memberships(self):

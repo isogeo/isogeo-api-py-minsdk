@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of FeatureAttributes entity
@@ -13,35 +13,28 @@
 
 # standard library
 import pprint
-from uuid import UUID
+
 
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 class FeatureAttribute(object):
-    """
-    FeatureAttributes are entities included as subresource into metadata.
-
+    """FeatureAttributes are entities included as subresource into metadata.
 
     :Example:
 
-    ```json
-    {
-        "_id": string (uuid),
-        "alias": string,
-        "dataType": string,
-        "description": string,
-        "language": string
-        "name": string,
-    }
-    ```
+    .. code-block:: json
+
+        {
+            "_id": string (uuid),
+            "alias": string,
+            "dataType": string,
+            "description": string,
+            "language": string
+            "name": string,
+        }
     """
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of event attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-    """
     attr_types = {
         "_id": str,
         "alias": str,
@@ -74,7 +67,7 @@ class FeatureAttribute(object):
         parent_resource: str = None,
     ):
         """Metadata Feature Attribute model.
-        
+
         :param str _id: UUID, defaults to None
         :param str alias: [description], defaults to None
         :param str dataType: [description], defaults to None
@@ -218,7 +211,7 @@ class FeatureAttribute(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -280,7 +273,7 @@ class FeatureAttribute(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -288,14 +281,14 @@ class FeatureAttribute(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, FeatureAttribute):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -303,5 +296,5 @@ class FeatureAttribute(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     ct = FeatureAttribute()

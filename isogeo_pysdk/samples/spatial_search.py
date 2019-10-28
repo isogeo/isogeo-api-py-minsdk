@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Geographic search
@@ -16,11 +16,6 @@
 # ########## Libraries #############
 # ##################################
 
-# Standard library
-import json
-from os import path
-from urllib.parse import quote
-
 # Isogeo
 from isogeo_pysdk import Isogeo
 
@@ -30,7 +25,7 @@ from isogeo_pysdk import Isogeo
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
 
@@ -62,7 +57,7 @@ if __name__ == "__main__":
     print(validation)
 
     # search & compare
-    basic_search = isogeo.search(page_size=0, whole_share=0)
+    basic_search = isogeo.search(page_size=0, whole_results=0)
 
     print("Comparing count of results returned: ")
     print("\t- without any filter = ", basic_search.get("total"))
@@ -82,7 +77,7 @@ if __name__ == "__main__":
 
         # search & display results - with bounding box
         filtered_search_bbox = isogeo.search(
-            page_size=0, whole_share=0, bbox=bbox, georel=geo_relation
+            page_size=0, whole_results=0, bbox=bbox, georel=geo_relation
         )
         print(
             str("\t- {} (BOX) = {}\t{}").format(
@@ -93,7 +88,7 @@ if __name__ == "__main__":
         )
         # search & display results - with convex hull
         filtered_search_geo = isogeo.search(
-            page_size=0, whole_share=0, poly=poly, georel=geo_relation
+            page_size=0, whole_results=0, poly=poly, georel=geo_relation
         )
         print(
             str("\t- {} (GEO) = {}\t{}").format(

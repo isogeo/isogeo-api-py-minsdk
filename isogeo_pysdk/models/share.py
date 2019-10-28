@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Share entity
@@ -12,12 +12,17 @@
 # ##################################
 
 # standard library
+import logging
 import pprint
 
 # other model
-from isogeo_pysdk.models.application import Application
-from isogeo_pysdk.models.catalog import Catalog
 from isogeo_pysdk.models.workgroup import Workgroup
+
+# #############################################################################
+# ########## Globals ###############
+# ##################################
+
+logger = logging.getLogger(__name__)
 
 
 # #############################################################################
@@ -26,68 +31,23 @@ from isogeo_pysdk.models.workgroup import Workgroup
 class Share(object):
     """Shares are entities used to publish catalog(s) of metadata to applications.
 
+    :Example:
 
-    Sample:
+    .. code-block:: json
 
-    ```json
-    {
-    "_created": "string (date-time)",
-    "_creator": {
-        "_abilities": [
-        "string"
-        ],
-        "_created": "string (date-time)",
-        "_id": "string (uuid)",
-        "_modified": "string (date-time)",
-        "areKeywordsRestricted": "boolean",
-        "canCreateMetadata": "boolean",
-        "catalogs": "string",
-        "contact": {
-        "_created": "string (date-time)",
-        "_id": "string (uuid)",
-        "_modified": "string (date-time)",
-        "addressLine1": "string",
-        "addressLine2": "string",
-        "addressLine3": "string",
-        "available": "string",
-        "city": "string",
-        "groups": "integer (int32)",
-        "groupsryCode": "string",
-        "email": "string",
-        "fax": "string",
-        "hash": "string",
-        "name": "string",
-        "organization": "string",
-        "phone": "string",
-        "type": "string",
-        "zipCode": "string"
-        },
-        "keywordsCasing": "string",
-        "metadataLanguage": "string",
-        "themeColor": "string"
-    },
-    "_id": "string (uuid)",
-    "_modified": "string (date-time)",
-    "applications": [
         {
-        "_created": "string (date-time)",
-        "_id": "string (uuid)",
-        "_modified": "string (date-time)",
-        "canHaveManyGroups": "boolean",
-        "client_id": "string",
-        "client_secret": "string",
-        "groups": [
-            {
-            "_abilities": [
-                "string"
-            ],
             "_created": "string (date-time)",
-            "_id": "string (uuid)",
-            "_modified": "string (date-time)",
-            "areKeywordsRestricted": "boolean",
-            "canCreateMetadata": "boolean",
-            "catalogs": "string",
-            "contact": {
+            "_creator": {
+                "_abilities": [
+                "string"
+                ],
+                "_created": "string (date-time)",
+                "_id": "string (uuid)",
+                "_modified": "string (date-time)",
+                "areKeywordsRestricted": "boolean",
+                "canCreateMetadata": "boolean",
+                "catalogs": "string",
+                "contact": {
                 "_created": "string (date-time)",
                 "_id": "string (uuid)",
                 "_modified": "string (date-time)",
@@ -106,44 +66,83 @@ class Share(object):
                 "phone": "string",
                 "type": "string",
                 "zipCode": "string"
+                },
+                "keywordsCasing": "string",
+                "metadataLanguage": "string",
+                "themeColor": "string"
             },
-            "keywordsCasing": "string",
-            "metadataLanguage": "string",
-            "themeColor": "string"
-            }
-        ],
-        "kind": "string",
-        "name": "string",
-        "redirect_uris": [
-            "string"
-        ],
-        "scopes": [
-            "string"
-        ],
-        "staff": "boolean",
-        "url": "string"
+            "_id": "string (uuid)",
+            "_modified": "string (date-time)",
+            "applications": [
+                {
+                "_created": "string (date-time)",
+                "_id": "string (uuid)",
+                "_modified": "string (date-time)",
+                "canHaveManyGroups": "boolean",
+                "client_id": "string",
+                "client_secret": "string",
+                "groups": [
+                    {
+                    "_abilities": [
+                        "string"
+                    ],
+                    "_created": "string (date-time)",
+                    "_id": "string (uuid)",
+                    "_modified": "string (date-time)",
+                    "areKeywordsRestricted": "boolean",
+                    "canCreateMetadata": "boolean",
+                    "catalogs": "string",
+                    "contact": {
+                        "_created": "string (date-time)",
+                        "_id": "string (uuid)",
+                        "_modified": "string (date-time)",
+                        "addressLine1": "string",
+                        "addressLine2": "string",
+                        "addressLine3": "string",
+                        "available": "string",
+                        "city": "string",
+                        "groups": "integer (int32)",
+                        "groupsryCode": "string",
+                        "email": "string",
+                        "fax": "string",
+                        "hash": "string",
+                        "name": "string",
+                        "organization": "string",
+                        "phone": "string",
+                        "type": "string",
+                        "zipCode": "string"
+                    },
+                    "keywordsCasing": "string",
+                    "metadataLanguage": "string",
+                    "themeColor": "string"
+                    }
+                ],
+                "kind": "string",
+                "name": "string",
+                "redirect_uris": [
+                    "string"
+                ],
+                "scopes": [
+                    "string"
+                ],
+                "staff": "boolean",
+                "url": "string"
+                }
+            ],
+            "catalogs": [
+                {
+                "$scan": "boolean",
+                "_abilities": [
+                    "string"
+                ],
+                "_created": "string (date-time)",
+                "_id": "string (uuid)",
+                "_modified": "string (date-time)"
+                }
+            ]
         }
-    ],
-    "catalogs": [
-        {
-        "$scan": "boolean",
-        "_abilities": [
-            "string"
-        ],
-        "_created": "string (date-time)",
-        "_id": "string (uuid)",
-        "_modified": "string (date-time)"
-        }
-    ]
-    }
-    ```
     """
 
-    """
-    Attributes:
-      attr_types (dict): basic structure of share attributes. {"attribute name": "attribute type"}.
-      attr_crea (dict): only attributes used to POST requests. {"attribute name": "attribute type"}
-    """
     attr_types = {
         "_created": str,
         "_creator": Workgroup,
@@ -183,7 +182,7 @@ class Share(object):
         type: str = None,
         urlToken: str = None,
     ):
-        """Share model"""
+        """Share model."""
 
         # default values for the object attributes/properties
         self.__created = None
@@ -326,7 +325,6 @@ class Share(object):
     def rights(self) -> list:
         """Gets the rights of this Share.
 
-
         :return: The rights of this Share.
         :rtype: str
         """
@@ -361,8 +359,44 @@ class Share(object):
         return self._urlToken
 
     # -- METHODS -----------------------------------------------------------------------
+    def admin_url(self, url_base: str = "https://app.isogeo.com") -> str:
+        """Returns the administration URL (https://app.isogeo.com) for this share.
+
+        :param str url_base: base URL of admin site. Defaults to: https://app.isogeo.com
+
+        :rtype: str
+        """
+        creator_id = self._creator.get("_tag")[6:]
+        return "{}/groups/{}/admin/shares/{}".format(url_base, creator_id, self._id)
+
+    def opencatalog_url(
+        self, url_base: str = "https://open.isogeo.com"
+    ) -> str or bool or None:
+        """Returns the OpenCatalog URL for this share or None if OpenCatalog is not enabled.
+
+        :param str url_base: base URL of OpenCatalog. Defaults to: https://open.isogeo.com
+
+        :returns:
+
+            - False if the share type is not 'application'
+            - None if OpenCatalog is not enabled in the share
+            - URL of the OpenCatalog when everything is fine
+        """
+        # opencatalog URL is valid only for share's of type 'application'
+        if self.type != "application":
+            logger.warning(
+                "Only shares of type 'application' can have an OpenCatalog URL, "
+                "not '{}'.".format(self.type)
+            )
+            return False
+        # check if the urlToken exists which means that OpenCatalog URL is not allowed
+        if self.urlToken is None:
+            return None
+
+        return "{}/s/{}/{}".format(url_base, self._id, self.urlToken)
+
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -426,7 +460,7 @@ class Share(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -434,14 +468,14 @@ class Share(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Share):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -449,6 +483,6 @@ class Share(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     model = Share(name="Test Share model")
     to_crea = model.to_dict_creation()
