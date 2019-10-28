@@ -289,15 +289,17 @@ class ApiCoordinateSystem:
 
         :Example:
 
-        >>> # retrieve the SRS
-        >>> coordsys = isogeo.srs.get("4326")
-        >>> # add a custom alias
-        >>> coordsys.alias = "World SRS"
-        >>> # add it to the workgroup selection
-        >>> isogeo.srs.associate_workgroup(
-            workgroup=isogeo.workgroup.get(WORKGROUP_UUID),
-            coordinate_system=coordsys
-            )
+            .. code-block:: python
+
+                # retrieve the SRS
+                coordsys = isogeo.srs.get("4326")
+                # add a custom alias
+                coordsys.alias = "World SRS"
+                # add it to the workgroup selection
+                isogeo.srs.associate_workgroup(
+                    workgroup=isogeo.workgroup.get(WORKGROUP_UUID),
+                    coordinate_system=coordsys
+                )
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup._id):
