@@ -118,7 +118,7 @@ class ApiCoordinateSystem:
         return coordinate_systems
 
     @ApiDecorators._check_bearer_validity
-    def coordinate_system(
+    def get(
         self, coordinate_system_code: str, workgroup_id: str = None
     ) -> CoordinateSystem:
         """Get details about a specific coordinate_system, from the whole Isogeo database or into a
@@ -134,7 +134,7 @@ class ApiCoordinateSystem:
         >>> # list all coordinate-systems in the whole Isogeo database
         >>> srs = isogeo.srs.listing()
         >>> # print details about the first SRS found
-        >>> pprint.pprint(isogeo.srs.coordinate_system(srs[0].get("code")))
+        >>> pprint.pprint(isogeo.srs.get(srs[0].get("code")))
         {
             '_tag': 'coordinate-system:4143',
             'code': 4143,
@@ -289,15 +289,17 @@ class ApiCoordinateSystem:
 
         :Example:
 
-        >>> # retrieve the SRS
-        >>> coordsys = isogeo.srs.coordinate_system("4326")
-        >>> # add a custom alias
-        >>> coordsys.alias = "World SRS"
-        >>> # add it to the workgroup selection
-        >>> isogeo.srs.associate_workgroup(
-            workgroup=isogeo.workgroup.get(WORKGROUP_UUID),
-            coordinate_system=coordsys
-            )
+            .. code-block:: python
+
+                # retrieve the SRS
+                coordsys = isogeo.srs.get("4326")
+                # add a custom alias
+                coordsys.alias = "World SRS"
+                # add it to the workgroup selection
+                isogeo.srs.associate_workgroup(
+                    workgroup=isogeo.workgroup.get(WORKGROUP_UUID),
+                    coordinate_system=coordsys
+                )
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup._id):

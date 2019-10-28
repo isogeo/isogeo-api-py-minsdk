@@ -212,7 +212,7 @@ class TestCoordinateSystems(unittest.TestCase):
 
         srs_code = sample(coordinate_systems, 1)[0].get("code")
         # retrieve coordinate system with his EPSG code
-        srs_detailed = self.isogeo.srs.coordinate_system(srs_code)
+        srs_detailed = self.isogeo.srs.get(srs_code)
         # check result
         self.assertIsInstance(srs_detailed, CoordinateSystem)
 
@@ -228,7 +228,7 @@ class TestCoordinateSystems(unittest.TestCase):
 
         srs_code = sample(wg_coordinate_systems, 1)[0].get("code")
         # retrieve coordinate system with his EPSG code
-        srs_detailed = self.isogeo.srs.coordinate_system(srs_code)
+        srs_detailed = self.isogeo.srs.get(srs_code)
         # check result
         self.assertIsInstance(srs_detailed, CoordinateSystem)
 
