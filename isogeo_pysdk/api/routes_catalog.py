@@ -69,6 +69,22 @@ class ApiCatalog:
         :param str workgroup_id: identifier of the owner workgroup
         :param tuple include: additionnal subresource to include in the response
         :param bool caching: option to cache the response
+
+        :rtype: list
+
+        :Example:
+
+            .. code-block:: python
+
+                # retrieve the catalogs of workgroup
+                wg_catalogs = isogeo.catalog.listing(
+                    workgroup_id=isogeo_workgroup._id,
+                    include=None
+                )
+                # filter on catalogs with the Sacn checked
+                for cat in wg_catalogs:
+                    if cat.get("$scan", False):
+                        print(cat.get("name"))
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
