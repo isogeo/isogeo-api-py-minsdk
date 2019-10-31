@@ -4,8 +4,7 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-black = "==19.3b0"
-codecov = "*"
+black = "==19.10b0"
 flake8 = "*"
 isogeo-pysdk = {editable = true,path = "."}
 pip = "*"
@@ -14,7 +13,6 @@ pycodestyle = "*"
 pylint = "*"
 pytest= "<5.1"
 pytest-cov="*"
-python-dateutil = "*"
 python-dotenv = "*"
 pytest-random-order = "*"
 setuptools = "*"
