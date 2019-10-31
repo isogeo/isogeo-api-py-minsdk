@@ -2,6 +2,7 @@
 #! python3  # noqa: E265 F401
 
 from .routes_application import ApiApplication  # noqa: F401
+from .routes_about import ApiAbout  # noqa: F401
 from .routes_account import ApiAccount  # noqa: F401
 from .routes_catalog import ApiCatalog  # noqa: F401
 from .routes_contact import ApiContact  # noqa: F401

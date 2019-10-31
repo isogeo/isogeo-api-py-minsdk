@@ -1,11 +1,9 @@
 {
     "editor.rulers": [88],
     "editor.wordWrapColumn": 88,
-    "python.dataScience.enabled": false,
     "python.envFile": "${workspaceFolder}/dev.env",
     "python.formatting.provider": "black",
     "python.formatting.blackArgs": ["--target-version=py37"],
-    "python.jediEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.flake8Args": [
         "--ignore=E24,E265,E501,W504",

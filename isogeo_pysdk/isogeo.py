@@ -272,6 +272,7 @@ class Isogeo(OAuth2Session):
             )
 
         # load routes as subclass
+        self.about = api.ApiAbout(platform=self.platform, proxies=self.proxies)
         self.account = api.ApiAccount(self)
         self.application = api.ApiApplication(self)
         self.catalog = api.ApiCatalog(self)
@@ -436,38 +437,43 @@ if __name__ == "__main__":
 
     # instanciate
 
-    # # for oAuth2 Legacy Flow
-    # isogeo = Isogeo(
-    #     auth_mode="user_legacy",
-    #     client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
-    #     client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
-    #     auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
-    #     platform=environ.get("ISOGEO_PLATFORM", "qa"),
-    # )
-
-    # # getting a token
-    # isogeo.connect(
-    #     username=environ.get("ISOGEO_USER_NAME"),
-    #     password=environ.get("ISOGEO_USER_PASSWORD"),
-    # )
-
-    # for oAuth2 Backend (Client Credentials Grant) Flow
+    # for oAuth2 Legacy Flow
     isogeo = Isogeo(
-        auth_mode="group",
-        client_id=environ.get("ISOGEO_API_GROUP_CLIENT_ID"),
-        client_secret=environ.get("ISOGEO_API_GROUP_CLIENT_SECRET"),
+        auth_mode="user_legacy",
+        client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+        client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
-        max_retries=1,
     )
 
     # getting a token
-    isogeo.connect()
+    isogeo.connect(
+        username=environ.get("ISOGEO_USER_NAME"),
+        password=environ.get("ISOGEO_USER_PASSWORD"),
+    )
+
+    # # for oAuth2 Backend (Client Credentials Grant) Flow
+    # isogeo = Isogeo(
+    #     auth_mode="group",
+    #     client_id=environ.get("ISOGEO_API_GROUP_CLIENT_ID"),
+    #     client_secret=environ.get("ISOGEO_API_GROUP_CLIENT_SECRET"),
+    #     auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+    #     platform=environ.get("ISOGEO_PLATFORM", "qa"),
+    #     max_retries=1,
+    # )
+
+    # # getting a token
+    # isogeo.connect()
 
     # misc
     discriminator = strftime("%Y-%m-%d_%H%M%S", gmtime())
     METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
     WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+
+    print(isogeo.about.api())
+    # print(isogeo.about.database())
+    # print(isogeo.about.auth())
+    # print(isogeo.about.services())
 
     # -- END -------
     isogeo.close()  # close session
