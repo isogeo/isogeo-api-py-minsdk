@@ -24,7 +24,7 @@ variables:
 # -- STAGES ----------------------------------------------------------------------------
 stages:
 - stage: Lint
-  displayName: Lint and format code
+  displayName: Format and lint code
 
   jobs:
     - job: 'Lint'
@@ -48,10 +48,6 @@ stages:
           python -m black --target-version=py37 .\tests
         displayName: 'Apply black code formatting'
 
-      - publish: $(System.DefaultWorkingDirectory)
-        artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
-        displayName: 'Publish formatted code with dependencies'
-
       - script: |
           # stop the build if there are Python syntax errors or undefined names
           python -m flake8  $(packageFolderName)/ --count --select=E9,F63,F7,F82 --show-source --statistics
@@ -59,6 +55,10 @@ stages:
           python -m flake8  $(packageFolderName)/ --count --exit-zero --max-complexity=15 --max-line-length=100 --ignore E501,W505
         displayName: "Static code analisis (PEP8 conformance, imports...) with flake8"
 
+      # save formatted code to use later avoiding git clone again
+      - publish: $(System.DefaultWorkingDirectory)
+        artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
+        displayName: 'Publish formatted code with dependencies'
 
 
 - stage: Test
@@ -81,6 +81,13 @@ stages:
       maxParallel: 2
 
     steps:
+
+    # no need for source code
+    - checkout: none
+
+    - download: current
+      artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
+
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '$(python.version)'
@@ -88,8 +95,8 @@ stages:
         addToPath: true
 
     - script: |
-        python -m pip install -U pip
-        python -m pip install -U -r ./requirements_dev.txt
+        python -m pip install -U pip --cache-dir ./.pipcache
+        python -m pip install -U -r ./requirements_dev.txt --cache-dir ./.pipcache
       displayName: 'Install dependencies'
 
     - script: |
