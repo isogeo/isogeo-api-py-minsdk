@@ -218,12 +218,12 @@ stages:
     - task: GitHubRelease@1
       displayName: "Publish tagged code as Github Release"
       inputs:
-        gitHubConnection: 'Azure DevOps'
+        gitHubConnection: 'github.com_Guts'
         repositoryName: '$(Build.Repository.Name)'
         action: 'create'
-        assets: "$(System.DefaultWorkingDirectory)/*"
         target: '$(Build.SourceVersion)'
         tagSource: 'gitTag'
+        assets: '$(System.DefaultWorkingDirectory)/*'
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
 
