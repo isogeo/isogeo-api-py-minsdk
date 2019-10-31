@@ -207,9 +207,15 @@ class Isogeo(OAuth2Session):
             pass
 
         # platform to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(platform)
 
         # max retries
         if max_retries > 0:

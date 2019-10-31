@@ -139,9 +139,15 @@ class IsogeoUtils(object):
         :param dict proxies: dictionary of proxy settings as described in
          requests. See: http://docs.python-requests.org/en/master/user/advanced/#proxies
         """
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = (
-            self.set_base_url()
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = self.set_base_url()
         self.proxies = proxies
         super(IsogeoUtils, self).__init__()
 

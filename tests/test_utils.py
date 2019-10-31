@@ -74,9 +74,15 @@ class TestIsogeoUtils(unittest.TestCase):
         version_api_prod = self.utils.get_isogeo_version(component="api")
         version_api_naive_prod = self.utils.get_isogeo_version()
         # qa
-        platform, api_url, app_url, csw_url, mng_url, oc_url, ssl = self.utils.set_base_url(
-            platform="qa"
-        )
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url(platform="qa")
         version_api_qa = self.utils.get_isogeo_version(component="api")
         version_api_naive_qa = self.utils.get_isogeo_version()
         # check
@@ -104,9 +110,15 @@ class TestIsogeoUtils(unittest.TestCase):
         # prod
         version_db_prod = self.utils.get_isogeo_version(component="db")
         # qa
-        platform, api_url, app_url, csw_url, mng_url, oc_url, ssl = self.utils.set_base_url(
-            platform="qa"
-        )
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url(platform="qa")
         version_db_qa = self.utils.get_isogeo_version(component="db")
         # check
         self.assertIsInstance(version_db_prod, str)
@@ -121,9 +133,15 @@ class TestIsogeoUtils(unittest.TestCase):
     def test_set_base_url(self):
         """Set base URLs."""
         # by default platform = prod
-        platform, api_url, app_url, csw_url, mng_url, oc_url, ssl = (
-            self.utils.set_base_url()
-        )
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url()
         self.assertIsInstance(platform, str)
         self.assertIsInstance(api_url, str)
         self.assertIsInstance(ssl, bool)
@@ -131,9 +149,15 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertEqual(api_url, self.utils.API_URLS.get("prod"))
         self.assertEqual(ssl, True)
         # qa
-        platform, api_url, app_url, csw_url, mng_url, oc_url, ssl = self.utils.set_base_url(
-            platform="qa"
-        )
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url(platform="qa")
         self.assertIsInstance(platform, str)
         self.assertIsInstance(api_url, str)
         self.assertIsInstance(ssl, bool)

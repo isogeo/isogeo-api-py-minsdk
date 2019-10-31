@@ -44,9 +44,15 @@ class ApiFeatureAttribute:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiFeatureAttribute, self).__init__()
 
