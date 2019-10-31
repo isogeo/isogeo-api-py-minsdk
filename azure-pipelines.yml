@@ -40,8 +40,8 @@ stages:
 
       - script: |
           python -m pip install -U pip --cache-dir ./.pipcache
-          python -m pip install -U black flake8 --cache-dir ./.pipcache
-        displayName: 'Install black and flake8 dependencies'
+          python -m pip install -U -r ./requirements_dev.txt --cache-dir ./.pipcache
+        displayName: 'Install black and flake8 dependencies (included in dev requirements)'
 
       - script: |
           python -m black --target-version=py37 ./$(packageFolderName)
