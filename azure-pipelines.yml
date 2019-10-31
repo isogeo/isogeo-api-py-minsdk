@@ -15,148 +15,248 @@ trigger:
 pr:
 - master
 
-jobs:
+# -- GLOBAL VARIABLES ------------------------------------------------------------------
+variables:
+  packageFolderName: "isogeo_pysdk"
+  pyPiPackageName: "isogeo-pysdk"
+  vmImageName: "windows-2019"
 
-# LINT AND FORMATTING CODE
-- job: 'Lint'
-  pool:
-    vmImage: "windows-2019"
+# -- STAGES ----------------------------------------------------------------------------
+stages:
+- stage: Lint
+  displayName: Format and lint code
 
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.7'
-      architecture: 'x64'
-      addToPath: true
+  jobs:
+    - job: 'Lint'
+      pool:
+        vmImage: $(vmImageName)
 
-  - script: |
-      python -m pip install -U pip
-      python -m pip install -U black flake8
-    displayName: 'Install black and flake8 dependencies'
+      steps:
+      - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
+        fetchDepth: 1
+        
+      - task: UsePythonVersion@0
+        inputs:
+          versionSpec: '3.7'
+          architecture: 'x64'
+          addToPath: true
 
-  - script: |
-      python -m black --target-version=py37 .\isogeo_pysdk
-      python -m black --target-version=py37 .\tests
-    displayName: 'Apply black code formatting'
+      - script: |
+          python -m pip install -U pip --cache-dir ./.pipcache
+          python -m pip install -U -r ./requirements_dev.txt --cache-dir ./.pipcache
+        displayName: 'Install black and flake8 dependencies (included in dev requirements)'
 
-  - script: |
-      # stop the build if there are Python syntax errors or undefined names
-      python -m flake8  ./isogeo_pysdk/ --count --select=E9,F63,F7,F82 --show-source --statistics
-      # exit-zero treats all errors as warnings. Tolerance of line length fixed to 100.
-      python -m flake8  ./isogeo_pysdk/ --count --exit-zero --max-complexity=15 --max-line-length=100 --ignore E501,W505
-    displayName: "Static code analisis (PEP8 conformance, imports...) with flake8"
+      - script: |
+          python -m black --target-version=py37 ./$(packageFolderName)
+          python -m black --target-version=py37 .\tests
+        displayName: 'Apply black code formatting'
 
-# TESTS
-- job: 'Test'
-  dependsOn: 'Lint'
-  pool:
-    vmImage: "windows-2019"
-  strategy:
-    matrix:
-      Python36:
-        python.version: '3.6'
-      Python37:
-        python.version: '3.7'
-    maxParallel: 2
+      - script: |
+          # stop the build if there are Python syntax errors or undefined names
+          python -m flake8  ./$(packageFolderName)/ --count --select=E9,F63,F7,F82 --show-source --statistics
+          # exit-zero treats all errors as warnings. Tolerance of line length fixed to 100.
+          python -m flake8  ./$(packageFolderName)/ --count --exit-zero --max-complexity=15 --max-line-length=100 --ignore E501,W505
+        displayName: "Static code analisis (PEP8 conformance, imports...) with flake8"
 
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-      architecture: 'x64'
-      addToPath: true
+      # save formatted code to use later avoiding git clone again
+      - publish: $(System.DefaultWorkingDirectory)
+        artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
+        displayName: 'Publish formatted code with dependencies'
 
-  - script: |
-      python -m pip install -U pip
-      python -m pip install -U -r ./requirements.txt
-      python -m pip install -U -r ./requirements_dev.txt
-    displayName: 'Install dependencies'
+- stage: Test
+  displayName: Tests stage
+  dependsOn: Lint
+  condition: succeeded()
 
-  - script: |
-      python -m pytest --random-order --maxfail=3 --junitxml=junit/test-results.xml --cov=isogeo_pysdk --cov-report=xml --cov-append tests
-    env:
-      # platform
-      ISOGEO_PLATFORM: $(ISOGEO_PLATFORM)
-      OAUTHLIB_INSECURE_TRANSPORT: $(OAUTHLIB_INSECURE_TRANSPORT)
-      # URLs
-      ISOGEO_API_URL: $(ISOGEO_API_URL)
-      ISOGEO_ID_URL: $(ISOGEO_ID_URL)
-      # oAuth2 Client Credentials Grant
-      ISOGEO_API_GROUP_CLIENT_ID: $(ISOGEO_API_GROUP_CLIENT_ID)
-      ISOGEO_API_GROUP_CLIENT_SECRET: $(ISOGEO_API_GROUP_CLIENT_SECRET)
-      # oAuth2 Legacy Application Client
-      ISOGEO_API_USER_LEGACY_CLIENT_ID: $(ISOGEO_API_USER_LEGACY_CLIENT_ID)
-      ISOGEO_API_USER_LEGACY_CLIENT_SECRET: $(ISOGEO_API_USER_LEGACY_CLIENT_SECRET)
-      ISOGEO_USER_NAME: $(ISOGEO_USER_NAME)
-      ISOGEO_USER_PASSWORD: $(ISOGEO_USER_PASSWORD)
-      # static fixtures
-      ISOGEO_FIXTURES_METADATA_COMPLETE: $(ISOGEO_FIXTURES_METADATA_COMPLETE)
-      ISOGEO_WORKGROUP_TEST_UUID: $(ISOGEO_WORKGROUP_TEST_UUID)
-    displayName: 'Tests and coverage - Pytest'
+  jobs:
+  # TESTS
+  - job: 'Test'
+    pool:
+      vmImage: $(vmImageName)
+    strategy:
+      matrix:
+        Python36:
+          python.version: '3.6'
+        Python37:
+          python.version: '3.7'
+      maxParallel: 2
 
-  - task: PublishTestResults@2
-    displayName: "Publish unit test results"
-    condition: succeededOrFailed()
-    inputs:
-      testResultsFiles: '**/test-*.xml'
-      testRunTitle: 'Publish test results for Python $(python.version)'
+    steps:
 
-  - task: PublishCodeCoverageResults@1
-    displayName: "Publish coverage results to Azure Pipelines"
-    inputs:
-      codeCoverageTool: Cobertura
-      summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+    # no need for source code
+    - checkout: none
 
-# BUILD and PUBLISH
-# only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
-- job: 'Publish'
-  dependsOn: 'Test'
-  pool:
-    vmImage: "windows-2019"
-  condition:
-    contains(variables['Build.SourceBranch'], 'tags')
+    - task: DownloadPipelineArtifact@2
+      displayName: "Download artifact previously saved"
+      inputs:
+        buildType: "current"
+        artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
+        targetPath: "$(System.DefaultWorkingDirectory)"
+      
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '$(python.version)'
+        architecture: 'x64'
+        addToPath: true
 
-  steps:
-  - task: GitHubRelease@0
-    inputs:
-      gitHubConnection: 'Azure DevOps'
-      repositoryName: 'isogeo/isogeo-api-py-minsdk'
-      action: 'create'
-      target: '$(Build.SourceVersion)'
-      tagSource: 'auto'
+    - script: |
+        python -m pip install -U pip --cache-dir ./.pipcache
+        python -m pip install -U -r ./requirements_dev.txt --cache-dir ./.pipcache
+      displayName: 'Install dependencies'
 
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '3.x'
-      architecture: 'x64'
-      addToPath: true
+    - script: |
+        python -m pytest --random-order --maxfail=3 --junitxml=junit/test-results.xml --cov=$(packageFolderName) --cov-report=xml --cov-append tests
+      env:
+        # platform
+        ISOGEO_PLATFORM: $(ISOGEO_PLATFORM)
+        OAUTHLIB_INSECURE_TRANSPORT: $(OAUTHLIB_INSECURE_TRANSPORT)
+        # URLs
+        ISOGEO_API_URL: $(ISOGEO_API_URL)
+        ISOGEO_ID_URL: $(ISOGEO_ID_URL)
+        # oAuth2 Client Credentials Grant
+        ISOGEO_API_GROUP_CLIENT_ID: $(ISOGEO_API_GROUP_CLIENT_ID)
+        ISOGEO_API_GROUP_CLIENT_SECRET: $(ISOGEO_API_GROUP_CLIENT_SECRET)
+        # oAuth2 Legacy Application Client
+        ISOGEO_API_USER_LEGACY_CLIENT_ID: $(ISOGEO_API_USER_LEGACY_CLIENT_ID)
+        ISOGEO_API_USER_LEGACY_CLIENT_SECRET: $(ISOGEO_API_USER_LEGACY_CLIENT_SECRET)
+        ISOGEO_USER_NAME: $(ISOGEO_USER_NAME)
+        ISOGEO_USER_PASSWORD: $(ISOGEO_USER_PASSWORD)
+        # static fixtures
+        ISOGEO_FIXTURES_METADATA_COMPLETE: $(ISOGEO_FIXTURES_METADATA_COMPLETE)
+        ISOGEO_WORKGROUP_TEST_UUID: $(ISOGEO_WORKGROUP_TEST_UUID)
+      displayName: 'Tests and coverage - Pytest'
 
-  - script: |
-      python -m pip install -U pip setuptools wheel
-      python -m pip install -U -r requirements.txt
-      python -m pip install -U twine
-    displayName: 'Install dependencies'
+    - task: PublishTestResults@2
+      displayName: "Publish unit test results"
+      condition: succeededOrFailed()
+      inputs:
+        testResultsFiles: '**/test-*.xml'
+        testRunTitle: 'Publish test results for Python $(python.version)'
 
-  - script: python setup.py egg_info
-    displayName: 'Build package metadata'
+    - task: PublishCodeCoverageResults@1
+      displayName: "Publish coverage results to Azure Pipelines"
+      inputs:
+        codeCoverageTool: Cobertura
+        summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
 
-  - script: python setup.py sdist
-    displayName: 'Build sdist'
 
-  - script: python setup.py bdist_wheel
-    displayName: 'Build wheel'
+- stage: Deploy
+  displayName: Build and Deploy
+  dependsOn: Test
+  condition: succeeded()
 
-  - task: PublishPipelineArtifact@1
-    displayName: 'Publish Artifact: Isogeo Python SDK package'
-    inputs:
-      path: $(System.DefaultWorkingDirectory)/dist
-      artifact: 'IsogeoPythonSDK_$(Build.SourceVersion)'
+  jobs:
+  # BUILD Python package
+  - job: 'Build'
+    pool:
+      vmImage: $(vmImageName)
 
-  - task: TwineAuthenticate@0
-    # see: https://dev.azure.com/isogeo/Python%20SDK/_settings/adminservices?resourceId=7650b333-6c8a-4c56-a839-a33242255c16&resource=%5Bobject%20Object%5D&_a=resources
-    inputs:
-      externalFeeds: 'PyPi'
+    steps:
+    # no need for source code
+    - checkout: none
 
-  - script: twine upload $(System.DefaultWorkingDirectory)/dist/* -r 'pypi' --config-file $(PYPIRC_PATH)
-    continueOnError: true
-    displayName: "Upload to PyPi"
+    - task: DownloadPipelineArtifact@2
+      displayName: "Download artifact previously saved"
+      inputs:
+        buildType: "current"
+        artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
+        targetPath: "$(System.DefaultWorkingDirectory)"
+
+    - task: UsePythonVersion@0
+      inputs:
+        versionSpec: '3.x'
+        architecture: 'x64'
+        addToPath: true
+
+    - script: |
+        python -m pip install -U pip --cache-dir ./.pipcache
+        python -m pip install -U -r ./requirements.txt --cache-dir ./.pipcache
+        python -m pip install -U twine
+      displayName: 'Install dependencies'
+
+    - script: python setup.py egg_info
+      displayName: 'Build package metadata'
+
+    - script: python setup.py sdist
+      displayName: 'Build sdist'
+
+    - script: python setup.py bdist_wheel
+      displayName: 'Build wheel'
+
+    - task: PublishPipelineArtifact@1
+      displayName: 'Publish Artifact: Isogeo Python SDK package'
+      inputs:
+        path: $(System.DefaultWorkingDirectory)/dist
+        artifact: '$(pyPiPackageName)_$(Build.SourceVersion)'
+
+  # PUBLISH TO GITHUB
+  # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
+  - job: 'DeployGithub'
+    dependsOn: Build
+    # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
+    condition: |
+      and
+      (
+        succeeded(),
+        contains(variables['Build.SourceBranch'], 'tags')
+      )
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    # no need for source code
+    - checkout: none
+
+    - task: DownloadPipelineArtifact@2
+      displayName: "Download artifact previously saved"
+      inputs:
+        buildType: "current"
+        artifact: '$(pyPiPackageName)_$(Build.SourceVersion)'
+        targetPath: "$(System.DefaultWorkingDirectory)"
+
+    # publish to Github
+    - task: GitHubRelease@1
+      displayName: "Publish tagged code as Github Release"
+      inputs:
+        gitHubConnection: 'Azure DevOps'
+        repositoryName: '$(Build.Repository.Name)'
+        action: 'create'
+        assets: "$(System.DefaultWorkingDirectory)/*"
+        target: '$(Build.SourceVersion)'
+        tagSource: 'gitTag'
+        changeLogCompareToRelease: 'lastFullRelease'
+        changeLogType: 'commitBased'
+
+  # PUBLISH TO the Python Package Index (PyPi)
+  # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)        
+  - job: 'DeployPyPi'  
+    dependsOn: Build
+    condition: |
+      and
+      (
+        succeeded(),
+        contains(variables['Build.SourceBranch'], 'tags')
+      )
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    # no need for source code
+    - checkout: none
+
+    - task: DownloadPipelineArtifact@2
+      displayName: "Download artifact previously saved"
+      inputs:
+        buildType: "current"
+        artifact: '$(pyPiPackageName)_$(Build.SourceVersion)'
+        targetPath: "$(System.DefaultWorkingDirectory)"
+
+    - task: TwineAuthenticate@1
+      inputs:
+        pythonUploadServiceConnection: 'pypi'
+
+    # see: https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#sep-python-upload
+    - script: |
+        python -m twine upload -r 'pypi' --config-file $(PYPIRC_PATH) *
+      continueOnError: true
+      displayName: "Upload to PyPi"
