@@ -129,9 +129,12 @@ stages:
 - stage: Deploy
   displayName: Build and Deploy
   dependsOn: Test
-  condition: 
-    succeeded()
-    contains(variables['Build.SourceBranch'], 'tags')
+  condition: |
+    and
+    (
+      succeeded()
+      contains(variables['Build.SourceBranch'], 'tags')
+    )
 
   jobs:
   # BUILD and PUBLISH
