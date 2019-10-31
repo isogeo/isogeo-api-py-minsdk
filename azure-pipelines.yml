@@ -189,7 +189,7 @@ stages:
         path: $(System.DefaultWorkingDirectory)/dist
         artifact: '$(pyPiPackageName)_$(Build.SourceVersion)'
 
-  # PUBLISH
+  # PUBLISH TO GITHUB
   # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
   - job: 'DeployGithub'
     dependsOn: Build
@@ -227,9 +227,10 @@ stages:
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
 
-  - job: 'DeployPyPi'
+  # PUBLISH TO the Python Package Index (PyPi)
+  # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)        
+  - job: 'DeployPyPi'  
     dependsOn: Build
-    # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
     condition: |
       and
       (
