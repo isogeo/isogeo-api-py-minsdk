@@ -60,6 +60,9 @@ stages:
         artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
         displayName: 'Publish formatted code with dependencies'
 
+      - task: TwineAuthenticate@1
+        inputs:
+          pythonUploadServiceConnection: 'PyPi'
 
 - stage: Test
   displayName: Tests stage
