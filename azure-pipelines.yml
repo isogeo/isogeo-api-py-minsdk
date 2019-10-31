@@ -23,7 +23,7 @@ variables:
 # Different stages
 stages:
 - stage: Lint
-  displayName: Build stage
+  displayName: Lint and format code
 
   jobs:
     - job: 'Lint'
@@ -129,7 +129,9 @@ stages:
 - stage: Deploy
   displayName: Build and Deploy
   dependsOn: Test
-  condition: succeeded()
+  condition: 
+    succeeded()
+    contains(variables['Build.SourceBranch'], 'tags')
 
   jobs:
   # BUILD and PUBLISH
@@ -137,8 +139,6 @@ stages:
   - job: 'Publish'
     pool:
       vmImage: $(vmImageName)
-    condition:
-      contains(variables['Build.SourceBranch'], 'tags')
 
     steps:
     - task: GitHubRelease@0
