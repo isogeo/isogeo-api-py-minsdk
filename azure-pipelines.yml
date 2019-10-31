@@ -63,15 +63,10 @@ stages:
         artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
         displayName: 'Publish formatted code with dependencies'
 
-      - task: TwineAuthenticate@1
-        inputs:
-          pythonUploadServiceConnection: 'PyPi'
-
 - stage: Test
   displayName: Tests stage
   dependsOn: Lint
   condition: succeeded()
-
 
   jobs:
   # TESTS
@@ -163,13 +158,15 @@ stages:
       vmImage: $(vmImageName)
 
     steps:
-    - task: GitHubRelease@0
+    - task: GitHubRelease@1
       inputs:
         gitHubConnection: 'Azure DevOps'
-        repositoryName: 'isogeo/isogeo-api-py-minsdk'
+        repositoryName: '$(Build.Repository.Name)'
         action: 'create'
         target: '$(Build.SourceVersion)'
-        tagSource: 'auto'
+        tagSource: 'gitTag'
+        changeLogCompareToRelease: 'lastFullRelease'
+        changeLogType: 'commitBased'
 
     - task: UsePythonVersion@0
       inputs:
@@ -198,10 +195,9 @@ stages:
         path: $(System.DefaultWorkingDirectory)/dist
         artifact: 'IsogeoPythonSDK_$(Build.SourceVersion)'
 
-    - task: TwineAuthenticate@0
-      # see: https://dev.azure.com/isogeo/Python%20SDK/_settings/adminservices?resourceId=7650b333-6c8a-4c56-a839-a33242255c16&resource=%5Bobject%20Object%5D&_a=resources
+    - task: TwineAuthenticate@1
       inputs:
-        externalFeeds: 'PyPi'
+        pythonUploadServiceConnection: 'PyPi'
 
     - script: twine upload $(System.DefaultWorkingDirectory)/dist/* -r 'pypi' --config-file $(PYPIRC_PATH)
       continueOnError: true
