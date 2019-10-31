@@ -189,9 +189,7 @@ stages:
         path: $(System.DefaultWorkingDirectory)/dist
         artifact: '$(pyPiPackageName)_$(Build.SourceVersion)'
 
-
-  jobs:
-  # BUILD and PUBLISH
+  # PUBLISH
   # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
   - job: 'DeployGithub'
     dependsOn: Build
