@@ -132,7 +132,7 @@ stages:
   condition: |
     and
     (
-      succeeded()
+      succeeded(),
       contains(variables['Build.SourceBranch'], 'tags')
     )
 
