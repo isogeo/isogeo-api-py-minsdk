@@ -62,5 +62,5 @@ class ApiDecorators(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     pass

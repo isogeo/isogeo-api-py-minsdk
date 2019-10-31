@@ -37,8 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiConformity:
-    """Routes as methods of Isogeo API used to manipulate conformity with specifications.
-    """
+    """Routes as methods of Isogeo API used to manipulate conformity with specifications."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -49,9 +48,15 @@ class ApiConformity:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiConformity, self).__init__()
 
@@ -221,5 +226,5 @@ class ApiConformity:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_conformity = ApiConformity()

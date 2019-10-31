@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+from functools import lru_cache
 
 # 3rd party
 from requests.models import Response
@@ -37,8 +38,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiContact:
-    """Routes as methods of Isogeo API used to manipulate contacts.
-    """
+    """Routes as methods of Isogeo API used to manipulate contacts."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -49,20 +49,27 @@ class ApiContact:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiContact, self).__init__()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
-        self, workgroup_id: str = None, include: list = ["count"], caching: bool = 1
+        self, workgroup_id: str = None, include: tuple = ("count",), caching: bool = 1
     ) -> list:
         """Get workgroup contacts.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param list include: identifier of the owner workgroup
+        :param tuple include: identifier of the owner workgroup
         :param bool caching: option to cache the response
         """
         # check workgroup UUID
@@ -72,8 +79,10 @@ class ApiContact:
             pass
 
         # handling request parameters
-        include = checker._check_filter_includes(include, "contact")
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_contacts = utils.get_request_base_url(
@@ -159,9 +168,6 @@ class ApiContact:
 
         :returns: the created contact or False if a similar cataog already exists or a tuple with response error code
         :rtype: Contact
-
-
-
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -179,7 +185,7 @@ class ApiContact:
         if check_exists == 1:
             # retrieve workgroup contacts
             if not self.api_client._wg_contacts_names:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if contact.name in self.api_client._wg_contacts_names:
                 logger.debug(
@@ -191,7 +197,7 @@ class ApiContact:
         elif check_exists == 2:
             # retrieve workgroup contacts
             if not self.api_client._wg_contacts_emails:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if contact.email in self.api_client._wg_contacts_emails:
                 logging.debug(
@@ -465,6 +471,6 @@ class ApiContact:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_contact = ApiContact()
     print(api_contact)

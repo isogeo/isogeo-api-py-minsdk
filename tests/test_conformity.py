@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_conformity
-    # for licific
-    python -m unittest tests.test_conformity.TestConformity.test_conformity_listing
-    ```
+```python
+# for whole test
+python -m unittest tests.test_conformity
+# for licific
+python -m unittest tests.test_conformity.TestConformity.test_conformity_listing
+```
 """
 
 # #############################################################################
@@ -54,7 +53,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - Conformitys - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -103,7 +102,7 @@ class TestConformity(unittest.TestCase):
 
         # fixture metadata
         cls.fixture_metadata_existing = cls.isogeo.metadata.get(
-            METADATA_TEST_FIXTURE_UUID, include=["specifications"]
+            METADATA_TEST_FIXTURE_UUID, include=("specifications",)
         )
 
         md = Metadata(title=get_test_marker(), type="vectorDataset")
@@ -126,7 +125,7 @@ class TestConformity(unittest.TestCase):
     def tearDownClass(cls):
         """Executed after the last test."""
         # clean created metadata
-        # cls.isogeo.metadata.delete(cls.fixture_metadata._id)
+        cls.isogeo.metadata.delete(cls.fixture_metadata._id)
 
         # close sessions
         cls.isogeo.close()

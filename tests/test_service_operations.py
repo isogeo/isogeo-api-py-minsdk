@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_service_operations
-    # for specific
-    python -m unittest tests.test_service_operations.TestServiceOperations.test_operations_create
-    ```
+```python
+# for whole test
+python -m unittest tests.test_service_operations
+# for specific
+python -m unittest tests.test_service_operations.TestServiceOperations.test_operations_create
+```
 """
 
 # #############################################################################
@@ -31,12 +30,7 @@ from dotenv import load_dotenv
 
 
 # module target
-from isogeo_pysdk import (
-    Isogeo,
-    __version__ as pysdk_version,
-    Metadata,
-    ServiceOperation,
-)
+from isogeo_pysdk import Isogeo, ServiceOperation
 
 
 # #############################################################################
@@ -63,7 +57,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - ServiceOperations - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -194,7 +188,7 @@ class TestServiceOperations(unittest.TestCase):
 
     #     # check association result
     #     service_updated = self.isogeo.metadata.get(
-    #         metadata_id=metadata_service._id, include=["operations"]
+    #         metadata_id=metadata_service._id, include=("operations",)
     #     )
 
     #     li_operations_datasets = list(

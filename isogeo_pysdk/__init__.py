@@ -1,9 +1,9 @@
 ﻿# -*- coding: utf-8 -*-
 #! python3  # noqa E265
 
-"""
-    This module is an abstraction class about the Isogeo REST API.
-    https://www.isogeo.com/
+"""This module is an abstraction class about the Isogeo REST API.
+
+https://www.isogeo.com/
 """
 
 # submodules

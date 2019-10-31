@@ -22,8 +22,8 @@ from isogeo_pysdk.models import Specification
 # ########## Classes ###############
 # ##################################
 class Conformity(object):
-    """Conformity is an entity defining if a data respects a specification. It's a quality indicator.
-    It's mainly composed by a specification and a boolean.
+    """Conformity is an entity defining if a data respects a specification. It's a quality
+    indicator. It's mainly composed by a specification and a boolean.
 
     :param str _id: object UUID
     :param bool conformant: conformity with the specification
@@ -142,7 +142,7 @@ class Conformity(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -204,7 +204,7 @@ class Conformity(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -212,14 +212,14 @@ class Conformity(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Conformity):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -227,6 +227,6 @@ class Conformity(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     fixture = Conformity(conformant=1, specification=Specification())
     print(fixture)

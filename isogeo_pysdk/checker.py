@@ -1,9 +1,7 @@
 # -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
-"""
-    Complementary set of tools to make some checks on requests to Isogeo API.
-"""
+"""Complementary set of tools to make some checks on requests to Isogeo API."""
 
 # #############################################################################
 # ########## Libraries #############
@@ -17,7 +15,7 @@ from collections import Counter
 from uuid import UUID
 
 # modules
-from isogeo_pysdk.enums import MetadataSubresources
+from isogeo_pysdk.enums import LinkActions, MetadataSubresources
 
 # ##############################################################################
 # ########## Globals ###############
@@ -44,8 +42,6 @@ FILTER_KEYS = {
     "type": [],
 }
 
-FILTER_ACTIONS = ("download", "other", "view")
-
 FILTER_PROVIDERS = ("manual", "auto")
 
 FILTER_TYPES = {
@@ -57,8 +53,6 @@ FILTER_TYPES = {
 }
 
 GEORELATIONS = ("contains", "disjoint", "equal", "intersects", "overlaps", "within")
-
-WG_KEYWORDS_CASING = ("capitalized", "lowercase", "mixedCase", "uppercase")
 
 EDIT_TABS = {
     "identification": ",".join(FILTER_TYPES),
@@ -83,9 +77,7 @@ _SUBRESOURCES_CT = ("count",)
 
 
 class IsogeoChecker(object):
-    """Complementary set of tools to make some checks on requests
-    to Isogeo API.
-    """
+    """Complementary set of tools to make some checks on requests to Isogeo API."""
 
     def __init__(self):
         super(IsogeoChecker, self).__init__()
@@ -220,9 +212,14 @@ class IsogeoChecker(object):
             raise ValueError(
                 "type value must be one of: {}".format(" | ".join(FILTER_TYPES))
             )
-        elif dico_filters.get("action", ("download",))[0].lower() not in FILTER_ACTIONS:
+        elif (
+            dico_filters.get("action", ("download",))[0].lower()
+            not in LinkActions.__members__
+        ):
             raise ValueError(
-                "action value must be one of: {}".format(" | ".join(FILTER_ACTIONS))
+                "action value must be one of: {}".format(
+                    " | ".join(LinkActions.__members__)
+                )
             )
         elif (
             dico_filters.get("provider", ("manual",))[0].lower() not in FILTER_PROVIDERS
@@ -279,8 +276,7 @@ class IsogeoChecker(object):
             return False
 
     def check_edit_tab(self, tab: str, md_type: str):
-        """Check if asked tab is part of Isogeo web form and reliable
-        with metadata type.
+        """Check if asked tab is part of Isogeo web form and reliable with metadata type.
 
         :param str tab: tab to check. Must be one one of EDIT_TABS attribute
         :param str md_type: metadata type. Must be one one of FILTER_TYPES
@@ -466,9 +462,8 @@ class IsogeoChecker(object):
         return subresource
 
     def _convert_md_type(self, type_to_convert: str):
-        """Metadata types are not consistent in Isogeo API. A vector dataset is
-         defined as vector-dataset in query filter but as vectorDataset in
-         resource (metadata) details.
+        """Metadata types are not consistent in Isogeo API. A vector dataset is defined as vector-
+        dataset in query filter but as vectorDataset in resource (metadata) details.
 
         see: https://github.com/isogeo/isogeo-api-py-minsdk/issues/29
         """

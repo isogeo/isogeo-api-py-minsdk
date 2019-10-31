@@ -37,8 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiCondition:
-    """Routes as methods of Isogeo API used to manipulate conditions.
-    """
+    """Routes as methods of Isogeo API used to manipulate conditions."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -49,9 +48,15 @@ class ApiCondition:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiCondition, self).__init__()
 
@@ -244,5 +249,5 @@ class ApiCondition:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_condition = ApiCondition()

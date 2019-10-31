@@ -32,7 +32,7 @@ out_dir.mkdir(exist_ok=True)
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
 
@@ -51,7 +51,7 @@ if __name__ == "__main__":
         order_by="modified",
         whole_results=0,
         query="action:download",
-        include=["links"],
+        include=("links",),
     )
 
     # parse and download

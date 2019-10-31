@@ -24,7 +24,6 @@ from isogeo_pysdk.models.workgroup import Workgroup
 class Catalog(object):
     """Catalogs are entities used to organize and shares metadata of a workgroup.
 
-
     :Example:
 
     .. code-block:: json
@@ -69,7 +68,6 @@ class Catalog(object):
                 'metadataLanguage': string
                 }
         }
-
     """
 
     attr_types = {
@@ -92,6 +90,7 @@ class Catalog(object):
     @classmethod
     def clean_attributes(cls, raw_object: dict):
         """Renames attributes wich are incompatible with Python (hyphens...).
+
         See related issue: https://github.com/isogeo/isogeo-api-py-minsdk/issues/82
         """
         for k, v in cls.attr_map.items():
@@ -111,7 +110,7 @@ class Catalog(object):
         owner: Workgroup = None,
         scan: bool = None,
     ):
-        """Catalog model"""
+        """Catalog model."""
 
         # default values for the object attributes/properties
         self.__abilities = None
@@ -259,8 +258,7 @@ class Catalog(object):
 
     @property
     def owner(self):
-        """Gets the owner of this Catalog.  # noqa: E501
-
+        """Gets the owner of this Catalog.  # noqa: E501.
 
         :return: The owner of this Catalog.  # noqa: E501
         :rtype: Workgroup
@@ -288,7 +286,7 @@ class Catalog(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -352,7 +350,7 @@ class Catalog(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -360,14 +358,14 @@ class Catalog(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Catalog):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -375,7 +373,7 @@ class Catalog(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     cat = Catalog(name="youpi", scan=1)
     to_crea = cat.to_dict_creation()
     print(type(to_crea.get("IsScanSink")))

@@ -30,7 +30,6 @@ class CoordinateSystem(object):
             'code': 31154,
             'name': 'Zanderij / TM 54 NW'
         }
-
     """
 
     attr_types = {"_tag": str, "alias": str, "code": str, "name": str}
@@ -42,7 +41,7 @@ class CoordinateSystem(object):
     def __init__(
         self, _tag: str = None, alias: str = None, code: str = None, name: str = None
     ):
-        """Coordinate-systems model"""
+        """Coordinate-systems model."""
 
         # default values for the object attributes/properties
         self.__tag = None
@@ -113,7 +112,7 @@ class CoordinateSystem(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -175,7 +174,7 @@ class CoordinateSystem(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -183,14 +182,14 @@ class CoordinateSystem(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, CoordinateSystem):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -198,6 +197,6 @@ class CoordinateSystem(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     fixture = CoordinateSystem(name="CoordinateSystem Test")
     print(fixture)

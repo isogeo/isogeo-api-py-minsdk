@@ -37,8 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiSpecification:
-    """Routes as methods of Isogeo API used to manipulate specifications.
-    """
+    """Routes as methods of Isogeo API used to manipulate specifications."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -49,9 +48,15 @@ class ApiSpecification:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiSpecification, self).__init__()
 
@@ -76,7 +81,10 @@ class ApiSpecification:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_specifications = utils.get_request_base_url(
@@ -170,7 +178,7 @@ class ApiSpecification:
         if check_exists == 1:
             # retrieve workgroup specifications
             if not self.api_client._wg_specifications_names:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if specification.name in self.api_client._wg_specifications_names:
                 logger.debug(
@@ -342,7 +350,8 @@ class ApiSpecification:
     def associate_metadata(
         self, metadata: Metadata, specification: Specification, conformity: bool = 0
     ) -> Response:
-        """Associate a specification (specification + conformity) to a metadata. When a specification is associated to a metadata, it becomes a ResourceConformity object.
+        """Associate a specification (specification + conformity) to a metadata. When a
+        specification is associated to a metadata, it becomes a ResourceConformity object.
 
         If the specified specification is already associated, the API responses is still a 200.
 
@@ -403,6 +412,6 @@ class ApiSpecification:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_specification = ApiSpecification()
     print(api_specification)

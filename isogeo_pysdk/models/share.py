@@ -31,7 +31,6 @@ logger = logging.getLogger(__name__)
 class Share(object):
     """Shares are entities used to publish catalog(s) of metadata to applications.
 
-
     :Example:
 
     .. code-block:: json
@@ -142,7 +141,6 @@ class Share(object):
                 }
             ]
         }
-
     """
 
     attr_types = {
@@ -184,7 +182,7 @@ class Share(object):
         type: str = None,
         urlToken: str = None,
     ):
-        """Share model"""
+        """Share model."""
 
         # default values for the object attributes/properties
         self.__created = None
@@ -327,7 +325,6 @@ class Share(object):
     def rights(self) -> list:
         """Gets the rights of this Share.
 
-
         :return: The rights of this Share.
         :rtype: str
         """
@@ -384,7 +381,6 @@ class Share(object):
             - False if the share type is not 'application'
             - None if OpenCatalog is not enabled in the share
             - URL of the OpenCatalog when everything is fine
-
         """
         # opencatalog URL is valid only for share's of type 'application'
         if self.type != "application":
@@ -400,7 +396,7 @@ class Share(object):
         return "{}/s/{}/{}".format(url_base, self._id, self.urlToken)
 
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -464,7 +460,7 @@ class Share(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -472,14 +468,14 @@ class Share(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Share):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -487,6 +483,6 @@ class Share(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     model = Share(name="Test Share model")
     to_crea = model.to_dict_creation()

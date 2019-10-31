@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
-    
-    ```python
-    # for whole test
-    python -m unittest tests.test_utils
-    # for specific
-    python -m unittest tests.test_utils.TestIsogeoUtils.test_get_edit_url_ok
-    ```
+"""Usage from the repo root folder:
+
+```python
+# for whole test
+python -m unittest tests.test_utils
+# for specific
+python -m unittest tests.test_utils.TestIsogeoUtils.test_get_edit_url_ok
+```
 """
 
 # #############################################################################
@@ -61,7 +60,7 @@ class TestIsogeoUtils(unittest.TestCase):
 
     # standard methods
     def setUp(self):
-        """ Fixtures prepared before each test."""
+        """Fixtures prepared before each test."""
         pass
 
     def tearDown(self):
@@ -70,14 +69,20 @@ class TestIsogeoUtils(unittest.TestCase):
 
     #  -  Isogeo components versions -----------------------------------------
     def test_get_isogeo_version_api(self):
-        """Check API version"""
+        """Check API version."""
         # prod
         version_api_prod = self.utils.get_isogeo_version(component="api")
         version_api_naive_prod = self.utils.get_isogeo_version()
         # qa
-        platform, api_url, app_url, csw_url, mng_url, oc_url, ssl = self.utils.set_base_url(
-            platform="qa"
-        )
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url(platform="qa")
         version_api_qa = self.utils.get_isogeo_version(component="api")
         version_api_naive_qa = self.utils.get_isogeo_version()
         # check
@@ -89,7 +94,7 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertEqual(version_api_qa, version_api_naive_prod)
 
     def test_get_isogeo_version_app(self):
-        """Check APP version"""
+        """Check APP version."""
         # prod
         self.utils.set_base_url(platform="prod")
         version_app_prod = self.utils.get_isogeo_version(component="app")
@@ -101,13 +106,19 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertIsInstance(version_app_qa, str)
 
     def test_get_isogeo_version_db(self):
-        """Check DB version"""
+        """Check DB version."""
         # prod
         version_db_prod = self.utils.get_isogeo_version(component="db")
         # qa
-        platform, api_url, app_url, csw_url, mng_url, oc_url, ssl = self.utils.set_base_url(
-            platform="qa"
-        )
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url(platform="qa")
         version_db_qa = self.utils.get_isogeo_version(component="db")
         # check
         self.assertIsInstance(version_db_prod, str)
@@ -120,11 +131,17 @@ class TestIsogeoUtils(unittest.TestCase):
 
     # -- Base URLs -----------------------------------------------------------
     def test_set_base_url(self):
-        """Set base URLs"""
+        """Set base URLs."""
         # by default platform = prod
-        platform, api_url, app_url, csw_url, mng_url, oc_url, ssl = (
-            self.utils.set_base_url()
-        )
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url()
         self.assertIsInstance(platform, str)
         self.assertIsInstance(api_url, str)
         self.assertIsInstance(ssl, bool)
@@ -132,9 +149,15 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertEqual(api_url, self.utils.API_URLS.get("prod"))
         self.assertEqual(ssl, True)
         # qa
-        platform, api_url, app_url, csw_url, mng_url, oc_url, ssl = self.utils.set_base_url(
-            platform="qa"
-        )
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url(platform="qa")
         self.assertIsInstance(platform, str)
         self.assertIsInstance(api_url, str)
         self.assertIsInstance(ssl, bool)
@@ -151,7 +174,7 @@ class TestIsogeoUtils(unittest.TestCase):
 
     # -- URLs Builders - edit (app) ------------------------------------------
     def test_get_edit_url_ok(self):
-        """Test URL builder for edition link on APP"""
+        """Test URL builder for edition link on APP."""
         self.utils.set_base_url(platform=environ.get("ISOGEO_PLATFORM", "prod"))
 
         metadata = Metadata(
@@ -289,7 +312,7 @@ class TestIsogeoUtils(unittest.TestCase):
 
     # encoding -- see #32
     def test_decoding_rfc2047(self):
-        """Test decoding func for filenames: """
+        """Test decoding func for filenames:"""
         b = "=?UTF-8?B?VGhpcyBpcyBhIGhvcnNleTog8J+Qjg==?="
         self.utils.encoded_words_to_text(b)
         q = "=?UTF-8?Q?This is a horsey: =F0=9F=90=8E?="
@@ -299,7 +322,7 @@ class TestIsogeoUtils(unittest.TestCase):
 
     # pages counter
     def test_pages_counter(self):
-        """Test search results pages counter to help pagination"""
+        """Test search results pages counter to help pagination."""
         p_default = self.utils.pages_counter(total=50)
         self.assertEqual(p_default, 1)
         p_default = self.utils.pages_counter(total=50, page_size=10)

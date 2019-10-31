@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_metadatas
-    # for specific
-    python -m unittest tests.test_metadatas.TestMetadatas.test_metadatas_create
-    ```
+```python
+# for whole test
+python -m unittest tests.test_metadatas
+# for specific
+python -m unittest tests.test_metadatas.TestMetadatas.test_metadatas_create
+```
 """
 
 # #############################################################################
@@ -22,7 +21,6 @@ import uuid
 import unittest
 from os import environ
 from pathlib import Path
-from random import sample
 from socket import gethostname
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
@@ -32,7 +30,7 @@ from dotenv import load_dotenv
 import urllib3
 
 # module target
-from isogeo_pysdk import Isogeo, IsogeoUtils, Metadata, MetadataSearch, Workgroup
+from isogeo_pysdk import Isogeo, IsogeoUtils, Metadata, Workgroup
 
 # #############################################################################
 # ######## Globals #################
@@ -56,7 +54,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - Metadatas - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -136,7 +134,7 @@ class TestMetadatas(unittest.TestCase):
     # -- TESTS ---------------------------------------------------------
     # -- MODEL --
     def test_metadatas_title_or_name(self):
-        """Model integrated method to retrive title or name"""
+        """Model integrated method to retrive title or name."""
         # title but no name
         md_title_no_name = Metadata(
             title="BD Topo® - My title really inspires the masses - Villenave d'Ornon"
@@ -180,7 +178,7 @@ class TestMetadatas(unittest.TestCase):
         self.assertEqual(exists, False)
 
     def test_metadatas_in_search_results(self):
-        """GET :resources/search"""
+        """GET :resources/search."""
         search = self.isogeo.search(include="all")
         for md in search.results:
             metadata = Metadata.clean_attributes(md)
@@ -207,7 +205,7 @@ class TestMetadatas(unittest.TestCase):
             # group name and _id
             self.assertIsInstance(metadata.groupName, str)
             self.assertIsInstance(metadata.groupId, str)
-            group = self.isogeo.workgroup.get(metadata.groupId, include=None)
+            group = self.isogeo.workgroup.get(metadata.groupId, include=())
             self.assertIsInstance(group, Workgroup)
             self.assertEqual(metadata.groupId, group._id)
             self.assertEqual(metadata.groupName, group.name)

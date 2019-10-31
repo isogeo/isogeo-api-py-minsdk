@@ -1,16 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    .. code-block:: python
+.. code-block:: python
 
-        # for whole test
-        python -m unittest tests.test_search
-        # for specific
-        python -m unittest tests.test_search.TestSearch.test_search_search_as_application
-
+    # for whole test
+    python -m unittest tests.test_search
+    # for specific
+    python -m unittest tests.test_search.TestSearch.test_search_search_as_application
 """
 
 # #############################################################################
@@ -20,20 +18,20 @@
 # Standard library
 import logging
 import unittest
-import urllib3
 from os import environ
 from pathlib import Path
-from random import randint, sample
+from random import sample
 from socket import gethostname
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
+import urllib3
 
 
 # module target
-from isogeo_pysdk import Isogeo, Metadata, MetadataSearch
+from isogeo_pysdk import Isogeo
 
 
 # #############################################################################
@@ -56,7 +54,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - Search - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -119,7 +117,7 @@ class TestSearch(unittest.TestCase):
     # -- TESTS ---------------------------------------------------------
     # -- GET --
     def test_search_search_as_application(self):
-        """GET :resources/search"""
+        """GET :resources/search."""
         basic_search = self.isogeo.search()
         # check attributes
         self.assertTrue(hasattr(basic_search, "envelope"))
@@ -273,7 +271,8 @@ class TestSearch(unittest.TestCase):
                 self.isogeo.search(bbox="-4.970,30.69418,8.258,51.237", georel="cross")
 
         def test_parameter_not_unique_search(self):
-            """SDK raises error for search with a parameter that must be unique."""
+            """SDK raises error for search with a parameter that must be
+            unique."""
             with self.assertRaises(ValueError):
                 self.isogeo.search(
                     query="coordinate-system:32517 coordinate-system:4326"
@@ -299,7 +298,7 @@ class TestSearch(unittest.TestCase):
 
     # search utilities
     def test_search_augmented(self):
-        """Augmented search with shares UUID"""
+        """Augmented search with shares UUID."""
         # at start, shares_id attribute doesn't exist
         self.assertFalse(hasattr(self.isogeo, "shares_id"))
         # normal

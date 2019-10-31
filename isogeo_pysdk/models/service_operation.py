@@ -24,7 +24,6 @@ import pprint
 class ServiceOperation(object):
     """ServiceOperations are entities defining rules of data creation.
 
-
     :Example:
 
     .. code-block:: json
@@ -41,7 +40,6 @@ class ServiceOperation(object):
             "url": "string",
             "verb": "string"
         }
-
     """
 
     attr_types = {
@@ -68,7 +66,7 @@ class ServiceOperation(object):
         # additional parameters
         parent_resource: str = None,
     ):
-        """ServiceOperation model"""
+        """ServiceOperation model."""
 
         # default values for the object attributes/properties
         self.__id = None
@@ -206,7 +204,7 @@ class ServiceOperation(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -268,7 +266,7 @@ class ServiceOperation(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -276,14 +274,14 @@ class ServiceOperation(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, ServiceOperation):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -291,7 +289,7 @@ class ServiceOperation(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     test_model = ServiceOperation()
     print(test_model.__dict__)
     print(test_model._id)

@@ -1,9 +1,7 @@
 # -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
-"""
-    Complementary set of hooks to use with Isogeo API.
-"""
+"""Complementary set of hooks to use with Isogeo API."""
 
 # ##############################################################################
 # ########## Classes ###############
@@ -13,13 +11,12 @@
 class IsogeoHooks(object):
     """Custom requests event hooks for Isogeo API.
 
-    Requests has a hook system that you can use to manipulate portions of the request\
-        process, or signal event handling. This module is a set of custom hooks to handle Isogeo API responses.
+    Requests has a hook system that you can use to manipulate portions of the request process,\
+        or signal event handling. This module is a set of custom hooks to handle Isogeo API responses.
     """
 
     def __init__(self):
-        """Instanciate IsogeoHooks module.
-        """
+        """Instanciate IsogeoHooks module."""
         super(IsogeoHooks, self).__init__()
 
     def check_for_error(self, resp, *args, **kwargs):
