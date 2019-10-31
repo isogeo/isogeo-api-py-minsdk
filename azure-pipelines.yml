@@ -143,30 +143,24 @@ stages:
 - stage: Deploy
   displayName: Build and Deploy
   dependsOn: Test
-  condition: |
-    and
-    (
-      succeeded(),
-      contains(variables['Build.SourceBranch'], 'tags')
-    )
+  condition: succeeded()
 
   jobs:
-  # BUILD and PUBLISH
-  # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
-  - job: 'Publish'
+  # BUILD Python package
+  - job: 'Build'
     pool:
       vmImage: $(vmImageName)
 
     steps:
-    - task: GitHubRelease@1
+    # no need for source code
+    - checkout: none
+
+    - task: DownloadPipelineArtifact@2
+      displayName: "Download artifact previously saved"
       inputs:
-        gitHubConnection: 'Azure DevOps'
-        repositoryName: '$(Build.Repository.Name)'
-        action: 'create'
-        target: '$(Build.SourceVersion)'
-        tagSource: 'gitTag'
-        changeLogCompareToRelease: 'lastFullRelease'
-        changeLogType: 'commitBased'
+        buildType: "current"
+        artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
+        targetPath: "$(System.DefaultWorkingDirectory)"
 
     - task: UsePythonVersion@0
       inputs:
@@ -175,8 +169,8 @@ stages:
         addToPath: true
 
     - script: |
-        python -m pip install -U pip setuptools wheel
-        python -m pip install -U -r requirements.txt
+        python -m pip install -U pip
+        python -m pip install -U -r ./requirements.txt --cache-dir ./.pipcache
         python -m pip install -U twine
       displayName: 'Install dependencies'
 
@@ -193,7 +187,45 @@ stages:
       displayName: 'Publish Artifact: Isogeo Python SDK package'
       inputs:
         path: $(System.DefaultWorkingDirectory)/dist
-        artifact: 'IsogeoPythonSDK_$(Build.SourceVersion)'
+        artifact: '$(pyPiPackageName)_$(Build.SourceVersion)'
+
+
+  jobs:
+  # BUILD and PUBLISH
+  # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
+  - job: 'DeployGithub'
+    dependsOn: Build
+    # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
+    condition: |
+      and
+      (
+        succeeded(),
+        contains(variables['Build.SourceBranch'], 'tags')
+      )
+    pool:
+      vmImage: $(vmImageName)
+
+    steps:
+    # no need for source code
+    - checkout: none
+
+    - task: DownloadPipelineArtifact@2
+      displayName: "Download artifact previously saved"
+      inputs:
+        buildType: "current"
+        artifact: '$(pyPiPackageName)_$(Build.SourceVersion)'
+        targetPath: "$(System.DefaultWorkingDirectory)"
+
+    # publish to Github
+    - task: GitHubRelease@1
+      inputs:
+        gitHubConnection: 'Azure DevOps'
+        repositoryName: '$(Build.Repository.Name)'
+        action: 'create'
+        target: '$(Build.SourceVersion)'
+        tagSource: 'gitTag'
+        changeLogCompareToRelease: 'lastFullRelease'
+        changeLogType: 'commitBased'
 
     - task: TwineAuthenticate@1
       inputs:
@@ -202,6 +234,3 @@ stages:
     - script: twine upload $(System.DefaultWorkingDirectory)/dist/* -r 'pypi' --config-file $(PYPIRC_PATH)
       continueOnError: true
       displayName: "Upload to PyPi"
-
-
-
