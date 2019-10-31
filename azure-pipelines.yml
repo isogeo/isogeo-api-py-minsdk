@@ -191,7 +191,7 @@ stages:
 
   # PUBLISH
   # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
-  - deployment: 'DeployGithub'
+  - job: 'DeployGithub'
     dependsOn: Build
     # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
     condition: |
@@ -227,7 +227,7 @@ stages:
         changeLogCompareToRelease: 'lastFullRelease'
         changeLogType: 'commitBased'
 
-  - deployment: 'DeployPyPi'
+  - job: 'DeployPyPi'
     dependsOn: Build
     # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)
     condition: |
@@ -252,8 +252,9 @@ stages:
 
     - task: TwineAuthenticate@1
       inputs:
-        pythonUploadServiceConnection: 'PyPi'
+        pythonUploadServiceConnection: 'pypi'
 
+    # see: https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#sep-python-upload
     - script: |
         python -m twine upload -r 'pypi' --config-file $(PYPIRC_PATH) *
       continueOnError: true
