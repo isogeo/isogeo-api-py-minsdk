@@ -15,12 +15,12 @@ trigger:
 pr:
 - master
 
-# Global variables
+# -- GLOBAL VARIABLES ------------------------------------------------------------------
 variables:
+  pyPiPackageName: "isogeo-pysdk"
   vmImageName: "windows-2019"
 
-
-# Different stages
+# -- STAGES ----------------------------------------------------------------------------
 stages:
 - stage: Lint
   displayName: Lint and format code
@@ -38,14 +38,18 @@ stages:
           addToPath: true
 
       - script: |
-          python -m pip install -U pip
-          python -m pip install -U black flake8
+          python -m pip install -U pip --cache-dir ./.pipcache
+          python -m pip install -U black flake8 --cache-dir ./.pipcache
         displayName: 'Install black and flake8 dependencies'
 
       - script: |
           python -m black --target-version=py37 .\isogeo_pysdk
           python -m black --target-version=py37 .\tests
         displayName: 'Apply black code formatting'
+
+      - publish: $(System.DefaultWorkingDirectory)
+        artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
+        displayName: 'Publish formatted code with dependencies'
 
       - script: |
           # stop the build if there are Python syntax errors or undefined names
@@ -84,7 +88,6 @@ stages:
 
     - script: |
         python -m pip install -U pip
-        python -m pip install -U -r ./requirements.txt
         python -m pip install -U -r ./requirements_dev.txt
       displayName: 'Install dependencies'
 
