@@ -85,9 +85,13 @@ stages:
     # no need for source code
     - checkout: none
 
-    - download: current
-      artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
-
+    - task: DownloadPipelineArtifact@2
+      displayName: "Download artifact previously saved"
+      inputs:
+        buildType: "current"
+        artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
+        targetPath: "$(System.DefaultWorkingDirectory)"
+      
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '$(python.version)'
