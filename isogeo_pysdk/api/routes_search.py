@@ -375,7 +375,6 @@ class ApiSearch:
         with ThreadPoolExecutor(
             max_workers=max_workers, thread_name_prefix="IsogeoSearch"
         ) as executor:
-            # Set any session parameters here before calling `fetch`
             loop = asyncio.get_event_loop()
             tasks = [
                 loop.run_in_executor(
