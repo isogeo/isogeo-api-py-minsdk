@@ -356,6 +356,7 @@ class IsogeoUtils(object):
           * db
           * app
         """
+        logger.warning(DeprecationWarning("Use 'api.ApiAbout' instead."))
         # which component
         if component == "api":
             version_url = "{}://v1.{}.isogeo.com/about".format(prot, self.api_url)
