@@ -203,7 +203,8 @@ class TestContacts(unittest.TestCase):
         )
 
         # check if object has not been created
-        self.assertEqual(contact_new_2, False)
+        self.assertIsInstance(contact_new_2, Contact)
+        self.assertEqual(contact_new_1._id, contact_new_2._id)
 
         # add created contact to deletion
         self.li_fixtures_to_delete.append(contact_new_1._id)
@@ -232,7 +233,8 @@ class TestContacts(unittest.TestCase):
         )
 
         # check if object has not been created
-        self.assertEqual(contact_new_2, False)
+        self.assertIsInstance(contact_new_2, Contact)
+        self.assertEqual(contact_new_1._id, contact_new_2._id)
 
         # add created contact to deletion
         self.li_fixtures_to_delete.append(contact_new_1._id)
