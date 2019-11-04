@@ -21,7 +21,7 @@ from requests import Response
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Condition, Metadata
+from isogeo_pysdk.models import Condition, License, Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -165,10 +165,14 @@ class ApiCondition:
             pass
 
         # check license UUID
-        if not checker.check_is_uuid(condition.license._id):
+        if isinstance(condition.license, License) and not checker.check_is_uuid(
+            condition.license._id
+        ):
             raise ValueError(
                 "License ID is not a correct UUID: {}".format(condition.license._id)
             )
+        elif condition.license is None:
+            logger.debug("Creating a condition without associated license.")
         else:
             pass
 

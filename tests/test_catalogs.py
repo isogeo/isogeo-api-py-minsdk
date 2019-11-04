@@ -3,12 +3,13 @@
 
 """Usage from the repo root folder:
 
-```python
-# for whole test
-python -m unittest tests.test_catalogs
-# for specific
-python -m unittest tests.test_catalogs.TestCatalogs.test_catalogs_create_basic
-```
+    .. code-block:: python
+
+        # for whole test
+        python -m unittest tests.test_catalogs
+        # for specific
+        python -m unittest tests.test_catalogs.TestCatalogs.test_catalogs_create_basic
+
 """
 
 # #############################################################################
