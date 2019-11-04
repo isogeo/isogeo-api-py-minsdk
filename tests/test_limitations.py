@@ -103,7 +103,7 @@ class TestLimitations(unittest.TestCase):
 
         md = Metadata(title=get_test_marker(), type="vectorDataset")
         cls.metadata_fixture_created = cls.isogeo.metadata.create(
-            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md
         )
         cls.metadata_fixture_existing = cls.isogeo.metadata.get(
             metadata_id=METADATA_TEST_FIXTURE_UUID
