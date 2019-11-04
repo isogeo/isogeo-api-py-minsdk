@@ -168,7 +168,6 @@ class TestServiceLayers(unittest.TestCase):
                 type="vectorDataset",
                 title="{} - {}".format(get_test_marker(), self.discriminator),
             ),
-            check_exists=0,
         )
 
         # vars
