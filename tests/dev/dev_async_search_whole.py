@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # #############################################################################
 # ########## Libraries #############
@@ -48,7 +48,7 @@ isogeo.connect()
 # ########## Functions ##############
 # ##################################
 def _meta_get_resource_sync(offset):
-    """Just a meta func to get execution time"""
+    """Just a meta func to get execution time."""
     search = isogeo.search(
         page_size=50, offset=offset, check=0, whole_results=0, include="all"
     )

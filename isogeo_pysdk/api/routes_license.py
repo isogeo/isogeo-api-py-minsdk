@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Licenses (= CGUs, conditions) entities
@@ -36,8 +36,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiLicense:
-    """Routes as methods of Isogeo API used to manipulate licenses (conditions).
-    """
+    """Routes as methods of Isogeo API used to manipulate licenses (conditions)."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -48,9 +47,15 @@ class ApiLicense:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiLicense, self).__init__()
 
@@ -58,13 +63,13 @@ class ApiLicense:
     def listing(
         self,
         workgroup_id: str = None,
-        include: list = ["_abilities", "count"],
+        include: tuple = ("_abilities", "count"),
         caching: bool = 1,
     ) -> list:
         """Get workgroup licenses.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param list include: additionnal subresource to include in the response
+        :param tuple include: additionnal subresource to include in the response
         :param bool caching: option to cache the response
         """
         # check workgroup UUID
@@ -74,7 +79,10 @@ class ApiLicense:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_licenses = utils.get_request_base_url(
@@ -163,7 +171,7 @@ class ApiLicense:
         if check_exists == 1:
             # retrieve workgroup licenses
             if not self.api_client._wg_licenses_names:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if license.name in self.api_client._wg_licenses_names:
                 logger.debug(
@@ -323,8 +331,8 @@ class ApiLicense:
     def associate_metadata(
         self, metadata: Metadata, license: License, description: str, force: bool = 0
     ) -> Response:
-        """Associate a condition (license + specific description) to a metadata.
-        When a license is associated to a metadata, it becomes a condition.
+        """Associate a condition (license + specific description) to a metadata. When a license is
+        associated to a metadata, it becomes a condition.
 
         By default, if the specified license is already associated, the method won't duplicate the association.
         Use `force` option to overpass this behavior.
@@ -391,7 +399,7 @@ class ApiLicense:
                     "Conditions have not been included during request. So, let's renew it!"
                 )
                 metadata_with_conditions = self.api_client.metadata.get(
-                    metadata_id=metadata._id, include=["conditions"]
+                    metadata_id=metadata._id, include=("conditions",)
                 )
                 return self.associate_metadata(
                     metadata=metadata_with_conditions,
@@ -419,5 +427,5 @@ class ApiLicense:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_license = ApiLicense()

@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_metadatas
-    # for specific
-    python -m unittest tests.test_metadatas.TestMetadatas.test_metadatas_create
-    ```
+```python
+# for whole test
+python -m unittest tests.test_metadatas
+# for specific
+python -m unittest tests.test_metadatas.TestMetadatas.test_metadatas_create
+```
 """
 
 # #############################################################################
@@ -18,22 +17,20 @@
 
 # Standard library
 import logging
+import uuid
 import unittest
-import urllib3
 from os import environ
 from pathlib import Path
-from random import sample
 from socket import gethostname
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
-
+import urllib3
 
 # module target
-from isogeo_pysdk import Isogeo, IsogeoUtils, Metadata, MetadataSearch
-
+from isogeo_pysdk import Isogeo, IsogeoUtils, Metadata, Workgroup
 
 # #############################################################################
 # ######## Globals #################
@@ -57,7 +54,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - Metadatas - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -106,7 +103,7 @@ class TestMetadatas(unittest.TestCase):
         # fixture metadata
         md = Metadata(title=get_test_marker(), type="vectorDataset")
         cls.fixture_metadata = cls.isogeo.metadata.create(
-            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md
         )
 
     def setUp(self):
@@ -135,9 +132,53 @@ class TestMetadatas(unittest.TestCase):
         cls.isogeo.close()
 
     # -- TESTS ---------------------------------------------------------
+    # -- MODEL --
+    def test_metadatas_title_or_name(self):
+        """Model integrated method to retrive title or name."""
+        # title but no name
+        md_title_no_name = Metadata(
+            title="BD Topo® - My title really inspires the masses - Villenave d'Ornon"
+        )
+        self.assertEqual(
+            md_title_no_name.title_or_name(),
+            "BD Topo® - My title really inspires the masses - Villenave d'Ornon",
+        )
+        self.assertEqual(
+            md_title_no_name.title_or_name(1),
+            "bd-topo-my-title-really-inspires-the-masses-villenave-dornon",
+        )
+
+        # no title but name - 1
+        md_no_title_name = Metadata(name="reference.roads_primary")
+        self.assertEqual(md_no_title_name.title_or_name(), "reference.roads_primary")
+
+        # no title but name - 2
+        md_no_title_name = Metadata(name="reference chemins de forêt.shp")
+        self.assertEqual(
+            md_no_title_name.title_or_name(1), "reference-chemins-de-foretshp"
+        )
+
+        # no title nor name
+        md_no_title_no_name = Metadata()
+        self.assertIsNone(md_no_title_no_name.title_or_name(0))
+        self.assertIsNone(md_no_title_no_name.title_or_name(1))
+
     # -- GET --
+    def test_metadatas_exists(self):
+        """GET :resources/{metadata_uuid}"""
+        # must be true
+        exists = self.isogeo.metadata.exists(resource_id=self.fixture_metadata._id)
+        self.assertIsInstance(exists, bool)
+        self.assertEqual(exists, True)
+
+        # must be false
+        fake_uuid = uuid.uuid4()
+        exists = self.isogeo.metadata.exists(resource_id=fake_uuid.hex)
+        self.assertIsInstance(exists, bool)
+        self.assertEqual(exists, False)
+
     def test_metadatas_in_search_results(self):
-        """GET :resources/search"""
+        """GET :resources/search."""
         search = self.isogeo.search(include="all")
         for md in search.results:
             metadata = Metadata.clean_attributes(md)
@@ -157,6 +198,17 @@ class TestMetadatas(unittest.TestCase):
             if metadata.created:
                 ds_date_creation = utils.hlpr_datetimes(metadata.created)
                 self.assertEqual(int(metadata.created[:4]), ds_date_creation.year)
+
+            # admin url
+            self.assertIsInstance(metadata.admin_url(self.isogeo.app_url), str)
+
+            # group name and _id
+            self.assertIsInstance(metadata.groupName, str)
+            self.assertIsInstance(metadata.groupId, str)
+            group = self.isogeo.workgroup.get(metadata.groupId, include=())
+            self.assertIsInstance(group, Workgroup)
+            self.assertEqual(metadata.groupId, group._id)
+            self.assertEqual(metadata.groupName, group.name)
 
     # def test_search_specific_mds_bad(self):
     #     """Searches filtering on specific metadata."""
@@ -188,6 +240,9 @@ class TestMetadatas(unittest.TestCase):
         self.assertTrue(hasattr(metadata, "abstract"))
         self.assertTrue(hasattr(metadata, "created"))
         self.assertTrue(hasattr(metadata, "modified"))
+        # specific to implementation
+        self.assertTrue(hasattr(metadata, "groupId"))
+        self.assertTrue(hasattr(metadata, "groupName"))
 
         # check method to dict
         md_as_dict = metadata.to_dict()

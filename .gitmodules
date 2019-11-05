@@ -1,3 +1,0 @@
-[submodule ".\\docs/wiki"]
-	path = .\\docs/wiki
-	url = https://github.com/isogeo/isogeo-api-py-minsdk.wiki.git

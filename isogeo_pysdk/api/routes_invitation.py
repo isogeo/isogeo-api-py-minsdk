@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Invitations entities
@@ -17,7 +17,7 @@ import logging
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Contact, Invitation
+from isogeo_pysdk.models import Invitation
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -33,8 +33,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiInvitation:
-    """Routes as methods of Isogeo API used to manipulate invitations.
-    """
+    """Routes as methods of Isogeo API used to manipulate invitations."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -45,9 +44,15 @@ class ApiInvitation:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiInvitation, self).__init__()
 
@@ -195,7 +200,7 @@ class ApiInvitation:
         # load new invitation and save it to the cache
         new_invitation = Invitation(**req_new_invitation.json())
         self.api_client._invitations_names[
-            new_invitation.contact.get("name")
+            new_invitation.group.get("name")
         ] = new_invitation._id
 
         # end of method
@@ -231,7 +236,7 @@ class ApiInvitation:
         # load new invitation and save it to the cache
         new_invitation = Invitation(**req_new_invitation.json())
         self.api_client._invitations_names[
-            new_invitation.contact.get("name")
+            new_invitation.group.get("name")
         ] = new_invitation._id
 
         # end of method
@@ -314,5 +319,5 @@ class ApiInvitation:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_invitation = ApiInvitation()

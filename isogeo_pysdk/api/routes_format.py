@@ -1,14 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Formats entities
 
     See: http://help.isogeo.com/api/complete/index.html
 
-    NOTE TO DEV: `format` being the name of a Python built-in function
-    (see: https://docs.python.org/3/library/functions.html#format),
-    we use the `frmt` shorter as replacement.
+    NOTE: `format` being the name of a Python built-in function \
+        (see: https://docs.python.org/3/library/functions.html#format), \
+        we use the `frmt` shorter as replacement.
 """
 
 # #############################################################################
@@ -38,8 +38,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiFormat:
-    """Routes as methods of Isogeo API used to manipulate formats.
-    """
+    """Routes as methods of Isogeo API used to manipulate formats."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -50,9 +49,15 @@ class ApiFormat:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiFormat, self).__init__()
 
@@ -203,7 +208,6 @@ class ApiFormat:
                 type="vectorDataset"
             )
             isogeo.formats.create(format_to_add)
-
         """
         # check format code
         if not frmt.code:
@@ -396,5 +400,5 @@ class ApiFormat:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_format = ApiFormat()

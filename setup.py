@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/env python3
+#! python3  # noqa E265
 
 """
     Setup script to package Isogeo PySDK Python module
@@ -17,7 +17,7 @@ import pathlib
 from setuptools import find_packages, setup
 
 # package (to get version)
-from isogeo_pysdk.__about__ import __version__
+from isogeo_pysdk import __about__
 
 # SETUP ######################################################################
 
@@ -31,15 +31,15 @@ README = (HERE / "README.md").read_text()
 setup(
     # meta
     name="isogeo-pysdk",
-    version=__version__,
-    author="Isogeo",
-    author_email="support@isogeo.com",
-    description="Python package to make it easy to use Isogeo REST API",
+    version=__about__.__version__,
+    author=__about__.__author__,
+    author_email=__about__.__email__,
+    description=__about__.__summary__,
     long_description=README,
     long_description_content_type="text/markdown",
     keywords="GIS metadata INSPIRE Isogeo API REST geographical data ISO19139",
     license="LGPL3",
-    url="https://github.com/isogeo/isogeo-api-py-minsdk",
+    url=__about__.__uri__,
     project_urls={
         "Docs": "https://isogeo-api-pysdk.readthedocs.io/",
         "Bug Reports": "https://github.com/isogeo/isogeo-api-py-minsdk/issues/",
@@ -50,7 +50,7 @@ setup(
     install_requires=["requests>=2.20.0", "requests-oauthlib>=1.2.0"],
     extras_require={
         "dev": ["black", "python-dotenv"],
-        "test": ["codecov", "coverage", "pytest", "pytest-cov"],
+        "test": ["pytest", "pytest-cov"],
     },
     python_requires=">=3.6, <4",
     # packaging

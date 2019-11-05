@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_events
-    # for specific
-    python -m unittest tests.test_events.TestEvents.test_events_create_basic
-    ```
+```python
+# for whole test
+python -m unittest tests.test_events
+# for specific
+python -m unittest tests.test_events.TestEvents.test_events_create_basic
+```
 """
 
 # #############################################################################
@@ -56,7 +55,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - Events {}".format(_getframe(1).f_code.co_name)
 
 
@@ -104,7 +103,7 @@ class TestEvents(unittest.TestCase):
 
         md = Metadata(title=get_test_marker(), type="vectorDataset")
         cls.metadata_fixture_created = cls.isogeo.metadata.create(
-            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md
         )
         cls.metadata_fixture_existing = cls.isogeo.metadata.get(
             metadata_id=METADATA_TEST_FIXTURE_UUID

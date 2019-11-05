@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Catalogs entities
@@ -39,8 +39,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiCatalog:
-    """Routes as methods of Isogeo API used to manipulate catalogs.
-    """
+    """Routes as methods of Isogeo API used to manipulate catalogs."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -51,9 +50,15 @@ class ApiCatalog:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiCatalog, self).__init__()
 
@@ -62,14 +67,30 @@ class ApiCatalog:
     def listing(
         self,
         workgroup_id: str = None,
-        include: list = ["_abilities", "count"],
+        include: tuple = ("_abilities", "count"),
         caching: bool = 1,
     ) -> list:
         """Get workgroup catalogs.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param list include: additionnal subresource to include in the response
+        :param tuple include: additionnal subresource to include in the response
         :param bool caching: option to cache the response
+
+        :rtype: list
+
+        :Example:
+
+            .. code-block:: python
+
+                # retrieve the catalogs of workgroup
+                wg_catalogs = isogeo.catalog.listing(
+                    workgroup_id=isogeo_workgroup._id,
+                    include=None
+                )
+                # filter on catalogs with the Sacn checked
+                for cat in wg_catalogs:
+                    if cat.get("$scan", False):
+                        print(cat.get("name"))
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -78,7 +99,10 @@ class ApiCatalog:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_catalogs = utils.get_request_base_url(
@@ -157,7 +181,7 @@ class ApiCatalog:
         self,
         workgroup_id: str,
         catalog_id: str,
-        include: list = ["_abilities", "count"],
+        include: tuple = ("_abilities", "count"),
     ) -> Catalog:
         """Get details about a specific catalog.
 
@@ -179,7 +203,10 @@ class ApiCatalog:
             pass
 
         # request parameter
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # catalog route
         url_catalog = utils.get_request_base_url(
@@ -219,7 +246,6 @@ class ApiCatalog:
 
         :returns: the created catalog or False if a similar cataog already exists or a tuple with response error code
         :rtype: Catalog
-
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -233,7 +259,7 @@ class ApiCatalog:
         if check_exists == 1:
             # retrieve workgroup catalogs
             if not self.api_client._wg_catalogs_names:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if catalog.name in self.api_client._wg_catalogs_names:
                 logger.debug(
@@ -631,5 +657,5 @@ class ApiCatalog:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_catalog = ApiCatalog()

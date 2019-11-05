@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_checker
-    # for specific
-    python -m unittest tests.test_checker.TestIsogeoChecker.test_checker_uuid_valid
-    ```
+```python
+# for whole test
+python -m unittest tests.test_checker
+# for specific
+python -m unittest tests.test_checker.TestIsogeoChecker.test_checker_uuid_valid
+```
 """
 
 # #############################################################################
@@ -22,16 +21,14 @@ import unittest
 import urllib3
 from os import environ
 from pathlib import Path
-from random import sample
 from socket import gethostname
-from sys import _getframe, exit
-from time import gmtime, sleep, strftime
+from sys import exit
 
 # 3rd party
 from dotenv import load_dotenv
 
 # Isogeo
-from isogeo_pysdk import Isogeo, IsogeoChecker
+from isogeo_pysdk import IsogeoChecker
 
 
 # #############################################################################
@@ -139,7 +136,7 @@ class TestIsogeoChecker(unittest.TestCase):
 
     # edition tabs
     def test_check_edit_tab_ok(self):
-        """Test if a good tab is valid"""
+        """Test if a good tab is valid."""
         # vector-dataset
         tab_ok_i = checker.check_edit_tab(
             tab="identification", md_type="vector-dataset"
@@ -220,7 +217,7 @@ class TestIsogeoChecker(unittest.TestCase):
         self.assertEqual(tab_ok_m, 1)
 
     def test_check_edit_tab_bad(self):
-        """Raise errors"""
+        """Raise errors."""
         with self.assertRaises(TypeError):
             checker.check_edit_tab(tab=1984, md_type="vector-dataset")
         with self.assertRaises(TypeError):
@@ -247,7 +244,7 @@ class TestIsogeoChecker(unittest.TestCase):
 
     # requests parameters
     def test_check_filter_includes_ok(self):
-        """Check sub resources"""
+        """Check sub resources."""
         # metadata sub resources - empty
         subresources = checker._check_filter_includes(includes=[], entity="metadata")
         self.assertIsInstance(subresources, str)
@@ -269,14 +266,14 @@ class TestIsogeoChecker(unittest.TestCase):
         self.assertIsInstance(subresources, str)
 
     def test_check_filter_includes_bad(self):
-        """Raise errors"""
+        """Raise errors."""
         with self.assertRaises(ValueError):
             checker._check_filter_includes(includes="all", entity="Metadata")
         with self.assertRaises(TypeError):
             checker._check_filter_includes(includes="layers", entity="metadata")
 
     def test_check_filter_specific_md_ok(self):
-        """Check specific md"""
+        """Check specific md."""
         uuid_sample_1 = "0269803d50c446b09f5060ef7fe3e22b"
         uuid_sample_2 = "0269803d50c446b09f5060ef7fe3e22a"
         # metadata sub resources - empty
@@ -297,12 +294,12 @@ class TestIsogeoChecker(unittest.TestCase):
         self.assertIsInstance(check, str)
 
     def test_check_filter_specific_md_bad(self):
-        """Raise errors"""
+        """Raise errors."""
         with self.assertRaises(TypeError):
             checker._check_filter_specific_md(specific_md="oh_yeah_i_m_a_metadata_uuid")
 
     def test_check_filter_specific_tag_ok(self):
-        """Check specific tag"""
+        """Check specific tag."""
         kw_sample_1 = "keyword:isogeo:demographie"
         kw_sample_2 = "keyword:isogeo:2014"
         # metadata sub resources - empty
@@ -323,12 +320,12 @@ class TestIsogeoChecker(unittest.TestCase):
         self.assertIsInstance(check, str)
 
     def test_check_filter_specific_tag_bad(self):
-        """Raise errors"""
+        """Raise errors."""
         with self.assertRaises(TypeError):
             checker._check_filter_specific_tag(specific_tag="oh_yeah_i_m_a_keyword")
 
     def test_check_subresource_ok(self):
-        """Check sub resources"""
+        """Check sub resources."""
         # metadata sub resources - empty
         subresource = checker._check_subresource(subresource="conditions")
         self.assertIsInstance(subresource, str)
@@ -340,7 +337,7 @@ class TestIsogeoChecker(unittest.TestCase):
         self.assertIsInstance(subresource, str)
 
     def test_check_subresource_bad(self):
-        """Raise errors"""
+        """Raise errors."""
         with self.assertRaises(ValueError):
             checker._check_subresource(subresource="_creator")
         with self.assertRaises(TypeError):
@@ -348,7 +345,7 @@ class TestIsogeoChecker(unittest.TestCase):
 
     # metadata type switcher
     def test_md_type_switcher_ok(self):
-        """Test metadata type converter with right values"""
+        """Test metadata type converter with right values."""
         # vector type switcher
         self.assertEqual(checker._convert_md_type(("vector-dataset")), "vectorDataset")
         self.assertEqual(checker._convert_md_type(("vectorDataset")), "vector-dataset")
@@ -358,7 +355,7 @@ class TestIsogeoChecker(unittest.TestCase):
         self.assertEqual(checker._convert_md_type(("raster-dataset")), "rasterDataset")
 
     def test_md_type_switcher_bad(self):
-        """Test metadata type converter with bad values"""
+        """Test metadata type converter with bad values."""
         with self.assertRaises(ValueError):
             checker._convert_md_type("i_am_a_bad_type")
 

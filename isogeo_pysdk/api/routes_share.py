@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Shares entities
@@ -37,8 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiShare:
-    """Routes as methods of Isogeo API used to manipulate shares.
-    """
+    """Routes as methods of Isogeo API used to manipulate shares."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -49,9 +48,15 @@ class ApiShare:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiShare, self).__init__()
 
@@ -74,11 +79,7 @@ class ApiShare:
                     route="groups/{}/shares".format(workgroup_id)
                 )
         else:
-            logger.debug(
-                "Listing shares for the authenticated user: {}".format(
-                    self.api_client._user.contact.name
-                )
-            )
+            logger.debug("Listing shares for the authenticated application/user")
             url_shares = utils.get_request_base_url(route="shares")
 
         # request
@@ -109,11 +110,11 @@ class ApiShare:
         return shares
 
     @ApiDecorators._check_bearer_validity
-    def share(self, share_id: str, include: list = ["_abilities", "groups"]) -> Share:
-        """Get details about a specific share.
+    def get(self, share_id: str, include: tuple = ("_abilities", "groups")) -> Share:
+        """Returns details about a specific share.
 
         :param str share_id: share UUID
-        :param list include: additionnal subresource to include in the response
+        :param tuple inlude: additionnal subresource to include in the response
         """
         # check share UUID
         if not checker.check_is_uuid(share_id):
@@ -122,7 +123,10 @@ class ApiShare:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         url_share = utils.get_request_base_url(route="shares/{}".format(share_id))
@@ -153,7 +157,7 @@ class ApiShare:
 
         :param str workgroup_id: identifier of the owner workgroup
         :param Share share: Share model object to create
-        :param int check_exists: check if a share already exists inot the workgroup:
+        :param int check_exists: check if a share already exists into the workgroup:
 
         - 0 = no check
         - 1 = compare name [DEFAULT]
@@ -246,12 +250,14 @@ class ApiShare:
         else:
             pass
 
-        # URL builder
-        url_share_exists = "{}{}".format(utils.get_request_base_url("shares"), share_id)
+        # URL
+        url_share_exists = utils.get_request_base_url(
+            route="shares/{}".format(share_id)
+        )
 
         # request
         req_share_exists = self.api_client.get(
-            url_share_exists,
+            url=url_share_exists,
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
             verify=self.api_client.ssl,
@@ -696,5 +702,5 @@ class ApiShare:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_share = ApiShare()

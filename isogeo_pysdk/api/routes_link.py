@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes to manage metadata links.
@@ -15,6 +15,7 @@
 import logging
 import mimetypes
 import re
+from functools import lru_cache
 from pathlib import Path
 
 # 3rd party
@@ -40,8 +41,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiLink:
-    """Routes as methods of Isogeo API used to manipulate metadata links (CGUs).
-    """
+    """Routes as methods of Isogeo API used to manipulate metadata links (CGUs)."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -52,9 +52,15 @@ class ApiLink:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiLink, self).__init__()
 
@@ -86,6 +92,7 @@ class ApiLink:
         # end of method
         return req_links.json()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(self, metadata_id: str, link_id: str) -> Link:
         """Get details about a specific link.
@@ -183,7 +190,6 @@ class ApiLink:
                 type="link",
                 link=Link(_id=LINK_UUID)
                 )
-
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):
@@ -227,7 +233,7 @@ class ApiLink:
 
         # check relation between link kind/actions
         link.actions = self.clean_kind_action_liability(
-            link_actions=link.actions, link_kind=link.kind
+            link_actions=tuple(link.actions), link_kind=link.kind
         )
 
         # deprecation warnings
@@ -288,7 +294,6 @@ class ApiLink:
         :param Metadata metadata: parent metadata (resource) containing the link. Optional if the link contains the 'parent_resource' attribute.
 
         :rtype: Response
-
         """
         # check link UUID
         if not checker.check_is_uuid(link._id):
@@ -328,7 +333,7 @@ class ApiLink:
     @ApiDecorators._check_bearer_validity
     def update(self, link: Link, metadata: Metadata = None) -> Link:
         """Update a link.
-        
+
         :param Link link: Link model object to update
         :param Metadata metadata: parent metadata (resource) containing the link. Optional if the link contains the 'parent_resource' attribute.
         """
@@ -401,7 +406,6 @@ class ApiLink:
             with open("./" + dl_stream[1], "wb") as fd:
                 for block in dl_stream[0].iter_content(1024):
                     fd.write(block)
-
         """
         # check resource link type
         if link.type != "hosted":
@@ -463,10 +467,10 @@ class ApiLink:
         .. code-block:: python
 
             from pathlib import Path
-            
+
             # define metadata
             md = isogeo.metadata.get(METADATA_UUID)
-            
+
             # localize the file on the OS
             my_file = Path("./upload/documentation.zip")
 
@@ -474,7 +478,7 @@ class ApiLink:
             lk = Link(
                 title=my_file.name
                 )
-            
+
             # add it to the metadata
             send = isogeo.metadata.links.upload_hosted(
                 metadata=md,
@@ -569,13 +573,71 @@ class ApiLink:
         return Link(**link_augmented)
 
     # -- Routes to manage the related objects ------------------------------------------
+    @lru_cache(maxsize=512)
     @ApiDecorators._check_bearer_validity
     def kinds_actions(self, caching: bool = 1) -> list:
         """Get the relation between kinds and action for links.
 
         :param bool caching: cache the response into the main API client instance. Defaults to True.
 
+        :returns: list of dictionaries per link kinds
         :rtype: list
+
+        :Example:
+
+        .. code-block:: python
+
+            import pprint
+            pprint.pprint(isogeo.metadata.links.kinds_actions())
+
+            >>> [
+                    {
+                        'actions':
+                        [
+                            'download',
+                            'view',
+                            'other'
+                        ],
+                        'kind': 'url',
+                        'name': 'Lien'
+                    },
+                    {
+                        'actions': ['download', 'view', 'other'],
+                        'kind': 'wfs',
+                        'name': 'Service WFS'
+                    },
+                    {
+                        'actions': ['view', 'other'],
+                        'kind': 'wms',
+                        'name': 'Service WMS'
+                    },
+                    {
+                        'actions': ['view', 'other'],
+                        'kind': 'wmts',
+                        'name': 'Service WMTS'
+                    },
+                    {
+                        'actions': ['download', 'view', 'other'],
+                        'kind': 'esriFeatureService',
+                        'name': 'Service ESRI Feature'
+                    },
+                    {
+                        'actions': ['view', 'other'],
+                        'kind': 'esriMapService',
+                        'name': 'Service ESRI Map'
+                    },
+                    {
+                        'actions': ['view', 'other'],
+                        'kind': 'esriTileService',
+                        'name': 'Service ESRI Tile'
+                    },
+                    {
+                        'actions': ['download', 'other'],
+                        'kind': 'data',
+                        'name': 'Donnée brute'
+                    }
+                ]
+
         """
         # request URL
         url_links = utils.get_request_base_url(route="link-kinds/")
@@ -602,16 +664,29 @@ class ApiLink:
         return req_links.json()
 
     # -- Helpers -----------------------------------------------------------------------
-    def clean_kind_action_liability(self, link_actions: list, link_kind: str) -> list:
-        """Link available actions depend on link kind.\
-            Relationships between kinds and actions are described in the `/link-kinds` route.
-            This is a helper checking the liability between kind/actions/type and cleaning if needed.
-            Useful before creating or updating a link.
+    @lru_cache(maxsize=512)
+    def clean_kind_action_liability(self, link_actions: tuple, link_kind: str) -> tuple:
+        """Link available actions depend on link kind. Relationships between kinds and actions are
+        described in the `/link-kinds` route. This is a helper checking the liability between
+        kind/actions/type and cleaning if needed. Useful before creating or updating a link.
 
         :param list link_actions: link actions
         :param str link_kind: link kind
 
-        :rtype: list
+        :rtype: tuple
+
+        :Example:
+
+        .. code-block:: python
+
+            # invalid action will be removed
+            print(isogeo.metadata.links.clean_kind_action_liability(
+                link_actions=("download", "stream"),
+                link_kind="url"
+                )
+            )
+            >>> ('download',)
+
         """
         # get matrix kinds/actions as dict - use cache if exists
         if self.api_client._links_kinds_actions:
@@ -638,12 +713,12 @@ class ApiLink:
                 if action in matrix_kind_actions.get(link_kind)
             ]
 
-        return link_actions
+        return tuple(link_actions)
 
 
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_test = ApiLink()

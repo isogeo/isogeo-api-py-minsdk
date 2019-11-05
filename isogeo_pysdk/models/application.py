@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Application entity
@@ -77,7 +77,6 @@ class Application(object):
             "type": "group",
             "url": "http://help.isogeo.com/arcmap/"
         }
-
     """
 
     attr_types = {
@@ -128,7 +127,7 @@ class Application(object):
         type: str = None,
         url: str = None,
     ):
-        """Application model"""
+        """Application model."""
 
         # default values for the object attributes/properties
         self.__abilities = None
@@ -273,8 +272,7 @@ class Application(object):
 
     @property
     def groups(self):
-        """Gets the groups of this Application.  # noqa: E501
-
+        """Gets the groups of this Application.  # noqa: E501.
 
         :return: The groups of this Application.  # noqa: E501
         :rtype: Workgroup
@@ -284,7 +282,6 @@ class Application(object):
     @groups.setter
     def groups(self, groups):
         """Sets the groups of this Application.
-
 
         :param groups: The groups of this Application.  # noqa: E501
         :type: Workgroup
@@ -352,8 +349,7 @@ class Application(object):
     # scopes
     @property
     def scopes(self):
-        """Gets the scopes of this Application.  # noqa: E501
-
+        """Gets the scopes of this Application.  # noqa: E501.
 
         :return: The scopes of this Application.  # noqa: E501
         :rtype: Workgroup
@@ -363,7 +359,6 @@ class Application(object):
     @scopes.setter
     def scopes(self, scopes):
         """Sets the scopes of this Application.
-
 
         :param scopes: The scopes of this Application.  # noqa: E501
         :type: Workgroup
@@ -393,8 +388,7 @@ class Application(object):
     # type
     @property
     def type(self):
-        """Gets the type of this Application.  # noqa: E501
-
+        """Gets the type of this Application.  # noqa: E501.
 
         :return: The type of this Application.  # noqa: E501
         :rtype: str
@@ -404,7 +398,6 @@ class Application(object):
     @type.setter
     def type(self, type):
         """Sets the type of this Application.
-
 
         :param type: The type of this Application.  # noqa: E501
         :type: str
@@ -440,8 +433,17 @@ class Application(object):
         self._url = url
 
     # -- METHODS -----------------------------------------------------------------------
+    def admin_url(self, url_base: str = "https://manage.isogeo.com") -> str:
+        """Returns the administration URL (https://manage.isogeo.com) for this application.
+
+        :param str url_base: base URL of admin site. Defaults to: https://manage.isogeo.com
+
+        :rtype: str
+        """
+        return "{}/applications/{}".format(url_base, self._id)
+
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.attr_types.items():
@@ -505,7 +507,7 @@ class Application(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -513,14 +515,14 @@ class Application(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Application):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -528,5 +530,5 @@ class Application(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     application = Application(name="My App to test")

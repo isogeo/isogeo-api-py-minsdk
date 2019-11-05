@@ -10,12 +10,12 @@ py -3 -m venv .venv_tests
 
 "-- STEP -- Install and display dependencies within the virtualenv"
 python -m pip install -U pip
-pip install --upgrade setuptools wheel
-pip install --upgrade -r .\tests\requirements_test.txt
+python -m pip install --upgrade setuptools wheel
+python -m pip install --upgrade -r ./requirements_dev.txt
 
 "-- STEP -- Python code style"
-python -m black --target-version=py36 ./isogeo_pysdk
-python -m black --target-version=py36 ./tests
+python -m black --target-version=py37 ./isogeo_pysdk
+python -m black --target-version=py37 ./tests
 
 "-- STEP -- Run coverage"
 # coverage run -m unittest discover -s tests/

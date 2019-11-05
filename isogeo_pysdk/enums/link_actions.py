@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Enums for Links actions
@@ -52,7 +52,7 @@ class LinkActions(Enum):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     print("{0:<30} {1:>20}".format("Enum", "Value"))
     for i in LinkActions:
         print("{0:<30} {1:>20}".format(i, i.value))

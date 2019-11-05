@@ -1,15 +1,11 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_links
-    # for specific
-    python -m unittest tests.test_links.TestLinks.test_links_create_basic
-    ```
+```python # for whole test python -m unittest tests.test_links # for
+specific python -m unittest
+tests.test_links.TestLinks.test_links_create_basic ```
 """
 
 # #############################################################################
@@ -58,7 +54,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - Links {}".format(_getframe(1).f_code.co_name)
 
 
@@ -106,7 +102,7 @@ class TestLinks(unittest.TestCase):
 
         md = Metadata(title=get_test_marker(), type="vectorDataset")
         cls.metadata_fixture_created = cls.isogeo.metadata.create(
-            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md
         )
         cls.metadata_fixture_existing = cls.isogeo.metadata.get(
             metadata_id=METADATA_TEST_FIXTURE_UUID
@@ -282,9 +278,9 @@ class TestLinks(unittest.TestCase):
     def test_links_matrix_cleaner(self):
         """Using the links kind/actions cleaner."""
         cleaned_actions_data = self.isogeo.metadata.links.clean_kind_action_liability(
-            link_kind="data", link_actions=["download", "other", "view"]
+            link_kind="data", link_actions=("download", "other", "view")
         )
-        self.assertListEqual(cleaned_actions_data, ["download", "other"])
+        self.assertTupleEqual(cleaned_actions_data, ("download", "other"))
 
 
 # ##############################################################################

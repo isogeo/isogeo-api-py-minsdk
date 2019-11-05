@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_applications
-    # for specific
-    python -m unittest tests.test_applications.TestApplications.test_applications_create_basic
-    ```
+```python
+# for whole test
+python -m unittest tests.test_applications
+# for specific
+python -m unittest tests.test_applications.TestApplications.test_applications_create_basic
+```
 """
 
 # #############################################################################
@@ -31,7 +30,7 @@ from time import gmtime, sleep, strftime
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import Application, Isogeo, Workgroup
+from isogeo_pysdk import Application, Isogeo
 
 
 # #############################################################################
@@ -53,7 +52,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -123,7 +122,7 @@ class TestApplications(unittest.TestCase):
     # -- TESTS ---------------------------------------------------------
     # -- MODEL --
     def test_applications_model(self):
-        """Testing the model structure, properties and methods"""
+        """Testing the model structure, properties and methods."""
         # var
         application = Application(name="My App to test")
         with self.assertRaises(ValueError):
@@ -253,6 +252,12 @@ class TestApplications(unittest.TestCase):
             self.assertEqual(application.name, i.get("name"))
             self.assertEqual(application.staff, i.get("staff"))
 
+            # check admin url
+            self.assertIsInstance(application.admin_url(self.isogeo.mng_url), str)
+            self.assertTrue(
+                application.admin_url(self.isogeo.mng_url).startswith("https")
+            )
+
     def test_application_workgroups(self):
         """GET :/applications/{application_uiid}/groups}"""
         # retrieve applications
@@ -305,15 +310,13 @@ class TestApplications(unittest.TestCase):
         self.assertTrue(self.isogeo.application.exists(application_group.get("_id")))
 
         # get and check
-        application_user_confidential = self.isogeo.application.application(
+        application_user_confidential = self.isogeo.application.get(
             application_user_confidential.get("_id")
         )
-        application_user_public = self.isogeo.application.application(
+        application_user_public = self.isogeo.application.get(
             application_user_public.get("_id")
         )
-        application_group = self.isogeo.application.application(
-            application_group.get("_id")
-        )
+        application_group = self.isogeo.application.get(application_group.get("_id"))
         self.assertIsInstance(application_user_confidential, Application)
         self.assertIsInstance(application_user_public, Application)
         self.assertIsInstance(application_group, Application)
@@ -335,7 +338,7 @@ class TestApplications(unittest.TestCase):
         application_fixture = self.isogeo.application.update(application_fixture)
 
         # check if the change is effective
-        application_fixture_updated = self.isogeo.application.application(
+        application_fixture_updated = self.isogeo.application.get(
             application_fixture._id
         )
         self.assertEqual(
