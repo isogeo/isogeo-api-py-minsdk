@@ -189,6 +189,37 @@ class TestFeatureAttributes(unittest.TestCase):
         # add to delete later
         self.li_fixtures_to_delete.append(online_obj)
 
+    def test_featureAttributes_create_missing_attribute(self):
+        """Create an attribute fails if attribute doesn't have name or datatype. \
+            (= 500). POST :resources/{metadata_uuid}/featureAttributes/}
+        """
+        attr_name = "{} - {}".format(get_test_marker(), self.discriminator)
+        # check if valuerror is raised
+        with self.assertRaises(ValueError):
+            # create local object
+            local_obj = FeatureAttribute(
+                name=attr_name,
+                description="Attribute without dataType can't be created.",
+            )
+
+            # create it online
+            self.isogeo.metadata.attributes.create(
+                metadata=self.metadata_fixture_existing, attribute=local_obj
+            )
+
+        # check if valuerror is raised
+        with self.assertRaises(ValueError):
+            # create local object
+            local_obj = FeatureAttribute(
+                dataType="numeric",
+                description="Attribute without name can't be created.",
+            )
+
+            # create it online
+            self.isogeo.metadata.attributes.create(
+                metadata=self.metadata_fixture_existing, attribute=local_obj
+            )
+
     # -- GET --
     def test_featureAttributes_listing(self):
         """GET :resources/{metadata_uuid}/featureAttributes/}"""
