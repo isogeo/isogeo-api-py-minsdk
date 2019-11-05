@@ -236,6 +236,17 @@ class TestFeatureAttributes(unittest.TestCase):
             self.assertEqual(attribute.name, i.get("name"))
             self.assertEqual(attribute.parent_resource, i.get("parent_resource"))
 
+    # -- SPECIAL ---------
+    def test_featureAttributes_import(self):
+        """Import feature-attributes from a metadata to another one.
+        """
+        # basic usage - FROM a metadata with feature-attributes TO one without
+        self.isogeo.metadata.attributes.import_from_dataset(
+            metadata_source=self.metadata_fixture_existing,
+            metadata_dest=self.metadata_fixture_created,
+            mode="add",
+        )
+
 
 # ##############################################################################
 # ##### Stand alone program ########
