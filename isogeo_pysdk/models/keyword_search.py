@@ -26,9 +26,9 @@ class KeywordSearch(object):
 
     """
     Attributes:
-      attr_types (dict): basic structure of search attributes. {"attribute name": "attribute type"}.
+      ATTR_TYPES (dict): basic structure of search attributes. {"attribute name": "attribute type"}.
     """
-    attr_types = {"limit": int, "offset": int, "results": list, "total": int}
+    ATTR_TYPES = {"limit": int, "offset": int, "results": list, "total": int}
 
     def __init__(
         self,
@@ -141,7 +141,7 @@ class KeywordSearch(object):
         """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(

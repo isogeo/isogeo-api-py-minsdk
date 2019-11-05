@@ -32,9 +32,9 @@ class Directive(object):
         }
     """
 
-    attr_types = {"_id": str, "description": str, "name": str}
+    ATTR_TYPES = {"_id": str, "description": str, "name": str}
 
-    attr_map = {}
+    ATTR_MAP = {}
 
     def __init__(self, _id: str = None, description: str = None, name: str = None):
         """Directive model."""
@@ -89,7 +89,7 @@ class Directive(object):
         """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
