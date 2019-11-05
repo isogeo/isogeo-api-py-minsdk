@@ -258,8 +258,6 @@ stages:
     # see: https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#sep-python-upload
     - script: |
         python -m pip install -U pip twine --cache-dir ./.pipcache
-        python -m twine upload ./dist/* --skip-existing --verbose --repository-url "https://upload.pypi.org/legacy/" --username Isogeo --password $(TWINE_PASSWORD)
-      env:
-        TWINE_PASSWORD: $(TWINE_PASSWORD)
+        python -m twine upload ./dist/* -r pypi --config-file $(PYPIRC_PATH) --verbose
       continueOnError: true
       displayName: "Upload to PyPi"
