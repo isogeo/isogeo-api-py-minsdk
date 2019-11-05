@@ -231,12 +231,12 @@ stages:
   # only with a tagged commit (see: https://github.com/MicrosoftDocs/vsts-docs/issues/3281)        
   - job: 'DeployPyPi'  
     dependsOn: Build
-    # condition: |
-    #   and
-    #   (
-    #     succeeded(),
-    #     contains(variables['Build.SourceBranch'], 'tags')
-    #   )
+    condition: |
+      and
+      (
+        succeeded(),
+        contains(variables['Build.SourceBranch'], 'tags')
+      )
     pool:
       vmImage: $(vmImageName)
 
