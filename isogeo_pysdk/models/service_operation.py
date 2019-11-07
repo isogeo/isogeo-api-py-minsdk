@@ -42,7 +42,7 @@ class ServiceOperation(object):
         }
     """
 
-    attr_types = {
+    ATTR_TYPES = {
         "_id": str,
         "mimeTypesIn": list,
         "mimeTypesOut": list,
@@ -51,9 +51,9 @@ class ServiceOperation(object):
         "verb": str,
     }
 
-    attr_crea = {"name": str, "verb": str}
+    ATTR_CREA = {"name": str, "verb": str}
 
-    attr_map = {}
+    ATTR_MAP = {}
 
     def __init__(
         self,
@@ -207,7 +207,7 @@ class ServiceOperation(object):
         """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -236,12 +236,12 @@ class ServiceOperation(object):
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
-        for attr, _ in self.attr_crea.items():
+        for attr, _ in self.ATTR_CREA.items():
             # get attribute value
             value = getattr(self, attr)
             # switch attribute name for creation purpose
-            if attr in self.attr_map:
-                attr = self.attr_map.get(attr)
+            if attr in self.ATTR_MAP:
+                attr = self.ATTR_MAP.get(attr)
             if isinstance(value, list):
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)

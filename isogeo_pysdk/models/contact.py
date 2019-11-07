@@ -21,7 +21,7 @@ import pprint
 class Contact(object):
     """Contacts are entities used into Isogeo adress book that can be associated to metadata."""
 
-    attr_types = {
+    ATTR_TYPES = {
         "_abilities": str,
         "_id": str,
         "_tag": str,
@@ -42,7 +42,7 @@ class Contact(object):
         "zipCode": str,
     }
 
-    attr_crea = {
+    ATTR_CREA = {
         "addressLine1": "str",
         "addressLine2": "str",
         "addressLine3": "str",
@@ -56,7 +56,7 @@ class Contact(object):
         "zipCode": "str",
     }
 
-    attr_map = {
+    ATTR_MAP = {
         "fax": "faxNumber",
         "organization": "organizationName",
         "phone": "phoneNumber",
@@ -493,7 +493,7 @@ class Contact(object):
         """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -522,12 +522,12 @@ class Contact(object):
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
-        for attr, _ in self.attr_crea.items():
+        for attr, _ in self.ATTR_CREA.items():
             # get attribute value
             value = getattr(self, attr)
             # switch attribute name for creation purpose
-            if attr in self.attr_map:
-                attr = self.attr_map.get(attr)
+            if attr in self.ATTR_MAP:
+                attr = self.ATTR_MAP.get(attr)
             if isinstance(value, list):
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)

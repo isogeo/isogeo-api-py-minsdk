@@ -41,16 +41,16 @@ class Condition(object):
         }
     """
 
-    attr_types = {
+    ATTR_TYPES = {
         "_id": str,
         "description": str,
         "license": License,
         "parent_resource": str,
     }
 
-    attr_crea = {"description": "str", "license": License}
+    ATTR_CREA = {"description": "str", "license": License}
 
-    attr_map = {}
+    ATTR_MAP = {}
 
     def __init__(
         self,
@@ -161,7 +161,7 @@ class Condition(object):
         """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -190,12 +190,12 @@ class Condition(object):
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
-        for attr, _ in self.attr_crea.items():
+        for attr, _ in self.ATTR_CREA.items():
             # get attribute value
             value = getattr(self, attr)
             # switch attribute name for creation purpose
-            if attr in self.attr_map:
-                attr = self.attr_map.get(attr)
+            if attr in self.ATTR_MAP:
+                attr = self.ATTR_MAP.get(attr)
             if isinstance(value, list):
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)
