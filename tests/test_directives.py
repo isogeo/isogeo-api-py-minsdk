@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_directives
-    # for specific
-    python -m unittest tests.test_directives.TestDirectives.test_directives_listing
-    ```
+```python
+# for whole test
+python -m unittest tests.test_directives
+# for specific
+python -m unittest tests.test_directives.TestDirectives.test_directives_listing
+```
 """
 
 # #############################################################################
@@ -59,7 +58,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - Directives - {}".format(_getframe(1).f_code.co_name)
 
 

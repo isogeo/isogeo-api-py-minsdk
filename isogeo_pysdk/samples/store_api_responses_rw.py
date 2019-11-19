@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Store API responses into JSON
@@ -47,7 +47,7 @@ WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 # ######## Export functions ###########
 # ###########################################################################
 def _meta_get_resource_sync(func_outname_params: dict):
-    """Meta function"""
+    """Meta function."""
     route_method = func_outname_params.get("route")
     out_filename = Path(outdir, func_outname_params.get("output_json_name") + ".json")
 
@@ -124,7 +124,7 @@ if __name__ == "__main__":
     print("Authentication succeeded at {:5.2f}s".format(default_timer() - START_TIME))
 
     # get some object identifiers required for certain routes
-    app_id = sample(isogeo.applications(include=[]), 1)[0].get("_id")
+    app_id = sample(isogeo.application.listing(include=()), 1)[0].get("_id")
     # resource_id = sample(isogeo.search(whole_results=0, page_size=50).get("results"), 1)[
     #     0
     # ].get("_id")
@@ -144,7 +144,7 @@ if __name__ == "__main__":
         {"route": isogeo.account, "output_json_name": "api_account", "params": {}},
         # Applications
         {
-            "route": isogeo.applications,
+            "route": isogeo.application.listing,
             "output_json_name": "api_applications",
             "params": {},
         },
@@ -155,50 +155,50 @@ if __name__ == "__main__":
         },
         # Keywords
         {
-            "route": isogeo.keywords,
+            "route": isogeo.keyword.thesaurus,
             "output_json_name": "api_keywords",
             "params": {"include": ["count"], "order_by": "count.isogeo"},
         },
         # Licenses
         {
-            "route": isogeo.licenses,
+            "route": isogeo.license.listing,
             "output_json_name": "api_licenses",
             "params": {"workgroup_id": WG_TEST_UUID},
         },
         # Specifications
         {
-            "route": isogeo.specifications,
+            "route": isogeo.specification.listing,
             "output_json_name": "api_specifications",
             "params": {"workgroup_id": WG_TEST_UUID},
         },
         # Workgroups
         {
-            "route": isogeo.workgroup_applications,
+            "route": isogeo.application.listing,
             "output_json_name": "api_workgroup_applications",
             "params": {"workgroup_id": WG_TEST_UUID, "caching": 0},
         },
         {
-            "route": isogeo.workgroup_catalogs,
+            "route": isogeo.catalog.listing,
             "output_json_name": "api_workgroup_catalogs",
             "params": {"workgroup_id": WG_TEST_UUID, "caching": 0},
         },
         {
-            "route": isogeo.workgroup_contacts,
+            "route": isogeo.contact.listing,
             "output_json_name": "api_workgroup_contacts",
             "params": {"workgroup_id": WG_TEST_UUID, "caching": 0},
         },
         {
-            "route": isogeo.workgroup_licenses,
+            "route": isogeo.license.listing,
             "output_json_name": "api_workgroup_licenses",
             "params": {"workgroup_id": WG_TEST_UUID, "caching": 0},
         },
         {
-            "route": isogeo.workgroup_specifications,
+            "route": isogeo.specification.listing,
             "output_json_name": "api_workgroup_specifications",
             "params": {"workgroup_id": WG_TEST_UUID, "caching": 0},
         },
         {
-            "route": isogeo.workgroup_stats,
+            "route": isogeo.workgroup.statistics,
             "output_json_name": "api_workgroup_stats",
             "params": {"workgroup_id": WG_TEST_UUID},
         },

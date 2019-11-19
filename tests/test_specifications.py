@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_specifications
-    # for specific
-    python -m unittest tests.test_specifications.TestSpecifications.test_specifications_create
-    ```
+```python
+# for whole test
+python -m unittest tests.test_specifications
+# for specific
+python -m unittest tests.test_specifications.TestSpecifications.test_specifications_create
+```
 """
 
 # #############################################################################
@@ -55,7 +54,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - Specifications - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -105,7 +104,7 @@ class TestSpecifications(unittest.TestCase):
         # fixture metadata
         md = Metadata(title=get_test_marker(), type="vectorDataset")
         cls.fixture_metadata = cls.isogeo.metadata.create(
-            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md
         )
 
     def setUp(self):
@@ -229,7 +228,7 @@ class TestSpecifications(unittest.TestCase):
 
         # refresh fixture metadata
         self.fixture_metadata = self.isogeo.metadata.get(
-            metadata_id=self.fixture_metadata._id, include=["specifications"]
+            metadata_id=self.fixture_metadata._id, include=("specifications",)
         )
 
         # try to associate the same specification = error
@@ -242,7 +241,7 @@ class TestSpecifications(unittest.TestCase):
         # # -- dissociate
         # refresh fixture metadata
         self.fixture_metadata = self.isogeo.metadata.get(
-            metadata_id=self.fixture_metadata._id, include=["specifications"]
+            metadata_id=self.fixture_metadata._id, include=("specifications",)
         )
         for specification in self.fixture_metadata.specifications:
             self.isogeo.specification.dissociate_metadata(
@@ -305,14 +304,19 @@ class TestSpecifications(unittest.TestCase):
         )
 
         # get and check both
-        specification_isogeo = self.isogeo.specification.specification(
+        specification_isogeo = self.isogeo.specification.get(
             specification_isogeo.get("_id")
         )
-        specification_specific = self.isogeo.specification.specification(
+        specification_specific = self.isogeo.specification.get(
             specification_specific.get("_id")
         )
+        # check object
         self.assertIsInstance(specification_isogeo, Specification)
         self.assertIsInstance(specification_specific, Specification)
+
+        # check isLocked status
+        self.assertTrue(specification_isogeo.isLocked)
+        self.assertFalse(specification_specific.isLocked)
 
     # -- PUT/PATCH --
     def test_specifications_update(self):
@@ -340,7 +344,7 @@ class TestSpecifications(unittest.TestCase):
         specification_fixture = self.isogeo.specification.update(specification_fixture)
 
         # check if the change is effective
-        specification_fixture_updated = self.isogeo.specification.specification(
+        specification_fixture_updated = self.isogeo.specification.get(
             specification_fixture._id
         )
         self.assertEqual(

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # #############################################################################
 # ########## Libraries #############
@@ -46,7 +46,7 @@ isogeo.connect()
 # ########## Functions ##############
 # ##################################
 def _meta_get_resource_sync(md_uuid):
-    """Just a meta func to get execution time"""
+    """Just a meta func to get execution time."""
     isogeo.metadata.get(metadata_id=md_uuid)
 
     elapsed = default_timer() - START_TIME

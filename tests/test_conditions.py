@@ -1,15 +1,15 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_conditions
-    # for licific
-    python -m unittest tests.test_conditions.TestConditions.test_conditions_create_basic
-    ```
+    .. code-block:: python
+
+        # for whole test
+        python -m unittest tests.test_conditions
+        # for specific test
+        python -m unittest tests.test_conditions.TestConditions.test_conditions_create_without_license
+
 """
 
 # #############################################################################
@@ -54,7 +54,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - Conditions - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -103,12 +103,12 @@ class TestConditions(unittest.TestCase):
 
         # fixture metadata
         cls.fixture_metadata_existing = cls.isogeo.metadata.get(
-            METADATA_TEST_FIXTURE_UUID, include=["conditions"]
+            METADATA_TEST_FIXTURE_UUID, include=("conditions",)
         )
 
         md = Metadata(title=get_test_marker(), type="vectorDataset")
         cls.fixture_metadata = cls.isogeo.metadata.create(
-            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md
         )
 
     def setUp(self):
@@ -157,11 +157,30 @@ class TestConditions(unittest.TestCase):
 
         self.assertEqual(condition_removed.status_code, 204)
 
+    def test_conditions_create_without_license(self):
+        """POST :metadata/{metadata_uuid}/conditions}"""
+        # create object locally
+        condition = Condition(
+            description="{} - {}".format(get_test_marker(), self.discriminator)
+        )
+
+        # add it to a metadata
+        condition_created = self.isogeo.metadata.conditions.create(
+            metadata=self.fixture_metadata, condition=condition
+        )
+
+        # remove it from a metadata
+        condition_removed = self.isogeo.metadata.conditions.delete(
+            metadata=self.fixture_metadata, condition=condition_created
+        )
+
+        self.assertEqual(condition_removed.status_code, 204)
+
     # -- GET --
     def test_conditions_listing(self):
         """GET :metadata/{metadata_uuid}/conditions}"""
         # retrieve metadata conditions
-        metadata_conditions = self.isogeo.metadata.conditions.list(
+        metadata_conditions = self.isogeo.metadata.conditions.listing(
             self.fixture_metadata_existing._id
         )
         self.assertIsInstance(metadata_conditions, list)

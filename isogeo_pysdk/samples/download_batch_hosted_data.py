@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Batch export to XML ISO19139
@@ -32,7 +32,7 @@ out_dir.mkdir(exist_ok=True)
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
 
@@ -51,13 +51,13 @@ if __name__ == "__main__":
         order_by="modified",
         whole_results=0,
         query="action:download",
-        include=["links"],
+        include=("links",),
     )
 
     # parse and download
     for md in latest_data_modified.get("results"):
         for link in filter(lambda x: x.get("type") == "hosted", md.get("links")):
-            dl_stream = isogeo.dl_hosted(resource_link=link)
+            dl_stream = isogeo.metadata.links.download_hosted(link=link)
             with open(out_dir / dl_stream[1], "wb") as fd:
                 for block in dl_stream[0].iter_content(1024):
                     fd.write(block)

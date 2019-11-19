@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Search
@@ -36,8 +36,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiSearch:
-    """Routes as methods of Isogeo API used to manipulate metadatas (resources).
-    """
+    """Routes as methods of Isogeo API used to manipulate metadatas (resources)."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -48,9 +47,15 @@ class ApiSearch:
         ApiDecorators.api_client = api_client
 
         # ensure platform to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
 
         # initialize
         super(ApiSearch, self).__init__()
@@ -85,17 +90,22 @@ class ApiSearch:
         tags_as_dicts: bool = False,
         whole_results: bool = False,
     ) -> MetadataSearch:
-        """Search within the resources shared to the application. It's the mainly used method to retrieve metadata.
+        """Search within the resources shared to the application. It's the mainly used method to
+        retrieve metadata.
 
-        :param str group: context to search. Pass a workgroup UUID to search within a group or pass None (default) to search in a global context.
+        :param str group: context to search. Pass a workgroup UUID to search within a \
+            group or pass None (default) to search in a global context.
         :param str query: search terms and semantic filters. Equivalent of
          **q** parameter in Isogeo API. It could be a simple
          string like *oil* or a tag like *keyword:isogeo:formations*
          or *keyword:inspire-theme:landcover*. The *AND* operator
          is applied when various tags are passed.
-        :param tuple bbox: Bounding box to limit the search. Must be a 4 tuple of coordinates in WGS84 (EPSG 4326). Could be associated with *georel*.
-        :param str poly: Geographic criteria for the search, in WKT format. Could be associated with *georel*.
-        :param str georel: geometric operator to apply to the `bbox` or `poly` parameters. Available values:
+        :param tuple bbox: Bounding box to limit the search. Must be a 4 tuple of \
+            coordinates in WGS84 (EPSG 4326). Could be associated with *georel*.
+        :param str poly: Geographic criteria for the search, in WKT format. \
+            Could be associated with *georel*.
+        :param str georel: geometric operator to apply to the `bbox` or `poly` parameters. \
+            Available values:
 
             * 'contains',
             * 'disjoint',
@@ -158,7 +168,6 @@ class ApiSearch:
                 augment=1,
                 whole_results=1
             )
-
         """
         # handling request parameters
         payload = {
@@ -350,8 +359,8 @@ class ApiSearch:
     async def search_metadata_asynchronous(
         self, total_results: int, max_workers: int = 10, **kwargs
     ) -> MetadataSearch:
-        """Meta async method used to request big searches (> 100 results), using asyncio.
-        It's a private method launched by the main search method.
+        """Meta async method used to request big searches (> 100 results), using asyncio. It's a
+        private method launched by the main search method.
 
         :param int total_results: total of results to retrieve
         :param int max_workers: maximum number of thread to use :class:`python.concurrent.futures`
@@ -366,7 +375,6 @@ class ApiSearch:
         with ThreadPoolExecutor(
             max_workers=max_workers, thread_name_prefix="IsogeoSearch"
         ) as executor:
-            # Set any session parameters here before calling `fetch`
             loop = asyncio.get_event_loop()
             tasks = [
                 loop.run_in_executor(
@@ -435,6 +443,6 @@ class ApiSearch:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """Standalone execution """
+    """Standalone execution."""
     api_search = ApiSearch()
     print(api_search)

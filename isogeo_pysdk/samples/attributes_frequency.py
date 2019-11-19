@@ -1,6 +1,5 @@
 # -*- coding: UTF-8 -*-
-#!/usr/bin/env python
-from __future__ import absolute_import, print_function, unicode_literals
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Attributes analisis
@@ -27,7 +26,7 @@ from isogeo_pysdk import Isogeo
 # ##################################
 
 if __name__ == "__main__":
-    """Standalone execution"""
+    """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
 
@@ -44,7 +43,7 @@ if __name__ == "__main__":
     # search
     search = isogeo.search(
         query="type:vector-dataset",  # filter only on vectors
-        include=["feature-attributes"],  # ask for including feature attributes
+        include=("feature-attributes",),  # ask for including feature attributes
         page_size=100,  # max metadata to download
         whole_results=0,  # download only the first results page
     )

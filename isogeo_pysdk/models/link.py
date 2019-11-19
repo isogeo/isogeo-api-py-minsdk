@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Link entity
@@ -15,7 +15,7 @@
 import pprint
 
 # package
-from isogeo_pysdk.enums import LinkActions, LinkKinds, LinkTypes
+from isogeo_pysdk.enums import LinkKinds, LinkTypes
 
 
 # #############################################################################
@@ -38,10 +38,9 @@ class Link(object):
             'type': string,
             'url': string
         }
-
     """
 
-    attr_types = {
+    ATTR_TYPES = {
         "_id": str,
         "actions": list,
         "kind": str,
@@ -53,7 +52,7 @@ class Link(object):
         "url": str,
     }
 
-    attr_crea = {
+    ATTR_CREA = {
         "actions": list,
         "kind": str,
         "link": dict,
@@ -63,7 +62,7 @@ class Link(object):
         "url": str,
     }
 
-    attr_map = {}
+    ATTR_MAP = {}
 
     def __init__(
         self,
@@ -78,7 +77,7 @@ class Link(object):
         # implementation additional parameters
         parent_resource: str = None,
     ):
-        """Link model"""
+        """Link model."""
 
         # default values for the object attributes/properties
         self.__id = None
@@ -273,10 +272,10 @@ class Link(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -305,12 +304,12 @@ class Link(object):
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
-        for attr, _ in self.attr_crea.items():
+        for attr, _ in self.ATTR_CREA.items():
             # get attribute value
             value = getattr(self, attr)
             # switch attribute name for creation purpose
-            if attr in self.attr_map:
-                attr = self.attr_map.get(attr)
+            if attr in self.ATTR_MAP:
+                attr = self.ATTR_MAP.get(attr)
             if isinstance(value, list):
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)
@@ -335,7 +334,7 @@ class Link(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -343,14 +342,14 @@ class Link(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Link):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -358,5 +357,5 @@ class Link(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     obj = Link()

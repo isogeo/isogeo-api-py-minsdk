@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Condition entity
@@ -22,8 +22,8 @@ from isogeo_pysdk.models import License
 # ########## Classes ###############
 # ##################################
 class Condition(object):
-    """Conditions are entities defining general conditions of use (CGUs) of a data.
-    It's mainly composed by a license and a description.
+    """Conditions are entities defining general conditions of use (CGUs) of a data. It's mainly
+    composed by a license and a description.
 
     :param str _id: object UUID
     :param str description: description of the condition
@@ -41,16 +41,16 @@ class Condition(object):
         }
     """
 
-    attr_types = {
+    ATTR_TYPES = {
         "_id": str,
         "description": str,
         "license": License,
         "parent_resource": str,
     }
 
-    attr_crea = {"description": "str", "license": License}
+    ATTR_CREA = {"description": "str", "license": License}
 
-    attr_map = {}
+    ATTR_MAP = {}
 
     def __init__(
         self,
@@ -130,12 +130,12 @@ class Condition(object):
         elif isinstance(license, dict):
             self._license = License(**license)
         else:
+            self._license = license
             raise Warning(
                 "Invalid license parameter ({}) to set as license for this condition.".format(
                     license
                 )
             )
-            self._license = license
 
     # parent metadata
     @property
@@ -158,10 +158,10 @@ class Condition(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -190,12 +190,12 @@ class Condition(object):
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
-        for attr, _ in self.attr_crea.items():
+        for attr, _ in self.ATTR_CREA.items():
             # get attribute value
             value = getattr(self, attr)
             # switch attribute name for creation purpose
-            if attr in self.attr_map:
-                attr = self.attr_map.get(attr)
+            if attr in self.ATTR_MAP:
+                attr = self.ATTR_MAP.get(attr)
             if isinstance(value, list):
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)
@@ -220,7 +220,7 @@ class Condition(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -228,14 +228,14 @@ class Condition(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Condition):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -243,6 +243,6 @@ class Condition(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
-    lic = Condition(name="Condition Test", description="Test condition description")
-    print(lic)
+    """standalone execution."""
+    fixture = Condition(description="Test condition description")
+    print(fixture)

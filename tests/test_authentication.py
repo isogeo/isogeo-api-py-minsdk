@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_authentication
-    # for specific
-    python -m unittest tests.test_authentication.TestAuthentication.test_other_language
-    ```
+```python
+# for whole test
+python -m unittest tests.test_authentication
+# for specific
+python -m unittest tests.test_authentication.TestAuthentication.test_other_language
+```
 """
 
 # #############################################################################
@@ -22,10 +21,8 @@ import unittest
 import urllib3
 from os import environ
 from pathlib import Path
-from random import sample
 from socket import gethostname
-from sys import _getframe, exit
-from time import gmtime, sleep, strftime
+from sys import exit
 
 # 3rd party
 from dotenv import load_dotenv

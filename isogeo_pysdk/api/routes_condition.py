@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Conditions entities
@@ -21,7 +21,7 @@ from requests import Response
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Condition, Metadata
+from isogeo_pysdk.models import Condition, License, Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -37,8 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiCondition:
-    """Routes as methods of Isogeo API used to manipulate conditions.
-    """
+    """Routes as methods of Isogeo API used to manipulate conditions."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -49,15 +48,21 @@ class ApiCondition:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiCondition, self).__init__()
 
     @lru_cache()
     @ApiDecorators._check_bearer_validity
-    def list(self, metadata_id: str) -> list:
+    def listing(self, metadata_id: str) -> list:
         """List metadata's conditions with complete information.
 
         :param str metadata_id: metadata UUID
@@ -160,10 +165,14 @@ class ApiCondition:
             pass
 
         # check license UUID
-        if not checker.check_is_uuid(condition.license._id):
+        if isinstance(condition.license, License) and not checker.check_is_uuid(
+            condition.license._id
+        ):
             raise ValueError(
                 "License ID is not a correct UUID: {}".format(condition.license._id)
             )
+        elif condition.license is None:
+            logger.debug("Creating a condition without associated license.")
         else:
             pass
 
@@ -244,5 +253,5 @@ class ApiCondition:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_condition = ApiCondition()

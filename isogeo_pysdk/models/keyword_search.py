@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Keyword search entity
@@ -14,9 +14,6 @@
 # standard library
 import pprint
 
-# other model
-from isogeo_pysdk.models.keyword import Keyword
-
 
 # #############################################################################
 # ########## Classes ###############
@@ -25,14 +22,13 @@ class KeywordSearch(object):
     """Keyword searchs are entities used to organize and shares metadata of a workgroup.
 
     .. code-block:: json
-
     """
 
     """
     Attributes:
-      attr_types (dict): basic structure of search attributes. {"attribute name": "attribute type"}.
+      ATTR_TYPES (dict): basic structure of search attributes. {"attribute name": "attribute type"}.
     """
-    attr_types = {"limit": int, "offset": int, "results": list, "total": int}
+    ATTR_TYPES = {"limit": int, "offset": int, "results": list, "total": int}
 
     def __init__(
         self,
@@ -41,7 +37,10 @@ class KeywordSearch(object):
         results: list = None,
         total: int = None,
     ):
-        """keywords/search? model"""
+        """keywords/search?
+
+        model
+        """
 
         # default values for the object attributes/properties
         self._limit = None
@@ -74,7 +73,6 @@ class KeywordSearch(object):
     @limit.setter
     def limit(self, limit: int):
         """Sets the limit of this InlineResponse2001.
-
 
         :param int limit: The limit of this Keyword Search
         """
@@ -114,7 +112,6 @@ class KeywordSearch(object):
     def results(self, results):
         """Sets the results of this InlineResponse2001.
 
-
         :param results: The results of this InlineResponse2001.  # noqa: E501
         :type: list[Keyword]
         """
@@ -141,10 +138,10 @@ class KeywordSearch(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -170,7 +167,7 @@ class KeywordSearch(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -178,14 +175,14 @@ class KeywordSearch(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, KeywordSearch):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -193,5 +190,5 @@ class KeywordSearch(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     search = KeywordSearch()

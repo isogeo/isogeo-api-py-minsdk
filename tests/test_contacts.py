@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_contacts
-    # for specific
-    python -m unittest tests.test_contacts.TestContacts.test_contacts_create_basic
-    ```
+```python
+# for whole test
+python -m unittest tests.test_contacts
+# for specific
+python -m unittest tests.test_contacts.TestContacts.test_contacts_create_basic
+```
 """
 
 # #############################################################################
@@ -56,7 +55,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - Contacts - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -204,7 +203,8 @@ class TestContacts(unittest.TestCase):
         )
 
         # check if object has not been created
-        self.assertEqual(contact_new_2, False)
+        self.assertIsInstance(contact_new_2, Contact)
+        self.assertEqual(contact_new_1._id, contact_new_2._id)
 
         # add created contact to deletion
         self.li_fixtures_to_delete.append(contact_new_1._id)
@@ -233,7 +233,8 @@ class TestContacts(unittest.TestCase):
         )
 
         # check if object has not been created
-        self.assertEqual(contact_new_2, False)
+        self.assertIsInstance(contact_new_2, Contact)
+        self.assertEqual(contact_new_1._id, contact_new_2._id)
 
         # add created contact to deletion
         self.li_fixtures_to_delete.append(contact_new_1._id)

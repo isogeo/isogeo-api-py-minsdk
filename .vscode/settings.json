@@ -1,18 +1,16 @@
 {
     "editor.rulers": [88],
     "editor.wordWrapColumn": 88,
-    "python.dataScience.enabled": false,
     "python.envFile": "${workspaceFolder}/dev.env",
     "python.formatting.provider": "black",
-    "python.formatting.blackArgs": ["--target-version=py36"],
-    "python.jediEnabled": false,
+    "python.formatting.blackArgs": ["--target-version=py37"],
     "python.linting.flake8Enabled": true,
     "python.linting.flake8Args": [
         "--ignore=E24,E265,E501,W504",
         "--verbose"
     ],
     "python.linting.pylintEnabled": true,
-    "python.pythonPath": ".venv_tests\\Scripts\\python.exe",
+    "python.pythonPath": "C:\\Users\\JulienMOURA\\.virtualenvs\\isogeo-api-py-minsdk-2lcBsEkK\\Scripts\\python.exe",
     "python.testing.pytestEnabled": true,
     "python.testing.pytestArgs": [
         "-c",
@@ -27,8 +25,5 @@
         "-p",
         "test_*.py"
     ],
-    "restructuredtext.confPath": "${workspaceFolder}\\docs",
-    "travis.username": "isogeo",
-    "travis.repository": "isogeo-api-py-minsdk",
-    "travis.statusPollingInterval": 300,
+    "restructuredtext.confPath": "${workspaceFolder}\\docs"
 }   

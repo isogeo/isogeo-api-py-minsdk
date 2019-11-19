@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Workgroups entities
@@ -41,8 +41,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiWorkgroup:
-    """Routes as methods of Isogeo API used to manipulate workgroups.
-    """
+    """Routes as methods of Isogeo API used to manipulate workgroups."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -53,9 +52,15 @@ class ApiWorkgroup:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
 
         # sub routes
         self.srs = ApiCoordinateSystem(self.api_client)
@@ -75,7 +80,10 @@ class ApiWorkgroup:
         :param bool caching: option to cache the response
         """
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_workgroups = utils.get_request_base_url(route="groups")
@@ -124,7 +132,10 @@ class ApiWorkgroup:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         url_workgroup = utils.get_request_base_url(
@@ -158,7 +169,6 @@ class ApiWorkgroup:
 
             - 0 = no check
             - 1 = compare name [DEFAULT]
-
         """
         # check if object has a correct contact
         if not hasattr(workgroup, "contact") or not isinstance(
@@ -328,8 +338,7 @@ class ApiWorkgroup:
 
     # -- Routes to manage the related objects ------------------------------------------
     def invite(self, workgroup_id: str, invitation: Invitation) -> dict:
-        """Invite new user to a workgroup.
-        Just a shortcut.
+        """Invite new user to a workgroup. Just a shortcut.
 
         :param str workgroup_id: workgroup UUID
         :param Invitation invitation: Invitation object to send
@@ -340,8 +349,8 @@ class ApiWorkgroup:
 
     @lru_cache()
     def invitations(self, workgroup_id: str) -> dict:
-        """Returns active invitations (including expired) for the specified workgroup.
-        Just a shortcut.
+        """Returns active invitations (including expired) for the specified workgroup. Just a
+        shortcut.
 
         :param str workgroup_id: workgroup UUID
         """
@@ -514,8 +523,8 @@ class ApiWorkgroup:
     @lru_cache()
     @ApiDecorators._check_bearer_validity
     def coordinate_systems(self, workgroup_id: str, caching: bool = 1) -> list:
-        """Returns coordinate-systems for the specified workgroup.
-        It's just an alias for the ApiCoordinateSystem.listing method.
+        """Returns coordinate-systems for the specified workgroup. It's just an alias for the
+        ApiCoordinateSystem.listing method.
 
         :param str workgroup_id: workgroup UUID
         :param bool caching: option to cache the response
@@ -529,5 +538,5 @@ class ApiWorkgroup:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_workgroup = ApiWorkgroup()

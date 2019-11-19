@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Directive entity
@@ -21,7 +21,6 @@ import pprint
 class Directive(object):
     """Directives are entities included as subresource of limitations into metadata CGUs.
 
-
     :Example:
 
     .. code-block:: json
@@ -31,15 +30,14 @@ class Directive(object):
             "name": string,
             "description": string
         }
-
     """
 
-    attr_types = {"_id": str, "description": str, "name": str}
+    ATTR_TYPES = {"_id": str, "description": str, "name": str}
 
-    attr_map = {}
+    ATTR_MAP = {}
 
     def __init__(self, _id: str = None, description: str = None, name: str = None):
-        """Directive model"""
+        """Directive model."""
 
         # default values for the object attributes/properties
         self.__id = None
@@ -88,10 +86,10 @@ class Directive(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -117,22 +115,22 @@ class Directive(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
-        return pprint.pdirective(self.to_dict())
+        """Returns the string representation of the model."""
+        return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
         """For `print` and `pprint`"""
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Directive):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -140,5 +138,5 @@ class Directive(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     test = Directive()

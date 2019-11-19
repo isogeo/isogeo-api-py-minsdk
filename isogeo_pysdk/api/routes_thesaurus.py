@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Thesaurus entities
@@ -34,8 +34,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiThesaurus:
-    """Routes as methods of Isogeo API used to manipulate thesaurus.
-    """
+    """Routes as methods of Isogeo API used to manipulate thesaurus."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -46,16 +45,21 @@ class ApiThesaurus:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiThesaurus, self).__init__()
 
     @ApiDecorators._check_bearer_validity
     def thesauri(self, caching: bool = 1) -> list:
-        """Get all thesauri.
-        """
+        """Get all thesauri."""
         # URL builder
         url_thesauri = utils.get_request_base_url(route="thesauri")
 
@@ -88,7 +92,7 @@ class ApiThesaurus:
     def thesaurus(
         self,
         thesaurus_id: UUID = "1616597fbc4348c8b11ef9d59cf594c8",
-        include: list = ["_abilities"],
+        include: tuple = ("_abilities",),
     ) -> Thesaurus:
         """Get a thesaurus.
 
@@ -105,7 +109,10 @@ class ApiThesaurus:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL builder
         url_thesaurus = utils.get_request_base_url(
@@ -135,5 +142,5 @@ class ApiThesaurus:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_thesaurus = ApiThesaurus()
