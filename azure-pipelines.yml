@@ -64,7 +64,7 @@ stages:
         displayName: 'Publish formatted code with dependencies'
 
 - stage: Test
-  displayName: Tests stage
+  displayName: Unit tests
   dependsOn: Lint
   condition: succeeded()
 
