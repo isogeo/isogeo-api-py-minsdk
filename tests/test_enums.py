@@ -206,7 +206,7 @@ class TestEnums(unittest.TestCase):
 
     def test_user_roles(self):
         """Check user's roles list."""
-        self.assertEqual(len(UserRoles), 11)
+        self.assertEqual(len(UserRoles), 3)
         self.assertTrue("admin" in UserRoles.__members__)
         self.assertFalse("Admin" in UserRoles.__members__)
         for i in UserRoles:
