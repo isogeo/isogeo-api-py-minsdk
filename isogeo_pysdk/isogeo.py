@@ -470,5 +470,10 @@ if __name__ == "__main__":
     METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
     WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
+    print(isogeo.about.api())
+    # print(isogeo.about.database())
+    # print(isogeo.about.auth())
+    # print(isogeo.about.services())
+
     # -- END -------
     isogeo.close()  # close session

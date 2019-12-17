@@ -12,6 +12,7 @@ import logging
 import socket
 import warnings
 from collections import Counter
+from json import JSONDecodeError
 from uuid import UUID
 
 # modules
@@ -120,11 +121,19 @@ class IsogeoChecker(object):
         if response.status_code == 200:
             return True
         elif response.status_code >= 400:
+            # ensure response got a JSON.
+            # See: https://github.com/isogeo/isogeo-api-py-minsdk/issues/136
+            try:
+                resp_error_msg = response.json().get("error")
+            except JSONDecodeError:
+                resp_error_msg = ""
+
+            # log it
             logging.error(
                 "{}: {} - {} - URL: {}".format(
                     response.status_code,
                     response.reason,
-                    response.json().get("error"),
+                    resp_error_msg,
                     response.request.url,
                 )
             )
