@@ -33,6 +33,7 @@ from isogeo_pysdk.enums import (
     SearchGeoRelations,
     SessionStatus,
     ShareTypes,
+    UserRoles,
     WorkgroupStatisticsTags,
 )
 
@@ -201,6 +202,14 @@ class TestEnums(unittest.TestCase):
         )  # case sensitive
         self.assertTrue(WorkgroupStatisticsTags.has_value("coordinate-system"))
         for i in WorkgroupStatisticsTags:
+            self.assertIsInstance(i.value, str)
+
+    def test_user_roles(self):
+        """Check user's roles list."""
+        self.assertEqual(len(UserRoles), 3)
+        self.assertTrue("admin" in UserRoles.__members__)
+        self.assertFalse("Admin" in UserRoles.__members__)
+        for i in UserRoles:
             self.assertIsInstance(i.value, str)
 
 

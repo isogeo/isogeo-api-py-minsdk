@@ -33,7 +33,7 @@ stages:
 
       steps:
       - checkout: self  # self represents the repo where the initial Pipelines YAML file was found
-        fetchDepth: 1
+        fetchDepth: 10
         
       - task: UsePythonVersion@0
         inputs:
@@ -64,7 +64,7 @@ stages:
         displayName: 'Publish formatted code with dependencies'
 
 - stage: Test
-  displayName: Tests stage
+  displayName: Unit tests
   dependsOn: Lint
   condition: succeeded()
 
@@ -249,7 +249,7 @@ stages:
       inputs:
         buildType: "current"
         artifact: '$(pyPiPackageName)_$(Build.SourceVersion)'
-        targetPath: "$(System.DefaultWorkingDirectory)"
+        targetPath: "$(System.DefaultWorkingDirectory)/dist/"
 
     - task: TwineAuthenticate@1
       inputs:
@@ -258,6 +258,6 @@ stages:
     # see: https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#sep-python-upload
     - script: |
         python -m pip install -U pip twine --cache-dir ./.pipcache
-        python -m twine upload ./dist/* -r 'pypi' --config-file $(PYPIRC_PATH) --verbose
+        python -m twine upload ./dist/* -r pypi --config-file $(PYPIRC_PATH) --verbose --skip-existing
       continueOnError: true
       displayName: "Upload to PyPi"
