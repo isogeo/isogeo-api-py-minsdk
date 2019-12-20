@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Metadata (= Resource) entity
@@ -12,17 +12,23 @@
 # ##################################
 
 # standard library
+import logging
 import pprint
 import re
 import unicodedata
 
 # package
-from isogeo_pysdk.enums import MetadataSubresources, MetadataTypes
+from isogeo_pysdk.enums import MetadataTypes
+
+# others models
+from isogeo_pysdk.models import Workgroup
 
 
 # #############################################################################
 # ########## Globals ###############
 # ##################################
+
+logger = logging.getLogger(__name__)
 
 # for slugified title
 _regex_slugify_strip = re.compile(r"[^\w\s-]")
@@ -142,7 +148,6 @@ class Metadata(object):
                 {}
             ]
         }
-
     """
 
     # -- ATTRIBUTES --------------------------------------------------------------------
@@ -229,8 +234,8 @@ class Metadata(object):
     # -- CLASS METHODS -----------------------------------------------------------------
     @classmethod
     def clean_attributes(cls, raw_object: dict):
-        """Renames attributes which are incompatible with Python (hyphens...).
-        See related issue: https://github.com/isogeo/isogeo-api-py-minsdk/issues/82
+        """Renames attributes which are incompatible with Python (hyphens...). See related issue:
+        https://github.com/isogeo/isogeo-api-py-minsdk/issues/82.
 
         :param dict raw_object: metadata dictionary returned by a request.json()
 
@@ -291,7 +296,7 @@ class Metadata(object):
         validTo: str = None,
         validityComment: str = None,
     ):
-        """Metadata model"""
+        """Metadata model."""
 
         # default values for the object attributes/properties
         self.__abilities = None
@@ -445,8 +450,8 @@ class Metadata(object):
     # _created
     @property
     def _created(self) -> str:
-        """Gets the creation datetime of the Metadata.
-        Datetime format is: `%Y-%m-%dT%H:%M:%S+00:00`.
+        """Gets the creation datetime of the Metadata. Datetime format is:
+        `%Y-%m-%dT%H:%M:%S+00:00`.
 
         :return: The created of this Metadata.
         :rtype: str
@@ -456,8 +461,8 @@ class Metadata(object):
     # _modified
     @property
     def _modified(self) -> str:
-        """Gets the last modification datetime of this Metadata.
-        Datetime format is: `%Y-%m-%dT%H:%M:%S+00:00`.
+        """Gets the last modification datetime of this Metadata. Datetime format is:
+        `%Y-%m-%dT%H:%M:%S+00:00`.
 
         :return: The modified of this Metadata.
         :rtype: str
@@ -610,8 +615,8 @@ class Metadata(object):
     # created
     @property
     def created(self) -> str:
-        """Gets the creation date of the data described by the Metadata.
-        It's the equivalent of the `created` original attribute (renamed to avoid conflicts with the _created` one).
+        """Gets the creation date of the data described by the Metadata. It's the equivalent of the
+        `created` original attribute (renamed to avoid conflicts with the _created` one).
 
         Date format is: `%Y-%m-%dT%H:%M:%S+00:00`.
 
@@ -1248,11 +1253,45 @@ class Metadata(object):
 
         self._validityComment = validityComment
 
+    # -- SPECIFIC TO IMPLEMENTATION ----------------------------------------------------
+    @property
+    def groupName(self) -> str:
+        """Shortcut to get the name of the workgroup which owns the Metadata."""
+        if isinstance(self._creator, dict):
+            return self._creator.get("contact").get("name")
+        elif isinstance(self._creator, Workgroup):
+            return self._creator.contact.get("name")
+        else:
+            return None
+
+    @property
+    def groupId(self) -> str:
+        """Shortcut to get the UUID of the workgroup which owns the Metadata."""
+        if isinstance(self._creator, dict):
+            return self._creator.get("_id")
+        elif isinstance(self._creator, Workgroup):
+            return self._creator._id
+        else:
+            return None
+
     # -- METHODS -----------------------------------------------------------------------
+    def admin_url(self, url_base: str = "https://app.isogeo.com") -> str:
+        """Returns the administration URL (https://app.isogeo.com) for this metadata.
+
+        :param str url_base: base URL of admin site. Defaults to: https://app.isogeo.com
+
+        :rtype: str
+        """
+        if self._creator is None:
+            logger.warning("Creator is required to build admin URL")
+            return False
+
+        creator_id = self._creator.get("_id")
+        return "{}/groups/{}/resources/{}/".format(url_base, creator_id, self._id)
 
     def title_or_name(self, slugged: bool = False) -> str:
-        """Gets the title of this Metadata or the name if there is no title.
-        It can return a slugified value.
+        """Gets the title of this Metadata or the name if there is no title. It can return a
+        slugified value.
 
         :param bool slugged: slugify title. Defaults to `False`.
 
@@ -1261,8 +1300,13 @@ class Metadata(object):
         """
         if self._title:
             title_or_name = self._title
-        else:
+        elif self._name:
             title_or_name = self._name
+        else:
+            logger.warning(
+                "Metadata has no title nor name. So this method is useless..."
+            )
+            return None
 
         # slugify
         if slugged:
@@ -1277,7 +1321,7 @@ class Metadata(object):
         return title_or_name
 
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
         for attr, _ in self.ATTR_TYPES.items():
@@ -1339,7 +1383,7 @@ class Metadata(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -1347,14 +1391,14 @@ class Metadata(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Metadata):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -1362,6 +1406,6 @@ class Metadata(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     md = Metadata()
     print(md)

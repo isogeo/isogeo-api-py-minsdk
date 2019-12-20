@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of CoordinateSystem entity
@@ -30,19 +30,18 @@ class CoordinateSystem(object):
             'code': 31154,
             'name': 'Zanderij / TM 54 NW'
         }
-
     """
 
-    attr_types = {"_tag": str, "alias": str, "code": str, "name": str}
+    ATTR_TYPES = {"_tag": str, "alias": str, "code": str, "name": str}
 
-    attr_crea = {}
+    ATTR_CREA = {}
 
-    attr_map = {}
+    ATTR_MAP = {}
 
     def __init__(
         self, _tag: str = None, alias: str = None, code: str = None, name: str = None
     ):
-        """Coordinate-systems model"""
+        """Coordinate-systems model."""
 
         # default values for the object attributes/properties
         self.__tag = None
@@ -113,10 +112,10 @@ class CoordinateSystem(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -145,12 +144,12 @@ class CoordinateSystem(object):
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
-        for attr, _ in self.attr_crea.items():
+        for attr, _ in self.ATTR_CREA.items():
             # get attribute value
             value = getattr(self, attr)
             # switch attribute name for creation purpose
-            if attr in self.attr_map:
-                attr = self.attr_map.get(attr)
+            if attr in self.ATTR_MAP:
+                attr = self.ATTR_MAP.get(attr)
             if isinstance(value, list):
                 result[attr] = list(
                     map(lambda x: x.to_dict() if hasattr(x, "to_dict") else x, value)
@@ -175,7 +174,7 @@ class CoordinateSystem(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -183,14 +182,14 @@ class CoordinateSystem(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, CoordinateSystem):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -198,8 +197,6 @@ class CoordinateSystem(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
-    atasource = CoordinateSystem(
-        name="CoordinateSystem Test", _modified="Test datasource _modified"
-    )
-    print(atasource)
+    """standalone execution."""
+    fixture = CoordinateSystem(name="CoordinateSystem Test")
+    print(fixture)

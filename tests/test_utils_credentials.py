@@ -1,12 +1,9 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
-    
-    ```python
-    python -m unittest tests.test_utils_credentials
-    ```
+"""Usage from the repo root folder:
+
+```python python -m unittest tests.test_utils_credentials ```
 """
 
 # #############################################################################
@@ -19,11 +16,8 @@ import unittest
 import urllib3
 from os import environ, path
 from pathlib import Path
-from random import sample
 from socket import gethostname
-from sys import _getframe, exit
-from time import gmtime, sleep, strftime
-from urllib.parse import urlparse
+from sys import exit
 
 # 3rd party
 from dotenv import load_dotenv
@@ -72,7 +66,7 @@ class TestIsogeoUtilsCredentials(unittest.TestCase):
 
     # standard methods
     def setUp(self):
-        """ Fixtures prepared before each test."""
+        """Fixtures prepared before each test."""
         self.utils = IsogeoUtils()
 
         # credentials
@@ -109,7 +103,7 @@ class TestIsogeoUtilsCredentials(unittest.TestCase):
 
     # -- Credentials loader -------------------------------------
     def test_credentials_loader_json_user(self):
-        """Test credentials loader for an user application from a JSON file"""
+        """Test credentials loader for an user application from a JSON file."""
         for in_creds_json_user in self.credentials_user_json:
             creds_json_user = self.utils.credentials_loader(in_creds_json_user)
             # structure
@@ -139,7 +133,8 @@ class TestIsogeoUtilsCredentials(unittest.TestCase):
             self.assertIsInstance(creds_json_user.get("uri_redirect"), list)
 
     def test_credentials_loader_json_group(self):
-        """Test credentials loader for an group application from a JSON file"""
+        """Test credentials loader for an group application from a JSON
+        file."""
         for in_creds_json_group in self.credentials_group_json:
             creds_json_group = self.utils.credentials_loader(in_creds_json_group)
             # structure
@@ -186,7 +181,8 @@ class TestIsogeoUtilsCredentials(unittest.TestCase):
                 )
 
     def test_credentials_loader_ini(self):
-        """Test credentials loader for an group application from an INI file"""
+        """Test credentials loader for an group application from an INI
+        file."""
         creds_ini = self.utils.credentials_loader(self.credentials_ini)
         # structure
         self.assertIsInstance(creds_ini, dict)

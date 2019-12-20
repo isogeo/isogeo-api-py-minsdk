@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
-    
-    ```python
-    # for whole test
-    python -m unittest tests.test_utils
-    # for specific
-    python -m unittest tests.test_utils.TestIsogeoUtils.test_get_edit_url_ok
-    ```
+"""Usage from the repo root folder:
+
+```python
+# for whole test
+python -m unittest tests.test_utils
+# for specific
+python -m unittest tests.test_utils.TestIsogeoUtils.test_get_edit_url_ok
+```
 """
 
 # #############################################################################
@@ -25,9 +24,10 @@ from urllib.parse import urlparse
 
 # 3rd party
 from dotenv import load_dotenv
+import urllib3
 
 # module target
-from isogeo_pysdk import IsogeoUtils
+from isogeo_pysdk import IsogeoUtils, Metadata
 
 # #############################################################################
 # ######## Globals #################
@@ -35,6 +35,10 @@ from isogeo_pysdk import IsogeoUtils
 
 if Path("dev.env").exists():
     load_dotenv("dev.env", override=True)
+
+# API access
+METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
+WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
 # ########## Classes ###############
@@ -50,9 +54,13 @@ class TestIsogeoUtils(unittest.TestCase):
         """Executed when module is loaded before any test."""
         cls.utils = IsogeoUtils()
 
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+            urllib3.disable_warnings()
+
     # standard methods
     def setUp(self):
-        """ Fixtures prepared before each test."""
+        """Fixtures prepared before each test."""
         pass
 
     def tearDown(self):
@@ -61,14 +69,20 @@ class TestIsogeoUtils(unittest.TestCase):
 
     #  -  Isogeo components versions -----------------------------------------
     def test_get_isogeo_version_api(self):
-        """Check API version"""
+        """Check API version."""
         # prod
         version_api_prod = self.utils.get_isogeo_version(component="api")
         version_api_naive_prod = self.utils.get_isogeo_version()
         # qa
-        platform, api_url, app_url, csw_url, mng_url, oc_url, ssl = self.utils.set_base_url(
-            platform="qa"
-        )
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url(platform="qa")
         version_api_qa = self.utils.get_isogeo_version(component="api")
         version_api_naive_qa = self.utils.get_isogeo_version()
         # check
@@ -80,7 +94,7 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertEqual(version_api_qa, version_api_naive_prod)
 
     def test_get_isogeo_version_app(self):
-        """Check APP version"""
+        """Check APP version."""
         # prod
         self.utils.set_base_url(platform="prod")
         version_app_prod = self.utils.get_isogeo_version(component="app")
@@ -92,13 +106,19 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertIsInstance(version_app_qa, str)
 
     def test_get_isogeo_version_db(self):
-        """Check DB version"""
+        """Check DB version."""
         # prod
         version_db_prod = self.utils.get_isogeo_version(component="db")
         # qa
-        platform, api_url, app_url, csw_url, mng_url, oc_url, ssl = self.utils.set_base_url(
-            platform="qa"
-        )
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url(platform="qa")
         version_db_qa = self.utils.get_isogeo_version(component="db")
         # check
         self.assertIsInstance(version_db_prod, str)
@@ -111,11 +131,17 @@ class TestIsogeoUtils(unittest.TestCase):
 
     # -- Base URLs -----------------------------------------------------------
     def test_set_base_url(self):
-        """Set base URLs"""
+        """Set base URLs."""
         # by default platform = prod
-        platform, api_url, app_url, csw_url, mng_url, oc_url, ssl = (
-            self.utils.set_base_url()
-        )
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url()
         self.assertIsInstance(platform, str)
         self.assertIsInstance(api_url, str)
         self.assertIsInstance(ssl, bool)
@@ -123,96 +149,52 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertEqual(api_url, self.utils.API_URLS.get("prod"))
         self.assertEqual(ssl, True)
         # qa
-        platform, api_url, app_url, csw_url, mng_url, oc_url, ssl = self.utils.set_base_url(
-            platform="qa"
-        )
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url(platform="qa")
         self.assertIsInstance(platform, str)
         self.assertIsInstance(api_url, str)
         self.assertIsInstance(ssl, bool)
         self.assertEqual(platform, "qa")
         self.assertEqual(api_url, self.utils.API_URLS.get("qa"))
+        self.assertEqual(oc_url, self.utils.OC_URLS.get("qa"))
         self.assertEqual(ssl, False)
 
     def test_set_base_url_bad_parameter(self):
         """Raise error if platform parameter is bad."""
         with self.assertRaises(ValueError):
             self.utils.set_base_url(platform="skynet")
+        self.utils.set_base_url(platform=environ.get("ISOGEO_PLATFORM", "qa"))
 
     # -- URLs Builders - edit (app) ------------------------------------------
     def test_get_edit_url_ok(self):
-        """Test URL builder for edition link on APP"""
+        """Test URL builder for edition link on APP."""
         self.utils.set_base_url(platform=environ.get("ISOGEO_PLATFORM", "prod"))
-        url = self.utils.get_edit_url(
-            md_id="0269803d50c446b09f5060ef7fe3e22b",
-            md_type="vector-dataset",
-            owner_id="32f7e95ec4e94ca3bc1afda960003882",
-            tab="identification",
+
+        metadata = Metadata(
+            _id=METADATA_TEST_FIXTURE_UUID,
+            _creator={"_id": WORKGROUP_TEST_FIXTURE_UUID},
+            type="vectorDataset",
         )
+        url = self.utils.get_edit_url(metadata=metadata, tab="history")
         self.assertIsInstance(url, str)
         self.assertIn("app", url)
         self.assertIn("groups", url)
         urlparse(url)
-        # again with type extracted from metadata model
-        url = self.utils.get_edit_url(
-            md_id="0269803d50c446b09f5060ef7fe3e22b",
-            md_type="vectorDataset",
-            owner_id="32f7e95ec4e94ca3bc1afda960003882",
-            tab="identification",
-        )
-
-    def test_get_edit_url_bad_md_uuid(self):
-        """Must raise an error if metadata/resource UUID check fails."""
-        with self.assertRaises(ValueError):
-            self.utils.get_edit_url(
-                md_id="oh_my_bad_i_m_not_a_correct_uuid",
-                md_type="vector-dataset",
-                owner_id="32f7e95ec4e94ca3bc1afda960003882",
-                tab="identification",
-            )
-
-    def test_get_edit_url_bad_md_type(self):
-        """Must raise an error if metadata/resource type check fails."""
-        with self.assertRaises(ValueError):
-            self.utils.get_edit_url(
-                md_id="0269803d50c446b09f5060ef7fe3e22b",
-                md_type="bad_md_type",
-                owner_id="32f7e95ec4e94ca3bc1afda960003882",
-                tab="identification",
-            )
-
-    def test_get_edit_url_bad_wg_uuid(self):
-        """Must raise an error if workgroup UUID check fails."""
-        with self.assertRaises(ValueError):
-            self.utils.get_edit_url(
-                md_id="0269803d50c446b09f5060ef7fe3e22b",
-                md_type="vector-dataset",
-                owner_id="oh_my_bad_i_m_not_a_correct_uuid",
-                tab="identification",
-            )
-
-    def test_get_edit_url_bad_tab(self):
-        """Must raise an error if tab check fails."""
-        with self.assertRaises(ValueError):
-            self.utils.get_edit_url(
-                md_id="0269803d50c446b09f5060ef7fe3e22b",
-                md_type="raster-dataset",
-                owner_id="32f7e95ec4e94ca3bc1afda960003882",
-                tab="attributes",
-            )
-        with self.assertRaises(ValueError):
-            self.utils.get_edit_url(
-                md_id="0269803d50c446b09f5060ef7fe3e22b",
-                md_type="raster-dataset",
-                owner_id="32f7e95ec4e94ca3bc1afda960003882",
-                tab="what_a_tab_name",
-            )
 
     # -- URLs Builders - request -------------------------------------
     def test_get_request_base_url(self):
         """Test URL request builder."""
         resource_url = self.utils.get_request_base_url("resources")
         self.assertEqual(
-            resource_url, "https://{}.isogeo.com/resources/".format(self.utils.api_url)
+            resource_url,
+            "https://{}.isogeo.com/resources/?_lang=fr".format(self.utils.api_url),
         )
 
     # -- URLs Builders - view on web app -------------------------------------
@@ -330,7 +312,7 @@ class TestIsogeoUtils(unittest.TestCase):
 
     # encoding -- see #32
     def test_decoding_rfc2047(self):
-        """Test decoding func for filenames: """
+        """Test decoding func for filenames:"""
         b = "=?UTF-8?B?VGhpcyBpcyBhIGhvcnNleTog8J+Qjg==?="
         self.utils.encoded_words_to_text(b)
         q = "=?UTF-8?Q?This is a horsey: =F0=9F=90=8E?="
@@ -340,7 +322,7 @@ class TestIsogeoUtils(unittest.TestCase):
 
     # pages counter
     def test_pages_counter(self):
-        """Test search results pages counter to help pagination"""
+        """Test search results pages counter to help pagination."""
         p_default = self.utils.pages_counter(total=50)
         self.assertEqual(p_default, 1)
         p_default = self.utils.pages_counter(total=50, page_size=10)

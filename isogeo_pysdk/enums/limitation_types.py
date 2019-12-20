@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Enums for Limitation types entity accepted values.
@@ -50,7 +50,7 @@ class LimitationTypes(Enum):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     print("{0:<30} {1:>30}".format("Enum", "Value"))
     for tag in LimitationTypes:
         print("{0:<30} {1:>30}".format(tag, tag.value))

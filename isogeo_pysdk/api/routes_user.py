@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Users entities
@@ -17,7 +17,7 @@ import logging
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Contact, User
+from isogeo_pysdk.models import User
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -33,8 +33,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiUser:
-    """Routes as methods of Isogeo API used to manipulate users.
-    """
+    """Routes as methods of Isogeo API used to manipulate users."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -45,9 +44,15 @@ class ApiUser:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiUser, self).__init__()
 
@@ -96,7 +101,7 @@ class ApiUser:
         return req_users.json()
 
     @ApiDecorators._check_bearer_validity
-    def user(self, user_id: str, include: list = ["_abilities"]) -> User:
+    def user(self, user_id: str, include: tuple = ("_abilities")) -> User:
         """Get details about a specific user.
 
         :param str user_id: user UUID
@@ -109,7 +114,10 @@ class ApiUser:
             pass
 
         # handling request parameters
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         url_user = utils.get_request_base_url(route="users/{}".format(user_id))
@@ -151,7 +159,7 @@ class ApiUser:
     #     if check_exists == 1:
     #         # retrieve user users
     #         if not self.api_client._users_names:
-    #             self.listing(include=[])
+    #             self.listing(include=())
     #         # check
     #         if user.contact.name in self.api_client._users_names:
     #             logger.debug(
@@ -254,5 +262,5 @@ class ApiUser:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_user = ApiUser()

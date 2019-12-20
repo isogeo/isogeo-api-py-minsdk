@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Datasources entities
@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+from functools import lru_cache
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
@@ -33,8 +34,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiDatasource:
-    """Routes as methods of Isogeo API used to manipulate datasources (CSW entry-points).
-    """
+    """Routes as methods of Isogeo API used to manipulate datasources (CSW entry-points)."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -45,15 +45,22 @@ class ApiDatasource:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiDatasource, self).__init__()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
-    def datasources(
-        self, workgroup_id: str = None, include: list = [], caching: bool = 1
+    def listing(
+        self, workgroup_id: str = None, include: tuple = None, caching: bool = 1
     ) -> list:
         """Get workgroup datasources.
 
@@ -68,7 +75,10 @@ class ApiDatasource:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_datasources = utils.get_request_base_url(
@@ -177,7 +187,7 @@ class ApiDatasource:
         if check_exists == 1:  # check names
             # retrieve workgroup datasources
             if not self.api_client._wg_datasources_names:
-                self.datasources(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if datasource.name in self.api_client._wg_datasources_names:
                 logger.debug(
@@ -189,7 +199,7 @@ class ApiDatasource:
         elif check_exists == 2:  # check URL (location)
             # retrieve workgroup datasources
             if not self.api_client._wg_datasources_urls:
-                self.datasources(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if datasource.location in self.api_client._wg_datasources_urls:
                 logging.debug(
@@ -383,5 +393,5 @@ class ApiDatasource:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_datasource = ApiDatasource()

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 # ------------------------------------------------------------------------------
 # Name:         Isogeo sample - Store API responses into JSON
@@ -40,11 +40,12 @@ outdir = Path(Path(__file__).parent, "_output/")
 # environment vars
 load_dotenv("dev.env", override=True)
 
+
 # ############################################################################
 # ######## Export functions ###########
 # ###########################################################################
 def _meta_get_resource_sync(func_outname_params: dict):
-    """Meta function"""
+    """Meta function."""
     route_method = func_outname_params.get("route")
     out_filename = Path(outdir, func_outname_params.get("output_json_name") + ".json")
 
@@ -107,7 +108,7 @@ if __name__ == "__main__":
     resource_id = sample(
         isogeo.search(whole_results=0, page_size=50).get("results"), 1
     )[0].get("_id")
-    share_id = isogeo.shares()[0].get("_id")
+    share_id = isogeo.share.listing()[0].get("_id")
 
     # list of methods to execute
     li_api_routes = [
@@ -122,27 +123,35 @@ if __name__ == "__main__":
             "params": {"whole_results": 1, "include": "all", "augment": 1},
         },
         {
-            "route": isogeo.resource,
+            "route": isogeo.metadata.get,
             "output_json_name": "api_metadata_complete",
             "params": {"id_resource": resource_id, "include": "all"},
         },
         # shares
-        {"route": isogeo.shares, "output_json_name": "api_shares", "params": {}},
+        {"route": isogeo.share.listing, "output_json_name": "api_shares", "params": {}},
         {
-            "route": isogeo.share,
+            "route": isogeo.share.get,
             "output_json_name": "api_share_augmented",
             "params": {"share_id": share_id, "augment": 1},
         },
         # static stuff
-        {"route": isogeo.thesauri, "output_json_name": "api_thesauri", "params": {}},
-        {"route": isogeo.thesaurus, "output_json_name": "api_thesaurus", "params": {}},
         {
-            "route": isogeo.get_link_kinds,
+            "route": isogeo.thesaurus.thesauri,
+            "output_json_name": "api_thesauri",
+            "params": {},
+        },
+        {
+            "route": isogeo.thesaurus.thesaurus,
+            "output_json_name": "api_thesaurus",
+            "params": {},
+        },
+        {
+            "route": isogeo.metadata.links.kinds_actions,
             "output_json_name": "api_link_kinds",
             "params": {},
         },
         {
-            "route": isogeo.get_directives,
+            "route": isogeo.directive.listing,
             "output_json_name": "api_directives",
             "params": {},
         },

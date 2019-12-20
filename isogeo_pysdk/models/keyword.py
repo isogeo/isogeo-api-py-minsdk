@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Keyword entity
@@ -24,7 +24,6 @@ from isogeo_pysdk.models.thesaurus import Thesaurus
 class Keyword(object):
     """Keywords are entities used to organize and shares metadata of a workgroup.
 
-
     :Example:
 
     .. code-block:: json
@@ -45,14 +44,13 @@ class Keyword(object):
             'description': None,
             'text': 'tests unitaires',
             'thesaurus': {
-                '_id': '1616597fbc4348c8b11ef9d59cf594c8', 
+                '_id': '1616597fbc4348c8b11ef9d59cf594c8',
                 'code': 'isogeo'
                 }
         }
-
     """
 
-    attr_types = {
+    ATTR_TYPES = {
         "_abilities": list,
         "_created": str,
         "_id": str,
@@ -65,9 +63,9 @@ class Keyword(object):
         "text": str,
     }
 
-    attr_crea = {"text": str}
+    ATTR_CREA = {"text": str}
 
-    attr_map = {}
+    ATTR_MAP = {}
 
     def __init__(
         self,
@@ -82,7 +80,7 @@ class Keyword(object):
         thesaurus: Thesaurus = None,
         text: bool = None,
     ):
-        """Keyword model"""
+        """Keyword model."""
 
         # default values for the object attributes/properties
         self.__abilities = None
@@ -231,8 +229,7 @@ class Keyword(object):
 
     @property
     def thesaurus(self):
-        """Gets the thesaurus of this Keyword.  # noqa: E501
-
+        """Gets the thesaurus of this Keyword.  # noqa: E501.
 
         :return: The thesaurus of this Keyword.  # noqa: E501
         :rtype: Thesaurus
@@ -241,10 +238,10 @@ class Keyword(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -273,12 +270,12 @@ class Keyword(object):
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
-        for attr, _ in self.attr_crea.items():
+        for attr, _ in self.ATTR_CREA.items():
             # get attribute value
             value = getattr(self, attr)
             # switch attribute name for creation purpose
-            if attr in self.attr_map:
-                attr = self.attr_map.get(attr)
+            if attr in self.ATTR_MAP:
+                attr = self.ATTR_MAP.get(attr)
             # process value depending on attr type
             if isinstance(value, list):
 
@@ -305,7 +302,7 @@ class Keyword(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -313,14 +310,14 @@ class Keyword(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Keyword):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -328,7 +325,6 @@ class Keyword(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
-    cat = Keyword(name="youpi", text=1)
-    to_crea = cat.to_dict_creation()
-    print(type(to_crea.get("IsScanSink")))
+    """standalone execution."""
+    fixture = Keyword(description="keyword text")
+    to_crea = fixture.to_dict_creation()

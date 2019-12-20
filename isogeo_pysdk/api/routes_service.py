@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Metadata of Services (web geo services)
@@ -17,8 +17,6 @@ from urllib.parse import urlparse, parse_qs, urlunparse
 
 # 3rd party
 import requests
-from requests.adapters import HTTPAdapter
-from requests.models import Response
 
 # submodules
 from isogeo_pysdk.exceptions import AlreadyExistError
@@ -45,6 +43,7 @@ utils = IsogeoUtils()
 # ##################################
 class ApiService:
     """Routes as methods of Isogeo API used to manipulate metadatas of web geo services (services).
+
     It's a set of helpers and shortcuts to make easier the sevrice management with the isogeo API.
     """
 
@@ -57,9 +56,15 @@ class ApiService:
         ApiDecorators.api_client = api_client
 
         # ensure platform to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
 
         # sub routes
         self.layers = ApiServiceLayer(self.api_client)
@@ -119,7 +124,6 @@ class ApiService:
                 workgroup_id=WORKGROUP_UUID,
                 service_url="https://api-carto.dijon.fr/arcgis/rest/services/SIGNALISATION/signalisation_MAJ/FeatureServer?f=pjson",
             )
-
         """
         # CHECKS PARAMS
         # check workgroup UUID
@@ -255,11 +259,11 @@ class ApiService:
         if service_format not in srv_formats_codes:
             raise Warning(
                 "Service format '{}' is not an accepted one: {}".format(
-                    " | ".join(srv_formats_codes)
+                    service_format, " | ".join(srv_formats_codes)
                 )
             )
 
-        ## -- SERVICE TITLE
+        # -- SERVICE TITLE
         # check service title
         if service_title is None:
             service_title = "{} - {}".format(url_parsed.netloc, service_format)
@@ -276,7 +280,7 @@ class ApiService:
         # based on the format and base URL (cleaned)
         if check_exists:
             # retrieve workgroup metadatas
-            md_services = self.api_client.metadata.search(
+            md_services = self.api_client.search(
                 query="type:service format:{} owner:{}".format(
                     service_format, workgroup_id
                 ),
@@ -319,7 +323,7 @@ class ApiService:
         self.api_client.metadata.update(new_metadata_service)
 
         new_md = self.api_client.metadata.get(
-            metadata_id=new_metadata_service._id, include=["layers", "operations"]
+            metadata_id=new_metadata_service._id, include=("layers", "operations")
         )
 
         return new_md
@@ -345,7 +349,7 @@ class ApiService:
                 "Let's retrieve these subresources..."
             )
             service = self.api_client.metadata.get(
-                metadata_id=service._id, include=["layers", "operations"]
+                metadata_id=service._id, include=("layers", "operations")
             )
 
         # list all layers which have been associated
@@ -390,7 +394,7 @@ class ApiService:
             )
 
         return self.api_client.metadata.get(
-            metadata_id=service._id, include=["layers", "operations"]
+            metadata_id=service._id, include=("layers", "operations")
         )
 
 
@@ -398,5 +402,5 @@ class ApiService:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_metadata = ApiService()

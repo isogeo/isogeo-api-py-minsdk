@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Keywords entities
@@ -13,9 +13,7 @@
 
 # Standard library
 import logging
-
-# 3rd party
-from requests.models import Response
+from functools import lru_cache
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
@@ -36,8 +34,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiKeyword:
-    """Routes as methods of Isogeo API used to manipulate keywords.
-    """
+    """Routes as methods of Isogeo API used to manipulate keywords."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -48,9 +45,15 @@ class ApiKeyword:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiKeyword, self).__init__()
 
@@ -58,12 +61,12 @@ class ApiKeyword:
     def metadata(
         self,
         metadata_id: str = None,
-        include: list = ["_abilities", "count", "thesaurus"],
+        include: tuple = ("_abilities", "count", "thesaurus"),
     ) -> list:
         """List a metadata's keywords with complete information.
 
         :param str metadata_id: metadata UUID
-        :param list include: subresources that should be returned. Available values:
+        :param tuple include: subresources that should be returned. Available values:
 
           * '_abilities'
           * 'count'
@@ -80,7 +83,10 @@ class ApiKeyword:
             pass
 
         # handling request parameters
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         url_metadata_keywords = utils.get_request_base_url(
@@ -116,7 +122,7 @@ class ApiKeyword:
         page_size: int = 20,
         specific_md: list = [],
         specific_tag: list = [],
-        include: list = ["_abilities", "count"],
+        include: tuple = ("_abilities", "count"),
         caching: bool = 1,
     ) -> KeywordSearch:
         """Search for keywords within a specific thesaurus or a specific group.
@@ -137,7 +143,7 @@ class ApiKeyword:
         :param int page_size: limits the number of results. Default: 20.
         :param list specific_md: list of metadata UUIDs to filter on
         :param list specific_tag: list of tags UUIDs to filter on
-        :param list include: subresources that should be returned. Available values:
+        :param tuple include: subresources that should be returned. Available values:
 
           * '_abilities'
           * 'count'
@@ -197,10 +203,10 @@ class ApiKeyword:
         page_size: int = 20,
         specific_md: list = [],
         specific_tag: list = [],
-        include: list = ["_abilities", "count", "thesaurus"],
+        include: tuple = ("_abilities", "count", "thesaurus"),
         caching: bool = 1,
     ) -> KeywordSearch:
-        """Search for keywords within a specific group's used thesauri
+        """Search for keywords within a specific group's used thesauri.
 
         :param str thesaurus_id: thesaurus UUID to filter on
         :param str query: search terms, equivalent of **q** parameter in API.
@@ -219,7 +225,7 @@ class ApiKeyword:
         :param int page_size: limits the number of results. Default: 20.
         :param list specific_md: list of metadata UUIDs to filter on
         :param list specific_tag: list of tags UUIDs to filter on
-        :param list include: subresources that should be returned. Available values:
+        :param tuple include: subresources that should be returned. Available values:
 
           * '_abilities'
           * 'count'
@@ -276,17 +282,18 @@ class ApiKeyword:
 
     @ApiDecorators._check_bearer_validity
     def get(
-        self, keyword_id: str, include: list = ["_abilities", "count", "thesaurus"]
+        self, keyword_id: str, include: tuple = ("_abilities", "count", "thesaurus")
     ) -> Keyword:
         """Get details about a specific keyword.
 
         :param str keyword_id: keyword UUID
-        :param list include: additionnal subresource to include in the response
+        :param tuple include: additionnal subresource to include in the response
 
 
         :Example:
+
         >>> # get a metadata with its tags (or keywords)
-        >>> md = isogeo.metadata.get(METADATA_UUID, include=["tags"])
+        >>> md = isogeo.metadata.get(METADATA_UUID, include=("tags",))
         >>> # list Isogeo keywords
         >>> li_keywords_uuids = [
             tag[8:] for tag in self.metadata_source.tags
@@ -297,14 +304,11 @@ class ApiKeyword:
         >>> # get its details
         >>> keyword = isogeo.keyword.get(random_keyword)
         """
-        # check keyword UUID
-        # if not checker.check_is_uuid(keyword_id):
-        #     raise ValueError("Keyword ID is not a correct UUID: {}".format(keyword_id))
-        # else:
-        #     pass
-
         # request parameter
-        payload = {"_include": ",".join(include)}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # keyword route
         url_keyword = utils.get_request_base_url(route="keywords/{}".format(keyword_id))
@@ -365,7 +369,7 @@ class ApiKeyword:
                 # try to return the most probably matching keyword
                 search_for_closest_keyword = self.thesaurus(
                     caching=0,
-                    include=[],
+                    include=(),
                     order_dir="asc",
                     page_size=1,
                     query=keyword.text,
@@ -444,7 +448,6 @@ class ApiKeyword:
             md = isogeo.metadata.get(METADATA_UUID)
             # retrieve a keyword
             keyword = isogeo.keyword.get(KEYWORD_UUID)
-
         """
         # check contact UUID
         if not checker.check_is_uuid(metadata._id):
@@ -478,7 +481,7 @@ class ApiKeyword:
             else:
                 # if not, make a new request to perform the check
                 metadata_existing_keywords = self.metadata(
-                    metadata_id=metadata._id, include=[]
+                    metadata_id=metadata._id, include=()
                 )
 
                 metadata_existing_keywords = [
@@ -581,5 +584,5 @@ class ApiKeyword:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_keyword = ApiKeyword()

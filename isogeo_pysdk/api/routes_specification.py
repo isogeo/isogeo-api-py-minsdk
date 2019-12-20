@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Specifications entities
@@ -13,6 +13,7 @@
 
 # Standard library
 import logging
+from functools import lru_cache
 
 # 3rd party
 from requests.models import Response
@@ -20,7 +21,7 @@ from requests.models import Response
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Metadata, Specification
+from isogeo_pysdk.models import Conformity, Metadata, Specification
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -36,8 +37,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiSpecification:
-    """Routes as methods of Isogeo API used to manipulate specifications.
-    """
+    """Routes as methods of Isogeo API used to manipulate specifications."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -48,23 +48,30 @@ class ApiSpecification:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiSpecification, self).__init__()
 
+    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
         self,
         workgroup_id: str = None,
-        include: list = ["_abilities", "count"],
+        include: tuple = ("_abilities", "count"),
         caching: bool = 1,
     ) -> list:
         """Get workgroup specifications.
 
         :param str workgroup_id: identifier of the owner workgroup
-        :param list include: additional parts of model to include in response
+        :param tuple include: additional parts of model to include in response
         :param bool caching: option to cache the response
         """
         # check workgroup UUID
@@ -74,7 +81,10 @@ class ApiSpecification:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # request URL
         url_specifications = utils.get_request_base_url(
@@ -108,8 +118,8 @@ class ApiSpecification:
         return wg_specifications
 
     @ApiDecorators._check_bearer_validity
-    def specification(self, specification_id: str) -> Specification:
-        """Get details about a specific specification.
+    def get(self, specification_id: str) -> Specification:
+        """Get a specification.
 
         :param str specification_id: specification UUID
         """
@@ -168,7 +178,7 @@ class ApiSpecification:
         if check_exists == 1:
             # retrieve workgroup specifications
             if not self.api_client._wg_specifications_names:
-                self.listing(workgroup_id=workgroup_id, include=[])
+                self.listing(workgroup_id=workgroup_id, include=())
             # check
             if specification.name in self.api_client._wg_specifications_names:
                 logger.debug(
@@ -340,7 +350,8 @@ class ApiSpecification:
     def associate_metadata(
         self, metadata: Metadata, specification: Specification, conformity: bool = 0
     ) -> Response:
-        """Associate a specification (specification + conformity) to a metadata. When a specification is associated to a metadata, it becomes a ResourceConformity object.
+        """Associate a specification (specification + conformity) to a metadata. When a
+        specification is associated to a metadata, it becomes a ResourceConformity object.
 
         If the specified specification is already associated, the API responses is still a 200.
 
@@ -355,7 +366,7 @@ class ApiSpecification:
                 metadata_id=my_metadata_uuid,
                 include=['specifications']
             )
-        >>> spec = isogeo.specification.specification(my_specification_uuid)
+        >>> spec = isogeo.specification.get(my_specification_uuid)
         >>> # associate them
         >>> isogeo.specification.associate_metadata(
                 metadata=md,
@@ -363,14 +374,6 @@ class ApiSpecification:
                 conformity=1
             )
         """
-        # check metadata UUID
-        if not checker.check_is_uuid(metadata._id):
-            raise ValueError(
-                "Metadata ID is not a correct UUID: {}".format(metadata._id)
-            )
-        else:
-            pass
-
         # check specification UUID
         if not checker.check_is_uuid(specification._id):
             raise ValueError(
@@ -379,30 +382,15 @@ class ApiSpecification:
         else:
             pass
 
-        # URL
-        url_specification_association = utils.get_request_base_url(
-            route="resources/{}/specifications/{}".format(
-                metadata._id, specification._id
-            )
+        # create the conformity object to add to the metadata
+        conformity_to_create = Conformity(
+            conformant=conformity, specification=specification
         )
-
-        # request
-        req_specification_association = self.api_client.put(
-            url=url_specification_association,
-            json={"conformant": conformity, "specification": specification.to_dict()},
-            headers=self.api_client.header,
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-            timeout=self.api_client.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_specification_association)
-        if isinstance(req_check, tuple):
-            return req_check
 
         # end of method
-        return req_specification_association
+        return self.api_client.metadata.conformity.create(
+            metadata=metadata, conformity=conformity_to_create
+        )
 
     @ApiDecorators._check_bearer_validity
     def dissociate_metadata(
@@ -413,53 +401,17 @@ class ApiSpecification:
         If the specified specification is not associated, the response is 404.
 
         :param Metadata metadata: metadata object to update
-        :param Specification specification: specification model object to associate
+        :param Specification specification_id: specification model object to associate
         """
-        # check metadata UUID
-        if not checker.check_is_uuid(metadata._id):
-            raise ValueError(
-                "Metadata ID is not a correct UUID: {}".format(metadata._id)
-            )
-        else:
-            pass
-
-        # check specification UUID
-        if not checker.check_is_uuid(specification_id):
-            raise ValueError(
-                "Specification ID is not a correct UUID: {}".format(specification_id)
-            )
-        else:
-            pass
-
-        # URL
-        url_specification_dissociation = utils.get_request_base_url(
-            route="resources/{}/specifications/{}".format(
-                metadata._id, specification_id
-            )
+        return self.api_client.metadata.conformity.delete(
+            metadata=metadata, specification_id=specification_id
         )
-
-        # request
-        req_specification_dissociation = self.api_client.delete(
-            url=url_specification_dissociation,
-            headers=self.api_client.header,
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-            timeout=self.api_client.timeout,
-        )
-
-        # checking response
-        req_check = checker.check_api_response(req_specification_dissociation)
-        if isinstance(req_check, tuple):
-            return req_check
-
-        # end of method
-        return req_specification_dissociation
 
 
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_specification = ApiSpecification()
     print(api_specification)

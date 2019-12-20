@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_service_layers
-    # for specific
-    python -m unittest tests.test_service_layers.TestServiceLayers.test_layers_create
-    ```
+```python
+# for whole test
+python -m unittest tests.test_service_layers
+# for specific
+python -m unittest tests.test_service_layers.TestServiceLayers.test_layers_create
+```
 """
 
 # #############################################################################
@@ -54,7 +53,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - ServiceLayers - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -150,7 +149,8 @@ class TestServiceLayers(unittest.TestCase):
         self.li_fixtures_to_delete.append(layer_new)
 
     def test_layers_association(self):
-        """POST :resources/{service_uuid}/layers/{layer_uuid}/dataset/{dataset_uuid}"""
+        """POST
+        :resources/{service_uuid}/layers/{layer_uuid}/dataset/{dataset_uuid}"""
         # fixtures
         metadata_service = self.isogeo.services.create(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
@@ -168,7 +168,6 @@ class TestServiceLayers(unittest.TestCase):
                 type="vectorDataset",
                 title="{} - {}".format(get_test_marker(), self.discriminator),
             ),
-            check_exists=0,
         )
 
         # vars
@@ -195,7 +194,7 @@ class TestServiceLayers(unittest.TestCase):
 
         # check association result
         service_updated = self.isogeo.metadata.get(
-            metadata_id=metadata_service._id, include=["layers"]
+            metadata_id=metadata_service._id, include=("layers",)
         )
 
         li_associated_layers = [
