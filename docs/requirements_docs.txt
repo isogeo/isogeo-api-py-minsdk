@@ -19,4 +19,7 @@ wheel
 requests_oauthlib
 
 # required
-Sphinx
+sphinx
+sphinx-markdown-tables  # to render markdown tables
+sphinx-rtd-theme
+recommonmark
