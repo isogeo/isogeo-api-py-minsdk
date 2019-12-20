@@ -51,7 +51,6 @@ release = __version__
 extensions = [
     "recommonmark",
     "sphinx.ext.autodoc",
-    "sphinx_click.ext",
     "sphinx_markdown_tables",
     "sphinx_rtd_theme",
 ]
@@ -83,12 +82,12 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "default"
+html_theme = "sphinx_rtd_theme"
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "IsogeoPySDK_doc"
+htmlhelp_basename = "IsogeoPySDK_Doc"
 
 
 # -- Options for Texinfo output ----------------------------------------------
