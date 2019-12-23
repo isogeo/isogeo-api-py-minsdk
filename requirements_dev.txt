@@ -11,19 +11,26 @@
 #
 #
 
-autopep8
-codecov
-coverage
+# install basic requirements
+-r requirements.txt
+
+# install addtionnal requirements for DEV and TEST
+
+
+# art of code
+black
 flake8
-requests==2.22.*
-pycodestyle
+pre-commit
 pylint
-python-dateutil
+
+# doc
+sphinx
+
+# tests
 python-dotenv
-pytest
+pytest==5.0.*
 pytest-cov
 pytest-random-order
-requests-oauthlib
 
 # then it's possible to install from the repo:
 # https://github.com/Isogeo/isogeo-api-py-minsdk/archive/master.zip

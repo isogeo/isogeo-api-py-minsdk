@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes to retrieve CoordinateSystems
@@ -31,12 +31,12 @@ logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
 utils = IsogeoUtils()
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 class ApiCoordinateSystem:
-    """Routes as methods of Isogeo API used to manipulate coordinate-systems
-    """
+    """Routes as methods of Isogeo API used to manipulate coordinate-systems."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -47,9 +47,15 @@ class ApiCoordinateSystem:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiCoordinateSystem, self).__init__()
 
@@ -118,11 +124,11 @@ class ApiCoordinateSystem:
         return coordinate_systems
 
     @ApiDecorators._check_bearer_validity
-    def coordinate_system(
+    def get(
         self, coordinate_system_code: str, workgroup_id: str = None
     ) -> CoordinateSystem:
-        """Get details about a specific coordinate_system, from the whole Isogeo database or
-        into a specific workgroup (to get the SRS alias for example).
+        """Get details about a specific coordinate_system, from the whole Isogeo database or into a
+        specific workgroup (to get the SRS alias for example).
 
         :param str workgroup_id: identifier of the owner workgroup. OPTIONNAL: if present, list SRS slected into the workgroup.
         :param str coordinate_system_code: EPSG code of the coordinate system
@@ -134,7 +140,7 @@ class ApiCoordinateSystem:
         >>> # list all coordinate-systems in the whole Isogeo database
         >>> srs = isogeo.srs.listing()
         >>> # print details about the first SRS found
-        >>> pprint.pprint(isogeo.srs.coordinate_system(srs[0].get("code")))
+        >>> pprint.pprint(isogeo.srs.get(srs[0].get("code")))
         {
             '_tag': 'coordinate-system:4143',
             'code': 4143,
@@ -198,7 +204,7 @@ class ApiCoordinateSystem:
                 # retrieve metadata
                 md = isogeo.metadata.get(
                         metadata_id=METADATA_UUID,
-                        include=[]
+                        include=()
                 )
                 # retrieve one of the SRS selected in the workgroup of the metadata
                 wg_srs = self.isogeo.coordinate_system.listing(md._creator.get("_id"))
@@ -289,15 +295,17 @@ class ApiCoordinateSystem:
 
         :Example:
 
-        >>> # retrieve the SRS
-        >>> coordsys = isogeo.srs.coordinate_system("4326")
-        >>> # add a custom alias
-        >>> coordsys.alias = "World SRS"
-        >>> # add it to the workgroup selection
-        >>> isogeo.srs.associate_workgroup(
-            workgroup=isogeo.workgroup.get(WORKGROUP_UUID),
-            coordinate_system=coordsys
-            )
+            .. code-block:: python
+
+                # retrieve the SRS
+                coordsys = isogeo.srs.get("4326")
+                # add a custom alias
+                coordsys.alias = "World SRS"
+                # add it to the workgroup selection
+                isogeo.srs.associate_workgroup(
+                    workgroup=isogeo.workgroup.get(WORKGROUP_UUID),
+                    coordinate_system=coordsys
+                )
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup._id):
@@ -387,5 +395,5 @@ class ApiCoordinateSystem:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_coordinate_system = ApiCoordinateSystem()

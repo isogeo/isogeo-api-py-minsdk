@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for ServiceOperations entities
@@ -13,9 +13,6 @@
 
 # Standard library
 import logging
-
-# 3rd party
-from requests.models import Response
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
@@ -36,8 +33,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiServiceOperation:
-    """Routes as methods of Isogeo API used to manipulate service_operations.
-    """
+    """Routes as methods of Isogeo API used to manipulate service_operations."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -48,9 +44,15 @@ class ApiServiceOperation:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiServiceOperation, self).__init__()
 
@@ -94,8 +96,8 @@ class ApiServiceOperation:
 
     @ApiDecorators._check_bearer_validity
     def operation(self, metadata_id: str, operation_id: str) -> ServiceOperation:
-        """Get details about a specific service operation and
-        expand the model with the parent service metadata '_id' reference.
+        """Get details about a specific service operation and expand the model with the parent
+        service metadata '_id' reference.
 
         :param str metadata_id: metadata with operations
         :param str operation_id: service operation UUID
@@ -494,5 +496,5 @@ class ApiServiceOperation:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_service_operation = ApiServiceOperation()

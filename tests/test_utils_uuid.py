@@ -1,12 +1,9 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
-    
-    ```python
-    python -m unittest tests.test_utils
-    ```
+"""Usage from the repo root folder:
+
+```python python -m unittest tests.test_utils ```
 """
 
 # #############################################################################
@@ -46,7 +43,7 @@ class TestIsogeoUtilsUuid(unittest.TestCase):
         cls.utils = IsogeoUtils()
 
     def setUp(self):
-        """ Fixtures prepared before each test."""
+        """Fixtures prepared before each test."""
         # uuid
         self.uuid_hex = "0269803d50c446b09f5060ef7fe3e22b"
         self.uuid_urn4122 = "urn:uuid:0269803d-50c4-46b0-9f50-60ef7fe3e22b"
@@ -60,7 +57,7 @@ class TestIsogeoUtilsUuid(unittest.TestCase):
 
     # -- UUID converter - from HEX -------------------------------------------
     def test_hex_to_hex(self):
-        """Test UUID converter from HEX to HEX"""
+        """Test UUID converter from HEX to HEX."""
         uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_hex, mode=0)
         self.assertIsInstance(uuid_out, str)
         self.assertEqual(uuid_out, self.uuid_hex)
@@ -82,7 +79,7 @@ class TestIsogeoUtilsUuid(unittest.TestCase):
 
     # UUID converter - from URN (RFC4122)
     def test_urn4122_to_hex(self):
-        """Test UUID converter from URN (RFC4122) to HEX"""
+        """Test UUID converter from URN (RFC4122) to HEX."""
         uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urn4122, mode=0)
         self.assertIsInstance(uuid_out, str)
         self.assertEqual(uuid_out, self.uuid_hex)
@@ -104,7 +101,7 @@ class TestIsogeoUtilsUuid(unittest.TestCase):
 
     # UUID converter - from URN (Isogeo style)
     def test_urnIsogeo_to_hex(self):
-        """Test UUID converter from URN (Isogeo style) to HEX"""
+        """Test UUID converter from URN (Isogeo style) to HEX."""
         uuid_out = self.utils.convert_uuid(in_uuid=self.uuid_urnIsogeo, mode=0)
         self.assertIsInstance(uuid_out, str)
         self.assertEqual(uuid_out, self.uuid_hex)

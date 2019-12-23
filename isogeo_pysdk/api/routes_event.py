@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Events entities
@@ -34,8 +34,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiEvent:
-    """Routes as methods of Isogeo API used to manipulate events.
-    """
+    """Routes as methods of Isogeo API used to manipulate events."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -46,9 +45,15 @@ class ApiEvent:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiEvent, self).__init__()
 
@@ -158,7 +163,7 @@ class ApiEvent:
         if event.kind == "creation":
             # retrieve metadata events
             metadata_events = self.api_client.metadata.get(
-                metadata._id, include=["events"]
+                metadata._id, include=("events",)
             )
             # filter on creation events
             events_creation = [
@@ -301,5 +306,5 @@ class ApiEvent:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_event = ApiEvent()

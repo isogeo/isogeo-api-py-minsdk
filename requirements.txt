@@ -18,12 +18,3 @@ wheel
 # required
 requests>=2.22.0
 requests-oauthlib>=1.2.0
-
-# development
-black
-pre-commit
-pylint
-python-dotenv
-
-# proxy
-# pypac==0.2.*

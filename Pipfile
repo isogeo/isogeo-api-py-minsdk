@@ -4,23 +4,24 @@ verify_ssl = true
 name = "pypi"
 
 [dev-packages]
-black = "==19.3b0"
-codecov = "*"
+black = "==19.10b0"
 flake8 = "*"
 isogeo-pysdk = {editable = true,path = "."}
 pip = "*"
 pre-commit = "*"
 pycodestyle = "*"
 pylint = "*"
-pytest= "*"
+pytest= "<5.1"
 pytest-cov="*"
-python-dateutil = "*"
 python-dotenv = "*"
 pytest-random-order = "*"
 setuptools = "*"
 twine = "*"
 wheel = "*"
 sphinx = "*"
+sphinx-markdown-tables = "*"
+sphinx-rtd-theme = "*"
+recommonmark = "*"
 
 [packages]
 requests = ">=2.20.0"

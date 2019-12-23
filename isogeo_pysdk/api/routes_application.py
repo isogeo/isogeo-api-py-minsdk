@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - API Routes for Applications entities
@@ -34,8 +34,7 @@ utils = IsogeoUtils()
 # ########## Classes ###############
 # ##################################
 class ApiApplication:
-    """Routes as methods of Isogeo API used to manipulate applications.
-    """
+    """Routes as methods of Isogeo API used to manipulate applications."""
 
     def __init__(self, api_client=None):
         if api_client is not None:
@@ -46,9 +45,15 @@ class ApiApplication:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        self.platform, self.api_url, self.app_url, self.csw_url, self.mng_url, self.oc_url, self.ssl = utils.set_base_url(
-            self.api_client.platform
-        )
+        (
+            self.platform,
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
+            self.ssl,
+        ) = utils.set_base_url(self.api_client.platform)
         # initialize
         super(ApiApplication, self).__init__()
 
@@ -57,17 +62,21 @@ class ApiApplication:
     def listing(
         self,
         workgroup_id: str = None,
-        include: list = ("_abilities"),
+        include: tuple = ("_abilities",),
         caching: bool = 1,
     ) -> list:
-        """Get all applications which are accessible by the authenticated user OR applications for a workgroup.
+        """Get all applications which are accessible by the authenticated user OR applications for a
+        workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup. If `None`, then list applications for the autenticated user
-        :param list include: additionnal subresource to include in the response.
+        :param tuple include: additionnal subresource to include in the response.
         :param bool caching: option to cache the response
         """
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         if workgroup_id is not None:
@@ -122,12 +131,12 @@ class ApiApplication:
 
     @ApiDecorators._check_bearer_validity
     def get(
-        self, application_id: str, include: list = ["_abilities", "groups"]
+        self, application_id: str, include: tuple = ("_abilities", "groups")
     ) -> Application:
         """Get details about a specific application.
 
         :param str application_id: application UUID
-        :param list include: additionnal subresource to include in the response
+        :param tuple include: additionnal subresource to include in the response
         """
         # check application UUID
         if not checker.check_is_uuid(application_id):
@@ -136,7 +145,10 @@ class ApiApplication:
             pass
 
         # handling request parameters
-        payload = {"_include": include}
+        if isinstance(include, (tuple, list)):
+            payload = {"_include": ",".join(include)}
+        else:
+            payload = None
 
         # URL
         url_application = utils.get_request_base_url(
@@ -347,7 +359,10 @@ class ApiApplication:
             pass
 
         # handling request parameters
-        # payload = {"_include": include}
+        # if isinstance(include, (tuple, list)):
+        #     payload = {"_include": ",".join(include)}
+        # else:
+        #     payload = None
 
         # URL
         url_application_groups = utils.get_request_base_url(
@@ -412,18 +427,18 @@ class ApiApplication:
             For dev memory, there are two main cases:
 
             Case 1 - application with no groups associated yet:
-            - self.get(application_id=app_uuid, include=[]).groups[0] is None
-            - len(self.get(application_id=app_uuid, include=[]).groups) == 1
+            - self.get(application_id=app_uuid, include=()).groups[0] is None
+            - len(self.get(application_id=app_uuid, include=()).groups) == 1
 
             Case 2 - application with some groups already associated but without include:
-            - self.get(application_id=app_uuid, include=[]).groups[0] is None
-            - len(self.get(application_id=app_uuid, include=[]).groups) == 1
+            - self.get(application_id=app_uuid, include=()).groups[0] is None
+            - len(self.get(application_id=app_uuid, include=()).groups) == 1
         """
         if len(application.groups) and application.groups[0] is None:
             logger.debug(
                 "Application doesn't contain its included workgroups. Let's make a new request..."
             )
-            application = self.get(application_id=application._id, include=["groups"])
+            application = self.get(application_id=application._id, include=("groups",))
         else:
             pass
 
@@ -528,5 +543,5 @@ class ApiApplication:
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     api_application = ApiApplication()

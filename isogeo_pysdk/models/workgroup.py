@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Workgroup entity
@@ -23,7 +23,6 @@ from isogeo_pysdk.models.contact import Contact
 # ##################################
 class Workgroup(object):
     """Workgroups are entities containing metadata.
-
 
     :Example:
 
@@ -85,7 +84,7 @@ class Workgroup(object):
         }
     """
 
-    attr_types = {
+    ATTR_TYPES = {
         "_abilities": list,
         "_created": str,
         "_id": str,
@@ -103,14 +102,14 @@ class Workgroup(object):
         "themeColor": str,
     }
 
-    attr_crea = {
+    ATTR_CREA = {
         "contact": Contact,
         "metadataLanguage": str,
         "canCreateLegacyServiceLinks": bool,
         "canCreateMetadata": bool,
     }
 
-    attr_map = {
+    ATTR_MAP = {
         "contact": [
             "contact.addressLine1",
             "contact.addressLine2",
@@ -144,7 +143,7 @@ class Workgroup(object):
         metadataLanguage: str = None,
         themeColor: str = None,
     ):
-        """Workgroup model"""
+        """Workgroup model."""
 
         # default values for the object attributes/properties
         self.__abilities = None
@@ -443,10 +442,10 @@ class Workgroup(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -475,12 +474,12 @@ class Workgroup(object):
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
-        for attr in self.attr_crea:
+        for attr in self.ATTR_CREA:
             # get attribute value
             value = getattr(self, attr)
             # switch attribute name for creation purpose
-            if attr in self.attr_map:
-                attr = self.attr_map.get(attr)
+            if attr in self.ATTR_MAP:
+                attr = self.ATTR_MAP.get(attr)
             # serialize depending on value type
             if isinstance(value, list):
                 result[attr] = list(
@@ -512,7 +511,7 @@ class Workgroup(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -520,14 +519,14 @@ class Workgroup(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Workgroup):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -535,5 +534,5 @@ class Workgroup(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     obj = Workgroup()

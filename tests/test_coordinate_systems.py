@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_coordinate_systems
-    # for specific
-    python -m unittest tests.test_coordinate_systems.TestCoordinateSystems.test_coordinate_systems_listing
-    ```
+```python
+# for whole test
+python -m unittest tests.test_coordinate_systems
+# for specific
+python -m unittest tests.test_coordinate_systems.TestCoordinateSystems.test_coordinate_systems_listing
+```
 """
 
 # #############################################################################
@@ -32,7 +31,7 @@ import urllib3
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import CoordinateSystem, Metadata, Workgroup, Isogeo
+from isogeo_pysdk import CoordinateSystem, Metadata, Isogeo
 
 
 # #############################################################################
@@ -55,7 +54,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - CoordinateSystems - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -103,7 +102,7 @@ class TestCoordinateSystems(unittest.TestCase):
 
         md = Metadata(title=get_test_marker(), type="vectorDataset")
         cls.metadata_fixture_created = cls.isogeo.metadata.create(
-            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md
         )
         cls.metadata_fixture_existing = cls.isogeo.metadata.get(
             metadata_id=METADATA_TEST_FIXTURE_UUID
@@ -153,7 +152,8 @@ class TestCoordinateSystems(unittest.TestCase):
 
         # refresh fixture metadata
         self.metadata_updated = self.isogeo.metadata.get(
-            metadata_id=self.metadata_fixture_created._id, include=["coordinate-system"]
+            metadata_id=self.metadata_fixture_created._id,
+            include=("coordinate-system",),
         )
 
         # -- dissociate
@@ -212,7 +212,7 @@ class TestCoordinateSystems(unittest.TestCase):
 
         srs_code = sample(coordinate_systems, 1)[0].get("code")
         # retrieve coordinate system with his EPSG code
-        srs_detailed = self.isogeo.srs.coordinate_system(srs_code)
+        srs_detailed = self.isogeo.srs.get(srs_code)
         # check result
         self.assertIsInstance(srs_detailed, CoordinateSystem)
 
@@ -228,7 +228,7 @@ class TestCoordinateSystems(unittest.TestCase):
 
         srs_code = sample(wg_coordinate_systems, 1)[0].get("code")
         # retrieve coordinate system with his EPSG code
-        srs_detailed = self.isogeo.srs.coordinate_system(srs_code)
+        srs_detailed = self.isogeo.srs.get(srs_code)
         # check result
         self.assertIsInstance(srs_detailed, CoordinateSystem)
 

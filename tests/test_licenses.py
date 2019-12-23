@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_licenses
-    # for licific
-    python -m unittest tests.test_licenses.TestLicenses.test_licenses_create_basic
-    ```
+```python
+# for whole test
+python -m unittest tests.test_licenses
+# for licific
+python -m unittest tests.test_licenses.TestLicenses.test_licenses_create_basic
+```
 """
 
 # #############################################################################
@@ -19,7 +18,6 @@
 # Standard library
 import logging
 import unittest
-import urllib3
 from os import environ
 from pathlib import Path
 from random import sample
@@ -29,10 +27,10 @@ from time import gmtime, sleep, strftime
 
 # 3rd party
 from dotenv import load_dotenv
+import urllib3
 
 # module target
-from isogeo_pysdk import Isogeo, License, Metadata
-
+from isogeo_pysdk import Isogeo, IsogeoUtils, License, Metadata
 
 # #############################################################################
 # ######## Globals #################
@@ -48,13 +46,15 @@ hostname = gethostname()
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
+utils = IsogeoUtils()
+
 # #############################################################################
 # ########## Helpers ###############
 # ##################################
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - Licenses - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -104,7 +104,7 @@ class TestLicenses(unittest.TestCase):
         # fixture metadata
         md = Metadata(title=get_test_marker(), type="vectorDataset")
         cls.fixture_metadata = cls.isogeo.metadata.create(
-            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md
         )
 
     def setUp(self):
@@ -234,8 +234,9 @@ class TestLicenses(unittest.TestCase):
         )
 
         # refresh fixture metadata
+        utils.cache_clearer(0)
         self.fixture_metadata = self.isogeo.metadata.get(
-            metadata_id=self.fixture_metadata._id, include=["conditions"]
+            metadata_id=self.fixture_metadata._id, include=("conditions",)
         )
 
         # try to associate the same license = error
@@ -258,7 +259,7 @@ class TestLicenses(unittest.TestCase):
         # -- dissociate
         # refresh fixture metadata
         self.fixture_metadata = self.isogeo.metadata.get(
-            metadata_id=self.fixture_metadata._id, include=["conditions"]
+            metadata_id=self.fixture_metadata._id, include=("conditions",)
         )
 
         # add created license to deletion

@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Share entity
@@ -16,8 +16,6 @@ import logging
 import pprint
 
 # other model
-from isogeo_pysdk.models.application import Application
-from isogeo_pysdk.models.catalog import Catalog
 from isogeo_pysdk.models.workgroup import Workgroup
 
 # #############################################################################
@@ -26,12 +24,12 @@ from isogeo_pysdk.models.workgroup import Workgroup
 
 logger = logging.getLogger(__name__)
 
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 class Share(object):
     """Shares are entities used to publish catalog(s) of metadata to applications.
-
 
     :Example:
 
@@ -143,10 +141,9 @@ class Share(object):
                 }
             ]
         }
-
     """
 
-    attr_types = {
+    ATTR_TYPES = {
         "_created": str,
         "_creator": Workgroup,
         "_id": str,
@@ -160,7 +157,7 @@ class Share(object):
         "urlToken": str,
     }
 
-    attr_crea = {
+    ATTR_CREA = {
         # "applications": list,
         # "catalogs": list,
         # "groups": list,
@@ -169,7 +166,7 @@ class Share(object):
         "type": str,
     }
 
-    attr_map = {}
+    ATTR_MAP = {}
 
     def __init__(
         self,
@@ -185,7 +182,7 @@ class Share(object):
         type: str = None,
         urlToken: str = None,
     ):
-        """Share model"""
+        """Share model."""
 
         # default values for the object attributes/properties
         self.__created = None
@@ -328,7 +325,6 @@ class Share(object):
     def rights(self) -> list:
         """Gets the rights of this Share.
 
-
         :return: The rights of this Share.
         :rtype: str
         """
@@ -385,7 +381,6 @@ class Share(object):
             - False if the share type is not 'application'
             - None if OpenCatalog is not enabled in the share
             - URL of the OpenCatalog when everything is fine
-
         """
         # opencatalog URL is valid only for share's of type 'application'
         if self.type != "application":
@@ -401,10 +396,10 @@ class Share(object):
         return "{}/s/{}/{}".format(url_base, self._id, self.urlToken)
 
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -433,12 +428,12 @@ class Share(object):
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
-        for attr, _ in self.attr_crea.items():
+        for attr, _ in self.ATTR_CREA.items():
             # get attribute value
             value = getattr(self, attr)
             # switch attribute name for creation purpose
-            if attr in self.attr_map:
-                attr = self.attr_map.get(attr)
+            if attr in self.ATTR_MAP:
+                attr = self.ATTR_MAP.get(attr)
             # process value depending on attr type
             if isinstance(value, list):
 
@@ -465,7 +460,7 @@ class Share(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -473,14 +468,14 @@ class Share(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Share):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -488,6 +483,6 @@ class Share(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     model = Share(name="Test Share model")
     to_crea = model.to_dict_creation()

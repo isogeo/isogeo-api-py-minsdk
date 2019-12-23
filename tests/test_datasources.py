@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_datasources
-    # for specific
-    python -m unittest tests.test_datasources.TestDatasources.test_datasources_create_basic
-    ```
+```python
+# for whole test
+python -m unittest tests.test_datasources
+# for specific
+python -m unittest tests.test_datasources.TestDatasources.test_datasources_create_basic
+```
 """
 
 # #############################################################################
@@ -53,7 +52,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -244,7 +243,7 @@ class TestDatasources(unittest.TestCase):
     def test_datasources_get_workgroup(self):
         """GET :groups/{workgroup_uuid}/datasources}"""
         # retrieve workgroup datasources
-        wg_datasources = self.isogeo.datasource.datasources(
+        wg_datasources = self.isogeo.datasource.listing(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
         )
         # parse and test object loader

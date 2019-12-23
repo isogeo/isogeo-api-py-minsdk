@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_workgroups
-    # for specific
-    python -m unittest tests.test_workgroups.TestWorkgroups.test_workgroups_create_basic
-    ```
+```python
+# for whole test
+python -m unittest tests.test_workgroups
+# for specific
+python -m unittest tests.test_workgroups.TestWorkgroups.test_workgroups_create_basic
+```
 """
 
 # #############################################################################
@@ -55,7 +54,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -233,7 +232,7 @@ class TestWorkgroups(unittest.TestCase):
         self.assertIsInstance(workgroup, Workgroup)
 
     def test_workgroup_coordinate_systems(self):
-        """GET :groups/{workgroup_uuid}/coordinate-systems"""
+        """GET :groups/{workgroup_uuid}/coordinate-systems."""
         # get
         workgroup_coordinate_systems = self.isogeo.workgroup.coordinate_systems(
             WORKGROUP_TEST_FIXTURE_UUID
@@ -243,7 +242,7 @@ class TestWorkgroups(unittest.TestCase):
         self.assertIsInstance(workgroup_coordinate_systems, list)
 
     def test_workgroup_invitations(self):
-        """GET :groups/{workgroup_uuid}/invitations"""
+        """GET :groups/{workgroup_uuid}/invitations."""
         # get
         workgroup_invitations = self.isogeo.workgroup.invitations(
             WORKGROUP_TEST_FIXTURE_UUID
@@ -252,14 +251,14 @@ class TestWorkgroups(unittest.TestCase):
         self.assertIsInstance(workgroup_invitations, list)
 
     def test_workgroup_limits(self):
-        """GET :groups/{workgroup_uuid}/limits"""
+        """GET :groups/{workgroup_uuid}/limits."""
         # get
         workgroup_limits = self.isogeo.workgroup.limits(WORKGROUP_TEST_FIXTURE_UUID)
         # check
         self.assertIsInstance(workgroup_limits, dict)
 
     def test_workgroup_memberships(self):
-        """GET :groups/{workgroup_uuid}/memberships"""
+        """GET :groups/{workgroup_uuid}/memberships."""
         # get
         workgroup_memberships = self.isogeo.workgroup.memberships(
             WORKGROUP_TEST_FIXTURE_UUID
@@ -268,7 +267,7 @@ class TestWorkgroups(unittest.TestCase):
         self.assertIsInstance(workgroup_memberships, list)
 
     def test_workgroup_statistics(self):
-        """GET :groups/{workgroup_uuid}/statistics"""
+        """GET :groups/{workgroup_uuid}/statistics."""
         # get
         workgroup_statistics = self.isogeo.workgroup.statistics(
             WORKGROUP_TEST_FIXTURE_UUID

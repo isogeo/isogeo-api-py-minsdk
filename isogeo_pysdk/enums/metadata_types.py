@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Enums for Resource entity accepted types
@@ -59,7 +59,7 @@ class MetadataTypes(Enum):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     print("{0:<30} {1:>20}".format("Enum", "Value"))
     for md_type in MetadataTypes:
         print("{0:<30} {1:>20}".format(md_type, md_type.value))

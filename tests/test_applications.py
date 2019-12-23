@@ -1,15 +1,14 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_applications
-    # for specific
-    python -m unittest tests.test_applications.TestApplications.test_applications_create_basic
-    ```
+```python
+# for whole test
+python -m unittest tests.test_applications
+# for specific
+python -m unittest tests.test_applications.TestApplications.test_applications_create_basic
+```
 """
 
 # #############################################################################
@@ -31,7 +30,7 @@ from time import gmtime, sleep, strftime
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import Application, Isogeo, Workgroup
+from isogeo_pysdk import Application, Isogeo
 
 
 # #############################################################################
@@ -53,7 +52,7 @@ WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - {}".format(_getframe(1).f_code.co_name)
 
 
@@ -123,7 +122,7 @@ class TestApplications(unittest.TestCase):
     # -- TESTS ---------------------------------------------------------
     # -- MODEL --
     def test_applications_model(self):
-        """Testing the model structure, properties and methods"""
+        """Testing the model structure, properties and methods."""
         # var
         application = Application(name="My App to test")
         with self.assertRaises(ValueError):

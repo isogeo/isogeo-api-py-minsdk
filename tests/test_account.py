@@ -1,15 +1,11 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
-"""
-    Usage from the repo root folder:
+"""Usage from the repo root folder:
 
-    ```python
-    # for whole test
-    python -m unittest tests.test_account
-    # for specific
-    python -m unittest tests.test_account.TestAccount.test_account_update
-    ```
+```python # for whole test python -m unittest tests.test_account # for
+specific python -m unittest
+tests.test_account.TestAccount.test_account_update ```
 """
 
 # #############################################################################
@@ -22,7 +18,6 @@ import unittest
 import urllib3
 from os import environ
 from pathlib import Path
-from random import sample
 from socket import gethostname
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
@@ -50,7 +45,7 @@ hostname = gethostname()
 
 
 def get_test_marker():
-    """Returns the function name"""
+    """Returns the function name."""
     return "TEST_PySDK - {}".format(_getframe(1).f_code.co_name)
 
 

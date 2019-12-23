@@ -1,5 +1,5 @@
 # -*- coding: UTF-8 -*-
-#! python3
+#! python3  # noqa E265
 
 """
     Isogeo API v1 - Model of Catalog entity
@@ -23,7 +23,6 @@ from isogeo_pysdk.models.workgroup import Workgroup
 # ##################################
 class Catalog(object):
     """Catalogs are entities used to organize and shares metadata of a workgroup.
-
 
     :Example:
 
@@ -69,10 +68,9 @@ class Catalog(object):
                 'metadataLanguage': string
                 }
         }
-
     """
 
-    attr_types = {
+    ATTR_TYPES = {
         "_abilities": list,
         "_created": str,
         "_id": str,
@@ -85,16 +83,17 @@ class Catalog(object):
         "scan": bool,
     }
 
-    attr_crea = {"code": str, "name": str, "scan": bool}
+    ATTR_CREA = {"code": str, "name": str, "scan": bool}
 
-    attr_map = {"scan": "$scan"}
+    ATTR_MAP = {"scan": "$scan"}
 
     @classmethod
     def clean_attributes(cls, raw_object: dict):
         """Renames attributes wich are incompatible with Python (hyphens...).
+
         See related issue: https://github.com/isogeo/isogeo-api-py-minsdk/issues/82
         """
-        for k, v in cls.attr_map.items():
+        for k, v in cls.ATTR_MAP.items():
             raw_object[k] = raw_object.pop(v, [])
         return cls(**raw_object)
 
@@ -111,7 +110,7 @@ class Catalog(object):
         owner: Workgroup = None,
         scan: bool = None,
     ):
-        """Catalog model"""
+        """Catalog model."""
 
         # default values for the object attributes/properties
         self.__abilities = None
@@ -259,8 +258,7 @@ class Catalog(object):
 
     @property
     def owner(self):
-        """Gets the owner of this Catalog.  # noqa: E501
-
+        """Gets the owner of this Catalog.  # noqa: E501.
 
         :return: The owner of this Catalog.  # noqa: E501
         :rtype: Workgroup
@@ -288,10 +286,10 @@ class Catalog(object):
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
-        """Returns the model properties as a dict"""
+        """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(
@@ -320,12 +318,12 @@ class Catalog(object):
         """Returns the model properties as a dict structured for creation purpose (POST)"""
         result = {}
 
-        for attr, _ in self.attr_crea.items():
+        for attr, _ in self.ATTR_CREA.items():
             # get attribute value
             value = getattr(self, attr)
             # switch attribute name for creation purpose
-            if attr in self.attr_map:
-                attr = self.attr_map.get(attr)
+            if attr in self.ATTR_MAP:
+                attr = self.ATTR_MAP.get(attr)
             # process value depending on attr type
             if isinstance(value, list):
 
@@ -352,7 +350,7 @@ class Catalog(object):
         return result
 
     def to_str(self) -> str:
-        """Returns the string representation of the model"""
+        """Returns the string representation of the model."""
         return pprint.pformat(self.to_dict())
 
     def __repr__(self) -> str:
@@ -360,14 +358,14 @@ class Catalog(object):
         return self.to_str()
 
     def __eq__(self, other) -> bool:
-        """Returns true if both objects are equal"""
+        """Returns true if both objects are equal."""
         if not isinstance(other, Catalog):
             return False
 
         return self.__dict__ == other.__dict__
 
     def __ne__(self, other) -> bool:
-        """Returns true if both objects are not equal"""
+        """Returns true if both objects are not equal."""
         return not self == other
 
 
@@ -375,7 +373,7 @@ class Catalog(object):
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
-    """ standalone execution """
+    """standalone execution."""
     cat = Catalog(name="youpi", scan=1)
     to_crea = cat.to_dict_creation()
     print(type(to_crea.get("IsScanSink")))
