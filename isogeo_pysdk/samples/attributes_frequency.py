@@ -19,7 +19,7 @@
 from collections import Counter
 
 # Isogeo
-from isogeo_pysdk import Isogeo
+from isogeo_pysdk import Isogeo, MetadataSearch
 
 # ############################################################################
 # ######### Main program ###########
@@ -30,12 +30,23 @@ if __name__ == "__main__":
     # ------------ Specific imports ----------------
     from os import environ
 
+    # ------------ Load .env file variables ----------------
+    from dotenv import load_dotenv
+    load_dotenv(".env", override=True)
+
     # ------------Authentication credentials ----------------
     client_id = environ.get("ISOGEO_API_DEV_ID")
     client_secret = environ.get("ISOGEO_API_DEV_SECRET")
 
     # instanciating the class
-    isogeo = Isogeo(client_id=client_id, client_secret=client_secret, lang="fr")
+    isogeo = Isogeo(
+        auth_mode="group",
+        client_id=client_id,
+        client_secret=client_secret,
+        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+        platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        lang="fr",
+    )
     isogeo.connect()
 
     # ------------ REAL START ------------------------------------------------
@@ -48,7 +59,7 @@ if __name__ == "__main__":
         whole_results=0,  # download only the first results page
     )
 
-    if type(search) != dict:
+    if not isinstance(search, MetadataSearch):
         raise TypeError(search)
     else:
         pass
@@ -62,7 +73,7 @@ if __name__ == "__main__":
     vectors_without_attributes = []
 
     # parse
-    for md in search.get("results"):
+    for md in search.results:
         md_attributes = md.get("feature-attributes")
         if not md_attributes:
             vectors_without_attributes.append(
@@ -86,7 +97,7 @@ if __name__ == "__main__":
         "{} metadatas retrieved of which "
         "{} do not have feature attributes.".format(
             len(attributes_names),
-            len(search.get("results")),
+            len(search.results),
             len(vectors_without_attributes),
         )
     )
