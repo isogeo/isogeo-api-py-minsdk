@@ -25,29 +25,40 @@ from isogeo_pysdk import Isogeo
 
 if __name__ == "__main__":
     """Standalone execution."""
-    # standard library
+    # ------------ Specific imports ----------------
     from os import environ
+    from dotenv import load_dotenv
+
+    # ------------ Load .env file variables ----------------
+    load_dotenv(".env", override=True)
 
     # ------------Authentication credentials ----------------
     client_id = environ.get("ISOGEO_API_DEV_ID")
     client_secret = environ.get("ISOGEO_API_DEV_SECRET")
 
-    # ------------ Real start ----------------
     # instanciating the class
-    isogeo = Isogeo(client_id=client_id, client_secret=client_secret, lang="fr")
+    isogeo = Isogeo(
+        auth_mode="group",
+        client_id=client_id,
+        client_secret=client_secret,
+        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+        platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        lang="fr",
+    )
     isogeo.connect()
 
     # ------------ REAL START ----------------------------
     latest_data_modified = isogeo.search(
-        page_size=10, order_by="modified", whole_results=0, include=["events"]
+        page_size=10, order_by="modified", whole_results=0, include=("events",)
     )
+    isogeo.close()
 
     print("Last 10 data updated \nTitle | datetime\n\t description")
-    for md in latest_data_modified.get("results"):
+    for md in latest_data_modified.results:
         title = md.get("title")
         evt_description = md.get("events")[0].get("description")
         print(
             str("___________________\n\n{} | {} \n\t {}").format(
-                title, md.get("modified")[:10], evt_description.encode("utf8")
+                title, md.get("modified")[:10], evt_description
             )
         )
