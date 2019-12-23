@@ -29,9 +29,9 @@ if __name__ == "__main__":
     """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
+    from dotenv import load_dotenv
 
     # ------------ Load .env file variables ----------------
-    from dotenv import load_dotenv
     load_dotenv(".env", override=True)
 
     # ------------Authentication credentials ----------------
@@ -58,6 +58,8 @@ if __name__ == "__main__":
         page_size=100,  # max metadata to download
         whole_results=0,  # download only the first results page
     )
+
+    isogeo.close()
 
     if not isinstance(search, MetadataSearch):
         raise TypeError(search)
