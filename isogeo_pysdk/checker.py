@@ -406,11 +406,11 @@ class IsogeoChecker(object):
                                 subresource, " | ".join(ref_subresources)
                             )
                         )
-                        includes.remove(subresource)  # removing bad subresource
+                        list(includes).remove(subresource)  # removing bad subresource
                     else:
                         pass
 
-                includes = ",".join(includes)
+                includes = tuple(",".join(includes))
             else:
                 includes = ""
         else:
