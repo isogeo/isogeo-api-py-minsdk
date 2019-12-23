@@ -31,6 +31,10 @@ if __name__ == "__main__":
     """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
+    from dotenv import load_dotenv
+
+    # ------------ Load .env file variables ----------------
+    load_dotenv(".env", override=True)
 
     # ------------Authentication credentials ----------------
     client_id = environ.get("ISOGEO_API_DEV_ID")
@@ -38,16 +42,23 @@ if __name__ == "__main__":
 
     # ------------ Real start ----------------
     # instanciating the class
-    isogeo = Isogeo(client_id=client_id, client_secret=client_secret, lang="fr")
+    isogeo = Isogeo(
+        auth_mode="group",
+        client_id=client_id,
+        client_secret=client_secret,
+        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+        platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        lang="fr",
+    )
     isogeo.connect()
 
     # let's search for metadatas!
     search = isogeo.search(
-        query="owner:b81e0b3bc3124deeadbf59ad05c71a2a",
         page_size=10,
         whole_results=0,
-        include=["layers", "links", "operations", "serviceLayers"],
+        include=("layers", "links", "operations", "serviceLayers"),
     )
+    isogeo.close()
 
     # ------------ Parsing resources ----------------
     md_resources = OrderedDict()
@@ -57,8 +68,7 @@ if __name__ == "__main__":
     li_ogc_share = []
     li_esri_share = []
     li_dl_share = []
-
-    for md in search.get("results"):
+    for md in search.results:
         if md.get("type") == "service":
             print("Services metadatas are excluded.")
             continue
@@ -80,8 +90,7 @@ if __name__ == "__main__":
             for link in rel_resources:
                 # only OGC
                 if link.get("kind") in kind_ogc or (
-                    link.get("type") == "link"
-                    and link.get("link").get("kind") in kind_ogc
+                    link.get("type") == "link" and link.get("link").get("kind") in kind_ogc
                 ):
                     li_ogc_md.append((link.get("title"), link.get("url")))
                     md_resources["OGC links"] = len(li_ogc_md)
@@ -93,8 +102,7 @@ if __name__ == "__main__":
 
                 # only Esri
                 if link.get("kind") in kind_esri or (
-                    link.get("type") == "link"
-                    and link.get("link").get("kind") in kind_esri
+                    link.get("type") == "link" and link.get("link").get("kind") in kind_esri
                 ):
                     li_esri_md.append((link.get("title"), link.get("url")))
                     md_resources["Esri links"] = len(li_ogc_md)
@@ -106,11 +114,8 @@ if __name__ == "__main__":
 
                 # downloadable
                 if (
-                    link.get("kind") == "data"
-                    and link.get("actions") == "download"
-                    or (
-                        link.get("type") == "link"
-                        and link.get("link").get("kind") == "data"
+                    link.get("kind") == "data" and link.get("actions") == "download" or (
+                        link.get("type") == "link" and link.get("link").get("kind") == "data"
                     )
                 ):
                     li_dl_md.append((link.get("title"), link.get("url")))
