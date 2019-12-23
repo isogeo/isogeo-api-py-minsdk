@@ -3,8 +3,15 @@
 
 """Usage from the repo root folder:
 
-```python # for whole test python -m unittest tests.test_enums # for
-specific python -m unittest tests.test_enums.TestEnums ```
+
+    :Example:
+
+    .. code-block:: python
+
+        # for whole test
+        python -m unittest tests.test_enums
+        # for specific test
+        python -m unittest tests.test_enums.TestEnums
 """
 
 # #############################################################################
@@ -17,6 +24,8 @@ import unittest
 # module target
 from isogeo_pysdk.enums import (
     ApplicationTypes,
+    BulkActions,
+    BulkTargets,
     CatalogStatisticsTags,
     ContactRoles,
     ContactTypes,
@@ -62,6 +71,22 @@ class TestEnums(unittest.TestCase):
         self.assertTrue("group" in ApplicationTypes.__members__)
         self.assertFalse("User" in ApplicationTypes.__members__)
         for i in ApplicationTypes:
+            self.assertIsInstance(i.value, int)
+
+    def test_bulk_actions(self):
+        """Check bulk actions."""
+        self.assertEqual(len(BulkActions), 3)
+        self.assertTrue("add" in BulkActions.__members__)
+        self.assertFalse("Delete" in BulkActions.__members__)
+        for i in BulkActions:
+            self.assertIsInstance(i.value, int)
+
+    def test_bulk_targets(self):
+        """Check bulk targets."""
+        self.assertEqual(len(BulkTargets), 12)
+        self.assertTrue("title" in BulkTargets.__members__)
+        self.assertFalse("Abstract" in BulkTargets.__members__)
+        for i in BulkTargets:
             self.assertIsInstance(i.value, int)
 
     def test_catalog_statistic_tags(self):
