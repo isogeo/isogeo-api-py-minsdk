@@ -410,7 +410,7 @@ class IsogeoChecker(object):
                     else:
                         pass
 
-                includes = tuple(",".join(includes))
+                includes = ",".join(includes)
             else:
                 includes = ""
         else:
