@@ -106,9 +106,9 @@ class ApiBulk:
         super(ApiBulk, self).__init__()
 
     def prepare(self, metadatas: tuple, action: str, target: str, models: tuple):
-        """[summary]
-        
-        :param tuple metadatas: -- [description]
+        """Prepare requests to be sent later in one shot.
+
+        :param tuple metadatas: tuple of metadatas UUIDs to be updated
         :param str action: TO DOC
         :param str target: TO DOC
         :param tuple models: TO DOC
@@ -133,6 +133,15 @@ class ApiBulk:
             raise ValueError(
                 "Target '{}' is not a valid value. Must be one of: {}".format(
                     target, " | ".join([e.name for e in BulkTargets])
+                )
+            )
+
+        # check passed objects
+        obj_type = models[0]
+        if not all([isinstance(obj, type(obj_type)) for obj in models]):
+            raise TypeError(
+                "Models must contain an unique type of objects. First found: {}".format(
+                    obj_type
                 )
             )
 
