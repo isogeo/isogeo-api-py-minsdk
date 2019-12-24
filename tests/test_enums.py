@@ -25,6 +25,7 @@ import unittest
 from isogeo_pysdk.enums import (
     ApplicationTypes,
     BulkActions,
+    BulkIgnoreReasons,
     BulkTargets,
     CatalogStatisticsTags,
     ContactRoles,
@@ -79,6 +80,15 @@ class TestEnums(unittest.TestCase):
         self.assertTrue("add" in BulkActions.__members__)
         self.assertFalse("Delete" in BulkActions.__members__)
         for i in BulkActions:
+            self.assertIsInstance(i.value, int)
+
+    def test_bulk_ignore_reasons(self):
+        """Check bulk ignore reasons."""
+        self.assertEqual(len(BulkIgnoreReasons), 5)
+        self.assertTrue("AlreadyPresent" in BulkIgnoreReasons.__members__)
+        self.assertFalse("notValid" in BulkIgnoreReasons.__members__)
+        self.assertFalse("invalid" in BulkIgnoreReasons.__members__)
+        for i in BulkIgnoreReasons:
             self.assertIsInstance(i.value, int)
 
     def test_bulk_targets(self):

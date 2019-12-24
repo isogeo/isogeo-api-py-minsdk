@@ -3,6 +3,7 @@
 
 from .application_types import ApplicationTypes  # noqa: F401
 from .bulk_actions import BulkActions  # noqa: F401
+from .bulk_ignore_reasons import BulkIgnoreReasons  # noqa: F401
 from .bulk_targets import BulkTargets  # noqa: F401
 from .catalog_statistics_tags import CatalogStatisticsTags  # noqa: F401
 from .contact_roles import ContactRoles  # noqa: F401
