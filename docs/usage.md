@@ -259,3 +259,35 @@ for md in latest_data_modified.results:
 Example:
 
 * [Batch export hosted data in the package sample](https://github.com/isogeo/isogeo-api-py-minsdk/blob/master/isogeo_pysdk/samples/download_batch_hosted_data.py).
+
+## Add versions to a format
+
+It is necessary to update Isogeo database with new formats versions, so that users can properly fill metadata sheets on app.isogeo.com.
+
+```python
+from isogeo_pysdk import Isogeo
+
+# -- Authentication and connection ---------------------------------
+# Isogeo client
+isogeo = Isogeo(
+    auth_mode="user_legacy",
+    client_id=api_dev_id,
+    client_secret=api_dev_secret
+)
+
+# getting a token
+isogeo.connect(
+    username=isogeo_user_name,
+    password=isogeo_user_password,
+)
+
+# get a format
+fmt_postgis = isogeo.formats.get("postgis")
+# add versions to this format
+fmt_postgis.versions.extend(li_new_versions)
+# update the format with added versions
+fmt_postgis_updated = isogeo.formats.update(fmt_postgis)
+
+# properly closing connection
+isogeo.close()
+```
