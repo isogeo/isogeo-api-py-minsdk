@@ -42,7 +42,7 @@ class ApiBulk:
 
     .. code-block:: python
 
-        # retrive objects
+        # retrieve objects to be associated
         catalog_1 = isogeo.catalog.get(
             workgroup_id={WORKGROUP_UUID},
             catalog_id={CATALOG_UUID_1},
