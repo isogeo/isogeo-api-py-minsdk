@@ -31,7 +31,7 @@ from time import gmtime, sleep, strftime
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import Catalog, Isogeo, Metadata, Keyword
+from isogeo_pysdk import BulkReport, Catalog, Isogeo, Metadata, Keyword
 
 # #############################################################################
 # ######## Globals #################
@@ -167,20 +167,18 @@ class TestBulks(unittest.TestCase):
         keywords = [
             Keyword(**kwd) for kwd in sample(self.isogeo.keyword.thesaurus().results, 5)
         ]
-        # prepare request for catalogs
+        # prepare request for keywords
         self.isogeo.metadata.bulk.prepare(
-            metadatas=(
-                self.fixture_metadata_1._id,
-                self.fixture_metadata_2._id,
-                self.fixture_metadata_3._id,
-            ),
+            metadatas=(self.fixture_metadata_1, self.fixture_metadata_2._id),
             action="add",
             target="keywords",
             models=tuple(keywords),
         )
 
         # send the one-shot request
-        self.isogeo.metadata.bulk.send()
+        req_bulk = self.isogeo.metadata.bulk.send()
+        self.assertIsInstance(req_bulk, list)
+        self.assertIsInstance(req_bulk[0], BulkReport)
 
 
 # ##############################################################################

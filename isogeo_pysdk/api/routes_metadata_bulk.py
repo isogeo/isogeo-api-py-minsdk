@@ -11,12 +11,13 @@
 
 # Standard library
 import logging
+from collections import defaultdict
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.enums import BulkActions, BulkTargets
-from isogeo_pysdk.models import BulkReport, BulkRequest
+from isogeo_pysdk.models import BulkReport, BulkRequest, Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -106,33 +107,39 @@ class ApiBulk:
     ) -> BulkRequest:
         """Prepare requests to be sent later in one shot.
 
-        :param tuple metadatas: tuple of metadatas UUIDs to be updated
+        :param tuple metadatas: tuple of metadatas UUIDs or Metadatas to be updated
         :param str action: TO DOC
         :param str target: TO DOC
         :param tuple models: TO DOC
         """
+        # instanciate a new Bulk REquest object
+        prepared_request = BulkRequest()
+
         # ensure lowercase
-        action = action.lower()
-        target = target.lower()
+        prepared_request.action = action.lower()
+        prepared_request.target = target.lower()
 
-        # check uuid
-        if not all([checker.check_is_uuid(md) for md in metadatas]):
-            raise TypeError("Not all metadatas passed are valid UUID")
+        # check metadatas uuid
+        metadatas = list(metadatas)
+        for i in metadatas:
+            if isinstance(i, str) and not checker.check_is_uuid(i):
+                logger.error("Not a correct UUID: {}".format(i))
+                metadatas.remove(i)
+            elif isinstance(i, Metadata) and not checker.check_is_uuid(i._id):
+                print("bad md")
+                logger.error(
+                    "Metadata passed but with an incorrect UUID: {}".format(i._id)
+                )
+                metadatas.remove(i)
+            elif isinstance(i, Metadata) and checker.check_is_uuid(i._id):
+                logger.debug("Metadata passed, extracting the UUID: {}".format(i._id))
+                metadatas.append(i._id)
+                metadatas.remove(i)
+            else:
+                continue
 
-        # check action
-        if action not in BulkActions.__members__:
-            raise ValueError(
-                "Action '{}' is not a valid value. Must be one of: {}".format(
-                    action, " | ".join([e.name for e in BulkActions])
-                )
-            )
-        # check target
-        if target not in BulkTargets.__members__:
-            raise ValueError(
-                "Target '{}' is not a valid value. Must be one of: {}".format(
-                    target, " | ".join([e.name for e in BulkTargets])
-                )
-            )
+        # add it to the prepared request query
+        prepared_request.query = {"ids": metadatas}
 
         # check passed objects
         obj_type = models[0]
@@ -143,18 +150,12 @@ class ApiBulk:
                 )
             )
 
-        # prepare request data
-        data_prepared = {
-            "action": action,
-            "target": target,
-            "query": {"ids": metadatas},
-            "model": [obj.to_dict() for obj in models],
-        }
+        prepared_request.model = [obj.to_dict() for obj in models]
 
         # add it to be sent later
-        self.BULK_DATA.append(data_prepared)
+        self.BULK_DATA.append(prepared_request.to_dict())
 
-        return BulkRequest(**data_prepared)
+        return prepared_request
 
     @ApiDecorators._check_bearer_validity
     def send(self) -> list:

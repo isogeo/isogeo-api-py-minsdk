@@ -15,8 +15,8 @@
 import pprint
 
 # other model
-# from isogeo_pysdk.models.resource import Metadata
-# from isogeo_pysdk.models.tag import Tag
+from isogeo_pysdk.enums import BulkActions, BulkTargets
+from isogeo_pysdk.models.metadata import Metadata
 
 
 # #############################################################################
@@ -65,8 +65,17 @@ class BulkRequest(object):
 
     @action.setter
     def action(self, action: str):
-        """Sets the action of this Bulk Request.
+        """Sets the action of this Bulk Request. \
+            Must be one of the values of `isogeo_pysdk.enums.bulk_actions`.
         """
+
+        # check if it's conformant with the enum
+        if action not in BulkActions.__members__:
+            raise ValueError(
+                "'{}' is not an accepted value for 'action'. Must be one of: {}.".format(
+                    action, " | ".join([e.name for e in BulkActions])
+                )
+            )
 
         self._action = action
 
@@ -117,15 +126,25 @@ class BulkRequest(object):
         :return: The tag of this Bulk Request.
         :rtype: str
         """
+
         return self._target
 
     @target.setter
     def target(self, target: str):
-        """Sets the target of this Bulk Request.
+        """Sets the target of this Bulk Request. \
+            Must be one of the values of `isogeo_pysdk.enums.bulk_targets`.
 
         :param target: The target of this Bulk Request.  # noqa: E501
         :type: str
         """
+
+        # check if it's conformant with the enum
+        if target not in BulkTargets.__members__:
+            raise ValueError(
+                "'{}' is not an accepted value for 'target'. Must be one of: {}.".format(
+                    target, " | ".join([e.name for e in BulkTargets])
+                )
+            )
 
         self._target = target
 
