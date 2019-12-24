@@ -6,8 +6,11 @@
 from isogeo_pysdk import Isogeo
 
 # authenticate your client application
-isogeo = Isogeo(client_id=app_id,
-                client_secret=app_secret)
+isogeo = Isogeo(
+                client_id=app_id,
+                client_secret=app_secret,
+                auto_refresh_url=isogeo_token_uri,
+                )
 
 # get the token
 isogeo.connect()
@@ -16,10 +19,13 @@ isogeo.connect()
 search = isogeo.search(page_size=0, whole_results=0, augment=1)
 
 # through search tags
-print(search.get("tags"))
+print(search.tags)
 
-# through attributes
-print(isogeo.shares_id)
+# through attribute
+print(isogeo.shares.listing())
+
+# properly closing connection
+isogeo.close()
 ```
 
 ## Get OpenCatalog URL for a share
@@ -34,41 +40,34 @@ The share UUID is required: 2 methods are proposed to retrieve it.
 from isogeo_pysdk import Isogeo
 
 # authenticate your client application
-isogeo = Isogeo(client_id=app_id,
-                client_secret=app_secret)
+isogeo = Isogeo(
+                client_id=app_id,
+                client_secret=app_secret,
+                auto_refresh_url=isogeo_token_uri
+                )
 
 # get the token
 isogeo.connect()
 
-## -- METHOD 1 - by shares route ------------------------------------------
+## -- BY SHARE ROUTE ------------------------------------------
 # get shares
 shares = isogeo.shares()
 
 # get first share id
 share_id = shares[0].get("_id")
 
-## -- METHOD 2 - by augmented search --------------------------------------
-# empty search
-search = isogeo.search(
-                       page_size=0,     # get only tags, not results
-                       whole_results=0,   # do not retrieve the whole application scope
-                       augment=1    # -> this parameter is what we need
-                       )
-
-# get share id from tags splitting dict key
-share_id = list(isogeo.shares_id.keys())[0].split(":")[1]
-
 ## -- ONCE SHARE ID RETRIEVED ---------------------------------------------
 
 # make an augmented share request
-share_augmented = isogeo.share(share_id, augment=1)
+target_share = isogeo.share.get(share_id)
 
-if "oc_url" in share_augmented:
-print("OpenCatalog is set: {}"
-        .format(share_augmented.get("oc_url"))
-        )
+if target_share.opencatalog_url() is not None:
+    print("OpenCatalog is set: {}".format(target_share.opencatalog_url()))
 else:
-print("OpenCatalog is not set in this share")
+    print("OpenCatalog is not set in this share")
+
+# properly closing connection
+isogeo.close()
 ```
 
 ## Check if a metadata is in a share
@@ -89,6 +88,9 @@ if md.get("_id") in share_augmented.get("mds_ids"):
 print("Metadata is present in this share")
 else:
 print("No present").
+
+# properly closing connection
+isogeo.close()
 ```
 
 ## URL Builder for web applications
@@ -191,8 +193,11 @@ In Isogeo, every metadata resource can be downloaded in its XML version (ISO 191
 from isogeo_pysdk import Isogeo
 
 # authenticate your client application
-isogeo = Isogeo(client_id=app_id,
-                client_secret=app_secret)
+isogeo = Isogeo(
+                client_id=app_id,
+                client_secret=app_secret,
+                auto_refresh_url=isogeo_token_uri
+                )
 
 # get the token
 isogeo.connect()
@@ -214,6 +219,9 @@ for md in search_to_be_exported.results:
     with open("{}.xml".format(title), 'wb') as fd:
         for block in xml_stream.iter_content(1024):
             fd.write(block)
+
+# properly closing connection
+isogeo.close()
 ```
 
 Others examples:
@@ -230,8 +238,11 @@ Administrators and editors can link raw data and docs (.zip, .pdf...) to metadat
 from isogeo_pysdk import Isogeo
 
 # authenticate your client application
-isogeo = Isogeo(client_id=app_id,
-                client_secret=app_secret)
+isogeo = Isogeo(
+                client_id=app_id,
+                client_secret=app_secret,
+                auto_refresh_url=isogeo_token_uri
+                )
 
 # get the token
 isogeo.connect()
@@ -254,6 +265,9 @@ for md in latest_data_modified.results:
         with open(filename, 'wb') as fd:
             for block in dl_stream[0].iter_content(1024):
                 fd.write(block)
+
+# properly closing connection
+isogeo.close()
 ```
 
 Example:
@@ -267,12 +281,13 @@ It is necessary to update Isogeo database with new formats versions, so that use
 ```python
 from isogeo_pysdk import Isogeo
 
-# -- Authentication and connection ---------------------------------
+# -- Authentication using 'user_legacy' flow
 # Isogeo client
 isogeo = Isogeo(
     auth_mode="user_legacy",
     client_id=api_dev_id,
-    client_secret=api_dev_secret
+    client_secret=api_dev_secret,
+    auto_refresh_url=isogeo_token_uri
 )
 
 # getting a token
