@@ -35,10 +35,10 @@ from isogeo_pysdk import Isogeo
 
 # output dir
 outdir = Path(Path(__file__).parent, "_output/")
-# outdir.mkdir(exist_ok=True)
+outdir.mkdir(exist_ok=True)
 
 # environment vars
-load_dotenv("dev.env", override=True)
+load_dotenv(".env", override=True)
 
 
 # ############################################################################
@@ -50,8 +50,12 @@ def _meta_get_resource_sync(func_outname_params: dict):
     out_filename = Path(outdir, func_outname_params.get("output_json_name") + ".json")
 
     try:
-        # use request
         request = route_method(**func_outname_params.get("params"))
+        # use request
+        if getattr(request, "to_dict", "") != "":
+            request = request.to_dict()
+        else:
+            pass
         # store response into a json file
         with out_filename.open("w") as out_json:
             json.dump(request, out_json, sort_keys=True, indent=4, default=list)
@@ -94,19 +98,25 @@ if __name__ == "__main__":
     # chronometer
     START_TIME = default_timer()
 
+    # ------------Authentication credentials ----------------
+    client_id = environ.get("ISOGEO_API_DEV_ID")
+    client_secret = environ.get("ISOGEO_API_DEV_SECRET")
+
     # -- Authentication and connection ---------------------------------
     isogeo = Isogeo(
-        client_id=environ.get("ISOGEO_API_DEV_ID"),
-        client_secret=environ.get("ISOGEO_API_DEV_SECRET"),
-        lang="fr",
+        auth_mode="group",
+        client_id=client_id,
+        client_secret=client_secret,
+        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        lang="fr",
     )
     isogeo.connect()
 
     # -- Async exports --------------------------------------------------
     # get some object identifiers required for certain routes
     resource_id = sample(
-        isogeo.search(whole_results=0, page_size=50).get("results"), 1
+        isogeo.search(whole_results=0, page_size=50).results, 1
     )[0].get("_id")
     share_id = isogeo.share.listing()[0].get("_id")
 
@@ -125,14 +135,14 @@ if __name__ == "__main__":
         {
             "route": isogeo.metadata.get,
             "output_json_name": "api_metadata_complete",
-            "params": {"id_resource": resource_id, "include": "all"},
+            "params": {"metadata_id": resource_id, "include": "all"},
         },
         # shares
         {"route": isogeo.share.listing, "output_json_name": "api_shares", "params": {}},
         {
             "route": isogeo.share.get,
             "output_json_name": "api_share_augmented",
-            "params": {"share_id": share_id, "augment": 1},
+            "params": {"share_id": share_id},
         },
         # static stuff
         {
@@ -170,3 +180,5 @@ if __name__ == "__main__":
             len(li_api_routes), time_completed_at
         )
     )
+
+    isogeo.close()
