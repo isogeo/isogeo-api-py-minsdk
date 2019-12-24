@@ -87,7 +87,7 @@ class TestEnums(unittest.TestCase):
         self.assertEqual(len(BulkIgnoreReasons), 5)
         self.assertTrue("alreadyPresent" in BulkIgnoreReasons.__members__)
         self.assertFalse("notValid" in BulkIgnoreReasons.__members__)
-        self.assertFalse("invalid" in BulkIgnoreReasons.__members__)
+        self.assertFalse("Invalid" in BulkIgnoreReasons.__members__)
         for i in BulkIgnoreReasons:
             self.assertIsInstance(i.value, int)
 
