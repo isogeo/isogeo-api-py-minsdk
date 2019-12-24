@@ -34,7 +34,7 @@ class BulkIgnoreReasons(Enum):
         BulkIgnoreReasons.NotFound                        5
 
         >>> # check if a var is an accepted value
-        >>> print("AlreadyPresent" in BulkIgnoreReasons.__members__)
+        >>> print("alreadyPresent" in BulkIgnoreReasons.__members__)
         True
         >>> print("NotValid" in BulkIgnoreReasons.__members__)  # case sensitive
         False
@@ -44,11 +44,11 @@ class BulkIgnoreReasons(Enum):
     See: https://docs.python.org/3/library/enum.html
     """
 
-    AlreadyPresent = auto()
-    Forbidden = auto()
-    Invalid = auto()
-    NotApplicable = auto()
-    NotFound = auto()
+    alreadyPresent = auto()
+    forbidden = auto()
+    invalid = auto()
+    notApplicable = auto()
+    notFound = auto()
 
 
 # ##############################################################################
@@ -62,6 +62,6 @@ if __name__ == "__main__":
 
     print(len(BulkIgnoreReasons))
 
-    print("AlreadyPresent" in BulkIgnoreReasons.__members__)
+    print("alreadyPresent" in BulkIgnoreReasons.__members__)
     print("NotValid" in BulkIgnoreReasons.__members__)
     print("NotExists" in BulkIgnoreReasons.__members__)
