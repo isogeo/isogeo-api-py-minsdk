@@ -52,7 +52,7 @@ def _meta_get_resource_sync(func_outname_params: dict):
     try:
         request = route_method(**func_outname_params.get("params"))
         # use request
-        if getattr(request, "to_dict", "") != "":
+        if not isinstance(request, (dict, list)):
             request = request.to_dict()
         else:
             pass
