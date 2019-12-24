@@ -11,16 +11,12 @@
 
 # Standard library
 import logging
-from functools import lru_cache
-
-# 3rd party
-from requests.models import Response
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.enums import BulkActions, BulkTargets
-from isogeo_pysdk.models import Metadata
+from isogeo_pysdk.models import BulkReport, BulkRequest
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -105,7 +101,9 @@ class ApiBulk:
         # initialize
         super(ApiBulk, self).__init__()
 
-    def prepare(self, metadatas: tuple, action: str, target: str, models: tuple):
+    def prepare(
+        self, metadatas: tuple, action: str, target: str, models: tuple
+    ) -> BulkRequest:
         """Prepare requests to be sent later in one shot.
 
         :param tuple metadatas: tuple of metadatas UUIDs to be updated
@@ -156,8 +154,10 @@ class ApiBulk:
         # add it to be sent later
         self.BULK_DATA.append(data_prepared)
 
+        return BulkRequest(**data_prepared)
+
     @ApiDecorators._check_bearer_validity
-    def send(self):
+    def send(self) -> list:
         """Send prepared BULK_DATA to the `POST BULK resources/`."""
 
         # build request url
@@ -169,6 +169,7 @@ class ApiBulk:
             json=self.BULK_DATA,
             headers=self.api_client.header,
             proxies=self.api_client.proxies,
+            stream=True,
             verify=self.api_client.ssl,
             timeout=self.api_client.timeout,
         )
@@ -180,6 +181,8 @@ class ApiBulk:
 
         # empty bulk data
         self.BULK_DATA.clear()
+
+        return [BulkReport(**req) for req in req_metadata_bulk.json()]
 
 
 # ##############################################################################
