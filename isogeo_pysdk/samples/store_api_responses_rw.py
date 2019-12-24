@@ -104,7 +104,7 @@ if __name__ == "__main__":
         import urllib3
 
         urllib3.disable_warnings()
-    
+
     # ------------Authentication credentials ----------------
     client_id = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID")
     client_secret = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET")
