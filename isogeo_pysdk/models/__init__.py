@@ -35,6 +35,10 @@ from .condition import Condition  # noqa: F401
 # depending on Specification model
 from .conformity import Conformity  # noqa: F401
 
+# depending on previous models
+from .bulk_request import BulkRequest  # noqa: F401
+from .bulk_report import BulkReport  # noqa: F401
+
 # shortcuts or confusion reducers
 Account = User
 Group = Workgroup

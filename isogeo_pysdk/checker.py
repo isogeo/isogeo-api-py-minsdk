@@ -406,7 +406,7 @@ class IsogeoChecker(object):
                                 subresource, " | ".join(ref_subresources)
                             )
                         )
-                        includes.remove(subresource)  # removing bad subresource
+                        list(includes).remove(subresource)  # removing bad subresource
                     else:
                         pass
 

@@ -26,6 +26,7 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 # other routes
 from .routes_event import ApiEvent
+from .routes_metadata_bulk import ApiBulk
 from .routes_condition import ApiCondition
 from .routes_conformity import ApiConformity
 from .routes_feature_attributes import ApiFeatureAttribute
@@ -70,6 +71,7 @@ class ApiMetadata:
 
         # sub routes
         self.attributes = ApiFeatureAttribute(self.api_client)
+        self.bulk = ApiBulk(self.api_client)
         self.conditions = ApiCondition(self.api_client)
         self.conformity = ApiConformity(self.api_client)
         self.events = ApiEvent(self.api_client)

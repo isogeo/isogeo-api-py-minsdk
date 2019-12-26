@@ -51,6 +51,7 @@ release = __version__
 extensions = [
     "recommonmark",
     "sphinx.ext.autodoc",
+    "sphinx_autodoc_typehints",
     "sphinx_markdown_tables",
     "sphinx_rtd_theme",
 ]
