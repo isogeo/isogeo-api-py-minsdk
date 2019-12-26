@@ -108,9 +108,9 @@ class ApiBulk:
         """Prepare requests to be sent later in one shot.
 
         :param tuple metadatas: tuple of metadatas UUIDs or Metadatas to be updated
-        :param str action: TO DOC
-        :param str target: TO DOC
-        :param tuple models: TO DOC
+        :param str action: type of action to perform on metadatas. See: `isogeo_pysdk.enums.bulk_actions`.
+        :param str target: kind of object to add/delete/update to the metadatas. See: `isogeo_pysdk.enums.bulk_targets`.
+        :param tuple models: tuple of objects to be associated with the metadatas.
         """
         # instanciate a new Bulk REquest object
         prepared_request = BulkRequest()
