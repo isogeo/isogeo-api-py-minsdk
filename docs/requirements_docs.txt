@@ -20,6 +20,7 @@ requests_oauthlib
 
 # required
 sphinx
+sphinx-autodoc-typehints
 sphinx-markdown-tables  # to render markdown tables
 sphinx-rtd-theme
 recommonmark
