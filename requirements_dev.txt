@@ -14,23 +14,30 @@
 # install basic requirements
 -r requirements.txt
 
-# install addtionnal requirements for DEV and TEST
-
-
-# art of code
+# Lint and formatting
+# -----------------------
 black
 flake8
 pre-commit
 pylint
 
-# doc
-sphinx
-
-# tests
+# Tests
+# -----------------------
 python-dotenv
 pytest==5.0.*
 pytest-cov
 pytest-random-order
+
+# Documentation
+# -----------------------
+sphinx
+sphinx-markdown-tables  # to render markdown tables
+sphinx-rtd-theme
+recommonmark
+
+# Packaging
+# -----------------------
+twine
 
 # then it's possible to install from the repo:
 # https://github.com/Isogeo/isogeo-api-py-minsdk/archive/master.zip
