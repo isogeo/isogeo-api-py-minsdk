@@ -154,16 +154,19 @@ class ApiLimitation:
         :rtype: Limitation or tuple
 
         :Example:
-        >>> # retrieve metadata
-        >>> md = isogeo.metadata.get(METADATA_UUID)
-        >>> # create the limitation locally
-        >>> new_limitation = Limitation(
-            type="legal",
-            restriction="patent",
-            description="Do not use for commercial purpose.",
-            )
-        >>> # add it to the metadata
-        >>> isogeo.metadata.limitations.create(md, new_limitation)
+
+        .. code-block:: python
+
+            # retrieve metadata
+            md = isogeo.metadata.get(METADATA_UUID)
+            # create the limitation locally
+            new_limitation = Limitation(
+                type="legal",
+                restriction="patent",
+                description="Do not use for commercial purpose.",
+                )
+            # add it to the metadata
+            isogeo.metadata.limitations.create(md, new_limitation)
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):
