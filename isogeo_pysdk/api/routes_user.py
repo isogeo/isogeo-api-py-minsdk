@@ -77,7 +77,7 @@ class ApiUser:
         37
         """
         # handling request parameters
-        payload = {"_include": ["memberships"]}
+        payload = {"_include": "memberships"}
 
         # request URL
         url_users = utils.get_request_base_url(route="users")
@@ -106,6 +106,8 @@ class ApiUser:
 
         :param str user_id: user UUID
         :param list include: additionnal subresource to include in the response
+
+        :rtype: User
         """
         # check user UUID
         if not checker.check_is_uuid(user_id):
@@ -229,33 +231,36 @@ class ApiUser:
     #     # end of method
     #     return User(**req_user_update.json())
 
-    # # -- Routes to manage the related objects ------------------------------------------
-    # @ApiDecorators._check_bearer_validity
-    # def memberships(self, user_id: str) -> dict:
-    #     """Returns memberships for the specified user.
+    # -- Routes to manage the related objects ------------------------------------------
+    @ApiDecorators._check_bearer_validity
+    def memberships(self, user_id: str) -> dict:
+        """Returns memberships for the specified user.
 
-    #     :param str user_id: user UUID
-    #     """
-    #     # URL builder
-    #     url_user_memberships = utils.get_request_base_url(
-    #         route="users/{}/memberships".format(user_id)
-    #     )
+        :param str user_id: user UUID
+        """
+        logger.warning(
+            "This route doesn't work in 2019. See: https://github.com/isogeo/isogeo-api/issues/7"
+        )
+        # URL builder
+        url_user_memberships = utils.get_request_base_url(
+            route="users/{}/memberships".format(user_id)
+        )
 
-    #     # request
-    #     req_user_memberships = self.api_client.get(
-    #         url=url_user_memberships,
-    #         headers=self.api_client.header,
-    #         proxies=self.api_client.proxies,
-    #         verify=self.api_client.ssl,
-    #         timeout=self.api_client.timeout,
-    #     )
+        # request
+        req_user_memberships = self.api_client.get(
+            url=url_user_memberships,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
 
-    #     # checking response
-    #     req_check = checker.check_api_response(req_user_memberships)
-    #     if isinstance(req_check, tuple):
-    #         return req_check
+        # checking response
+        req_check = checker.check_api_response(req_user_memberships)
+        if isinstance(req_check, tuple):
+            return req_check
 
-    #     return req_user_memberships.json()
+        return req_user_memberships.json()
 
 
 # ##############################################################################
