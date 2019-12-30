@@ -19,6 +19,9 @@ setuptools = "*"
 twine = "*"
 wheel = "*"
 sphinx = "*"
+sphinx-markdown-tables = "*"
+sphinx-rtd-theme = "*"
+recommonmark = "*"
 
 [packages]
 requests = ">=2.20.0"
