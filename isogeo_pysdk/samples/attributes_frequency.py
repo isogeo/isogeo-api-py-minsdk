@@ -98,9 +98,7 @@ if __name__ == "__main__":
         "{} attributes among "
         "{} metadatas retrieved of which "
         "{} do not have feature attributes.".format(
-            len(attributes_names),
-            len(search.results),
-            len(vectors_without_attributes),
+            len(attributes_names), len(search.results), len(vectors_without_attributes),
         )
     )
 
