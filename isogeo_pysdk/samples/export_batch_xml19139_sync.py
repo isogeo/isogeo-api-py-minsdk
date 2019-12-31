@@ -16,7 +16,6 @@
 # ##################################
 
 # Standard library
-from os import environ
 from pathlib import Path
 from timeit import default_timer
 
@@ -39,22 +38,35 @@ if __name__ == "__main__":
     """Standalone execution."""
     chrono_start = default_timer()  # chrono
 
-    # Authentication #########
-    app_id = environ.get("ISOGEO_API_DEV_ID")
-    app_token = environ.get("ISOGEO_API_DEV_SECRET")
+    # ------------ Specific imports ----------------
+    from os import environ
+    from dotenv import load_dotenv
 
-    # start Isogeo
-    isogeo = Isogeo(client_id=app_id, client_secret=app_token)
+    # ------------ Load .env file variables ----------------
+    load_dotenv(".env", override=True)
 
-    # getting a token
+    # ------------Authentication credentials ----------------
+    client_id = environ.get("ISOGEO_API_DEV_ID")
+    client_secret = environ.get("ISOGEO_API_DEV_SECRET")
+
+    # instanciating the class
+    isogeo = Isogeo(
+        auth_mode="group",
+        client_id=client_id,
+        client_secret=client_secret,
+        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+        platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        lang="fr",
+    )
     isogeo.connect()
 
     # Process #########
     latest_data_modified = isogeo.search(
         page_size=10, order_by="modified", whole_results=0
     )
+    isogeo.close()
 
-    for md in latest_data_modified.get("results"):
+    for md in latest_data_modified.results:
         metadata = Metadata.clean_attributes(md)
         title = metadata.title
         xml_stream = isogeo.metadata.download_xml(metadata)

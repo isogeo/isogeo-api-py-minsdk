@@ -148,14 +148,14 @@ def search_tags_as_filters(tags):
 if __name__ == "__main__":
     """Standalone execution."""
     # check file presence
-    if not path.isfile("out_api_search_empty.json"):
+    if not path.isfile("isogeo_pysdk/samples/_output/api_search_empty.json"):
         print("Input file not found." "You should first execute store_api_responses.py")
         sys.exit()
     else:
         pass
 
     # open and read JSON
-    with open("out_api_search_empty.json") as data_file:
+    with open("isogeo_pysdk/samples/_output/api_search_empty.json") as data_file:
         data = json.load(data_file)
 
     # check data type
