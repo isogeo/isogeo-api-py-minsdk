@@ -86,9 +86,7 @@ if __name__ == "__main__":
         )
         print(
             str("\t- {} (BOX) = {}\t{}").format(
-                feature.get("properties").get("name"),
-                filtered_search_bbox.total,
-                bbox,
+                feature.get("properties").get("name"), filtered_search_bbox.total, bbox,
             )
         )
         # search & display results - with convex hull
@@ -97,9 +95,7 @@ if __name__ == "__main__":
         )
         print(
             str("\t- {} (GEO) = {}\t{}").format(
-                feature.get("properties").get("name"),
-                filtered_search_geo.total,
-                poly,
+                feature.get("properties").get("name"), filtered_search_geo.total, poly,
             )
         )
 

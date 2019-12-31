@@ -84,7 +84,9 @@ class ApiApplication:
                 "Listing applications for a workgroup: {}".format(workgroup_id)
             )
             if not checker.check_is_uuid(workgroup_id):
-                raise ValueError("Workgroup ID is not a correct UUID.")
+                raise ValueError(
+                    "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
+                )
             else:
                 url_applications = utils.get_request_base_url(
                     route="groups/{}/applications".format(workgroup_id)
@@ -140,7 +142,9 @@ class ApiApplication:
         """
         # check application UUID
         if not checker.check_is_uuid(application_id):
-            raise ValueError("Application ID is not a correct UUID.")
+            raise ValueError(
+                "Application ID is not a correct UUID: {}".format(application_id)
+            )
         else:
             pass
 
@@ -174,9 +178,7 @@ class ApiApplication:
         return Application(**req_application.json())
 
     @ApiDecorators._check_bearer_validity
-    def create(
-        self, application: object = Application(), check_exists: int = 1
-    ) -> Application:
+    def create(self, application: Application, check_exists: int = 1) -> Application:
         """Add a new application to Isogeo.
 
         :param int check_exists: check if a application already exists inot the workgroup:
