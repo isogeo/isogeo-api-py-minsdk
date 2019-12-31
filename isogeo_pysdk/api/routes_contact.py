@@ -369,12 +369,12 @@ class ApiContact:
 
         .. code-block:: python
 
-        # retrieve a metadata
-        md = isogeo.metadata.get(METADATA_UUID)
-        # retrieve a contact
-        ctct = isogeo.contact.get(CONTACT_UUID)
-        # associate a contact to a metadata
-        isogeo.contact.associate_metadata(metadata = md, contact = ctct)
+            # retrieve a metadata
+            md = isogeo.metadata.get(METADATA_UUID)
+            # retrieve a contact
+            ctct = isogeo.contact.get(CONTACT_UUID)
+            # associate a contact to a metadata
+            isogeo.contact.associate_metadata(metadata = md, contact = ctct)
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):

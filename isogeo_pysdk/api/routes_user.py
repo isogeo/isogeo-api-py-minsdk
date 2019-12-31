@@ -145,7 +145,7 @@ class ApiUser:
         return User(**req_user.json())
 
     @ApiDecorators._check_bearer_validity
-    def create(self, user: object = User(), check_exists: bool = 1) -> User:
+    def create(self, user: object = User, check_exists: bool = 1) -> User:
         """Add a new user to Isogeo.
 
         :param class user: User model object to create
