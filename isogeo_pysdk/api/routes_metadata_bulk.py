@@ -108,8 +108,8 @@ class ApiBulk:
         """Prepare requests to be sent later in one shot.
 
         :param tuple metadatas: tuple of metadatas UUIDs or Metadatas to be updated
-        :param str action: type of action to perform on metadatas. See: `isogeo_pysdk.enums.bulk_actions`.
-        :param str target: kind of object to add/delete/update to the metadatas. See: `isogeo_pysdk.enums.bulk_targets`.
+        :param str action: type of action to perform on metadatas. See: :class:`~isogeo_pysdk.enums.bulk_actions`.
+        :param str target: kind of object to add/delete/update to the metadatas. See: :class:`~isogeo_pysdk.enums.bulk_targets`.
         :param tuple models: tuple of objects to be associated with the metadatas.
         """
         # instanciate a new Bulk REquest object
@@ -126,7 +126,6 @@ class ApiBulk:
                 logger.error("Not a correct UUID: {}".format(i))
                 metadatas.remove(i)
             elif isinstance(i, Metadata) and not checker.check_is_uuid(i._id):
-                print("bad md")
                 logger.error(
                     "Metadata passed but with an incorrect UUID: {}".format(i._id)
                 )
@@ -159,7 +158,10 @@ class ApiBulk:
 
     @ApiDecorators._check_bearer_validity
     def send(self) -> list:
-        """Send prepared BULK_DATA to the `POST BULK resources/`."""
+        """Send prepared BULK_DATA to the `POST BULK resources/`.
+
+        :rtype: List[BulkReport]
+        """
 
         # build request url
         url_metadata_bulk = utils.get_request_base_url(route="resources")
