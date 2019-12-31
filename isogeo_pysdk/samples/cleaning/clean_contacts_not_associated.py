@@ -32,7 +32,7 @@ from isogeo_pysdk import Isogeo
 # ##################################
 
 # environment vars
-load_dotenv("dev.env", override=True)
+load_dotenv(".env", override=True)
 WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
@@ -90,13 +90,19 @@ if __name__ == "__main__":
 
         urllib3.disable_warnings()
 
+    # ------------Authentication credentials ----------------
+    client_id = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID")
+    client_secret = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET")
+
     # -- Authentication and connection ---------------------------------
     # Isogeo client
     isogeo = Isogeo(
-        client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
-        client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
+        auth_mode="user_legacy",
+        client_id=client_id,
+        client_secret=client_secret,
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        lang="fr",
     )
 
     # getting a token
@@ -110,7 +116,7 @@ if __name__ == "__main__":
 
     # get some object identifiers required for certain routes
     wg_contacts = isogeo.contact.listing(
-        workgroup_id=WG_TEST_UUID, include=["count"], caching=0
+        workgroup_id=WG_TEST_UUID, include=("count",), caching=0
     )
 
     # filter on contacts with count=0

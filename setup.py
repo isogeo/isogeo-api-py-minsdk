@@ -42,8 +42,8 @@ setup(
     url=__about__.__uri__,
     project_urls={
         "Docs": "https://isogeo-api-pysdk.readthedocs.io/",
-        "Bug Reports": "https://github.com/isogeo/isogeo-api-py-minsdk/issues/",
-        "Source": "https://github.com/isogeo/isogeo-api-py-minsdk/",
+        "Bug Reports": "{}issues/".format(__about__.__uri__),
+        "Source": __about__.__uri__,
         "Isogeo API": "http://help.isogeo.com/api/",
     },
     # dependencies

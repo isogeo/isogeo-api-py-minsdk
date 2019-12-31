@@ -111,6 +111,7 @@ class ApiFeatureAttribute:
             metadata_id=md._id,
             attribute_id=md_attributes[0].get("_id")
             )
+
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata_id):
@@ -183,6 +184,7 @@ class ApiFeatureAttribute:
             )
         >>> # add it to the metadata
         >>> isogeo.metadata.attributes.create(md, new_attribute)
+
         """
         # check metadata type
         if metadata.type != "vectorDataset":

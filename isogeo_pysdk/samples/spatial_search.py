@@ -28,6 +28,10 @@ if __name__ == "__main__":
     """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
+    from dotenv import load_dotenv
+
+    # ------------ Load .env file variables ----------------
+    load_dotenv(".env", override=True)
 
     # specific imports
     import geojson
@@ -39,7 +43,14 @@ if __name__ == "__main__":
 
     # ------------ Real start ----------------
     # instanciating the class
-    isogeo = Isogeo(client_id=client_id, client_secret=client_secret, lang="fr")
+    isogeo = Isogeo(
+        auth_mode="group",
+        client_id=client_id,
+        client_secret=client_secret,
+        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+        platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        lang="fr",
+    )
     isogeo.connect()
 
     # ------------ REAL START ----------------------------
@@ -49,18 +60,14 @@ if __name__ == "__main__":
     # opening a geojson file
     gson_input = r"samples_boundingbox.geojson"
     with open(gson_input) as data_file:
-        # data = json.load(data_file)
         data = data_file.read()
         data = geojson.loads(data)
-
-    validation = geojson.is_valid(data)
-    print(validation)
 
     # search & compare
     basic_search = isogeo.search(page_size=0, whole_results=0)
 
     print("Comparing count of results returned: ")
-    print("\t- without any filter = ", basic_search.get("total"))
+    print("\t- without any filter = ", basic_search.total)
 
     for feature in data.get("features"):
         # just for VIPolygons
@@ -73,16 +80,14 @@ if __name__ == "__main__":
         bbox = ",".join(str(round(c, 3)) for c in feature.get("bbox"))
         poly = wkt.dumps(feature.get("geometry"), decimals=3)
 
-        # print(quote(poly))
-
         # search & display results - with bounding box
         filtered_search_bbox = isogeo.search(
             page_size=0, whole_results=0, bbox=bbox, georel=geo_relation
         )
         print(
             str("\t- {} (BOX) = {}\t{}").format(
-                feature.get("properties").get("name").encode("utf8"),
-                filtered_search_bbox.get("total"),
+                feature.get("properties").get("name"),
+                filtered_search_bbox.total,
                 bbox,
             )
         )
@@ -92,8 +97,10 @@ if __name__ == "__main__":
         )
         print(
             str("\t- {} (GEO) = {}\t{}").format(
-                feature.get("properties").get("name").encode("utf8"),
-                filtered_search_geo.get("total"),
+                feature.get("properties").get("name"),
+                filtered_search_geo.total,
                 poly,
             )
         )
+
+    isogeo.close()
