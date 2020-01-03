@@ -35,14 +35,24 @@ if __name__ == "__main__":
     """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
+    from dotenv import load_dotenv
+
+    # ------------ Load .env file variables ----------------
+    load_dotenv(".env", override=True)
 
     # ------------Authentication credentials ----------------
     client_id = environ.get("ISOGEO_API_DEV_ID")
     client_secret = environ.get("ISOGEO_API_DEV_SECRET")
 
     # instanciating the class
-    isogeo = Isogeo(client_id=client_id, client_secret=client_secret, lang="fr")
-
+    isogeo = Isogeo(
+        auth_mode="group",
+        client_id=client_id,
+        client_secret=client_secret,
+        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+        platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        lang="fr",
+    )
     isogeo.connect()
 
     # ------------ REAL START ------------------------------------------------
@@ -53,9 +63,9 @@ if __name__ == "__main__":
         query="action:download",
         include=("links",),
     )
-
+    isogeo.close()
     # parse and download
-    for md in latest_data_modified.get("results"):
+    for md in latest_data_modified.results:
         for link in filter(lambda x: x.get("type") == "hosted", md.get("links")):
             dl_stream = isogeo.metadata.links.download_hosted(link=link)
             with open(out_dir / dl_stream[1], "wb") as fd:

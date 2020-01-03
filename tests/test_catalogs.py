@@ -3,12 +3,13 @@
 
 """Usage from the repo root folder:
 
-```python
-# for whole test
-python -m unittest tests.test_catalogs
-# for specific
-python -m unittest tests.test_catalogs.TestCatalogs.test_catalogs_create_basic
-```
+    .. code-block:: python
+
+        # for whole test
+        python -m unittest tests.test_catalogs
+        # for specific
+        python -m unittest tests.test_catalogs.TestCatalogs.test_catalogs_create_basic
+
 """
 
 # #############################################################################
@@ -30,7 +31,7 @@ from time import gmtime, sleep, strftime
 from dotenv import load_dotenv
 
 # module target
-from isogeo_pysdk import Catalog, Isogeo, Share
+from isogeo_pysdk import Catalog, Isogeo, Metadata, Share
 
 from isogeo_pysdk.enums import CatalogStatisticsTags
 
@@ -100,6 +101,12 @@ class TestCatalogs(unittest.TestCase):
             password=environ.get("ISOGEO_USER_PASSWORD"),
         )
 
+        # fixture metadata
+        md = Metadata(title=get_test_marker(), type="resource")
+        cls.fixture_metadata = cls.isogeo.metadata.create(
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md
+        )
+
     def setUp(self):
         """Executed before each test."""
         # tests stuff
@@ -114,6 +121,9 @@ class TestCatalogs(unittest.TestCase):
     @classmethod
     def tearDownClass(cls):
         """Executed after the last test."""
+        # clean created metadata
+        cls.isogeo.metadata.delete(cls.fixture_metadata._id)
+
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
@@ -199,6 +209,40 @@ class TestCatalogs(unittest.TestCase):
 
         # check if object has not been created
         self.assertEqual(catalog_new_2, False)
+
+        # add created catalog to deletion
+        self.li_fixtures_to_delete.append(catalog_new_1._id)
+
+    def test_catalogs_association(self):
+        """POST :catalogs/{catalog_uuid}/resources/"""
+        # vars
+        name_to_be_unique = "TEST_UNIT_AUTO UNIQUE"
+
+        # create local object
+        catalog_local = Catalog(name=name_to_be_unique)
+
+        # create it online
+        catalog_new_1 = self.isogeo.catalog.create(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            catalog=catalog_local,
+            check_exists=0,
+        )
+
+        # associate
+        self.isogeo.catalog.associate_metadata(
+            metadata=self.fixture_metadata, catalog=catalog_new_1
+        )
+
+        # -- dissociate
+        # refresh fixture metadata
+        self.fixture_metadata = self.isogeo.metadata.get(
+            metadata_id=self.fixture_metadata._id, include=("tags",)
+        )
+
+        # associate
+        self.isogeo.catalog.dissociate_metadata(
+            metadata=self.fixture_metadata, catalog=catalog_new_1
+        )
 
         # add created catalog to deletion
         self.li_fixtures_to_delete.append(catalog_new_1._id)

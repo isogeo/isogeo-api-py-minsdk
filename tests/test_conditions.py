@@ -3,12 +3,13 @@
 
 """Usage from the repo root folder:
 
-```python
-# for whole test
-python -m unittest tests.test_conditions
-# for licific
-python -m unittest tests.test_conditions.TestConditions.test_conditions_create_basic
-```
+    .. code-block:: python
+
+        # for whole test
+        python -m unittest tests.test_conditions
+        # for specific test
+        python -m unittest tests.test_conditions.TestConditions.test_conditions_create_without_license
+
 """
 
 # #############################################################################
@@ -107,7 +108,7 @@ class TestConditions(unittest.TestCase):
 
         md = Metadata(title=get_test_marker(), type="vectorDataset")
         cls.fixture_metadata = cls.isogeo.metadata.create(
-            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md
         )
 
     def setUp(self):
@@ -142,6 +143,25 @@ class TestConditions(unittest.TestCase):
         # create object locally
         condition = Condition(
             description="bonjour", license=sample(workgroup_licenses, 1)[0]
+        )
+
+        # add it to a metadata
+        condition_created = self.isogeo.metadata.conditions.create(
+            metadata=self.fixture_metadata, condition=condition
+        )
+
+        # remove it from a metadata
+        condition_removed = self.isogeo.metadata.conditions.delete(
+            metadata=self.fixture_metadata, condition=condition_created
+        )
+
+        self.assertEqual(condition_removed.status_code, 204)
+
+    def test_conditions_create_without_license(self):
+        """POST :metadata/{metadata_uuid}/conditions}"""
+        # create object locally
+        condition = Condition(
+            description="{} - {}".format(get_test_marker(), self.discriminator)
         )
 
         # add it to a metadata

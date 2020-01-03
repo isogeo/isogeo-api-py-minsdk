@@ -26,6 +26,7 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 # other routes
 from .routes_event import ApiEvent
+from .routes_metadata_bulk import ApiBulk
 from .routes_condition import ApiCondition
 from .routes_conformity import ApiConformity
 from .routes_feature_attributes import ApiFeatureAttribute
@@ -70,6 +71,7 @@ class ApiMetadata:
 
         # sub routes
         self.attributes = ApiFeatureAttribute(self.api_client)
+        self.bulk = ApiBulk(self.api_client)
         self.conditions = ApiCondition(self.api_client)
         self.conformity = ApiConformity(self.api_client)
         self.events = ApiEvent(self.api_client)
@@ -132,21 +134,12 @@ class ApiMetadata:
 
     @ApiDecorators._check_bearer_validity
     def create(
-        self,
-        workgroup_id: str,
-        metadata: Metadata,
-        check_exists: bool = 1,
-        return_basic_or_complete: bool = 0,
+        self, workgroup_id: str, metadata: Metadata, return_basic_or_complete: bool = 0
     ) -> Metadata:
         """Add a new metadata to a workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup
         :param Metadata metadata: Metadata model object to create
-        :param bool check_exists: check if a metadata with the same title already exists into the workgroup:
-
-          - 0 = no check
-          - 1 = compare name [DEFAULT]
-
         :param bool return_basic_or_complete: creation of metada uses a bulk script.\
           So, by default API does not return the complete object but the minimal info.\
           This option allow to overrides the basic behavior. Options:
@@ -155,6 +148,23 @@ class ApiMetadata:
           - 1 = complete (make an addtionnal request)
 
         :rtype: Metadata
+
+        :Example:
+
+        .. code-block:: python
+
+            # create a local metadata
+            my_metadata = Metadata(
+                title="My awesome metadata",    # required
+                type="vectorDataset",           # required
+                abstract="Here comes my **awesome** description with a piece of markdown."  # optional
+            )
+
+            # push it online
+            isogeo.metadata.create(
+                workgroup_id=WORKGROUP_UUID,
+                metadata=my_metadata
+            )
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -162,22 +172,17 @@ class ApiMetadata:
         else:
             pass
 
-        # check if metadata already exists in workgroup
-        if check_exists:
-            logger.debug(NotImplemented)
-        #     # retrieve workgroup metadatas
-        #     if not self.api_client._wg_metadatas_names:
-        #         self.metadatas(workgroup_id=workgroup_id, include=())
-        #     # check
-        #     if metadata.name in self.api_client._wg_metadatas_names:
-        #         logger.debug(
-        #             "Metadata with the same name already exists: {}. Use 'metadata_update' instead.".format(
-        #                 metadata.name
-        #             )
-        #         )
-        #         return False
-        # else:
-        #     pass
+        # check required attributes
+        if not metadata.title:
+            raise ValueError("Metadata title is required: {}".format(metadata.title))
+        else:
+            pass
+        if not metadata.type:
+            logger.warning(
+                "Metadata type is not specified, so the 'resource' type will be applied"
+            )
+        else:
+            pass
 
         # build request url
         url_metadata_create = utils.get_request_base_url(

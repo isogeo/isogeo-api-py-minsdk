@@ -103,7 +103,7 @@ class TestMetadatas(unittest.TestCase):
         # fixture metadata
         md = Metadata(title=get_test_marker(), type="vectorDataset")
         cls.fixture_metadata = cls.isogeo.metadata.create(
-            WORKGROUP_TEST_FIXTURE_UUID, metadata=md, check_exists=0
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md
         )
 
     def setUp(self):
@@ -180,6 +180,11 @@ class TestMetadatas(unittest.TestCase):
     def test_metadatas_in_search_results(self):
         """GET :resources/search."""
         search = self.isogeo.search(include="all")
+        if isinstance(search, tuple):
+            logging.warning(
+                "Search request failed: {} - {}".format(search[0], search[1])
+            )
+            return
         for md in search.results:
             metadata = Metadata.clean_attributes(md)
             # compare values

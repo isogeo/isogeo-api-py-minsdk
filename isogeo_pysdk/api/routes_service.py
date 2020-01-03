@@ -280,7 +280,7 @@ class ApiService:
         # based on the format and base URL (cleaned)
         if check_exists:
             # retrieve workgroup metadatas
-            md_services = self.api_client.metadata.search(
+            md_services = self.api_client.search(
                 query="type:service format:{} owner:{}".format(
                     service_format, workgroup_id
                 ),

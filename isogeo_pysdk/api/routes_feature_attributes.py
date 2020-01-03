@@ -111,6 +111,7 @@ class ApiFeatureAttribute:
             metadata_id=md._id,
             attribute_id=md_attributes[0].get("_id")
             )
+
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata_id):
@@ -183,6 +184,7 @@ class ApiFeatureAttribute:
             )
         >>> # add it to the metadata
         >>> isogeo.metadata.attributes.create(md, new_attribute)
+
         """
         # check metadata type
         if metadata.type != "vectorDataset":
@@ -193,6 +195,19 @@ class ApiFeatureAttribute:
             )
         else:
             pass
+
+        # check required data
+        if not attribute.name:
+            raise ValueError("Attribute name is required: {}".format(attribute.name))
+        if not attribute.dataType:
+            logger.warning(
+                ValueError(
+                    "Attribute dataType is missing. An empty string '\"\"' (but != None) will be used.".format(
+                        attribute.dataType
+                    )
+                )
+            )
+            attribute.dataType = ""
 
         # URL
         url_feature_attribute_create = utils.get_request_base_url(

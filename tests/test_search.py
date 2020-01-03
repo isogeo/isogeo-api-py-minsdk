@@ -318,3 +318,11 @@ class TestSearch(unittest.TestCase):
 
         # redo using existing attribute
         search = self.isogeo.search(page_size=0, whole_results=0, augment=1)
+
+    def test_search_full(self):
+        """Complete searches."""
+        # launch a full search
+        self.isogeo.search(whole_results=1)
+
+        # launch again to test event loop management is OK
+        self.isogeo.search(whole_results=1, augment=1)

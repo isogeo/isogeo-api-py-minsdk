@@ -165,8 +165,7 @@ class ApiContact:
             - 1 = compare name [DEFAULT]
             - 2 = compare email
 
-
-        :returns: the created contact or False if a similar cataog already exists or a tuple with response error code
+        :returns: the created contact or the existing contact if case oof a matching name or email or a tuple with response error code
         :rtype: Contact
         """
         # check workgroup UUID
@@ -193,7 +192,7 @@ class ApiContact:
                         contact.name
                     )
                 )
-                return False
+                return self.get(self.api_client._wg_contacts_names.get(contact.name))
         elif check_exists == 2:
             # retrieve workgroup contacts
             if not self.api_client._wg_contacts_emails:
@@ -205,7 +204,7 @@ class ApiContact:
                         contact.email
                     )
                 )
-                return False
+                return self.get(self.api_client._wg_contacts_emails.get(contact.email))
         else:
             pass
 
@@ -365,6 +364,17 @@ class ApiContact:
         :param Metadata metadata: metadata object to update
         :param Contact contact: contact model object to associate
         :param str role: role to assign to the contact
+
+        :Example:
+
+        .. code-block:: python
+
+            # retrieve a metadata
+            md = isogeo.metadata.get(METADATA_UUID)
+            # retrieve a contact
+            ctct = isogeo.contact.get(CONTACT_UUID)
+            # associate a contact to a metadata
+            isogeo.contact.associate_metadata(metadata = md, contact = ctct)
         """
         # check metadata UUID
         if not checker.check_is_uuid(metadata._id):

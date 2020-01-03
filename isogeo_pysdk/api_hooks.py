@@ -13,6 +13,8 @@ class IsogeoHooks(object):
 
     Requests has a hook system that you can use to manipulate portions of the request process,\
         or signal event handling. This module is a set of custom hooks to handle Isogeo API responses.
+
+        WIP
     """
 
     def __init__(self):

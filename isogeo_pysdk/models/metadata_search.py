@@ -25,7 +25,7 @@ import pprint
 class MetadataSearch(object):
     """Metadata searchs are entities used to organize and shares metadata of a workgroup."""
 
-    attr_types = {
+    ATTR_TYPES = {
         "envelope": object,
         "limit": int,
         "offset": int,
@@ -223,7 +223,7 @@ class MetadataSearch(object):
         """Returns the model properties as a dict."""
         result = {}
 
-        for attr, _ in self.attr_types.items():
+        for attr, _ in self.ATTR_TYPES.items():
             value = getattr(self, attr)
             if isinstance(value, list):
                 result[attr] = list(

@@ -31,6 +31,10 @@ if __name__ == "__main__":
     """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
+    from dotenv import load_dotenv
+
+    # ------------ Load .env file variables ----------------
+    load_dotenv(".env", override=True)
 
     # ------------Authentication credentials ----------------
     client_id = environ.get("ISOGEO_API_DEV_ID")
@@ -38,16 +42,23 @@ if __name__ == "__main__":
 
     # ------------ Real start ----------------
     # instanciating the class
-    isogeo = Isogeo(client_id=client_id, client_secret=client_secret, lang="fr")
+    isogeo = Isogeo(
+        auth_mode="group",
+        client_id=client_id,
+        client_secret=client_secret,
+        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+        platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        lang="fr",
+    )
     isogeo.connect()
 
     # let's search for metadatas!
     search = isogeo.search(
-        query="owner:b81e0b3bc3124deeadbf59ad05c71a2a",
         page_size=10,
         whole_results=0,
-        include=["layers", "links", "operations", "serviceLayers"],
+        include=("layers", "links", "operations", "serviceLayers"),
     )
+    isogeo.close()
 
     # ------------ Parsing resources ----------------
     md_resources = OrderedDict()
@@ -57,8 +68,7 @@ if __name__ == "__main__":
     li_ogc_share = []
     li_esri_share = []
     li_dl_share = []
-
-    for md in search.get("results"):
+    for md in search.results:
         if md.get("type") == "service":
             print("Services metadatas are excluded.")
             continue

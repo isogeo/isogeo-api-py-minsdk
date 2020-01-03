@@ -1,10 +1,5 @@
-.. Isogeo PySDK documentation master file, created by
-   sphinx-quickstart on Mon Mar 26 15:11:32 2018.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
-Isogeo PySDK's documentation
-============================
+Isogeo Python SDK - Documentation
+=================================
 
 .. toctree::
    :maxdepth: 2
@@ -17,27 +12,31 @@ Isogeo PySDK's documentation
 :Source code: https://github.com/Isogeo/isogeo-api-py-minsdk/
 :Issues: https://github.com/Isogeo/isogeo-api-py-minsdk/issues
 
+.. |date| date::
+
+Updated: |date|
+
 Indices and tables
-==================
+++++++++++++++++++
 
 * :ref:`genindex`
 * :ref:`modindex`
 * :ref:`search`
 
-Installation
-++++++++++++
-
-.. include:: installation.rst
-
-
 Cookbook
 ++++++++
 
 .. toctree::
-    usage
+   :maxdepth: 2
 
-Package modules
-+++++++++++++++
+   installation
+   authentication
+   usage
+
+----
+
+Package modules and submodules
+++++++++++++++++++++++++++++++
 
 .. toctree::
     _apidoc/modules

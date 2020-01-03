@@ -2,6 +2,9 @@
 #! python3  # noqa: E265
 
 from .application_types import ApplicationTypes  # noqa: F401
+from .bulk_actions import BulkActions  # noqa: F401
+from .bulk_ignore_reasons import BulkIgnoreReasons  # noqa: F401
+from .bulk_targets import BulkTargets  # noqa: F401
 from .catalog_statistics_tags import CatalogStatisticsTags  # noqa: F401
 from .contact_roles import ContactRoles  # noqa: F401
 from .contact_types import ContactTypes  # noqa: F401
@@ -18,4 +21,5 @@ from .metadata_types import MetadataTypes  # noqa: F401
 from .search_filters_georelations import SearchGeoRelations  # noqa: F401
 from .session_status import SessionStatus  # noqa: F401
 from .share_types import ShareTypes  # noqa: F401
+from .user_roles import UserRoles  # noqa: F401
 from .workgroup_statistics_tags import WorkgroupStatisticsTags  # noqa: F401
