@@ -19,6 +19,7 @@ pr:
 variables:
   packageFolderName: "isogeo_pysdk"
   pyPiPackageName: "isogeo-pysdk"
+  pythonVersion: "3.7"
   vmImageName: "windows-2019"
 
 # -- STAGES ----------------------------------------------------------------------------
@@ -37,7 +38,7 @@ stages:
 
       - task: UsePythonVersion@0
         inputs:
-          versionSpec: '3.7'
+          versionSpec: $(pythonVersion)
           architecture: 'x64'
           addToPath: true
 
@@ -48,13 +49,11 @@ stages:
 
       - script: |
           python -m black --target-version=py37 ./$(packageFolderName)
-          python -m black --target-version=py37 .\tests
+          python -m black --target-version=py37 ./tests
         displayName: 'Apply black code formatting'
 
       - script: |
-          # stop the build if there are Python syntax errors or undefined names
           python -m flake8  ./$(packageFolderName)/ --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. Tolerance of line length fixed to 100.
           python -m flake8  ./$(packageFolderName)/ --count --exit-zero --max-complexity=15 --max-line-length=100 --ignore E501,W505
         displayName: "Static code analisis (PEP8 conformance, imports...) with flake8"
 
@@ -81,7 +80,7 @@ stages:
           python.version: '3.7'
         Python38:
           python.version: '3.8'
-      maxParallel: 2
+      maxParallel: 3
 
     steps:
 
@@ -165,7 +164,7 @@ stages:
 
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.x'
+        versionSpec: $(pythonVersion)
         architecture: 'x64'
         addToPath: true
 
