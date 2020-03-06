@@ -97,6 +97,9 @@ metadata.json
 # logs
 *.log.*
 
+# mypy
+.mypy_cache
+
 # PTVS
 *.ptvs
 *.vs

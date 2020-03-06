@@ -31,6 +31,10 @@ if __name__ == "__main__":
     """Standalone execution."""
     # ------------ Specific imports ----------------
     from os import environ
+    from dotenv import load_dotenv
+
+    # ------------ Load .env file variables ----------------
+    load_dotenv(".env", override=True)
 
     # ------------Authentication credentials ----------------
     client_id = environ.get("ISOGEO_API_DEV_ID")
@@ -38,24 +42,29 @@ if __name__ == "__main__":
 
     # ------------ Real start ----------------
     # instanciating the class
-    isogeo = Isogeo(client_id=client_id, client_secret=client_secret, lang="fr")
+    isogeo = Isogeo(
+        auth_mode="group",
+        client_id=client_id,
+        client_secret=client_secret,
+        auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+        platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        lang="fr",
+    )
     isogeo.connect()
 
     # let's search for metadatas!
     search = isogeo.search()
 
-    print(sorted(search.keys()))
-    print(search.get("query"))
-    print("Total count of metadatas shared: ", search.get("total"))
-    print("Count of resources got by request: {}\n".format(len(search.get("results"))))
+    print(search.query)
+    print("Total count of metadatas shared: ", search.total)
+    print("Count of resources got by request: {}\n".format(len(search.results)))
 
     # get one random resource
-    hatnumber = randrange(0, len(search.get("results")))
+    hatnumber = randrange(0, len(search.results))
     my_resource = isogeo.metadata.get(
         search.results[hatnumber].get("_id"), include="all"
     )
-
-    print(sorted(my_resource))
+    isogeo.close()
 
     # use integrated translator
     tr = IsogeoTranslator("FR")

@@ -14,6 +14,7 @@
 # Standard library
 import logging
 from functools import lru_cache
+from typing import Tuple, Union
 
 # 3rd party
 from requests.exceptions import Timeout
@@ -432,27 +433,43 @@ class ApiCatalog:
 
     # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity
-    def associate_metadata(self, metadata: Metadata, catalog: Catalog) -> Response:
+    def associate_metadata(
+        self, metadata: Union[Metadata, Tuple[Metadata, ...]], catalog: Catalog
+    ) -> Response:
         """Associate a metadata with a catalog.
 
         If the specified catalog is already associated, the response is still 204.
 
-        :param Metadata metadata: metadata object to update
+        :param metadata: metadata object to update
         :param Catalog catalog: catalog model object to associate
 
         :Example:
 
-        >>> isogeo.catalog.associate_metadata(
-            isogeo.metadata.get(METADATA_UUID),
-            isogeo.catalog.get(WORKGROUP_UUID, CATALOG_UUID)
-            ))
-        <Response [204]>
+        .. code-block:: python
+
+            isogeo.catalog.associate_metadata(
+                isogeo.metadata.get(METADATA_UUID),
+                isogeo.catalog.get(WORKGROUP_UUID, CATALOG_UUID)
+                )
+
+            <Response [204]>
         """
         # check metadata UUID
-        if not checker.check_is_uuid(metadata._id):
+        if isinstance(metadata, Metadata) and not checker.check_is_uuid(metadata._id):
             raise ValueError(
                 "Metadata ID is not a correct UUID: {}".format(metadata._id)
             )
+        elif isinstance(metadata, (list, tuple)):
+            logger.info("Multiple association detected: using bulk instead...")
+            # prepare request
+            self.api_client.metadata.bulk.prepare(
+                metadatas=tuple([md._id for md in metadata]),
+                action="add",
+                target="catalogs",
+                models=(catalog,),
+            )
+            # send it
+            return self.api_client.metadata.bulk.send()
         else:
             pass
 

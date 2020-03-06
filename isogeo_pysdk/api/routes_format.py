@@ -300,7 +300,7 @@ class ApiFormat:
         >>> # add new versions locally
         >>> fmt_postgis.versions.extend(["3.0", "3.1"])
         >>> # update online
-        >>> fmt_postgis_updted = isogeo.formats.update(fmt_pgis)
+        >>> fmt_postgis_updted = isogeo.formats.update(fmt_postgis)
         """
         # check format UUID
         if not checker.check_is_uuid(frmt._id):
