@@ -16,7 +16,7 @@ import pathlib
 
 from setuptools import find_packages, setup
 
-# package (to get version)
+# package metadata
 from isogeo_pysdk import __about__
 
 # SETUP ######################################################################
@@ -64,6 +64,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",

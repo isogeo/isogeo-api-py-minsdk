@@ -13,9 +13,7 @@
 
 # Common requirements
 # -----------------------
-pip
 setuptools
-wheel
 
 # Project requirements
 # -----------------------

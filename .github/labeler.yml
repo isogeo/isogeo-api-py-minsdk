@@ -1,0 +1,16 @@
+code art:
+    - .pre-commit-config.yaml
+    - setup.cfg
+
+dependencies:
+    - requirements*.txt
+
+documentation:
+    - .readthedocs.yml
+    - docs/**/*
+    - isogeo_pysdk/samples/**/*
+    - README.md
+
+CI CD:
+    - .github/**/*
+    - azure-pipelines.yml
