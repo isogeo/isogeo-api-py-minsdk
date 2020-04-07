@@ -1,10 +1,6 @@
 Isogeo Python SDK - Documentation
 =================================
 
-.. toctree::
-   :maxdepth: 2
-   :caption: Contents:
-
 .. module:: isogeo-pysdk
 .. moduleauthor:: Julien M. (Isogeo)
 
@@ -23,20 +19,23 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
-Cookbook
-++++++++
-
 .. toctree::
    :maxdepth: 2
+   :caption: Quickstart
 
    installation
    authentication
+
+.. toctree::
+   :maxdepth: 2
+   :caption: Cookbook
+
    usage
 
 ----
 
-Package modules and submodules
-++++++++++++++++++++++++++++++
-
 .. toctree::
-    _apidoc/modules
+   :maxdepth: 3
+   :caption: Package
+
+   _apidoc/modules
