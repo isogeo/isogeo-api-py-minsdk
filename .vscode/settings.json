@@ -10,7 +10,7 @@
         "--verbose"
     ],
     "python.linting.pylintEnabled": true,
-    "python.pythonPath": "C:\\Users\\JulienMOURA\\.virtualenvs\\isogeo-api-py-minsdk-2lcBsEkK\\Scripts\\python.exe",
+    "python.pythonPath": "${workspaceFolder}/.venv/Scripts/python.exe",
     "python.testing.pytestEnabled": true,
     "python.testing.pytestArgs": [
         "-c",
