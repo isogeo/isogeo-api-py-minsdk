@@ -104,7 +104,7 @@ stages:
         python -m pip install -U -r ./requirements_dev.txt --cache-dir ./.pipcache
       displayName: 'Install dependencies'
 
-    - script: python -m pytest
+    - script: pytest -n 3
       env:
         # platform
         ISOGEO_PLATFORM: $(ISOGEO_PLATFORM)
