@@ -170,8 +170,7 @@ stages:
 
     - script: |
         python -m pip install -U pip --cache-dir ./.pipcache
-        python -m pip install -U -r ./requirements.txt --cache-dir ./.pipcache
-        python -m pip install -U twine
+        python -m pip install -U -r ./requirements_dev.txt --cache-dir ./.pipcache
       displayName: 'Install dependencies'
 
     - script: python setup.py egg_info
