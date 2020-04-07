@@ -90,6 +90,10 @@ html_theme = "sphinx_rtd_theme"
 # Output file base name for HTML help builder.
 htmlhelp_basename = "IsogeoPySDK_Doc"
 
+# Ensure sidebar is the same along the pages
+html_sidebars = {
+    "**": ["globaltoc.html", "relations.html", "sourcelink.html", "searchbox.html"]
+}
 
 # -- Options for Texinfo output ----------------------------------------------
 
