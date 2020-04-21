@@ -252,6 +252,7 @@ class IsogeoChecker(object):
                 " Must be one of: {}.".format(in_rel, " | ".join(GEORELATIONS))
             )
 
+    @classmethod
     def check_is_uuid(self, uuid_str: str):
         """Check if it's an Isogeo UUID handling specific form.
 

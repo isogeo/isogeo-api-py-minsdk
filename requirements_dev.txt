@@ -16,29 +16,31 @@
 
 # Lint and formatting
 # -----------------------
-black
-flake8
-pre-commit
-pylint
+black==19.10b0
+flake8==3.7.*
+pre-commit==2.2.*
 
 # Tests
 # -----------------------
-python-dotenv
-pytest==5.0.*
-pytest-cov
-pytest-random-order
+python-dotenv==0.13.*
+pytest==5.4.*
+pytest-cov==2.8.*
+pytest-randomly==3.2.*
+pytest-rerunfailures==9.*
+tox==3.14.*
 
-# Documentation
+# Documentation (for devs)
 # -----------------------
-sphinx
-sphinx-autodoc-typehints
-sphinx-markdown-tables  # to render markdown tables
-sphinx-rtd-theme
-recommonmark
+sphinx==2.4.*
+sphinx-autodoc-typehints==1.10.3
+sphinx-markdown-tables==0.0.*  # to render markdown tables
+sphinx-rtd-theme==0.4.*
+recommonmark==0.6.*
 
 # Packaging
 # -----------------------
 twine
+wheel
 
 # then it's possible to install from the repo:
 # https://github.com/Isogeo/isogeo-api-py-minsdk/archive/master.zip

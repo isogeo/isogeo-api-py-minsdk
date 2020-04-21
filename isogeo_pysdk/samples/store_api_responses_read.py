@@ -115,9 +115,9 @@ if __name__ == "__main__":
 
     # -- Async exports --------------------------------------------------
     # get some object identifiers required for certain routes
-    resource_id = sample(
-        isogeo.search(whole_results=0, page_size=50).results, 1
-    )[0].get("_id")
+    resource_id = sample(isogeo.search(whole_results=0, page_size=50).results, 1)[
+        0
+    ].get("_id")
     share_id = isogeo.share.listing()[0].get("_id")
 
     # list of methods to execute

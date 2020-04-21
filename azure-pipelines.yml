@@ -19,6 +19,7 @@ pr:
 variables:
   packageFolderName: "isogeo_pysdk"
   pyPiPackageName: "isogeo-pysdk"
+  pythonVersion: "3.7"
   vmImageName: "windows-2019"
 
 # -- STAGES ----------------------------------------------------------------------------
@@ -37,7 +38,7 @@ stages:
 
       - task: UsePythonVersion@0
         inputs:
-          versionSpec: '3.7'
+          versionSpec: $(pythonVersion)
           architecture: 'x64'
           addToPath: true
 
@@ -48,13 +49,11 @@ stages:
 
       - script: |
           python -m black --target-version=py37 ./$(packageFolderName)
-          python -m black --target-version=py37 .\tests
+          python -m black --target-version=py37 ./tests
         displayName: 'Apply black code formatting'
 
       - script: |
-          # stop the build if there are Python syntax errors or undefined names
           python -m flake8  ./$(packageFolderName)/ --count --select=E9,F63,F7,F82 --show-source --statistics
-          # exit-zero treats all errors as warnings. Tolerance of line length fixed to 100.
           python -m flake8  ./$(packageFolderName)/ --count --exit-zero --max-complexity=15 --max-line-length=100 --ignore E501,W505
         displayName: "Static code analisis (PEP8 conformance, imports...) with flake8"
 
@@ -66,7 +65,7 @@ stages:
 - stage: Test
   displayName: Unit tests
   dependsOn: Lint
-  condition: succeeded()
+  condition: ne(variables['System.PullRequest.SourceBranch'], 'docs')
 
   jobs:
   # TESTS
@@ -79,7 +78,9 @@ stages:
           python.version: '3.6'
         Python37:
           python.version: '3.7'
-      maxParallel: 2
+        Python38:
+          python.version: '3.8'
+      maxParallel: 3
 
     steps:
 
@@ -92,7 +93,6 @@ stages:
         buildType: "current"
         artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
         targetPath: "$(System.DefaultWorkingDirectory)"
-
     - task: UsePythonVersion@0
       inputs:
         versionSpec: '$(python.version)'
@@ -104,8 +104,7 @@ stages:
         python -m pip install -U -r ./requirements_dev.txt --cache-dir ./.pipcache
       displayName: 'Install dependencies'
 
-    - script: |
-        python -m pytest --random-order --maxfail=3 --junitxml=junit/test-results.xml --cov=$(packageFolderName) --cov-report=xml --cov-append tests
+    - script: python -m pytest
       env:
         # platform
         ISOGEO_PLATFORM: $(ISOGEO_PLATFORM)
@@ -164,14 +163,13 @@ stages:
 
     - task: UsePythonVersion@0
       inputs:
-        versionSpec: '3.x'
+        versionSpec: $(pythonVersion)
         architecture: 'x64'
         addToPath: true
 
     - script: |
         python -m pip install -U pip --cache-dir ./.pipcache
-        python -m pip install -U -r ./requirements.txt --cache-dir ./.pipcache
-        python -m pip install -U twine
+        python -m pip install -U -r ./requirements_dev.txt --cache-dir ./.pipcache
       displayName: 'Install dependencies'
 
     - script: python setup.py egg_info
