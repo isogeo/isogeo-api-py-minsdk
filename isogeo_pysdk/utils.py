@@ -44,7 +44,8 @@ _regex_milliseconds = re.compile(r"\.(.*)\+")
 """
     For timestamps about metadata (_created, _modified):
 
-        - `2019-05-17T13:01:08.559123+00:00`: sometimes there are 6 digits in milliseconds, as accepted in `standard lib (%f) <https://docs.python.org/fr/3/library/datetime.html#strftime-strptime-behavior>`_
+        - `2019-05-17T13:01:08.559123+00:00`: sometimes there are 6 digits in milliseconds, \
+        as accepted in `standard lib (%f) <https://docs.python.org/fr/3/library/datetime.html#strftime-strptime-behavior>`_
         - `2019-08-21T16:07:42.9419347+00:00`: sometimes there are more than 6 digits in milliseconds
 """
 _dtm_metadata = "%Y-%m-%dT%H:%M:%S.%f+00:00"
@@ -258,6 +259,13 @@ class IsogeoUtils(object):
         """Convert a mount of octets in readable size.
 
         :param int octets: mount of octets to convert
+
+        :Example:
+
+        .. code-block:: python
+
+            >>> IsogeoUtils.convert_octets(1024)
+            "1ko"
         """
         # check zero
         if octets == 0:
@@ -475,7 +483,7 @@ class IsogeoUtils(object):
 
     @classmethod
     def get_url_base_from_url_token(
-        self, url_api_token: str = "https://id.api.isogeo.com/oauth/token"
+        cls, url_api_token: str = "https://id.api.isogeo.com/oauth/token"
     ) -> str:
         """Returns the Isogeo API root URL (not included into credentials file) from the token or
         the auth URL (always included).
@@ -500,7 +508,7 @@ class IsogeoUtils(object):
         return api_url_base.geturl()
 
     @classmethod
-    def guess_platform_from_url(self, url: str = "https://api.isogeo.com/") -> str:
+    def guess_platform_from_url(cls, url: str = "https://api.isogeo.com/") -> str:
         """Returns the Isogeo platform from a given URL.
 
         :param url str: URL string to guess from
@@ -538,7 +546,7 @@ class IsogeoUtils(object):
 
     # -- SEARCH  --------------------------------------------------------------
     @classmethod
-    def pages_counter(self, total: int, page_size: int = 100) -> int:
+    def pages_counter(cls, total: int, page_size: int = 100) -> int:
         """Simple helper to handle pagination. Returns the number of pages for a given number of
         results.
 
@@ -814,7 +822,7 @@ class IsogeoUtils(object):
 
     # -- API AUTH ------------------------------------------------------------
     @classmethod
-    def credentials_loader(self, in_credentials: str = "client_secrets.json") -> dict:
+    def credentials_loader(cls, in_credentials: str = "client_secrets.json") -> dict:
         """Loads API credentials from a file, JSON or INI.
 
         :param str in_credentials: path to the credentials file. By default, `./client_secrets.json`
@@ -880,7 +888,7 @@ class IsogeoUtils(object):
                     "scopes": auth_settings.get("scopes", ["resources:read"]),
                     "uri_auth": auth_settings.get("auth_uri"),
                     "uri_token": auth_settings.get("token_uri"),
-                    "uri_base": self.get_url_base_from_url_token(
+                    "uri_base": cls.get_url_base_from_url_token(
                         auth_settings.get("token_uri")
                     ),
                     "uri_redirect": None,
@@ -900,7 +908,7 @@ class IsogeoUtils(object):
                     "scopes": auth_settings.get("scopes", ["resources:read"]),
                     "uri_auth": auth_settings.get("auth_uri"),
                     "uri_token": auth_settings.get("token_uri"),
-                    "uri_base": self.get_url_base_from_url_token(
+                    "uri_base": cls.get_url_base_from_url_token(
                         auth_settings.get("token_uri")
                     ),
                     "uri_redirect": auth_settings.get("redirect_uris", None),
@@ -928,14 +936,14 @@ class IsogeoUtils(object):
                 "client_secret": auth_settings.get("CLIENT_SECRET"),
                 "uri_auth": auth_settings.get("URI_AUTH"),
                 "uri_token": auth_settings.get("URI_TOKEN"),
-                "uri_base": self.get_url_base_from_url_token(
+                "uri_base": cls.get_url_base_from_url_token(
                     auth_settings.get("URI_TOKEN")
                 ),
                 "uri_redirect": auth_settings.get("URI_REDIRECT"),
             }
 
         # add guessed platform
-        out_auth["platform"] = self.guess_platform_from_url(out_auth.get("uri_base"))
+        out_auth["platform"] = cls.guess_platform_from_url(out_auth.get("uri_base"))
 
         # method ending
         return out_auth
