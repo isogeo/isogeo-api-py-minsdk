@@ -246,6 +246,7 @@ class Metadata(object):
         """
         for k, v in cls.ATTR_MAP.items():
             raw_object[k] = raw_object.pop(v, [])
+
         return cls(**raw_object)
 
     # -- CLASS INSTANCIATION -----------------------------------------------------------
@@ -298,6 +299,7 @@ class Metadata(object):
         validFrom: str = None,
         validTo: str = None,
         validityComment: str = None,
+        **kwargs,
     ):
         """Metadata model."""
 
@@ -441,6 +443,15 @@ class Metadata(object):
             self._validTo = validTo
         if validityComment is not None:
             self._validityComment = validityComment
+
+        # warn about unsupported attributes
+        if len(kwargs):
+            logger.warning(
+                "Folllowings fields were not expected and have been ignored. "
+                "Maybe consider adding them to the model: {}.".format(
+                    " | ".join(kwargs.keys())
+                )
+            )
 
     # -- PROPERTIES --------------------------------------------------------------------
     # abilities of the user related to the metadata
