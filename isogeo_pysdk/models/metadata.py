@@ -191,6 +191,7 @@ class Metadata(object):
         "serviceLayers": list,
         "specifications": list,
         "tags": list,
+        "thumbnailUrl": str,
         "title": str,
         "topologicalConsistency": str,
         "type": str,
@@ -289,6 +290,7 @@ class Metadata(object):
         serviceLayers: list = None,
         specifications: list = None,
         tags: list = None,
+        thumbnailUrl: str = None,
         title: str = None,
         topologicalConsistency: str = None,
         type: str = None,
@@ -338,6 +340,7 @@ class Metadata(object):
         self._serviceLayers = None
         self._specifications = None
         self._tags = None
+        self._thumbnailUrl = None
         self._title = None
         self._topologicalConsistency = None
         self._type = None
@@ -422,6 +425,8 @@ class Metadata(object):
             self._specifications = specifications
         if tags is not None:
             self._tags = tags
+        if thumbnailUrl is not None:
+            self._thumbnailUrl = thumbnailUrl
         if title is not None:
             self._title = title
         if topologicalConsistency is not None:
@@ -1112,6 +1117,22 @@ class Metadata(object):
         """
 
         self._tags = tags
+
+    # thumbnailUrl
+    @property
+    def thumbnailUrl(self) -> str:
+        """Gets the thumbnailUrl of this Metadata.
+
+        :return: The thumbnailUrl of this Metadata.
+        :rtype: str
+        """
+        logger.warning(
+            DeprecationWarning(
+                "Thumbnail Url is a former field of Isogeo metadata model. "
+                "Its use is not guaranted."
+            )
+        )
+        return self._thumbnailUrl
 
     # title
     @property
