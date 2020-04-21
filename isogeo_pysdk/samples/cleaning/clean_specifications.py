@@ -28,8 +28,8 @@ from isogeo_pysdk import Isogeo, Metadata, Specification
 # ##################################
 
 # environment vars
-load_dotenv("dev.env", override=True)
-WG_TEST_UUID = ""
+load_dotenv(".env", override=True)
+WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
 # ############################################################################
@@ -78,13 +78,17 @@ if __name__ == "__main__":
         urllib3.disable_warnings()
 
     # -- Authentication and connection ---------------------------------
+    client_id = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID")
+    client_secret = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET")
+
     # for oAuth2 Legacy Flow
     isogeo = Isogeo(
         auth_mode="user_legacy",
-        client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
-        client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
+        client_id=client_id,
+        client_secret=client_secret,
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        lang="fr",
         timeout=(30, 200),
     )
 

@@ -42,6 +42,18 @@ class ApiSearch:
         if api_client is not None:
             self.api_client = api_client
 
+        # create an asyncio AbstractEventLoop
+        try:
+            self.loop = asyncio.get_event_loop()
+        except RuntimeError as e:
+            logger.warning(
+                "Async get loop failed. Maybe because it's already executed in a separated thread. Original error: {}".format(
+                    e
+                )
+            )
+            self.loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self.loop)
+
         # store API client (Request [Oauthlib] Session) and pass it to the decorators
         self.api_client = api_client
         ApiDecorators.api_client = api_client
@@ -278,30 +290,28 @@ class ApiSearch:
                     "order_dir": order_dir,
                 }
 
-                # launch async searches
-                try:
-                    loop = asyncio.get_event_loop()
-                except RuntimeError as e:
-                    logger.warning(
-                        "Async get loop failed. Maybe because it's already executed in a separated thread. Original error: {}".format(
-                            e
-                        )
+                # check loop state
+                if self.loop.is_closed():
+                    logger.debug(
+                        "Current event loop is already closed. Creating a new one..."
                     )
-                    loop = asyncio.new_event_loop()
-                    asyncio.set_event_loop(loop)
+                    self.loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(self.loop)
 
+                # launch async searches
                 future_searches_concatenated = asyncio.ensure_future(
                     self.search_metadata_asynchronous(
                         total_results=total_results, **search_params
-                    )
+                    ),
+                    loop=self.loop,
                 )
-                loop.run_until_complete(future_searches_concatenated)
+                self.loop.run_until_complete(future_searches_concatenated)
 
                 # check results structure
                 req_metadata_search = future_searches_concatenated.result()
 
                 # properly close the loop
-                loop.close()
+                self.loop.close()
 
         # cASE - NO PAGINATION NEEDED
         elif page_size == 0 or not whole_results:
@@ -375,9 +385,9 @@ class ApiSearch:
         with ThreadPoolExecutor(
             max_workers=max_workers, thread_name_prefix="IsogeoSearch"
         ) as executor:
-            loop = asyncio.get_event_loop()
+            self.loop = asyncio.get_event_loop()
             tasks = [
-                loop.run_in_executor(
+                self.loop.run_in_executor(
                     executor,
                     partial(
                         self.search,

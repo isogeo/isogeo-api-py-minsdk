@@ -12,6 +12,7 @@
 # ##################################
 
 # standard library
+from hashlib import sha256
 import logging
 import pprint
 import re
@@ -1401,11 +1402,44 @@ class Metadata(object):
         """Returns true if both objects are not equal."""
         return not self == other
 
+    def signature(
+        self,
+        included_attributes: tuple = (
+            "coordinateSystem",
+            "envelope",
+            "features",
+            "featureAttributes",
+            "format",
+            "geometry",
+            "groupId",
+            "name",
+            "path",
+            "series",
+            "title",
+            "type",
+        ),
+    ) -> str:
+        """Calculate a hash cumulating certain attributes values. Useful to Scan or comparison operations.
+
+        :param tuple included_attributes: object attributes to include in hash. Default: \
+            {("coordinateSystem","envelope","features","featuresAttributes","format","geometry","groupId","name","path","series","title","type")})
+        """
+        # instanciate the hash
+        hasher = sha256()
+
+        # parse attributes
+        for i in included_attributes:
+            # because hash.update requires a
+            if getattr(self, i):
+                hasher.update(getattr(self, i).encode())
+
+        return hasher.hexdigest()
+
 
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
     """standalone execution."""
-    md = Metadata()
-    print(md)
+    test_sample = Metadata(title="abcd123")
+    print(test_sample.signature())
