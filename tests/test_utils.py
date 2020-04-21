@@ -327,7 +327,8 @@ class TestIsogeoUtils(unittest.TestCase):
         self.assertEqual(p_default, 1)
         p_default = self.utils.pages_counter(total=50, page_size=10)
         self.assertEqual(p_default, 5)
-        p_default = self.utils.pages_counter(total=156, page_size=22)
+        # test it also as class method
+        p_default = IsogeoUtils.pages_counter(total=156, page_size=22)
         self.assertEqual(p_default, 8)
 
     # -- Methods helpers
@@ -409,3 +410,9 @@ class TestIsogeoUtils(unittest.TestCase):
         unrecognized_date = IsogeoUtils.hlpr_datetimes("2014-10-02T00:00:00+00")
         self.assertIsInstance(unrecognized_date, datetime)
         self.assertEqual(unrecognized_date.year, 2014)
+
+    def test_convert_octets(self):
+        """Test octets conversion into a readable string."""
+        result = IsogeoUtils.convert_octets(1024)
+        self.assertIsInstance(result, str)
+        self.assertIs(result, "1ko")
