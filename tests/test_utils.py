@@ -415,4 +415,4 @@ class TestIsogeoUtils(unittest.TestCase):
         """Test octets conversion into a readable string."""
         result = IsogeoUtils.convert_octets(1024)
         self.assertIsInstance(result, str)
-        self.assertIs(result, "1ko")
+        self.assertEqual(result, "1.0 Ko")
