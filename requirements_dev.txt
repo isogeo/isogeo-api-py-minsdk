@@ -22,7 +22,7 @@ pre-commit==2.2.*
 
 # Tests
 # -----------------------
-python-dotenv==0.12.*
+python-dotenv==0.13.*
 pytest==5.4.*
 pytest-cov==2.8.*
 pytest-randomly==3.2.*

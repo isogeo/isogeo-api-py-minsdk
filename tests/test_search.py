@@ -138,7 +138,6 @@ class TestSearch(unittest.TestCase):
         # redo using existing attribute
         search = self.isogeo.search(page_size=0, whole_results=0, augment=1)
 
-
     def test_search_search_as_application(self):
         """GET :resources/search."""
         basic_search = self.isogeo.search()
