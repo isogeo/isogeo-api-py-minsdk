@@ -90,7 +90,8 @@ if __name__ == "__main__":
             for link in rel_resources:
                 # only OGC
                 if link.get("kind") in kind_ogc or (
-                    link.get("type") == "link" and link.get("link").get("kind") in kind_ogc
+                    link.get("type") == "link"
+                    and link.get("link").get("kind") in kind_ogc
                 ):
                     li_ogc_md.append((link.get("title"), link.get("url")))
                     md_resources["OGC links"] = len(li_ogc_md)
@@ -102,7 +103,8 @@ if __name__ == "__main__":
 
                 # only Esri
                 if link.get("kind") in kind_esri or (
-                    link.get("type") == "link" and link.get("link").get("kind") in kind_esri
+                    link.get("type") == "link"
+                    and link.get("link").get("kind") in kind_esri
                 ):
                     li_esri_md.append((link.get("title"), link.get("url")))
                     md_resources["Esri links"] = len(li_ogc_md)
@@ -114,8 +116,11 @@ if __name__ == "__main__":
 
                 # downloadable
                 if (
-                    link.get("kind") == "data" and link.get("actions") == "download" or (
-                        link.get("type") == "link" and link.get("link").get("kind") == "data"
+                    link.get("kind") == "data"
+                    and link.get("actions") == "download"
+                    or (
+                        link.get("type") == "link"
+                        and link.get("link").get("kind") == "data"
                     )
                 ):
                     li_dl_md.append((link.get("title"), link.get("url")))
