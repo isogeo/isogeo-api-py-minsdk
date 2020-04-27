@@ -3,12 +3,15 @@
 
 """Usage from the repo root folder:
 
-```python
-# for whole test
-python -m unittest tests.test_authentication
-# for specific
-python -m unittest tests.test_authentication.TestAuthentication.test_other_language
-```
+    :Example:
+
+    .. code-block:: python
+
+        # for whole test
+        python -m unittest tests.test_authentication
+        # for specific
+        python -m unittest tests.test_authentication.TestAuthentication.test_other_language
+
 """
 
 # #############################################################################
