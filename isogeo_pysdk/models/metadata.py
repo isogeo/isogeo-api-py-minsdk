@@ -12,11 +12,11 @@
 # ##################################
 
 # standard library
-from hashlib import sha256
 import logging
 import pprint
 import re
 import unicodedata
+from hashlib import sha256
 from typing import Union
 
 # package
@@ -1469,7 +1469,17 @@ class Metadata(object):
         for i in included_attributes:
             # because hash.update requires a
             if getattr(self, i):
-                hasher.update(getattr(self, i).encode())
+                try:
+                    attr_value = getattr(self, i)
+                    if isinstance(attr_value, str):
+                        hasher.update(attr_value.encode())
+                    elif isinstance(attr_value, dict):
+                        hasher.update(hash(frozenset(attr_value.items())))
+                    else:
+                        hasher.update(hash(attr_value))
+                        pass
+                except TypeError:
+                    pass
 
         return hasher.hexdigest()
 
