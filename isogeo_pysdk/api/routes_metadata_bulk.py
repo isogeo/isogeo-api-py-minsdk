@@ -117,7 +117,8 @@ class ApiBulk:
 
         # ensure lowercase
         prepared_request.action = action.lower()
-        prepared_request.target = target.lower()
+        # prepared_request.target = target.lower()
+        prepared_request.target = target
 
         # check metadatas uuid
         metadatas = list(metadatas)
