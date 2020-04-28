@@ -118,7 +118,6 @@ class TestToken(unittest.TestCase):
         print(datetime.utcfromtimestamp(isogeo.token.get("expires_at")))
         print(datetime.utcnow())
 
-        daetime.uctnow()
         # close
         isogeo.close()
 
