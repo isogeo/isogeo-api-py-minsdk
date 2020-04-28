@@ -17,12 +17,13 @@ import logging
 import pprint
 import re
 import unicodedata
+from typing import Union
 
 # package
 from isogeo_pysdk.enums import MetadataTypes
 
 # others models
-from isogeo_pysdk.models import Workgroup
+from isogeo_pysdk.models import CoordinateSystem, Workgroup
 
 
 # #############################################################################
@@ -205,6 +206,7 @@ class Metadata(object):
         "abstract": str,
         "collectionContext": str,
         "collectionMethod": str,
+        "coordinateSystem": dict,
         "distance": float,
         "editionProfile": str,
         "encoding": str,
@@ -612,22 +614,26 @@ class Metadata(object):
 
     # coordinateSystem
     @property
-    def coordinateSystem(self) -> dict:
+    def coordinateSystem(self) -> CoordinateSystem:
         """Gets the coordinateSystem of this Metadata.
 
         :return: The coordinateSystem of this Metadata.
-        :rtype: dict
+        :rtype: CoordinateSystem
         """
         return self._coordinateSystem
 
     @coordinateSystem.setter
-    def coordinateSystem(self, coordinateSystem: dict):
+    def coordinateSystem(self, coordinateSystem: Union[dict, CoordinateSystem]):
         """Sets the coordinate systems of this Metadata.
-
-        :param dict coordinateSystem: to be set
+        
+        :param Union[dict, CoordinateSystem] coordinateSystem: coordinate-system to be set
         """
-
-        self._coordinateSystem = coordinateSystem
+        if isinstance(coordinateSystem, dict):
+            self._coordinateSystem = CoordinateSystem(**coordinateSystem)
+        elif isinstance(coordinateSystem, CoordinateSystem):
+            self._coordinateSystem = coordinateSystem
+        else:
+            self._coordinateSystem = None
 
     # created
     @property
