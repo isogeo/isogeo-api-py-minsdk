@@ -23,5 +23,6 @@
         "-p",
         "test_*.py"
     ],
-    "restructuredtext.confPath": "${workspaceFolder}\\docs"
+    "restructuredtext.confPath": "${workspaceFolder}\\docs",
+    "autoDocstring.customTemplatePath": ".vscode\\docstring-config.mustache",
 }   
