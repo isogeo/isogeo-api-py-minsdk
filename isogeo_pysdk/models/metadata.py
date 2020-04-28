@@ -1285,7 +1285,7 @@ class Metadata(object):
 
     @validityComment.setter
     def validityComment(self, validityComment: str):
-        """Sets the  of this Metadata.
+        """Sets the validityComment of this Metadata.
 
         :param str validityComment: to be set
         """
@@ -1312,6 +1312,12 @@ class Metadata(object):
             return self._creator._id
         else:
             return None
+
+    @property
+    def typeFilter(self) -> str:
+        """Shortcut to get the type as expected in search filter."""
+        if self.type in MetadataTypes.__members__:
+            return MetadataTypes[self.type].value
 
     # -- METHODS -----------------------------------------------------------------------
     def admin_url(self, url_base: str = "https://app.isogeo.com") -> str:
