@@ -12,17 +12,18 @@
 # ##################################
 
 # standard library
-from hashlib import sha256
 import logging
 import pprint
 import re
 import unicodedata
+from hashlib import sha256
+from typing import Union
 
 # package
 from isogeo_pysdk.enums import MetadataTypes
 
 # others models
-from isogeo_pysdk.models import Workgroup
+from isogeo_pysdk.models import CoordinateSystem, Workgroup
 
 
 # #############################################################################
@@ -205,6 +206,7 @@ class Metadata(object):
         "abstract": str,
         "collectionContext": str,
         "collectionMethod": str,
+        "coordinateSystem": dict,
         "distance": float,
         "editionProfile": str,
         "encoding": str,
@@ -612,22 +614,26 @@ class Metadata(object):
 
     # coordinateSystem
     @property
-    def coordinateSystem(self) -> dict:
+    def coordinateSystem(self) -> CoordinateSystem:
         """Gets the coordinateSystem of this Metadata.
 
         :return: The coordinateSystem of this Metadata.
-        :rtype: dict
+        :rtype: CoordinateSystem
         """
         return self._coordinateSystem
 
     @coordinateSystem.setter
-    def coordinateSystem(self, coordinateSystem: dict):
+    def coordinateSystem(self, coordinateSystem: Union[dict, CoordinateSystem]):
         """Sets the coordinate systems of this Metadata.
-
-        :param dict coordinateSystem: to be set
+        
+        :param Union[dict, CoordinateSystem] coordinateSystem: coordinate-system to be set
         """
-
-        self._coordinateSystem = coordinateSystem
+        if isinstance(coordinateSystem, dict):
+            self._coordinateSystem = CoordinateSystem(**coordinateSystem)
+        elif isinstance(coordinateSystem, CoordinateSystem):
+            self._coordinateSystem = coordinateSystem
+        else:
+            self._coordinateSystem = None
 
     # created
     @property
@@ -1279,7 +1285,7 @@ class Metadata(object):
 
     @validityComment.setter
     def validityComment(self, validityComment: str):
-        """Sets the  of this Metadata.
+        """Sets the validityComment of this Metadata.
 
         :param str validityComment: to be set
         """
@@ -1306,6 +1312,12 @@ class Metadata(object):
             return self._creator._id
         else:
             return None
+
+    @property
+    def typeFilter(self) -> str:
+        """Shortcut to get the type as expected in search filter."""
+        if self.type in MetadataTypes.__members__:
+            return MetadataTypes[self.type].value
 
     # -- METHODS -----------------------------------------------------------------------
     def admin_url(self, url_base: str = "https://app.isogeo.com") -> str:
@@ -1463,7 +1475,17 @@ class Metadata(object):
         for i in included_attributes:
             # because hash.update requires a
             if getattr(self, i):
-                hasher.update(getattr(self, i).encode())
+                try:
+                    attr_value = getattr(self, i)
+                    if isinstance(attr_value, str):
+                        hasher.update(attr_value.encode())
+                    elif isinstance(attr_value, dict):
+                        hasher.update(hash(frozenset(attr_value.items())))
+                    else:
+                        hasher.update(hash(attr_value))
+                        pass
+                except TypeError:
+                    pass
 
         return hasher.hexdigest()
 

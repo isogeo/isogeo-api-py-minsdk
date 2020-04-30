@@ -6,7 +6,8 @@
       "mikestead.dotenv",
       "ms-azure-devops.azure-pipelines",
       "ms-python.python",
-      "ms-vscode.powershell"
+      "ms-vscode.powershell",
+      "njpwerner.autodocstring"
     ]
   }
   

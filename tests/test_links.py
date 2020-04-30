@@ -236,14 +236,15 @@ class TestLinks(unittest.TestCase):
         # retrieve link
         md_links = self.isogeo.metadata.links.listing(self.metadata_fixture_existing)
         # pick one randomly
-        random_link = sample(md_links, 1)[0]
-        # get
-        online_link = self.isogeo.metadata.links.get(
-            metadata_id=self.metadata_fixture_existing._id,
-            link_id=random_link.get("_id"),
-        )
-        # check
-        self.assertIsInstance(online_link, Link)
+        if len(md_links):
+            random_link = sample(md_links, 1)[0]
+            # get
+            online_link = self.isogeo.metadata.links.get(
+                metadata_id=self.metadata_fixture_existing._id,
+                link_id=random_link.get("_id"),
+            )
+            # check
+            self.assertIsInstance(online_link, Link)
 
     # -- PUT/PATCH --
     def test_links_update(self):

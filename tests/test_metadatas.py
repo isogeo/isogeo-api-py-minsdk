@@ -3,12 +3,15 @@
 
 """Usage from the repo root folder:
 
-```python
-# for whole test
-python -m unittest tests.test_metadatas
-# for specific
-python -m unittest tests.test_metadatas.TestMetadatas.test_metadatas_create
-```
+    :Example:
+
+    .. code-block:: python
+
+        # for whole test
+        python -m unittest tests.test_metadatas
+        # for specific
+        python -m unittest tests.test_metadatas.TestMetadatas.test_metadatas_create
+
 """
 
 # #############################################################################

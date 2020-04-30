@@ -45,10 +45,7 @@ class MetadataSearch(object):
         tags: dict = None,
         total: int = None,
     ):
-        """resource/search?
-
-        model
-        """
+        """Model for object returned by resource/search?."""
 
         # default values for the object attributes/properties
         self._envelope = None
@@ -89,11 +86,11 @@ class MetadataSearch(object):
 
     @envelope.setter
     def envelope(self, envelope: dict):
-        """Sets the envelope of this InlineResponse2001.
+        """Sets the envelope of this metadata search.
 
         The aggregated convex hull for the entire serach results. Might be null (if the results span the entire globe, for instance).  # noqa: E501
 
-        :param envelope: The envelope of this InlineResponse2001.  # noqa: E501
+        :param envelope: The envelope of this metadata search.  # noqa: E501
         :type: object
         """
 
@@ -111,7 +108,7 @@ class MetadataSearch(object):
 
     @limit.setter
     def limit(self, limit: int):
-        """Sets the limit of this InlineResponse2001.
+        """Sets the limit of this metadata search.
 
         :param int limit: The limit of this Metadata Search
         """
@@ -149,9 +146,9 @@ class MetadataSearch(object):
 
     @query.setter
     def query(self, query: dict):
-        """Sets the query of this InlineResponse2001.
+        """Sets the query of this metadata search.
 
-        :param query: The query of this InlineResponse2001.  # noqa: E501
+        :param query: The query of this metadata search.  # noqa: E501
         :type: object
         """
 
@@ -169,9 +166,9 @@ class MetadataSearch(object):
 
     @results.setter
     def results(self, results: list):
-        """Sets the results of this InlineResponse2001.
+        """Sets the results of this metadata search.
 
-        :param results: The results of this InlineResponse2001.  # noqa: E501
+        :param results: The results of this metadata search.  # noqa: E501
         :type: list[Metadata]
         """
 
@@ -189,11 +186,11 @@ class MetadataSearch(object):
 
     @tags.setter
     def tags(self, tags: dict):
-        """Sets the tags of this InlineResponse2001.
+        """Sets the tags of this metadata search.
 
         The aggregated set of tags for the entire search results  # noqa: E501
 
-        :param tags: The tags of this InlineResponse2001.  # noqa: E501
+        :param tags: The tags of this metadata search.  # noqa: E501
         :type: Tags
         """
 
