@@ -145,7 +145,7 @@ class TestServiceLayers(unittest.TestCase):
 
         # create it online
         layer_new = self.isogeo.metadata.layers.create(
-            metadata=self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID),
+            metadata=self.isogeo.metadata.get(METADATA_TEST_SERVICE_FIXTURE_UUID),
             layer=layer_new,
         )
 
@@ -247,12 +247,12 @@ class TestServiceLayers(unittest.TestCase):
         """GET :resources/{metadata_uuid}/layers/{layer_uuid}"""
         # get layers
         md_layers = self.isogeo.metadata.layers.listing(
-            self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID)
+            self.isogeo.metadata.get(METADATA_TEST_SERVICE_FIXTURE_UUID)
         )
         # pick one
         layer_id = sample(md_layers, 1)[0].get("_id")
         self.isogeo.metadata.layers.layer(
-            metadata_id=METADATA_TEST_FIXTURE_UUID, layer_id=layer_id
+            metadata_id=METADATA_TEST_SERVICE_FIXTURE_UUID, layer_id=layer_id
         )
 
     # -- PUT/PATCH --
@@ -272,7 +272,7 @@ class TestServiceLayers(unittest.TestCase):
 
         # create it online
         layer_created = self.isogeo.metadata.layers.create(
-            metadata=self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID),
+            metadata=self.isogeo.metadata.get(METADATA_TEST_SERVICE_FIXTURE_UUID),
             layer=layer_new,
         )
 
@@ -285,7 +285,7 @@ class TestServiceLayers(unittest.TestCase):
 
         # check if the change is effective
         layer_to_check = self.isogeo.metadata.layers.layer(
-            metadata_id=METADATA_TEST_FIXTURE_UUID, layer_id=layer_created._id
+            metadata_id=METADATA_TEST_SERVICE_FIXTURE_UUID, layer_id=layer_created._id
         )
         self.assertEqual(layer_to_check.name, "{} - UPDATED".format(layer_name))
 
