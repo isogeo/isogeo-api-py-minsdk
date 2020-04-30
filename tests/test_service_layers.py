@@ -3,12 +3,15 @@
 
 """Usage from the repo root folder:
 
-```python
-# for whole test
-python -m unittest tests.test_service_layers
-# for specific
-python -m unittest tests.test_service_layers.TestServiceLayers.test_layers_create
-```
+    :Example:
+
+    .. code-block:: python
+
+        # for whole test
+        python -m unittest tests.test_service_layers
+        # for specific
+        python -m unittest tests.test_service_layers.TestServiceLayers.test_layers_create
+
 """
 
 # #############################################################################
@@ -44,7 +47,8 @@ if Path("dev.env").exists():
 hostname = gethostname()
 
 # API access
-METADATA_TEST_FIXTURE_UUID = "c6989e8b406845b5a86261bd5ef57b60"
+METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
+METADATA_TEST_SERVICE_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_SERVICE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
@@ -221,7 +225,7 @@ class TestServiceLayers(unittest.TestCase):
         """GET :resources/{metadata_uuid}/layers/}"""
         # retrieve metadata layers
         md_layers = self.isogeo.metadata.layers.listing(
-            self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID)
+            self.isogeo.metadata.get(METADATA_TEST_SERVICE_FIXTURE_UUID)
         )
         # parse and test object loader
         for i in md_layers:
