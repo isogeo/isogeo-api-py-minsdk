@@ -7,10 +7,10 @@
 
     .. code-block:: python
 
-    # for whole test
-    python -m unittest tests.test_limitations
-    # for specific
-    python -m unittest tests.test_limitations.TestLimitations.test_limitations_create_basic
+        # for whole test
+        python -m unittest tests.test_limitations
+        # for specific
+        python -m unittest tests.test_limitations.TestLimitations.test_limitations_create_basic
 
 """
 
