@@ -4,12 +4,15 @@
 
 """Usage from the repo root folder:
 
-```python
-# for whole test
-python -m unittest tests.test_translator
-# for specific
-python -m unittest tests.test_translator.TestIsogeoTranslator.test_translation_fr
-```
+    :Example:
+
+    .. code-block:: python
+
+    # for whole test
+    python -m unittest tests.test_translator
+    # for specific
+    python -m unittest tests.test_translator.TestIsogeoTranslator.test_translation_fr
+
 """
 
 # #############################################################################
@@ -38,7 +41,7 @@ from isogeo_pysdk import Isogeo, IsogeoTranslator
 if Path("dev.env").exists():
     load_dotenv("dev.env", override=True)
 
-# API access
+# fixtures
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 
 li_contacts_fr = (
@@ -109,10 +112,12 @@ class TestIsogeoTranslator(unittest.TestCase):
         cls.isogeo.connect()
 
         # get contacts on a metadata
-        cls.md_contacts = cls.isogeo.metadata.get(
+        cls.fixture_metadata_existing = cls.isogeo.metadata.get(
             metadata_id=METADATA_TEST_FIXTURE_UUID, include=("contacts",)
         )
-        cls.li_contacts_roles = [i.get("role") for i in cls.md_contacts.contacts]
+        cls.li_contacts_roles = [
+            i.get("role") for i in cls.fixture_metadata_existing.contacts
+        ]
 
     # standard methods
     def setUp(self):
