@@ -46,7 +46,7 @@ if Path("dev.env").exists():
 # host machine name - used as discriminator
 hostname = gethostname()
 
-# API access
+# fixtures
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 METADATA_TEST_SERVICE_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_SERVICE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
