@@ -145,7 +145,7 @@ class ApiMetadata:
           This option allow to overrides the basic behavior. Options:
 
           - 0 = basic (only the _id, title and attributes passed for the creation) [DEFAULT]
-          - 1 = complete (make an addtionnal request)
+          - 1 = complete (make an additionnal request)
 
         :rtype: Metadata
 
@@ -205,7 +205,9 @@ class ApiMetadata:
             return req_check
 
         # load new metadata
-        new_metadata = Metadata(**req_new_metadata.json())
+        resp_md = req_new_metadata.json()
+        resp_md["_creator"] = {"_id": workgroup_id}
+        new_metadata = Metadata(**resp_md)
 
         # return basic metadata or complete
         if return_basic_or_complete:
