@@ -4,11 +4,19 @@ exclude: ^(.venv_packaging/|.venv_tests/|.venv*/|tests/dev/|tests/fixtures/)
 fail_fast: true
 repos:
 - repo: https://github.com/pre-commit/pre-commit-hooks
-  rev: v2.4.0
+  rev: v3.1.0
   hooks:
-  - id: trailing-whitespace
+  - id: check-added-large-files
+    args: ['--maxkb=500']
+  - id: check-toml
   - id: check-yaml
   - id: detect-private-key
+  - id: end-of-file-fixer
+  - id: fix-encoding-pragma
+    args: [--remove]
+  - id: trailing-whitespace
+    args: [--markdown-linebreak-ext=md]
+
 - repo: https://github.com/python/black
   rev: 19.10b0
   hooks:
