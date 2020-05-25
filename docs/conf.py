@@ -49,12 +49,18 @@ release = __version__
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
 extensions = [
+    # markdown
     "recommonmark",
+    # Sphinx included
     "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
+    # 3rd party
     "sphinx_autodoc_typehints",
+    "sphinx_copybutton",
     "sphinx_markdown_tables",
     "sphinx_rtd_theme",
 ]
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
@@ -67,7 +73,7 @@ master_doc = "index"
 
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-# language = 'fr'
+language = 'fr'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -115,7 +121,7 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    "python": ("https://python.readthedocs.io/en/latest/", None),
+    "python": ("https://docs.python.org/fr/3/", None),
     "requests": ("https://requests.readthedocs.io/en/latest/", None),
     "oauthlib": ("https://oauthlib.readthedocs.io/en/latest/", None),
     "requests_oauthlib": ("https://requests-oauthlib.readthedocs.io/en/latest/", None),
