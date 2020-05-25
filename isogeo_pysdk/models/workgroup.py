@@ -12,10 +12,17 @@
 # ##################################
 
 # standard library
+import logging
 import pprint
 
 # submodels
 from isogeo_pysdk.models.contact import Contact
+
+# #############################################################################
+# ########## Globals ###############
+# ##################################
+
+logger = logging.getLogger(__name__)
 
 
 # #############################################################################
@@ -464,6 +471,20 @@ class Workgroup(object):
             return self.contact.name
         else:
             return None
+
+    def admin_url(self, url_base: str = "https://app.isogeo.com") -> str:
+        """Returns the administration URL (https://app.isogeo.com) for this group.
+
+        :param str url_base: base URL of admin site. \
+        Defaults to: https://app.isogeo.com. Can also be https://manage.isogeo.com.
+
+        :rtype: str
+        """
+        if self._id is None:
+            logger.warning("UUID is required to build admin URL")
+            return url_base
+
+        return "{}/groups/{}".format(url_base, self._id)
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
