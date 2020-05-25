@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
 
@@ -16,7 +15,6 @@
 # ##################################
 
 # Standard library
-import logging
 from os import environ
 from timeit import default_timer
 

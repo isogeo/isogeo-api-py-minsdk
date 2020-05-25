@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
 """
@@ -202,9 +201,8 @@ class ApiFeatureAttribute:
         if not attribute.dataType:
             logger.warning(
                 ValueError(
-                    "Attribute dataType is missing. An empty string '\"\"' (but != None) will be used.".format(
-                        attribute.dataType
-                    )
+                    "Attribute dataType is missing. "
+                    "An empty string '\"\"' (but != None) will be used."
                 )
             )
             attribute.dataType = ""

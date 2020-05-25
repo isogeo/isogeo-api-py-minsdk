@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
 """
@@ -16,7 +15,6 @@ import pprint
 
 # other model
 from isogeo_pysdk.enums import BulkActions, BulkTargets
-from isogeo_pysdk.models.metadata import Metadata
 
 
 # #############################################################################

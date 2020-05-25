@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
 """
@@ -625,7 +624,7 @@ class Metadata(object):
     @coordinateSystem.setter
     def coordinateSystem(self, coordinateSystem: Union[dict, CoordinateSystem]):
         """Sets the coordinate systems of this Metadata.
-        
+
         :param Union[dict, CoordinateSystem] coordinateSystem: coordinate-system to be set
         """
         if isinstance(coordinateSystem, dict):

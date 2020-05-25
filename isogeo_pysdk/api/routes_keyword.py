@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
 """
@@ -13,7 +12,6 @@
 
 # Standard library
 import logging
-from functools import lru_cache
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker

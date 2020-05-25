@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
 """
@@ -11,12 +10,10 @@
 
 # Standard library
 import logging
-from collections import defaultdict
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.enums import BulkActions, BulkTargets
 from isogeo_pysdk.models import BulkReport, BulkRequest, Metadata
 from isogeo_pysdk.utils import IsogeoUtils
 
