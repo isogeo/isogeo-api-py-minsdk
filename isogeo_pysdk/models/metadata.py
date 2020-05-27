@@ -1297,6 +1297,22 @@ class Metadata(object):
 
     # -- SPECIFIC TO IMPLEMENTATION ----------------------------------------------------
     @property
+    def featuresAttributesCount(self) -> Union[int, None]:
+        """Shortcut to get the feature attributes count. \
+        If no vector dataset or if `featureAttributes` is not set, returns None.
+
+        :return: [description]
+        :rtype: Union[int, None]
+        """
+        if self.type not in ("vectorDataset", "vector-dataset"):
+            return None
+
+        if isinstance(self.featureAttributes, list):
+            return len(self.featureAttributes)
+        else:
+            return None
+
+    @property
     def groupName(self) -> str:
         """Shortcut to get the name of the workgroup which owns the Metadata."""
         if isinstance(self._creator, dict):
