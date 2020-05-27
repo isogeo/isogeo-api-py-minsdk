@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
 """
@@ -92,13 +91,16 @@ class CoordinateSystem(object):
 
     # EPSG code
     @property
-    def code(self) -> str:
+    def code(self) -> int:
         """Gets the EPSG code of this CoordinateSystem.
 
         :return: The EPSG code of this CoordinateSystem.
-        :rtype: str
+        :rtype: int
         """
-        return self._code
+        if isinstance(self._code, str) and self._code.isdigit():
+            return int(self._code)
+        else:
+            return self._code
 
     # name
     @property
