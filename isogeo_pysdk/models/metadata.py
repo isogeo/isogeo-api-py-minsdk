@@ -374,8 +374,12 @@ class Metadata(object):
             self._conditions = conditions
         if contacts is not None:
             self._contacts = contacts
-        if coordinateSystem is not None:
+        if isinstance(coordinateSystem, CoordinateSystem):
             self._coordinateSystem = coordinateSystem
+        elif isinstance(coordinateSystem, dict):
+            self._coordinateSystem = CoordinateSystem(**coordinateSystem)
+        else:
+            pass
         if created is not None:
             self._creation = created
         if distance is not None:
