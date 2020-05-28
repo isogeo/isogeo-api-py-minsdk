@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
 """Complementary set of utils to use with Isogeo API."""
@@ -211,7 +210,7 @@ class IsogeoUtils(object):
                 else:
                     locale.setlocale(locale.LC_ALL, str("en_GB.utf8"))
         except locale.Error as e:
-            logger.error(
+            logger.warning(
                 "Selected locale ({}) is not installed: {}".format(lang.lower(), e)
             )
         logger.debug("Locale set to: {}".format(locale.getlocale()))
