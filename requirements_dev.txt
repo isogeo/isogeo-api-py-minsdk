@@ -31,7 +31,7 @@ tox==3.19.*
 
 # Documentation (for devs)
 # -----------------------
-sphinx==3.0.*
+sphinx==3.2.*
 sphinx-autodoc-typehints==1.10.*
 sphinx-copybutton==0.2.*
 sphinx-markdown-tables==0.0.15  # to render markdown tables
