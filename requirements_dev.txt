@@ -33,7 +33,7 @@ tox==3.19.*
 # -----------------------
 sphinx==3.0.*
 sphinx-autodoc-typehints==1.10.*
-sphinx-copybutton==0.2.*
+sphinx-copybutton==0.3.*
 sphinx-markdown-tables==0.0.15  # to render markdown tables
 sphinx-rtd-theme==0.5.*
 recommonmark==0.6.*
