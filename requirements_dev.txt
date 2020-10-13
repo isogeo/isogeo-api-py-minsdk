@@ -22,18 +22,18 @@ pre-commit==2.4.*
 
 # Tests
 # -----------------------
-python-dotenv==0.13.*
-pytest==5.4.*
+python-dotenv==0.14.*
+pytest==6.1.*
 pytest-cov==2.10.*
 pytest-randomly==3.4.*
 pytest-rerunfailures==9.*
-tox==3.19.*
+tox==3.20.*
 
 # Documentation (for devs)
 # -----------------------
-sphinx==3.0.*
+sphinx==3.2.*
 sphinx-autodoc-typehints==1.10.*
-sphinx-copybutton==0.2.*
+sphinx-copybutton==0.3.*
 sphinx-markdown-tables==0.0.15  # to render markdown tables
 sphinx-rtd-theme==0.5.*
 recommonmark==0.6.*
