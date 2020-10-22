@@ -420,7 +420,7 @@ class ApiFeatureAttribute:
                             if attr.get("name") == attr_src.name
                         ][0]
                     )
-                elif attr_src.name.lower() in attributes_dest_names_low:
+                elif attr_src.name.lower() in attributes_dest_names_low and not case_sensitive_matching:
                     attr_dst = FeatureAttribute(
                         **[
                             attr
