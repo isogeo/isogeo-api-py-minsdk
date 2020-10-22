@@ -340,7 +340,7 @@ class ApiFeatureAttribute:
 
     # -- Extra methods as helpers --------------------------------------------------
     def import_from_dataset(
-        self, metadata_source: Metadata, metadata_dest: Metadata, mode: str = "add"
+        self, metadata_source: Metadata, metadata_dest: Metadata, mode: str = "add", case_sensitive_matching: bool = True
     ) -> bool:
         """Import feature-attributes from another vector metadata.
 
@@ -351,6 +351,8 @@ class ApiFeatureAttribute:
             - 'add': add the attributes except those with a duplicated name
             - 'update': update only the attributes with the same name
             - 'update_or_add': update the attributes with the same name or create
+        : param bool case_sensitive_matching: False to make featureattributes's name 
+        matching case-insensitive when mode == "update"
 
         :raises TypeError: if one metadata is not a vector
         :raises ValueError: if mode is not one of accepted value
@@ -385,6 +387,7 @@ class ApiFeatureAttribute:
         attributes_source = self.listing(metadata_source)
         attributes_dest = self.listing(metadata_dest)
         attributes_dest_names = [attr.get("name") for attr in attributes_dest]
+        attributes_dest_names_low = [attr.get("name").lower() for attr in attributes_dest]
 
         # according to the selected mode
         if mode == "add":
@@ -417,16 +420,27 @@ class ApiFeatureAttribute:
                             if attr.get("name") == attr_src.name
                         ][0]
                     )
-                    attr_dst.alias = attr_src.alias
-                    attr_dst.dataType = attr_src.dataType
-                    attr_dst.description = attr_src.description
-                    attr_dst.language = attr_src.language
-                    self.update(metadata=metadata_dest, attribute=attr_dst)
-                    logger.debug(
-                        "Attribute with the same name ({}) spotted. It has been updated.".format(
-                            attr_dst.name
-                        )
+                elif attr_src.name.lower() in attributes_dest_names_low:
+                    attr_dst = FeatureAttribute(
+                        **[
+                            attr
+                            for attr in attributes_dest
+                            if attr.get("name").lower() == attr_src.name.lower()
+                        ][0]
                     )
+                else:
+                    continue
+
+                attr_dst.alias = attr_src.alias
+                attr_dst.dataType = attr_src.dataType
+                attr_dst.description = attr_src.description
+                attr_dst.language = attr_src.language
+                self.update(metadata=metadata_dest, attribute=attr_dst)
+                logger.debug(
+                    "Attribute with the same name ({}) spotted. It has been updated.".format(
+                        attr_dst.name
+                    )
+                )
         elif mode == "update_or_add":
             for attribute in attributes_source:
                 attr_src = FeatureAttribute(**attribute)
