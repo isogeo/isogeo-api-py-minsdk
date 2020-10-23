@@ -19,7 +19,7 @@ __title__ = "Isogeo Python SDK"
 __summary__ = "API wrapper for the Isogeo REST API"
 __uri__ = "https://github.com/isogeo/isogeo-api-py-minsdk/"
 
-__version__ = "3.4.3"
+__version__ = "3.5.0"
 
 __author__ = "Isogeo"
 __email__ = "contact@isogeo.com"
