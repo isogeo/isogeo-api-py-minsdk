@@ -216,7 +216,7 @@ stages:
     - task: GitHubRelease@1
       displayName: "Publish tagged code as Github Release"
       inputs:
-        gitHubConnection: 'github.com_Guts'
+        gitHubConnection: 'github.com_SimonSAMPERE'
         repositoryName: '$(Build.Repository.Name)'
         action: 'create'
         target: '$(Build.SourceVersion)'
