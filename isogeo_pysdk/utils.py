@@ -503,7 +503,7 @@ class IsogeoUtils(object):
         """
         in_parsed = urlparse(url_api_token)
         api_url_base = in_parsed._replace(
-            path="", netloc=in_parsed.netloc.replace("id.", "")
+            path="", netloc=in_parsed.netloc.replace("id.", "v1.")
         )
         return api_url_base.geturl()
 
