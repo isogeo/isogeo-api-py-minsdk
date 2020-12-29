@@ -65,7 +65,7 @@ class ApiEvent:
         """
         # URL
         url_events = utils.get_request_base_url(
-            route="resources/{}/events/".format(metadata._id)
+            route="resources/{}/events".format(metadata._id)
         )
 
         # request
@@ -182,7 +182,7 @@ class ApiEvent:
 
         # URL
         url_event_create = utils.get_request_base_url(
-            route="resources/{}/events/".format(metadata._id)
+            route="resources/{}/events".format(metadata._id)
         )
 
         # request

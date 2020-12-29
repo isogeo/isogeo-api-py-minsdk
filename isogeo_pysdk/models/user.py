@@ -74,7 +74,7 @@ class User(object):
     }
 
     ATTR_CREA = {
-        # "contact": Contact,
+        "contact": Contact,
         "language": str,
         "mailchimp": str,
         "staff": bool,
@@ -271,6 +271,27 @@ class User(object):
         """
 
         self._timezone = timezone
+
+    # -- SPECIFIC TO IMPLEMENTATION ----------------------------------------------------
+    @property
+    def name(self) -> str:
+        """Shortcut to get the name from the contact data linked to the user."""
+        if isinstance(self._contact, dict):
+            return self._contact.get("name")
+        elif isinstance(self._contact, Contact):
+            return self._contact.name
+        else:
+            return None
+
+    @property
+    def email(self) -> str:
+        """Shortcut to get the email from the contact data linked to the user."""
+        if isinstance(self._contact, dict):
+            return self._contact.get("email")
+        elif isinstance(self.contact, Contact):
+            return self.contact.email
+        else:
+            return None
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:

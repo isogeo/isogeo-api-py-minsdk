@@ -3,12 +3,15 @@
 
 """Usage from the repo root folder:
 
-```python
-# for whole test
-python -m unittest tests.test_service_operations
-# for specific
-python -m unittest tests.test_service_operations.TestServiceOperations.test_operations_create
-```
+    :Example:
+
+    .. code-block:: python
+
+    # for whole test
+    python -m unittest tests.test_service_operations
+    # for specific
+    python -m unittest tests.test_service_operations.TestServiceOperations.test_operations_listing
+
 """
 
 # #############################################################################
@@ -42,13 +45,10 @@ load_dotenv("dev.env", override=True)
 # host machine name - used as discriminator
 hostname = gethostname()
 
-# API access
-app_script_id = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID")
-app_script_secret = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET")
-platform = environ.get("ISOGEO_PLATFORM", "qa")
-user_email = environ.get("ISOGEO_USER_NAME")
-user_password = environ.get("ISOGEO_USER_PASSWORD")
-METADATA_TEST_FIXTURE_UUID = "c6989e8b406845b5a86261bd5ef57b60"
+
+# fixtures
+METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
+METADATA_TEST_SERVICE_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_SERVICE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
@@ -74,7 +74,9 @@ class TestServiceOperations(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         # checks
-        if not app_script_id or not app_script_secret:
+        if not environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID") or not environ.get(
+            "ISOGEO_API_USER_LEGACY_CLIENT_SECRET"
+        ):
             logging.critical("No API credentials set as env variables.")
             exit()
         else:
@@ -214,7 +216,7 @@ class TestServiceOperations(unittest.TestCase):
         """GET :resources/{metadata_uuid}/operations/}"""
         # retrieve metadata operations
         md_operations = self.isogeo.metadata.operations.listing(
-            self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID)
+            self.isogeo.metadata.get(METADATA_TEST_SERVICE_FIXTURE_UUID)
         )
         # parse and test object loader
         for i in md_operations:
@@ -237,13 +239,13 @@ class TestServiceOperations(unittest.TestCase):
         """GET :resources/{metadata_uuid}/operations/{operation_uuid}}"""
         # get operations
         md_operations = self.isogeo.metadata.operations.listing(
-            self.isogeo.metadata.get(METADATA_TEST_FIXTURE_UUID)
+            self.isogeo.metadata.get(METADATA_TEST_SERVICE_FIXTURE_UUID)
         )
         # pick one
         operation_id = sample(md_operations, 1)[0].get("_id")
         # get it with a direct request
         operation = self.isogeo.metadata.operations.operation(
-            metadata_id=METADATA_TEST_FIXTURE_UUID, operation_id=operation_id
+            metadata_id=METADATA_TEST_SERVICE_FIXTURE_UUID, operation_id=operation_id
         )
 
         # checks

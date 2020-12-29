@@ -8,13 +8,15 @@
 #
 #   It's higly recomended to use it within a virtualenv.
 #
-#
-#
 
-# utils
+-i https://pypi.org/simple
+
+# Common requirements
+# -----------------------
 setuptools
 wheel
 
-# required
+# Project requirements
+# -----------------------
 requests>=2.22.0
 requests-oauthlib>=1.2.0

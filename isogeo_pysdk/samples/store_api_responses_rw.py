@@ -39,7 +39,7 @@ outdir = Path(Path(__file__).parent, "_output/")
 outdir.mkdir(exist_ok=True)
 
 # environment vars
-load_dotenv("dev.env", override=True)
+load_dotenv(".env", override=True)
 WG_TEST_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 
@@ -105,13 +105,19 @@ if __name__ == "__main__":
 
         urllib3.disable_warnings()
 
+    # ------------Authentication credentials ----------------
+    client_id = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID")
+    client_secret = environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET")
+
     # -- Authentication and connection ---------------------------------
     # Isogeo client
     isogeo = Isogeo(
-        client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
-        client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
+        auth_mode="user_legacy",
+        client_id=client_id,
+        client_secret=client_secret,
         auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
         platform=environ.get("ISOGEO_PLATFORM", "qa"),
+        lang="fr",
     )
 
     # getting a token
@@ -125,7 +131,7 @@ if __name__ == "__main__":
 
     # get some object identifiers required for certain routes
     app_id = sample(isogeo.application.listing(include=()), 1)[0].get("_id")
-    # resource_id = sample(isogeo.search(whole_results=0, page_size=50).get("results"), 1)[
+    # resource_id = sample(isogeo.search(whole_results=0, page_size=50).results, 1)[
     #     0
     # ].get("_id")
     # share_id = isogeo.shares()[0].get("_id")
@@ -141,7 +147,7 @@ if __name__ == "__main__":
     # list of methods to execute
     li_api_routes = [
         # Account
-        {"route": isogeo.account, "output_json_name": "api_account", "params": {}},
+        {"route": isogeo.account.get, "output_json_name": "api_account", "params": {}},
         # Applications
         {
             "route": isogeo.application.listing,
@@ -149,7 +155,7 @@ if __name__ == "__main__":
             "params": {},
         },
         {
-            "route": isogeo.application,
+            "route": isogeo.application.get,
             "output_json_name": "api_application",
             "params": {"application_id": app_id},
         },
@@ -157,7 +163,7 @@ if __name__ == "__main__":
         {
             "route": isogeo.keyword.thesaurus,
             "output_json_name": "api_keywords",
-            "params": {"include": ["count"], "order_by": "count.isogeo"},
+            "params": {"include": ("count",), "order_by": "count.isogeo"},
         },
         # Licenses
         {
@@ -216,3 +222,5 @@ if __name__ == "__main__":
             len(li_api_routes), time_completed_at
         )
     )
+
+    isogeo.close()

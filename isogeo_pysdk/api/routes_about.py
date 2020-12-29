@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
 """Module to easily get versions about Isogeo platform components."""
@@ -123,7 +122,7 @@ class ApiAbout:
             req_session.proxies = self.proxies
             # request
             req_api_version = req_session.get(
-                url="{}://daemons.isogeo.com/about".format(self.protocol, self.api_url),
+                url="{}://daemons.isogeo.com/about".format(self.protocol),
                 proxies=self.proxies,
                 verify=self.ssl,
             )

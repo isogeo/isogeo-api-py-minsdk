@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
 """
@@ -26,6 +25,7 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 # other routes
 from .routes_event import ApiEvent
+from .routes_metadata_bulk import ApiBulk
 from .routes_condition import ApiCondition
 from .routes_conformity import ApiConformity
 from .routes_feature_attributes import ApiFeatureAttribute
@@ -70,6 +70,7 @@ class ApiMetadata:
 
         # sub routes
         self.attributes = ApiFeatureAttribute(self.api_client)
+        self.bulk = ApiBulk(self.api_client)
         self.conditions = ApiCondition(self.api_client)
         self.conformity = ApiConformity(self.api_client)
         self.events = ApiEvent(self.api_client)
@@ -132,18 +133,19 @@ class ApiMetadata:
 
     @ApiDecorators._check_bearer_validity
     def create(
-        self, workgroup_id: str, metadata: Metadata, return_basic_or_complete: bool = 0
+        self, workgroup_id: str, metadata: Metadata, return_basic_or_complete: int = 0
     ) -> Metadata:
         """Add a new metadata to a workgroup.
 
         :param str workgroup_id: identifier of the owner workgroup
         :param Metadata metadata: Metadata model object to create
-        :param bool return_basic_or_complete: creation of metada uses a bulk script.\
+        :param int return_basic_or_complete: creation of metada uses a bulk script.\
           So, by default API does not return the complete object but the minimal info.\
           This option allow to overrides the basic behavior. Options:
 
-          - 0 = basic (only the _id, title and attributes passed for the creation) [DEFAULT]
-          - 1 = complete (make an addtionnal request)
+          - 0 = dry (only the _id, title and attributes passed for the creation) [DEFAULT]
+          - 1 = basic without any include (requires an additionnal request)
+          - 2 = complete with all include (requires an additionnal request)
 
         :rtype: Metadata
 
@@ -203,11 +205,15 @@ class ApiMetadata:
             return req_check
 
         # load new metadata
-        new_metadata = Metadata(**req_new_metadata.json())
+        resp_md = req_new_metadata.json()
+        resp_md["_creator"] = {"_id": workgroup_id}
+        new_metadata = Metadata(**resp_md)
 
         # return basic metadata or complete
-        if return_basic_or_complete:
+        if return_basic_or_complete == 1:
             return self.get(metadata_id=new_metadata._id)
+        elif return_basic_or_complete == 2:
+            return self.get(metadata_id=new_metadata._id, include="all")
         else:
             return new_metadata
 

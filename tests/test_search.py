@@ -116,6 +116,28 @@ class TestSearch(unittest.TestCase):
 
     # -- TESTS ---------------------------------------------------------
     # -- GET --
+    def test_search_augmented(self):
+        """Augmented search with shares UUID."""
+        # at start, shares_id attribute doesn't exist
+        # self.assertFalse(hasattr(self.isogeo, "shares_id"))
+        # normal
+        search = self.isogeo.search(page_size=0, whole_results=0, augment=0)
+        tags_shares = [i for i in search.tags if i.startswith("share:")]
+        # shares_id attribute still doesn't exist
+        self.assertEqual(len(tags_shares), 0)
+        # self.assertFalse(hasattr(self.isogeo, "shares_id"))
+
+        # augment it
+        search = self.isogeo.search(page_size=0, whole_results=0, augment=1)
+
+        # compare
+        tags_shares = [i for i in search.tags if i.startswith("share:")]
+        self.assertNotEqual(len(tags_shares), 0)
+        self.assertTrue(hasattr(self.isogeo, "shares_id"))  # now it exists
+
+        # redo using existing attribute
+        search = self.isogeo.search(page_size=0, whole_results=0, augment=1)
+
     def test_search_search_as_application(self):
         """GET :resources/search."""
         basic_search = self.isogeo.search()
@@ -296,25 +318,10 @@ class TestSearch(unittest.TestCase):
             )
             self.isogeo.search(query="type:vector-dataset type:raster-dataset", check=0)
 
-    # search utilities
-    def test_search_augmented(self):
-        """Augmented search with shares UUID."""
-        # at start, shares_id attribute doesn't exist
-        self.assertFalse(hasattr(self.isogeo, "shares_id"))
-        # normal
-        search = self.isogeo.search(page_size=0, whole_results=0, augment=0)
-        tags_shares = [i for i in search.tags if i.startswith("share:")]
-        # shares_id attribute still doesn't exist
-        self.assertEqual(len(tags_shares), 0)
-        self.assertFalse(hasattr(self.isogeo, "shares_id"))
+    def test_search_full(self):
+        """Complete searches."""
+        # launch a full search
+        self.isogeo.search(whole_results=1)
 
-        # augment it
-        search = self.isogeo.search(page_size=0, whole_results=0, augment=1)
-
-        # compare
-        tags_shares = [i for i in search.tags if i.startswith("share:")]
-        self.assertNotEqual(len(tags_shares), 0)
-        self.assertTrue(hasattr(self.isogeo, "shares_id"))  # now it exists
-
-        # redo using existing attribute
-        search = self.isogeo.search(page_size=0, whole_results=0, augment=1)
+        # launch again to test event loop management is OK
+        self.isogeo.search(whole_results=1, augment=1)

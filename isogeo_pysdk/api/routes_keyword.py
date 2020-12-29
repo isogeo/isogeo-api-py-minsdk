@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
 """
@@ -13,7 +12,6 @@
 
 # Standard library
 import logging
-from functools import lru_cache
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
@@ -438,7 +436,7 @@ class ApiKeyword:
 
         :param Metadata metadata: metadata (resource) to edit
         :param Keyword keyword: object to associate
-        :param bool check_exists: check if a metadata with the same service base URL and format alerady exists. Defaults to True.
+        :param bool check_exists: check if a metadata with the same service base URL and format already exists. Defaults to True.
 
         :Example:
 
@@ -447,7 +445,9 @@ class ApiKeyword:
             # retrieve a metadata
             md = isogeo.metadata.get(METADATA_UUID)
             # retrieve a keyword
-            keyword = isogeo.keyword.get(KEYWORD_UUID)
+            kw = isogeo.keyword.get(KEYWORD_UUID)
+            # associate a keyword to a metadata
+            isogeo.keyword.tagging(metadata = md, keyword = kw)
         """
         # check contact UUID
         if not checker.check_is_uuid(metadata._id):

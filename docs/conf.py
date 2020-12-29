@@ -48,20 +48,32 @@ release = __version__
 # Add any Sphinx extension module names here, as strings. They can be
 # extensions coming with Sphinx (named 'sphinx.ext.*') or your custom
 # ones.
-extensions = ["sphinx.ext.autodoc", "sphinx.ext.intersphinx", "sphinx.ext.viewcode"]
+extensions = [
+    # markdown
+    "recommonmark",
+    # Sphinx included
+    "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
+    # 3rd party
+    "sphinx_autodoc_typehints",
+    "sphinx_copybutton",
+    "sphinx_markdown_tables",
+    "sphinx_rtd_theme",
+]
+
 
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ["_templates"]
 
 # source_suffix = ['.rst', '.md']
-source_suffix = ".rst"
+source_suffix = {".rst": "restructuredtext", ".md": "markdown"}
 
 # The master toctree document.
 master_doc = "index"
 
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-# language = 'fr'
+language = 'fr'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -77,13 +89,17 @@ pygments_style = "sphinx"
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "default"
+html_theme = "sphinx_rtd_theme"
 
 # -- Options for HTMLHelp output ---------------------------------------------
 
 # Output file base name for HTML help builder.
-htmlhelp_basename = "IsogeoPySDK_doc"
+htmlhelp_basename = "IsogeoPySDK_Doc"
 
+# Ensure sidebar is the same along the pages
+html_sidebars = {
+    "**": ["globaltoc.html", "relations.html", "sourcelink.html", "searchbox.html"]
+}
 
 # -- Options for Texinfo output ----------------------------------------------
 
@@ -105,7 +121,7 @@ texinfo_documents = [
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
-    "python": ("https://python.readthedocs.io/en/latest/", None),
+    "python": ("https://docs.python.org/fr/3/", None),
     "requests": ("https://requests.readthedocs.io/en/latest/", None),
     "oauthlib": ("https://oauthlib.readthedocs.io/en/latest/", None),
     "requests_oauthlib": ("https://requests-oauthlib.readthedocs.io/en/latest/", None),

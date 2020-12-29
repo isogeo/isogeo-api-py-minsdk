@@ -12,10 +12,17 @@
 # ##################################
 
 # standard library
+import logging
 import pprint
 
 # submodels
 from isogeo_pysdk.models.contact import Contact
+
+# #############################################################################
+# ########## Globals ###############
+# ##################################
+
+logger = logging.getLogger(__name__)
 
 
 # #############################################################################
@@ -96,6 +103,7 @@ class Workgroup(object):
         "code": str,
         "contact": Contact,
         "hasCswClient": bool,
+        "hasScanFme": bool,
         "limits": dict,
         "keywordsCasing": str,
         "metadataLanguage": str,
@@ -157,6 +165,7 @@ class Workgroup(object):
         self._code = code
         self._contact = Contact
         self._hasCswClient = None
+        self._hasScanFme = None
         self._keywordsCasing = None
         self._limits = None
         self._metadataLanguage = None
@@ -172,6 +181,8 @@ class Workgroup(object):
             self.__id = _id
         if _modified is not None:
             self.__modified = _modified
+        if _tag is not None:
+            self.__tag = _tag
         if areKeywordsRestricted is not None:
             self._areKeywordsRestricted = areKeywordsRestricted
         if canCreateLegacyServiceLinks is not None:
@@ -182,6 +193,8 @@ class Workgroup(object):
             self._code = code
         if hasCswClient is not None:
             self._hasCswClient = hasCswClient
+        if hasScanFme is not None:
+            self._hasScanFme = hasScanFme
         if keywordsCasing is not None:
             self._keywordsCasing = keywordsCasing
         if limits is not None:
@@ -336,22 +349,41 @@ class Workgroup(object):
 
     # hasCswClient
     @property
-    def hasCswClient(self) -> str:
+    def hasCswClient(self) -> bool:
         """Gets the hasCswClient of this Workgroup.
 
         :return: The hasCswClient of this Workgroup.
-        :rtype: str
+        :rtype: bool
         """
         return self._hasCswClient
 
     @hasCswClient.setter
-    def hasCswClient(self, hasCswClient: str):
+    def hasCswClient(self, hasCswClient: bool):
         """Sets the hasCswClient of this Workgroup.
 
-        :param str hasCswClient: The hasCswClient of this Workgroup. Must be one of GROUP_KIND_VALUES
+        :param bool hasCswClient: The hasCswClient of this Workgroup. Must be one of GROUP_KIND_VALUES
         """
 
         self._hasCswClient = hasCswClient
+
+    # hasScanFme
+    @property
+    def hasScanFme(self) -> bool:
+        """Find out if the group has access to the Scan.
+
+        :return: The hasScanFme value of this Workgroup.
+        :rtype: bool
+        """
+        return self._hasScanFme
+
+    @hasScanFme.setter
+    def hasScanFme(self, hasScanFme: bool):
+        """Sets the access of the group to the Scan.
+
+        :param bool hasScanFme: The hasScanFme of this Workgroup. Must be one of GROUP_KIND_VALUES
+        """
+
+        self._hasScanFme = hasScanFme
 
     # keywordsCasing
     @property
@@ -439,6 +471,20 @@ class Workgroup(object):
             return self.contact.name
         else:
             return None
+
+    def admin_url(self, url_base: str = "https://app.isogeo.com") -> str:
+        """Returns the administration URL (https://app.isogeo.com) for this group.
+
+        :param str url_base: base URL of admin site. \
+        Defaults to: https://app.isogeo.com. Can also be https://manage.isogeo.com.
+
+        :rtype: str
+        """
+        if self._id is None:
+            logger.warning("UUID is required to build admin URL")
+            return url_base
+
+        return "{}/groups/{}".format(url_base, self._id)
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:

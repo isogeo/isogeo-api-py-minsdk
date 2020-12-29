@@ -1,10 +1,9 @@
-# -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
 """Usage from the repo root folder:
 
     .. code-block:: python
-    
+
         # for whole test
         python -m unittest tests.test_about
 
@@ -15,17 +14,10 @@
 # ##################################
 
 # Standard library
-import logging
 import unittest
-import urllib3
-from os import environ
-from pathlib import Path
 from socket import gethostname
-from sys import _getframe, exit
+from sys import _getframe
 from time import gmtime, sleep, strftime
-
-# 3rd party
-from dotenv import load_dotenv
 
 # module target
 from isogeo_pysdk import ApiAbout

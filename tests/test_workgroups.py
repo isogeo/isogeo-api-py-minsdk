@@ -3,12 +3,13 @@
 
 """Usage from the repo root folder:
 
-```python
-# for whole test
-python -m unittest tests.test_workgroups
-# for specific
-python -m unittest tests.test_workgroups.TestWorkgroups.test_workgroups_create_basic
-```
+    .. code-block:: python
+
+        # for whole test
+        python -m unittest tests.test_workgroups
+        # for specific
+        python -m unittest tests.test_workgroups.TestWorkgroups.test_workgroups_create_basic
+
 """
 
 # #############################################################################

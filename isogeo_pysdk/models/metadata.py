@@ -1,4 +1,3 @@
-# -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
 """
@@ -16,12 +15,14 @@ import logging
 import pprint
 import re
 import unicodedata
+from hashlib import sha256
+from typing import Union
 
 # package
 from isogeo_pysdk.enums import MetadataTypes
 
 # others models
-from isogeo_pysdk.models import Workgroup
+from isogeo_pysdk.models import CoordinateSystem, Workgroup
 
 
 # #############################################################################
@@ -190,6 +191,7 @@ class Metadata(object):
         "serviceLayers": list,
         "specifications": list,
         "tags": list,
+        "thumbnailUrl": str,
         "title": str,
         "topologicalConsistency": str,
         "type": str,
@@ -203,6 +205,7 @@ class Metadata(object):
         "abstract": str,
         "collectionContext": str,
         "collectionMethod": str,
+        "coordinateSystem": dict,
         "distance": float,
         "editionProfile": str,
         "encoding": str,
@@ -244,6 +247,7 @@ class Metadata(object):
         """
         for k, v in cls.ATTR_MAP.items():
             raw_object[k] = raw_object.pop(v, [])
+
         return cls(**raw_object)
 
     # -- CLASS INSTANCIATION -----------------------------------------------------------
@@ -288,6 +292,7 @@ class Metadata(object):
         serviceLayers: list = None,
         specifications: list = None,
         tags: list = None,
+        thumbnailUrl: str = None,
         title: str = None,
         topologicalConsistency: str = None,
         type: str = None,
@@ -295,6 +300,7 @@ class Metadata(object):
         validFrom: str = None,
         validTo: str = None,
         validityComment: str = None,
+        **kwargs,
     ):
         """Metadata model."""
 
@@ -337,6 +343,7 @@ class Metadata(object):
         self._serviceLayers = None
         self._specifications = None
         self._tags = None
+        self._thumbnailUrl = None
         self._title = None
         self._topologicalConsistency = None
         self._type = None
@@ -421,6 +428,8 @@ class Metadata(object):
             self._specifications = specifications
         if tags is not None:
             self._tags = tags
+        if thumbnailUrl is not None:
+            self._thumbnailUrl = thumbnailUrl
         if title is not None:
             self._title = title
         if topologicalConsistency is not None:
@@ -435,6 +444,15 @@ class Metadata(object):
             self._validTo = validTo
         if validityComment is not None:
             self._validityComment = validityComment
+
+        # warn about unsupported attributes
+        if len(kwargs):
+            logger.warning(
+                "Folllowings fields were not expected and have been ignored. "
+                "Maybe consider adding them to the model: {}.".format(
+                    " | ".join(kwargs.keys())
+                )
+            )
 
     # -- PROPERTIES --------------------------------------------------------------------
     # abilities of the user related to the metadata
@@ -595,22 +613,26 @@ class Metadata(object):
 
     # coordinateSystem
     @property
-    def coordinateSystem(self) -> dict:
+    def coordinateSystem(self) -> CoordinateSystem:
         """Gets the coordinateSystem of this Metadata.
 
         :return: The coordinateSystem of this Metadata.
-        :rtype: dict
+        :rtype: CoordinateSystem
         """
         return self._coordinateSystem
 
     @coordinateSystem.setter
-    def coordinateSystem(self, coordinateSystem: dict):
+    def coordinateSystem(self, coordinateSystem: Union[dict, CoordinateSystem]):
         """Sets the coordinate systems of this Metadata.
 
-        :param dict coordinateSystem: to be set
+        :param Union[dict, CoordinateSystem] coordinateSystem: coordinate-system to be set
         """
-
-        self._coordinateSystem = coordinateSystem
+        if isinstance(coordinateSystem, dict):
+            self._coordinateSystem = CoordinateSystem(**coordinateSystem)
+        elif isinstance(coordinateSystem, CoordinateSystem):
+            self._coordinateSystem = coordinateSystem
+        else:
+            self._coordinateSystem = None
 
     # created
     @property
@@ -1112,6 +1134,22 @@ class Metadata(object):
 
         self._tags = tags
 
+    # thumbnailUrl
+    @property
+    def thumbnailUrl(self) -> str:
+        """Gets the thumbnailUrl of this Metadata.
+
+        :return: The thumbnailUrl of this Metadata.
+        :rtype: str
+        """
+        logger.warning(
+            DeprecationWarning(
+                "Thumbnail Url is a former field of Isogeo metadata model. "
+                "Its use is not guaranted."
+            )
+        )
+        return self._thumbnailUrl
+
     # title
     @property
     def title(self) -> str:
@@ -1246,7 +1284,7 @@ class Metadata(object):
 
     @validityComment.setter
     def validityComment(self, validityComment: str):
-        """Sets the  of this Metadata.
+        """Sets the validityComment of this Metadata.
 
         :param str validityComment: to be set
         """
@@ -1273,6 +1311,12 @@ class Metadata(object):
             return self._creator._id
         else:
             return None
+
+    @property
+    def typeFilter(self) -> str:
+        """Shortcut to get the type as expected in search filter."""
+        if self.type in MetadataTypes.__members__:
+            return MetadataTypes[self.type].value
 
     # -- METHODS -----------------------------------------------------------------------
     def admin_url(self, url_base: str = "https://app.isogeo.com") -> str:
@@ -1401,11 +1445,54 @@ class Metadata(object):
         """Returns true if both objects are not equal."""
         return not self == other
 
+    def signature(
+        self,
+        included_attributes: tuple = (
+            "coordinateSystem",
+            "envelope",
+            "features",
+            "featureAttributes",
+            "format",
+            "geometry",
+            "groupId",
+            "name",
+            "path",
+            "series",
+            "title",
+            "type",
+        ),
+    ) -> str:
+        """Calculate a hash cumulating certain attributes values. Useful to Scan or comparison operations.
+
+        :param tuple included_attributes: object attributes to include in hash. Default: \
+            {("coordinateSystem","envelope","features","featuresAttributes","format","geometry","groupId","name","path","series","title","type")})
+        """
+        # instanciate the hash
+        hasher = sha256()
+
+        # parse attributes
+        for i in included_attributes:
+            # because hash.update requires a
+            if getattr(self, i):
+                try:
+                    attr_value = getattr(self, i)
+                    if isinstance(attr_value, str):
+                        hasher.update(attr_value.encode())
+                    elif isinstance(attr_value, dict):
+                        hasher.update(hash(frozenset(attr_value.items())))
+                    else:
+                        hasher.update(hash(attr_value))
+                        pass
+                except TypeError:
+                    pass
+
+        return hasher.hexdigest()
+
 
 # ##############################################################################
 # ##### Stand alone program ########
 # ##################################
 if __name__ == "__main__":
     """standalone execution."""
-    md = Metadata()
-    print(md)
+    test_sample = Metadata(title="abcd123")
+    print(test_sample.signature())

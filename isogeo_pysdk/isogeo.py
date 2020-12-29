@@ -339,6 +339,7 @@ class Isogeo(OAuth2Session):
                 password=password,
                 client_id=self.client_id,
                 client_secret=self.client_secret,
+                proxies=self.proxies,
                 verify=self.ssl,
             )
             # get authenticated user informations
@@ -349,6 +350,7 @@ class Isogeo(OAuth2Session):
                 token_url=self.auto_refresh_url,
                 client_id=self.client_id,
                 client_secret=self.client_secret,
+                proxies=self.proxies,
                 verify=self.ssl,
             )
             # get authenticated application informations

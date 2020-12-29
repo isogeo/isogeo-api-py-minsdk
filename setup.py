@@ -16,7 +16,7 @@ import pathlib
 
 from setuptools import find_packages, setup
 
-# package (to get version)
+# package metadata
 from isogeo_pysdk import __about__
 
 # SETUP ######################################################################
@@ -42,8 +42,8 @@ setup(
     url=__about__.__uri__,
     project_urls={
         "Docs": "https://isogeo-api-pysdk.readthedocs.io/",
-        "Bug Reports": "https://github.com/isogeo/isogeo-api-py-minsdk/issues/",
-        "Source": "https://github.com/isogeo/isogeo-api-py-minsdk/",
+        "Bug Reports": "{}issues/".format(__about__.__uri__),
+        "Source": __about__.__uri__,
         "Isogeo API": "http://help.isogeo.com/api/",
     },
     # dependencies
@@ -64,6 +64,7 @@ setup(
         "Programming Language :: Python :: 3",
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
