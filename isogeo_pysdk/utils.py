@@ -502,9 +502,14 @@ class IsogeoUtils(object):
             >>> "https://api.qa.isogeo.com"
         """
         in_parsed = urlparse(url_api_token)
-        api_url_base = in_parsed._replace(
-            path="", netloc=in_parsed.netloc.replace("id.", "v1.")
-        )
+        if "qa" in url_api_token:
+            api_url_base = in_parsed._replace(
+                path="", netloc=in_parsed.netloc.replace("id.", "")
+            )
+        else:
+            api_url_base = in_parsed._replace(
+                path="", netloc=in_parsed.netloc.replace("id.", "v1.")
+            )
         return api_url_base.geturl()
 
     @classmethod
