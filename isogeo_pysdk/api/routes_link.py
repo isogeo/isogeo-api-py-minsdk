@@ -713,6 +713,9 @@ class ApiLink:
                 if action in matrix_kind_actions.get(link_kind)
             ]
 
+        if not len(link_actions):
+            link_actions.append("other")
+
         return tuple(link_actions)
 
 
