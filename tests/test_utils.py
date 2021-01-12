@@ -336,7 +336,7 @@ class TestIsogeoUtils(unittest.TestCase):
         """Test class method to get API base URL from token url."""
         # prod
         prod_api = IsogeoUtils.get_url_base_from_url_token()
-        self.assertEqual(prod_api, "https://api.isogeo.com")
+        self.assertEqual(prod_api, "https://v1.api.isogeo.com")
 
         # qa
         qa_api = IsogeoUtils.get_url_base_from_url_token(

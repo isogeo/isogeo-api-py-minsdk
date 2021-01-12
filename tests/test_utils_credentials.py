@@ -125,7 +125,7 @@ class TestIsogeoUtilsCredentials(unittest.TestCase):
                 creds_json_user.get("uri_auth"),
                 "https://id.api.isogeo.com/oauth/authorize",
             )
-            self.assertEqual(creds_json_user.get("uri_base"), "https://api.isogeo.com")
+            self.assertEqual(creds_json_user.get("uri_base"), "https://v1.api.isogeo.com")
             self.assertEqual(
                 creds_json_user.get("uri_token"),
                 "https://id.api.isogeo.com/oauth/token",
@@ -165,7 +165,7 @@ class TestIsogeoUtilsCredentials(unittest.TestCase):
                     "https://id.api.isogeo.com/oauth/token",
                 )
                 self.assertEqual(
-                    creds_json_group.get("uri_base"), "https://api.isogeo.com"
+                    creds_json_group.get("uri_base"), "https://v1.api.isogeo.com"
                 )
             elif creds_json_group.get("platform") == "qa":
                 self.assertEqual(
@@ -198,7 +198,7 @@ class TestIsogeoUtilsCredentials(unittest.TestCase):
         self.assertEqual(
             creds_ini.get("uri_auth"), "https://id.api.isogeo.com/oauth/authorize"
         )
-        self.assertEqual(creds_ini.get("uri_base"), "https://api.isogeo.com")
+        self.assertEqual(creds_ini.get("uri_base"), "https://v1.api.isogeo.com")
         self.assertEqual(
             creds_ini.get("uri_token"), "https://id.api.isogeo.com/oauth/token"
         )
