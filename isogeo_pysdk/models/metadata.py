@@ -446,13 +446,13 @@ class Metadata(object):
             self._validityComment = validityComment
 
         # warn about unsupported attributes
-        if len(kwargs):
-            logger.warning(
-                "Folllowings fields were not expected and have been ignored. "
-                "Maybe consider adding them to the model: {}.".format(
-                    " | ".join(kwargs.keys())
-                )
-            )
+        # if len(kwargs):
+        #     logger.warning(
+        #         "Folllowings fields were not expected and have been ignored. "
+        #         "Maybe consider adding them to the model: {}.".format(
+        #             " | ".join(kwargs.keys())
+        #         )
+        #     )
 
     # -- PROPERTIES --------------------------------------------------------------------
     # abilities of the user related to the metadata
@@ -1142,12 +1142,6 @@ class Metadata(object):
         :return: The thumbnailUrl of this Metadata.
         :rtype: str
         """
-        logger.warning(
-            DeprecationWarning(
-                "Thumbnail Url is a former field of Isogeo metadata model. "
-                "Its use is not guaranted."
-            )
-        )
         return self._thumbnailUrl
 
     # title
@@ -1347,9 +1341,6 @@ class Metadata(object):
         elif self._name:
             title_or_name = self._name
         else:
-            logger.warning(
-                "Metadata has no title nor name. So this method is useless..."
-            )
             return None
 
         # slugify
