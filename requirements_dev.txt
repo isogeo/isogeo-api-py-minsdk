@@ -24,7 +24,7 @@ pre-commit==2.9.*
 # -----------------------
 python-dotenv==0.15.*
 pytest==6.2.*
-pytest-cov==2.11.*
+pytest-cov==3.0.*
 pytest-randomly==3.5.*
 pytest-rerunfailures==9.*
 tox==3.23.*
