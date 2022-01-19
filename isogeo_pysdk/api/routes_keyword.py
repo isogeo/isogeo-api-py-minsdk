@@ -11,7 +11,10 @@
 # ##################################
 
 # Standard library
+import asyncio
+from concurrent.futures import ThreadPoolExecutor
 import logging
+from functools import partial
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
@@ -37,6 +40,18 @@ class ApiKeyword:
     def __init__(self, api_client=None):
         if api_client is not None:
             self.api_client = api_client
+
+        # create an asyncio AbstractEventLoop
+        try:
+            self.loop = asyncio.get_event_loop()
+        except RuntimeError as e:
+            logger.warning(
+                "Async get loop failed. Maybe because it's already executed in a separated thread. Original error: {}".format(
+                    e
+                )
+            )
+            self.loop = asyncio.new_event_loop()
+            asyncio.set_event_loop(self.loop)
 
         # store API client (Request [Oauthlib] Session) and pass it to the decorators
         self.api_client = api_client
@@ -117,11 +132,11 @@ class ApiKeyword:
         offset: int = 0,
         order_by: str = "text",  # available values : count.group, count.isogeo, text
         order_dir: str = "desc",
-        page_size: int = 20,
+        page_size: int = 100,
         specific_md: list = [],
         specific_tag: list = [],
         include: tuple = ("_abilities", "count"),
-        caching: bool = 1,
+        whole_results: bool = True,
     ) -> KeywordSearch:
         """Search for keywords within a specific thesaurus or a specific group.
 
@@ -138,7 +153,7 @@ class ApiKeyword:
           * 'desc': descending [DEFAULT]
           * 'asc': ascending
 
-        :param int page_size: limits the number of results. Default: 20.
+        :param int page_size: limits the number of results. Default: 100.
         :param list specific_md: list of metadata UUIDs to filter on
         :param list specific_tag: list of tags UUIDs to filter on
         :param tuple include: subresources that should be returned. Available values:
@@ -146,21 +161,19 @@ class ApiKeyword:
           * '_abilities'
           * 'count'
           * 'thesaurus'
+
+        :param bool whole_results: option to return all results or only the page size. *False* by DEFAULT.
+
+        :rtype: KeywordSearch
         """
-        # specific resources specific parsing
-        specific_md = checker._check_filter_specific_md(specific_md)
-        # sub resources specific parsing
-        include = checker._check_filter_includes(include, "keyword")
-        # specific tag specific parsing
-        specific_tag = checker._check_filter_specific_tag(specific_tag)
 
         # handling request parameters
         payload = {
-            "_id": specific_md,
-            "_include": include,
+            "_id": checker._check_filter_specific_md(specific_md),
+            "_include": checker._check_filter_includes(include, "keyword"),
             "_limit": page_size,
             "_offset": offset,
-            "_tag": specific_tag,
+            "_tag": checker._check_filter_specific_tag(specific_tag),
             "ob": order_by,
             "od": order_dir,
             "q": query,
@@ -171,23 +184,100 @@ class ApiKeyword:
             route="thesauri/{}/keywords/search".format(thesaurus_id)
         )
 
-        # request
-        req_thesaurus_keywords = self.api_client.get(
-            url=url_thesauri_keywords,
-            headers=self.api_client.header,
-            params=payload,
-            proxies=self.api_client.proxies,
-            verify=self.api_client.ssl,
-            timeout=self.api_client.timeout,
-        )
+        if whole_results:
+            # PAGINATION
+            # determine if a request to get the total is required
+            # make an empty request with same filters
+            total_results = self.thesaurus(
+                thesaurus_id=thesaurus_id,
+                # filters
+                query=query,
+                specific_md=specific_md,
+                specific_tag=specific_tag,
+                # options
+                page_size=1,
+                whole_results=0,
+            ).total
 
-        # checking response
-        req_check = checker.check_api_response(req_thesaurus_keywords)
-        if isinstance(req_check, tuple):
-            return req_check
+            # avoid to launch async searches if it's possible in one request
+            if total_results <= 100:
+                logger.debug(
+                    "Paginated (size={}) search changed into a unique search because "
+                    "the total of metadata {} is less than the maximum size (100).".format(
+                        page_size, total_results
+                    )
+                )
+                return self.thesaurus(
+                    thesaurus_id=thesaurus_id,
+                    # filters
+                    query=query,
+                    specific_md=specific_md,
+                    specific_tag=specific_tag,
+                    # results
+                    include=include,
+                    # sorting
+                    order_by=order_by,
+                    order_dir=order_dir,
+                    # options
+                    page_size=100,
+                    whole_results=0,
+                )
+            else:
+                # store search args as dict
+                search_params = {
+                    "thesaurus_id": thesaurus_id,
+                    # filters
+                    "query": query,
+                    "include": include,
+                    "specific_md": specific_md,
+                    "specific_tag": specific_tag,
+                    # sorting
+                    "order_by": order_by,
+                    "order_dir": order_dir,
+                }
+
+                # check loop state
+                if self.loop.is_closed():
+                    logger.debug(
+                        "Current event loop is already closed. Creating a new one..."
+                    )
+                    self.loop = asyncio.new_event_loop()
+                    asyncio.set_event_loop(self.loop)
+
+                # launch async searches
+                future_searches_concatenated = asyncio.ensure_future(
+                    self.search_keyword_asynchronous(
+                        total_results=total_results, **search_params
+                    ),
+                    loop=self.loop,
+                )
+                self.loop.run_until_complete(future_searches_concatenated)
+
+                # check results structure
+                req_keyword_search = future_searches_concatenated.result()
+
+                # properly close the loop
+                self.loop.close()
+        else:
+            # request
+            req_thesaurus_keywords = self.api_client.get(
+                url=url_thesauri_keywords,
+                headers=self.api_client.header,
+                params=payload,
+                proxies=self.api_client.proxies,
+                verify=self.api_client.ssl,
+                timeout=self.api_client.timeout,
+            )
+
+            # checking response
+            req_check = checker.check_api_response(req_thesaurus_keywords)
+            if isinstance(req_check, tuple):
+                return req_check
+
+            req_keyword_search = KeywordSearch(**req_thesaurus_keywords.json())
 
         # end of method
-        return KeywordSearch(**req_thesaurus_keywords.json())
+        return req_keyword_search
 
     @ApiDecorators._check_bearer_validity
     def workgroup(
@@ -198,11 +288,10 @@ class ApiKeyword:
         offset: int = 0,
         order_by: str = "text",  # available values : count.group, count.isogeo, text
         order_dir: str = "desc",
-        page_size: int = 20,
+        page_size: int = 100,
         specific_md: list = [],
         specific_tag: list = [],
-        include: tuple = ("_abilities", "count", "thesaurus"),
-        caching: bool = 1,
+        include: tuple = ("_abilities", "count", "thesaurus")
     ) -> KeywordSearch:
         """Search for keywords within a specific group's used thesauri.
 
@@ -220,7 +309,7 @@ class ApiKeyword:
           * 'desc': descending [DEFAULT]
           * 'asc': ascending
 
-        :param int page_size: limits the number of results. Default: 20.
+        :param int page_size: limits the number of results. Default: 100.
         :param list specific_md: list of metadata UUIDs to filter on
         :param list specific_tag: list of tags UUIDs to filter on
         :param tuple include: subresources that should be returned. Available values:
@@ -578,6 +667,60 @@ class ApiKeyword:
 
         # end of method
         return req_keyword_dissociate
+
+    # -- SEARCH SUBMETHODS
+    async def search_keyword_asynchronous(
+        self, total_results: int, max_workers: int = 10, **kwargs
+    ) -> KeywordSearch:
+        """Meta async method used to request big searches (> 100 results), using asyncio. It's a
+        private method launched by the main search method.
+
+        :param int total_results: total of results to retrieve
+        :param int max_workers: maximum number of thread to use :class:`python.concurrent.futures`
+
+        :rtype: KeywordSearch
+        """
+        # prepare async searches
+        total_pages = utils.pages_counter(total_results, page_size=100)
+        li_offsets = [offset * 100 for offset in range(0, total_pages)]
+        logger.debug("Async search launched with {} pages.".format(total_pages))
+
+        with ThreadPoolExecutor(
+            max_workers=max_workers, thread_name_prefix="IsogeoSearch"
+        ) as executor:
+            self.loop = asyncio.get_event_loop()
+            tasks = [
+                self.loop.run_in_executor(
+                    executor,
+                    partial(
+                        self.thesaurus,
+                        # filters
+                        query=kwargs.get("query"),
+                        include=kwargs.get("include"),
+                        specific_md=kwargs.get("specific_md"),
+                        specific_tag=kwargs.get("specific_tag"),
+                        # sorting
+                        order_by=kwargs.get("order_by"),
+                        order_dir=kwargs.get("order_dir"),
+                        # pagination
+                        offset=offset,
+                        page_size=100,
+                        # options
+                        whole_results=0,
+                    ),
+                )
+                for offset in li_offsets
+            ]
+
+            # store responses in a fresh Metadata Search object
+            final_search = KeywordSearch(results=[])
+            for response in await asyncio.gather(*tasks):
+                final_search.limit = response.total
+                final_search.offset = 0
+                final_search.results.extend(response.results)
+                final_search.total = response.total
+
+            return final_search
 
 
 # ##############################################################################
