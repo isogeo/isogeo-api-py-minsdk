@@ -227,7 +227,35 @@ class TestKeywordsComplete(unittest.TestCase):
     def test_keywords_search_thesaurus(self):
         """GET :thesauri/{thesauri_uuid}/keywords/search}"""
         # retrieve thesauri keywords
-        wg_keywords = self.isogeo.keyword.thesaurus(caching=0)
+        wg_keywords = self.isogeo.keyword.thesaurus(caching=0, whole_results=False)
+        # parse and test object loader
+        for i in wg_keywords.results:
+            # load it
+            keyword = Keyword(**i)
+            # tests attributes structure
+            self.assertTrue(hasattr(keyword, "_abilities"))
+            self.assertTrue(hasattr(keyword, "_id"))
+            self.assertTrue(hasattr(keyword, "_tag"))
+            self.assertTrue(hasattr(keyword, "code"))
+            self.assertTrue(hasattr(keyword, "count"))
+            self.assertTrue(hasattr(keyword, "description"))
+            self.assertTrue(hasattr(keyword, "text"))
+            self.assertTrue(hasattr(keyword, "thesaurus"))
+            # tests attributes value
+            self.assertEqual(keyword._abilities, i.get("_abilities"))
+            self.assertEqual(keyword._id, i.get("_id"))
+            self.assertEqual(keyword._tag, i.get("_tag"))
+            self.assertEqual(keyword.code, i.get("code"))
+            self.assertEqual(keyword.count, i.get("count"))
+            self.assertEqual(keyword.description, i.get("description"))
+            self.assertEqual(keyword.text, i.get("text"))
+            self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
+
+    def test_keywords_search_thesaurus_whole_results(self):
+        """GET :thesauri/{thesauri_uuid}/keywords/search}"""
+        # retrieve thesauri keywords
+        wg_keywords = self.isogeo.keyword.thesaurus(caching=0, query="eau", whole_results=True)
+        self.assertEqual(wg_keywords.total, len(wg_keywords.results))
         # parse and test object loader
         for i in wg_keywords.results:
             # load it
