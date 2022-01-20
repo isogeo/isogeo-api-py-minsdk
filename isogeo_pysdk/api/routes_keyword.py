@@ -19,7 +19,7 @@ from functools import partial
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.models import Keyword, KeywordSearch, Metadata
+from isogeo_pysdk.models import Keyword, KeywordSearch, Metadata, Workgroup
 from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
@@ -291,7 +291,8 @@ class ApiKeyword:
         page_size: int = 100,
         specific_md: list = [],
         specific_tag: list = [],
-        include: tuple = ("_abilities", "count", "thesaurus")
+        include: tuple = ("_abilities", "count", "thesaurus"),
+        whole_results: bool = True,
     ) -> KeywordSearch:
         """Search for keywords within a specific group's used thesauri.
 
@@ -317,6 +318,8 @@ class ApiKeyword:
           * '_abilities'
           * 'count'
           * 'thesaurus'
+
+        :param bool whole_results: option to return all results or only the page size. *False* by DEFAULT.
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -324,25 +327,42 @@ class ApiKeyword:
         else:
             pass
 
-        # specific resources specific parsing
-        specific_md = checker._check_filter_specific_md(specific_md)
-        # sub resources specific parsing
-        include = checker._check_filter_includes(include, "keyword")
-        # specific tag specific parsing
-        specific_tag = checker._check_filter_specific_tag(specific_tag)
-
         # handling request parameters
         payload = {
-            "_id": specific_md,
-            "_include": include,
+            "_id": checker._check_filter_specific_md(specific_md),
+            "_include": checker._check_filter_includes(include, "keyword"),
             "_limit": page_size,
             "_offset": offset,
-            "_tag": specific_tag,
-            "tid": thesaurus_id,
+            "_tag": checker._check_filter_specific_tag(specific_tag),
+            "th": thesaurus_id,
             "ob": order_by,
             "od": order_dir,
             "q": query,
         }
+
+        if whole_results:
+            # PAGINATION
+            # determine if a request to get the total is required
+            # make an empty request with same filters
+            total_results = self.workgroup(
+                workgroup_id=workgroup_id,
+                thesaurus_id=thesaurus_id,
+                # filters
+                query=query,
+                specific_md=specific_md,
+                specific_tag=specific_tag,
+                # options
+                page_size=1,
+                whole_results=False,
+            ).total
+
+            # avoid to launch async searches if it's possible in one request
+            if total_results > page_size:
+                payload["_limit"] = total_results
+            else:
+                pass
+        else:
+            pass
 
         # URL
         url_workgroup_keywords = utils.get_request_base_url(
@@ -350,7 +370,7 @@ class ApiKeyword:
         )
 
         # request
-        req_thesaurus_keywords = self.api_client.get(
+        req_workgroup_keywords = self.api_client.get(
             url=url_workgroup_keywords,
             headers=self.api_client.header,
             params=payload,
@@ -360,12 +380,12 @@ class ApiKeyword:
         )
 
         # checking response
-        req_check = checker.check_api_response(req_thesaurus_keywords)
+        req_check = checker.check_api_response(req_workgroup_keywords)
         if isinstance(req_check, tuple):
             return req_check
 
         # end of method
-        return KeywordSearch(**req_thesaurus_keywords.json())
+        return KeywordSearch(**req_workgroup_keywords.json())
 
     @ApiDecorators._check_bearer_validity
     def get(
@@ -557,14 +577,14 @@ class ApiKeyword:
             if metadata.tags:
                 # first look into the tags
                 metadata_existing_keywords = [
-                    tag for tag in metadata.tags if tag.startswith("keyword:isogeo:")
+                    tag for tag in metadata.tags if tag.startswith("keyword:isogeo:") or tag.startswith("keyword:group-theme:")
                 ]
             elif metadata.keywords:
                 # if not, maybe the metadata has been passed with subresuorces: so use it
                 metadata_existing_keywords = [
                     tag
                     for tag in metadata.keywords
-                    if tag.get("_tag").startswith("keyword:isogeo:")
+                    if tag.get("_tag").startswith("keyword:isogeo:") or tag.get("_tag").startswith("keyword:group-theme:")
                 ]
             else:
                 # if not, make a new request to perform the check
@@ -575,7 +595,7 @@ class ApiKeyword:
                 metadata_existing_keywords = [
                     tag
                     for tag in metadata_existing_keywords
-                    if tag.get("_tag").startswith("keyword:isogeo:")
+                    if tag.get("_tag").startswith("keyword:isogeo:") or tag.get("_tag").startswith("keyword:group-theme:")
                 ]
             # then compare
             if keyword._tag in metadata_existing_keywords:
