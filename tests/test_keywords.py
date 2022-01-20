@@ -199,7 +199,7 @@ class TestKeywordsComplete(unittest.TestCase):
         """GET :groups/{workgroup_uuid}/keywords/search}"""
         # retrieve workgroup keywords
         wg_keywords = self.isogeo.keyword.workgroup(
-            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID
         )
         # parse and test object loader
         for i in wg_keywords.results:
@@ -227,7 +227,7 @@ class TestKeywordsComplete(unittest.TestCase):
     def test_keywords_search_thesaurus(self):
         """GET :thesauri/{thesauri_uuid}/keywords/search}"""
         # retrieve thesauri keywords
-        wg_keywords = self.isogeo.keyword.thesaurus(caching=0, whole_results=False)
+        wg_keywords = self.isogeo.keyword.thesaurus(whole_results=False)
         # parse and test object loader
         for i in wg_keywords.results:
             # load it
@@ -254,7 +254,7 @@ class TestKeywordsComplete(unittest.TestCase):
     def test_keywords_search_thesaurus_whole_results(self):
         """GET :thesauri/{thesauri_uuid}/keywords/search}"""
         # retrieve thesauri keywords
-        wg_keywords = self.isogeo.keyword.thesaurus(caching=0, query="eau", whole_results=True)
+        wg_keywords = self.isogeo.keyword.thesaurus(query="eau", whole_results=True)
         self.assertEqual(wg_keywords.total, len(wg_keywords.results))
         # parse and test object loader
         for i in wg_keywords.results:
@@ -282,7 +282,7 @@ class TestKeywordsComplete(unittest.TestCase):
     def test_keyword_detailed(self):
         """GET :keywords/{keyword_uuid}"""
         # retrieve thesauri keywords
-        thesaurus_keywords = self.isogeo.keyword.thesaurus(page_size=50, caching=0)
+        thesaurus_keywords = self.isogeo.keyword.thesaurus(page_size=50)
         # pick one randomly
         random_keyword = sample(thesaurus_keywords.results, 1)[0]
         random_keyword = self.isogeo.keyword.get(random_keyword.get("_id"))

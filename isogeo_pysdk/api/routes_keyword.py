@@ -455,7 +455,6 @@ class ApiKeyword:
                 )
                 # try to return the most probably matching keyword
                 search_for_closest_keyword = self.thesaurus(
-                    caching=0,
                     include=(),
                     order_dir="asc",
                     page_size=1,
