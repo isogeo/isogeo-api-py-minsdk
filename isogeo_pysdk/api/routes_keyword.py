@@ -687,6 +687,108 @@ class ApiKeyword:
         # end of method
         return req_keyword_dissociate
 
+    @ApiDecorators._check_bearer_validity
+    def associate_workgroup(
+        self, workgroup: Workgroup, keyword: Keyword, check_exists: bool = 0
+    ) -> dict:
+        """Associate a keyword to a workgroup.
+
+        :param Workgroup workgroup: workgroup (resource) to edit
+        :param Keyword keyword: object to associate
+        :param bool check_exists: check if the keyword is already associated with the workgroup. Defaults to True.
+
+        :Example:
+
+        .. code-block:: python
+
+            # retrieve a workgroup
+            wg = isogeo.workgroup.get(WORKGROUP_UUID)
+            # retrieve a keyword
+            kw = isogeo.keyword.get(KEYWORD_UUID)
+            # associate a keyword to a workgroup
+            isogeo.keyword.tagging(workgroup = wg, keyword = kw)
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup._id):
+            raise ValueError(
+                "Workgroup ID is not a correct UUID: {}".format(workgroup._id)
+            )
+        else:
+            pass
+
+        # check keyword UUID
+        if not checker.check_is_uuid(keyword._id):
+            raise ValueError("Keyword ID is not a correct UUID: {}".format(keyword._id))
+        else:
+            pass
+
+        # check if keyword is from group-theme or isogeo thesaurus
+        if "isogeo" not in keyword._tag and "group-theme" not in keyword._tag:
+            keyword_thesaurus_code = keyword._tag.replace("keyword:", "").split(":")[0]
+            raise ValueError("Keyword cannot be from {} thesaurus".format(keyword_thesaurus_code))
+        # if keyword is form isogeo thesaurus, check if it need to be associated
+        elif "isogeo" in keyword._tag and workgroup.areKeywordsRestricted is False:
+            # return checker as true
+            return True, "not necessary"
+        else:
+            pass
+
+        # check if keyword is already associated
+        if check_exists:
+            # search for all workgroup's keywords
+            workgroup_existing_keywords = self.workgroup(
+                workgroup_id=workgroup._id, whole_results=True
+            ).results
+            # fetch all workgroup's keywords' tags
+            workgroup_existing_keywords = [
+                kw.get("_tag")
+                for kw in workgroup_existing_keywords
+                if kw.get("_tag").startswith("keyword:isogeo:") or kw.get("_tag").startswith("keyword:group-theme:")
+            ]
+
+            # then compare
+            if keyword._tag in workgroup_existing_keywords:
+                # return checker as true
+                return True, "already done"
+        else:
+            pass
+
+        # URL
+        url_keyword_associate_with_workgroup = utils.get_request_base_url(
+            route="groups/{}/keywords/{}".format(workgroup._id, keyword._id)
+        )
+
+        # request
+        req_keyword_associate = self.api_client.post(
+            url=url_keyword_associate_with_workgroup,
+            headers=self.api_client.header,
+            proxies=self.api_client.proxies,
+            timeout=self.api_client.timeout,
+            verify=self.api_client.ssl,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_keyword_associate)
+        if isinstance(req_check, tuple):
+            # handle conflict (see: https://developer.mozilla.org/fr/docs/Web/HTTP/Status/409)
+            if req_check[1] == 409:
+                # log conflict
+                logger.info(
+                    "Workgroup '{}' is already tagged by the keyword '{}'. Isogeo API reply: HTTP {} - {}.".format(
+                        workgroup._id,
+                        keyword._id,
+                        req_check[1],
+                        req_keyword_associate.reason,
+                    )
+                )
+                # set checker as true
+                req_check = tuple([True, req_check[1]])
+            else:
+                return req_check
+
+        # end of method
+        return req_keyword_associate
+
     # -- SEARCH SUBMETHODS
     async def search_keyword_asynchronous(
         self, total_results: int, max_workers: int = 10, **kwargs
