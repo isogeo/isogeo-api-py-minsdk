@@ -528,21 +528,27 @@ class ApiKeyword:
             return Keyword(**req_new_keyword.json())
 
     @ApiDecorators._check_bearer_validity
-    def delete(self, keyword: Keyword):
+    def delete(self, keyword: Keyword, thesaurus_id: str = "1616597fbc4348c8b11ef9d59cf594c8") -> Keyword:
         """Delete a keyword from Isogeo database.
 
         :param Keyword keyword: Keyword model object to create
+        :param str thesaurus_id: thesaurus UUID
         """
         # check keyword UUID
         if not checker.check_is_uuid(keyword._id):
             raise ValueError("Keyword ID is not a correct UUID: {}".format(keyword._id))
         else:
             pass
+        # check if thesaurus is 'group-theme' or 'isogeo'
+        if thesaurus_id not in ["1616597fbc4348c8b11ef9d59cf594c8", "0edc90b138ef41e593cf47fbca2cb1ad"]:
+            raise ValueError("'thesaurus_id' value can only be '1616597fbc4348c8b11ef9d59cf594c8' or '0edc90b138ef41e593cf47fbca2cb1ad', not '{}'".format(thesaurus_id))
+        else:
+            pass
 
         # URL
         url_keyword_delete = utils.get_request_base_url(
-            route="thesauri/1616597fbc4348c8b11ef9d59cf594c8/keywords/{}".format(
-                keyword._id
+            route="thesauri/{}/keywords/{}".format(
+                thesaurus_id, keyword._id
             )
         )
 
