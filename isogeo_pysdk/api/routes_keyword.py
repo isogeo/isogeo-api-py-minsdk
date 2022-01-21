@@ -439,7 +439,7 @@ class ApiKeyword:
         return Keyword(**req_keyword.json())
 
     @ApiDecorators._check_bearer_validity
-    def create(self, keyword: Keyword, thesaurus_id: str = "1616597fbc4348c8b11ef9d59cf594c8", check_exist: bool = 0) -> Keyword:
+    def create(self, keyword: Keyword, thesaurus_id: str = "1616597fbc4348c8b11ef9d59cf594c8", check_exists: bool = 0) -> Keyword:
         """Add a new keyword to the Isogeo thesaurus.
 
         If a keyword with the same text already exists, the Isogeo API returns a 409 HTTP code.
@@ -455,7 +455,7 @@ class ApiKeyword:
         else:
             pass
 
-        if check_exist:
+        if check_exists:
             # search for thesaurus' keywords
             thesaurus_existing_keywords = self.thesaurus(
                 thesaurus_id=thesaurus_id,
