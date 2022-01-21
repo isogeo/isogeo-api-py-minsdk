@@ -439,17 +439,50 @@ class ApiKeyword:
         return Keyword(**req_keyword.json())
 
     @ApiDecorators._check_bearer_validity
-    def create(self, keyword: Keyword) -> Keyword:
+    def create(self, keyword: Keyword, thesaurus_id: str = "1616597fbc4348c8b11ef9d59cf594c8", check_exist: bool = 0) -> Keyword:
         """Add a new keyword to the Isogeo thesaurus.
 
         If a keyword with the same text already exists, the Isogeo API returns a 409 HTTP code.
         Then this method will try to get the closest matching keyword and return it.
 
         :param Keyword keyword: Keyword model object to create
+        :param str thesaurus_id: thesaurus UUID
+        :param bool check_exists: check if a keyword with the same text already exists. Defaults to False.
         """
+        # check if thesaurus is 'group-theme' or 'isogeo'
+        if thesaurus_id not in ["1616597fbc4348c8b11ef9d59cf594c8", "0edc90b138ef41e593cf47fbca2cb1ad"]:
+            raise ValueError("'thesaurus_id' value can only be '1616597fbc4348c8b11ef9d59cf594c8' or '0edc90b138ef41e593cf47fbca2cb1ad', not '{}'".format(thesaurus_id))
+        else:
+            pass
+
+        if check_exist:
+            # search for thesaurus' keywords
+            thesaurus_existing_keywords = self.thesaurus(
+                thesaurus_id=thesaurus_id,
+                query=keyword.text,
+                include=(),
+                whole_results=True,
+            )
+            if thesaurus_existing_keywords.results and len(thesaurus_existing_keywords.results) > 0:
+                # search for a perfectly matching keyword
+                li_matching_keyword = [
+                    Keyword(**kw)
+                    for kw in thesaurus_existing_keywords.results
+                    if kw.get("text") == keyword.text
+                ]
+                # return it if it exists
+                if len(li_matching_keyword) > 0:
+                    return li_matching_keyword[0]
+                else:
+                    pass
+            else:
+                pass
+        else:
+            pass
+
         # URL
         url_keyword_create = utils.get_request_base_url(
-            route="thesauri/1616597fbc4348c8b11ef9d59cf594c8/keywords"
+            route="thesauri/{}/keywords".format(thesaurus_id)
         )
 
         # request
@@ -467,38 +500,32 @@ class ApiKeyword:
         if isinstance(req_check, tuple):
             # handle conflict (see: https://developer.mozilla.org/fr/docs/Web/HTTP/Status/409)
             if req_check[1] == 409:
-                # log conflict
-                logger.info(
-                    "A keyword with the same text already exists: '{}'. Isogeo API doesn't allow to create duplicates (HTTP {} - {}). Let's try to get the closes matching keyword...".format(
-                        keyword.text, req_check[1], req_new_keyword.reason
-                    )
-                )
-                # try to return the most probably matching keyword
-                search_for_closest_keyword = self.thesaurus(
-                    include=(),
-                    order_dir="asc",
-                    page_size=1,
+                # search for thesaurus' keywords
+                thesaurus_existing_keywords = self.thesaurus(
+                    thesaurus_id=thesaurus_id,
                     query=keyword.text,
+                    include=(),
+                    whole_results=True,
                 )
-                if search_for_closest_keyword.results:
-                    logger.info(
-                        "Returning the closest matching keyword for: 'thesauri/keywords/search?query={}'".format(
-                            keyword.text
-                        )
-                    )
-                    return Keyword(**search_for_closest_keyword.results[0])
+                if thesaurus_existing_keywords.results and len(thesaurus_existing_keywords.results) > 0:
+                    # search for a perfectly matching keyword
+                    li_matching_keyword = [
+                        Keyword(**kw)
+                        for kw in thesaurus_existing_keywords.results
+                        if kw.get("text") == keyword.text
+                    ]
+                    # return it if it exists
+                    if len(li_matching_keyword) > 0:
+                        return li_matching_keyword[0]
+                    else:
+                        pass
                 else:
-                    logger.info(
-                        "No match for: 'thesauri/keywords/search?query={}'".format(
-                            keyword.text
-                        )
-                    )
-
+                    pass
             # if other error, then return it
             return req_check
-
-        # end of method
-        return Keyword(**req_new_keyword.json())
+        else:
+            # end of method
+            return Keyword(**req_new_keyword.json())
 
     @ApiDecorators._check_bearer_validity
     def delete(self, keyword: Keyword):
@@ -544,7 +571,7 @@ class ApiKeyword:
 
         :param Metadata metadata: metadata (resource) to edit
         :param Keyword keyword: object to associate
-        :param bool check_exists: check if a metadata with the same service base URL and format already exists. Defaults to True.
+        :param bool check_exists: check if the keyword is already tagged to the metadata. Defaults to False.
 
         :Example:
 
