@@ -52,7 +52,7 @@ setup(
         "dev": ["black", "python-dotenv"],
         "test": ["pytest", "pytest-cov"],
     },
-    python_requires=">=3.6, <4",
+    python_requires=">=3.7, <4",
     # packaging
     packages=find_packages(
         exclude=["contrib", "docs", "*.tests", "*.tests.*", "tests.*", "tests"]
@@ -62,9 +62,9 @@ setup(
         "Intended Audience :: Developers",
         "Intended Audience :: Information Technology",
         "Programming Language :: Python :: 3",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
         "Development Status :: 5 - Production/Stable",
         "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
         "Operating System :: OS Independent",
