@@ -783,6 +783,8 @@ class ApiKeyword:
             if keyword._tag in workgroup_existing_keywords:
                 # return checker as true
                 return True, "already done"
+            else:
+                pass
         else:
             pass
 
@@ -815,7 +817,7 @@ class ApiKeyword:
                     )
                 )
                 # set checker as true
-                req_check = tuple([True, req_check[1]])
+                return True, req_check[1]
             else:
                 return req_check
 
@@ -906,7 +908,7 @@ class ApiKeyword:
         req_check = checker.check_api_response(req_keyword_dissociate)
         if isinstance(req_check, tuple):
             # handle conflict (see: https://developer.mozilla.org/fr/docs/Web/HTTP/Status/409)
-            if req_check[1] == 409:
+            if req_check[1] == 404:
                 # log conflict
                 logger.info(
                     "Keyword '{}' is already dissociated from the workgroup '{}'. Isogeo API reply: HTTP {} - {}.".format(
@@ -917,7 +919,7 @@ class ApiKeyword:
                     )
                 )
                 # set checker as true
-                req_check = tuple([True, req_check[1]])
+                return True, req_check[1]
             else:
                 return req_check
 
