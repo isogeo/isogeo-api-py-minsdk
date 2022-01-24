@@ -140,6 +140,7 @@ class TestFeatureAttributes(unittest.TestCase):
         local_obj = FeatureAttribute(
             name="{} - {}".format(get_test_marker(), self.discriminator),
             alias="I'm the nickname",
+            comment="I'm the nickname from database",
             dataType="varchar",
             description="Testing feature attribute creation:\n\n* with markdown\n* included"
             "\n\n[see the issue 129](https://github.com/isogeo/isogeo-api-py-minsdk/issues/129)",
@@ -220,6 +221,7 @@ class TestFeatureAttributes(unittest.TestCase):
             # tests attributes structure
             self.assertTrue(hasattr(attribute, "_id"))
             self.assertTrue(hasattr(attribute, "alias"))
+            self.assertTrue(hasattr(attribute, "comment"))
             self.assertTrue(hasattr(attribute, "dataType"))
             self.assertTrue(hasattr(attribute, "description"))
             self.assertTrue(hasattr(attribute, "language"))
@@ -231,6 +233,7 @@ class TestFeatureAttributes(unittest.TestCase):
             # tests attributes value
             self.assertEqual(attribute._id, i.get("_id"))
             self.assertEqual(attribute.alias, i.get("alias"))
+            self.assertEqual(attribute.comment, i.get("comment"))
             self.assertEqual(attribute.dataType, i.get("dataType"))
             self.assertEqual(attribute.description, i.get("description"))
             self.assertEqual(attribute.name, i.get("name"))

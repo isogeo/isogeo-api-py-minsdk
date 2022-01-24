@@ -86,6 +86,7 @@ virtualenv/
 *.pypirc
 *env*
 !.env.example
+.pipcache/
 
 # tests and PEP8
 junit/*

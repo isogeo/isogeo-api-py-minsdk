@@ -109,7 +109,7 @@ class ApiSpecification:
         wg_specifications = req_specifications_wg.json()
 
         # if caching use or store the workgroup specifications
-        if caching and not self.api_client._wg_specifications_names:
+        if caching:
             self.api_client._wg_specifications_names = {
                 i.get("name"): i.get("_id") for i in wg_specifications
             }
@@ -157,6 +157,7 @@ class ApiSpecification:
         workgroup_id: str,
         check_exists: int = 1,
         specification: object = Specification(),
+        caching: bool = 1
     ) -> Specification:
         """Add a new specification to a workgroup.
 
@@ -167,6 +168,7 @@ class ApiSpecification:
         - 1 = compare name [DEFAULT]
 
         :param class specification: Specification model object to create
+        :param bool caching: option to cache the response
         """
         # check workgroup UUID
         if not checker.check_is_uuid(workgroup_id):
@@ -177,7 +179,7 @@ class ApiSpecification:
         # check if specification already exists in workgroup
         if check_exists == 1:
             # retrieve workgroup specifications
-            if not self.api_client._wg_specifications_names:
+            if len(self.api_client._wg_specifications_names) == 0:
                 self.listing(workgroup_id=workgroup_id, include=())
             # check
             if specification.name in self.api_client._wg_specifications_names:
@@ -212,9 +214,10 @@ class ApiSpecification:
 
         # load new specification and save it to the cache
         new_specification = Specification(**req_new_specification.json())
-        self.api_client._wg_specifications_names[
-            new_specification.name
-        ] = new_specification._id
+        if caching:
+            self.api_client._wg_specifications_names[
+                new_specification.name
+            ] = new_specification._id
 
         # end of method
         return new_specification
@@ -260,6 +263,10 @@ class ApiSpecification:
         req_check = checker.check_api_response(req_specification_deletion)
         if isinstance(req_check, tuple):
             return req_check
+        elif len(self.api_client._wg_specifications_names) > 0:
+            self.listing(workgroup_id=workgroup_id, include=())
+        else:
+            pass
 
         return req_specification_deletion
 

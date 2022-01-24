@@ -49,6 +49,11 @@ hostname = gethostname()
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
+# shorctuts
+ISOGEO_THESAURUS_ID = "1616597fbc4348c8b11ef9d59cf594c8"
+GROUPTHEME_THESAURUS_ID = "0edc90b138ef41e593cf47fbca2cb1ad"
+INSPIRE_THESAURUS_ID = "926c676c380046d7af99bcae343ac813"
+
 # #############################################################################
 # ########## Helpers ###############
 # ##################################
@@ -121,33 +126,92 @@ class TestKeywordsComplete(unittest.TestCase):
         """Executed after the last test."""
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
-            for i in cls.li_fixtures_to_delete:
-                cls.isogeo.keyword.delete(i)
-                pass
+            for kw, th_id in cls.li_fixtures_to_delete:
+                cls.isogeo.keyword.delete(
+                    keyword=kw,
+                    thesaurus_id=th_id
+                )
         # close sessions
         cls.isogeo.close()
 
     # -- TESTS ---------------------------------------------------------
 
     # -- POST --
-    def test_keywords_create_basic(self):
+    def test_keywords_create_basic_nochecking_exists(self):
         """POST :thesauri/{isogeo_thesaurus_uuid}/keywords/}"""
         # var
         keyword_text = "{} - {}".format(get_test_marker(), self.discriminator)
 
-        # create local object
+        for thesaurus_id in [ISOGEO_THESAURUS_ID, GROUPTHEME_THESAURUS_ID]:
+            # create local object
+            keyword_new = Keyword(text=keyword_text)
+
+            # create it online
+            keyword_new = self.isogeo.keyword.create(
+                keyword=keyword_new,
+                thesaurus_id=thesaurus_id,
+                check_exists=0
+            )
+
+            # checks
+            self.assertEqual(keyword_new.text, keyword_text)
+            self.assertIsInstance(keyword_new, Keyword)
+
+            # add created keyword to deletion
+            self.li_fixtures_to_delete.append(
+                (keyword_new, thesaurus_id)
+            )
+
         keyword_new = Keyword(text=keyword_text)
+        with self.assertRaises(ValueError):
+            keyword_new = self.isogeo.keyword.create(
+                keyword=keyword_new,
+                thesaurus_id=INSPIRE_THESAURUS_ID,
+                check_exists=0
+            )
+        if keyword_new._id is not None:
+            self.li_fixtures_to_delete.append(
+                (keyword_new, thesaurus_id)
+            )
 
-        # create it online
-        keyword_new = self.isogeo.keyword.create(keyword=keyword_new)
+    def test_keywords_create_basic_checking_exists(self):
+        """POST :thesauri/{isogeo_thesaurus_uuid}/keywords/}"""
+        # var
+        keyword_text = "{} - {}".format(get_test_marker(), self.discriminator)
 
-        # checks
-        self.assertEqual(keyword_new.text, keyword_text)
+        for thesaurus_id in [ISOGEO_THESAURUS_ID, GROUPTHEME_THESAURUS_ID]:
+            # create local object
+            keyword_new = Keyword(text=keyword_text)
 
-        # add created keyword to deletion
-        self.li_fixtures_to_delete.append(keyword_new)
+            # create it online
+            keyword_new = self.isogeo.keyword.create(
+                keyword=keyword_new,
+                thesaurus_id=thesaurus_id,
+                check_exists=1
+            )
 
-    def test_keywords_create_similar(self):
+            # checks
+            self.assertEqual(keyword_new.text, keyword_text)
+            self.assertIsInstance(keyword_new, Keyword)
+
+            # add created keyword to deletion
+            self.li_fixtures_to_delete.append(
+                (keyword_new, thesaurus_id)
+            )
+
+        keyword_new = Keyword(text=keyword_text)
+        with self.assertRaises(ValueError):
+            keyword_new = self.isogeo.keyword.create(
+                keyword=keyword_new,
+                thesaurus_id=INSPIRE_THESAURUS_ID,
+                check_exists=1
+            )
+        if keyword_new._id is not None:
+            self.li_fixtures_to_delete.append(
+                (keyword_new, thesaurus_id)
+            )
+
+    def test_keywords_create_similar_nochecking_exists(self):
         """POST :thesauri/{isogeo_thesaurus_uuid}/keywords/}
 
         Handling case when the keyword already exists
@@ -155,27 +219,75 @@ class TestKeywordsComplete(unittest.TestCase):
         # var
         keyword_text = "{} - {}".format(get_test_marker(), self.discriminator)
 
-        # create local objects
-        keyword_new_1 = Keyword(text=keyword_text)
-        keyword_new_2 = Keyword(text=keyword_text)
+        for thesaurus_id in [ISOGEO_THESAURUS_ID, GROUPTHEME_THESAURUS_ID]:
+            # create local objects
+            keyword_new_1 = Keyword(text=keyword_text)
+            keyword_new_2 = Keyword(text=keyword_text)
 
-        # create first it online
-        keyword_new_1_created = self.isogeo.keyword.create(keyword=keyword_new_1)
+            # create first it online
+            keyword_new_1_created = self.isogeo.keyword.create(
+                keyword=keyword_new_1, thesaurus_id=thesaurus_id, check_exists=0
+            )
 
-        # check
-        self.assertEqual(keyword_new_1_created.text, keyword_text)
+            # add created keyword to deletion
+            self.li_fixtures_to_delete.append(
+                (keyword_new_1_created, thesaurus_id)
+            )
 
-        # try to create a keyword with the same text
-        keyword_new_2_created = self.isogeo.keyword.create(keyword=keyword_new_2)
+            # check
+            self.assertEqual(keyword_new_1_created.text, keyword_text)
+            self.assertIsInstance(keyword_new_1_created, Keyword)
 
-        # check
-        self.assertEqual(keyword_new_2_created.text, keyword_text)
+            # try to create a keyword with the same text
+            keyword_new_2_created = self.isogeo.keyword.create(
+                keyword=keyword_new_2, thesaurus_id=thesaurus_id, check_exists=0
+            )
 
-        # compare
-        self.assertTrue(keyword_new_1_created._id == keyword_new_2_created._id)
+            # check
+            self.assertEqual(keyword_new_2_created.text, keyword_text)
+            self.assertIsInstance(keyword_new_2_created, Keyword)
 
-        # add created keyword to deletion
-        self.li_fixtures_to_delete.append(keyword_new_1_created)
+            # compare
+            self.assertTrue(keyword_new_1_created._id == keyword_new_2_created._id)
+
+    def test_keywords_create_similar_checking_exists(self):
+        """POST :thesauri/{isogeo_thesaurus_uuid}/keywords/}
+
+        Handling case when the keyword already exists
+        """
+        # var
+        keyword_text = "{} - {}".format(get_test_marker(), self.discriminator)
+
+        for thesaurus_id in [ISOGEO_THESAURUS_ID, GROUPTHEME_THESAURUS_ID]:
+            # create local objects
+            keyword_new_1 = Keyword(text=keyword_text)
+            keyword_new_2 = Keyword(text=keyword_text)
+
+            # create first it online
+            keyword_new_1_created = self.isogeo.keyword.create(
+                keyword=keyword_new_1, thesaurus_id=thesaurus_id, check_exists=1
+            )
+
+            # add created keyword to deletion
+            self.li_fixtures_to_delete.append(
+                (keyword_new_1_created, thesaurus_id)
+            )
+
+            # check
+            self.assertEqual(keyword_new_1_created.text, keyword_text)
+            self.assertIsInstance(keyword_new_1_created, Keyword)
+
+            # try to create a keyword with the same text
+            keyword_new_2_created = self.isogeo.keyword.create(
+                keyword=keyword_new_2, thesaurus_id=thesaurus_id, check_exists=1
+            )
+
+            # check
+            self.assertEqual(keyword_new_2_created.text, keyword_text)
+            self.assertIsInstance(keyword_new_2_created, Keyword)
+
+            # compare
+            self.assertTrue(keyword_new_1_created._id == keyword_new_2_created._id)
 
     # -- GET --
     def test_keywords_list_metadata(self):
@@ -199,8 +311,46 @@ class TestKeywordsComplete(unittest.TestCase):
         """GET :groups/{workgroup_uuid}/keywords/search}"""
         # retrieve workgroup keywords
         wg_keywords = self.isogeo.keyword.workgroup(
-            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, caching=0
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, whole_results=0, page_size=20
         )
+
+        if wg_keywords.total > 20:
+            self.assertEqual(len(wg_keywords.results), 20)
+        else:
+            self.assertEqual(wg_keywords.total, len(wg_keywords.results))
+
+        # parse and test object loader
+        for i in wg_keywords.results:
+            # load it
+            keyword = Keyword(**i)
+            # tests attributes structure
+            self.assertTrue(hasattr(keyword, "_abilities"))
+            self.assertTrue(hasattr(keyword, "_id"))
+            self.assertTrue(hasattr(keyword, "_tag"))
+            self.assertTrue(hasattr(keyword, "code"))
+            self.assertTrue(hasattr(keyword, "count"))
+            self.assertTrue(hasattr(keyword, "description"))
+            self.assertTrue(hasattr(keyword, "text"))
+            self.assertTrue(hasattr(keyword, "thesaurus"))
+            # tests attributes value
+            self.assertEqual(keyword._abilities, i.get("_abilities"))
+            self.assertEqual(keyword._id, i.get("_id"))
+            self.assertEqual(keyword._tag, i.get("_tag"))
+            self.assertEqual(keyword.code, i.get("code"))
+            self.assertEqual(keyword.count, i.get("count"))
+            self.assertEqual(keyword.description, i.get("description"))
+            self.assertEqual(keyword.text, i.get("text"))
+            self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
+
+    def test_keywords_search_workgroup_whole_results(self):
+        """GET :groups/{workgroup_uuid}/keywords/search}"""
+        # retrieve workgroup keywords
+        wg_keywords = self.isogeo.keyword.workgroup(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, whole_results=1, page_size=20
+        )
+
+        self.assertEqual(len(wg_keywords.results), wg_keywords.total)
+
         # parse and test object loader
         for i in wg_keywords.results:
             # load it
@@ -226,10 +376,54 @@ class TestKeywordsComplete(unittest.TestCase):
 
     def test_keywords_search_thesaurus(self):
         """GET :thesauri/{thesauri_uuid}/keywords/search}"""
+
         # retrieve thesauri keywords
-        wg_keywords = self.isogeo.keyword.thesaurus(caching=0)
+        for thesaurus_id in [ISOGEO_THESAURUS_ID, GROUPTHEME_THESAURUS_ID]:
+            th_keywords = self.isogeo.keyword.thesaurus(
+                thesaurus_id=thesaurus_id, whole_results=False, page_size=20
+            )
+            if th_keywords.total > 20:
+                self.assertEqual(len(th_keywords.results), 20)
+            else:
+                self.assertEqual(th_keywords.total, len(th_keywords.results))
+            # parse and test object loader
+            for i in th_keywords.results:
+                # load it
+                keyword = Keyword(**i)
+                # tests attributes structure
+                self.assertTrue(hasattr(keyword, "_abilities"))
+                self.assertTrue(hasattr(keyword, "_id"))
+                self.assertTrue(hasattr(keyword, "_tag"))
+                self.assertTrue(hasattr(keyword, "code"))
+                self.assertTrue(hasattr(keyword, "count"))
+                self.assertTrue(hasattr(keyword, "description"))
+                self.assertTrue(hasattr(keyword, "text"))
+                self.assertTrue(hasattr(keyword, "thesaurus"))
+                # tests attributes value
+                self.assertEqual(keyword._abilities, i.get("_abilities"))
+                self.assertEqual(keyword._id, i.get("_id"))
+                self.assertEqual(keyword._tag, i.get("_tag"))
+                self.assertEqual(keyword.code, i.get("code"))
+                self.assertEqual(keyword.count, i.get("count"))
+                self.assertEqual(keyword.description, i.get("description"))
+                self.assertEqual(keyword.text, i.get("text"))
+                self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
+
+    def test_keywords_search_thesaurus_whole_results(self):
+        """GET :thesauri/{thesauri_uuid}/keywords/search}"""
+
+        # retrieve thesauri keywords
+        th_keywords = self.isogeo.keyword.thesaurus(
+            thesaurus_id=ISOGEO_THESAURUS_ID, whole_results=True, query="eau"
+        )
+        self.assertEqual(len(th_keywords.results), th_keywords.total)
+
+        li_matching_kw = [kw for kw in th_keywords.results if kw.get("text") == "eau"]
+        self.assertTrue(len(li_matching_kw) == 1)
+        self.assertTrue(li_matching_kw[0].get("text") == "eau")
+
         # parse and test object loader
-        for i in wg_keywords.results:
+        for i in th_keywords.results:
             # load it
             keyword = Keyword(**i)
             # tests attributes structure
@@ -253,40 +447,265 @@ class TestKeywordsComplete(unittest.TestCase):
 
     def test_keyword_detailed(self):
         """GET :keywords/{keyword_uuid}"""
-        # retrieve thesauri keywords
-        thesaurus_keywords = self.isogeo.keyword.thesaurus(page_size=50, caching=0)
-        # pick one randomly
-        random_keyword = sample(thesaurus_keywords.results, 1)[0]
-        random_keyword = self.isogeo.keyword.get(random_keyword.get("_id"))
 
-    # -- PUT/PATCH --
-    # def test_keywords_update(self):
-    #     """PUT :groups/{workgroup_uuid}/keywords/{keyword_uuid}}"""
-    #     # create a new keyword
-    #     keyword_fixture = Keyword(name="{}".format(get_test_marker()))
-    #     keyword_fixture = self.isogeo.keyword.create(
-    #         workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, keyword=keyword_fixture, check_exists=0
-    #     )
+        # retrieve a random thesauri keywords
+        for thesaurus_id in [ISOGEO_THESAURUS_ID, GROUPTHEME_THESAURUS_ID]:
+            thesaurus_keywords = self.isogeo.keyword.thesaurus(
+                thesaurus_id=thesaurus_id, page_size=50, include=("_abilities", "count", "thesaurus")
+            )
+            # pick one randomly
+            random_keyword_dict = sample(thesaurus_keywords.results, 1)[0]
+            random_keyword = self.isogeo.keyword.get(random_keyword_dict.get("_id"))
+            # tests attributes structure
+            self.assertTrue(hasattr(random_keyword, "_abilities"))
+            self.assertTrue(hasattr(random_keyword, "_id"))
+            self.assertTrue(hasattr(random_keyword, "_tag"))
+            self.assertTrue(hasattr(random_keyword, "code"))
+            self.assertTrue(hasattr(random_keyword, "count"))
+            self.assertTrue(hasattr(random_keyword, "description"))
+            self.assertTrue(hasattr(random_keyword, "text"))
+            self.assertTrue(hasattr(random_keyword, "thesaurus"))
+            self.assertEqual(random_keyword_dict.get("_abilities"), random_keyword._abilities)
+            self.assertEqual(random_keyword_dict.get("_id"), random_keyword._id)
+            self.assertEqual(random_keyword_dict.get("_tag"), random_keyword._tag)
+            self.assertEqual(random_keyword_dict.get("code"), random_keyword.code)
+            self.assertEqual(random_keyword_dict.get("count"), random_keyword.count)
+            self.assertEqual(random_keyword_dict.get("description"), random_keyword.description)
+            self.assertEqual(random_keyword_dict.get("text"), random_keyword.text)
+            self.assertEqual(random_keyword_dict.get("thesaurus"), random_keyword.thesaurus)
 
-    #     # modify local object
-    #     keyword_fixture.name = "{} - {}".format(get_test_marker(), self.discriminator)
-    #     keyword_fixture.scan = True
+    def test_associate_and_dissociate_workgroup_groupTheme(self):
+        """POST :group/{workgroup_uuid}/keywords/{keyword_uuid}"""
+        # fetch fixture workgroup
+        workgroup_test_fixture = self.isogeo.workgroup.get(WORKGROUP_TEST_FIXTURE_UUID)
 
-    #     # update the online keyword
-    #     keyword_fixture = self.isogeo.keyword.keyword_update(keyword_fixture)
+        # pick a random groupTheme that is not already associated with fixture workgroup
+        groupTheme_thesaurus_keywords = self.isogeo.keyword.thesaurus(
+            thesaurus_id=GROUPTHEME_THESAURUS_ID, page_size=100
+        )
+        groupTheme_workgroup_keywords = self.isogeo.keyword.workgroup(
+            workgroup_id=workgroup_test_fixture._id, thesaurus_id=GROUPTHEME_THESAURUS_ID, whole_results=True
+        )
+        if groupTheme_workgroup_keywords.results and len(groupTheme_workgroup_keywords.results):
+            groupTheme_workgroup_tags = [kw.get("_tag") for kw in groupTheme_workgroup_keywords.results]
+            randow_keyword_dict = sample(
+                [kw_dict for kw_dict in groupTheme_thesaurus_keywords.results if kw_dict.get("_tag") not in groupTheme_workgroup_tags],
+                1
+            )[0]
+        else:
+            groupTheme_workgroup_tags = []
+            randow_keyword_dict = sample(groupTheme_thesaurus_keywords.results, 1)[0]
+        random_keyword = Keyword(**randow_keyword_dict)
 
-    #     # check if the change is effective
-    #     keyword_fixture_updated = self.isogeo.keyword.get(
-    #         keyword_fixture.owner.get("_id"), keyword_fixture._id
-    #     )
-    #     self.assertEqual(
-    #         keyword_fixture_updated.name,
-    #         "{} - {}".format(get_test_marker(), self.discriminator),
-    #     )
-    #     self.assertEqual(keyword_fixture_updated.scan, True)
+        # check that random_keyword is not already associated with fixture workgroup
+        self.assertFalse(random_keyword._tag in groupTheme_workgroup_tags)
 
-    #     # add created keyword to deletion
-    #     self.li_fixtures_to_delete.append(keyword_fixture_updated._id)
+        # associate random_keyword with fixture workgroup
+        self.isogeo.keyword.associate_workgroup(
+            workgroup=workgroup_test_fixture, keyword=random_keyword
+        )
+        # check random_keyword is actually associated with fixture workgroup
+        groupTheme_workgroup_keywords = self.isogeo.keyword.workgroup(
+            workgroup_id=workgroup_test_fixture._id, thesaurus_id=GROUPTHEME_THESAURUS_ID, whole_results=True
+        )
+        self.assertTrue(any(kw_dict.get("_tag") == random_keyword._tag for kw_dict in groupTheme_workgroup_keywords.results))
+        self.assertTrue(any(kw_dict.get("text") == random_keyword.text for kw_dict in groupTheme_workgroup_keywords.results))
+        self.assertTrue(any(kw_dict.get("_id") == random_keyword._id for kw_dict in groupTheme_workgroup_keywords.results))
+
+        # try to associate random_keyword with fixture workgroup again
+        # with check_exists=True
+        self.assertEqual(
+            self.isogeo.keyword.associate_workgroup(
+                workgroup=workgroup_test_fixture, keyword=random_keyword, check_exists=True
+            ),
+            (True, "already done")
+        )
+        # with check_exists=False
+        self.assertEqual(
+            self.isogeo.keyword.associate_workgroup(
+                workgroup=workgroup_test_fixture, keyword=random_keyword, check_exists=False
+            ),
+            (True, 409)
+        )
+
+        # dissociate random_keyword from fixture workgroup
+        self.isogeo.keyword.dissociate_workgroup(
+            workgroup=workgroup_test_fixture, keyword=random_keyword, check_exists=False
+        )
+        # check random_keyword is actually dissociated from fixture workgroup
+        groupTheme_workgroup_keywords = self.isogeo.keyword.workgroup(
+            workgroup_id=workgroup_test_fixture._id, thesaurus_id=GROUPTHEME_THESAURUS_ID, whole_results=True
+        )
+        if groupTheme_workgroup_keywords.results and len(groupTheme_workgroup_keywords.results):
+            self.assertTrue(all(kw_dict.get("_tag") != random_keyword._tag for kw_dict in groupTheme_workgroup_keywords.results))
+            self.assertTrue(all(kw_dict.get("text") != random_keyword.text for kw_dict in groupTheme_workgroup_keywords.results))
+            self.assertTrue(all(kw_dict.get("_id") != random_keyword._id for kw_dict in groupTheme_workgroup_keywords.results))
+        else:
+            pass
+
+        # try to dissociate random_keyword from fixture workgroup again
+        # with check_exists=True
+        self.assertEqual(
+            self.isogeo.keyword.dissociate_workgroup(
+                workgroup=workgroup_test_fixture, keyword=random_keyword, check_exists=True
+            ),
+            (True, "already done")
+        )
+        # with check_exists=False
+        self.assertEqual(
+            self.isogeo.keyword.dissociate_workgroup(
+                workgroup=workgroup_test_fixture, keyword=random_keyword, check_exists=False
+            ),
+            (True, 404)
+        )
+
+    def test_associate_and_dissociate_workgroup_isogeo(self):
+        """POST :group/{workgroup_uuid}/keywords/{keyword_uuid}"""
+
+        # pick a random isogeo keyword
+        random_keyword = Keyword(
+            **sample(
+                self.isogeo.keyword.thesaurus(
+                    thesaurus_id=ISOGEO_THESAURUS_ID, page_size=100
+                ).results,
+                1
+            )[0]
+        )
+        # fetch fixture workgroup
+        workgroup_test_fixture = self.isogeo.workgroup.get(WORKGROUP_TEST_FIXTURE_UUID)
+
+        # set workgroup.areKeywordsRestricted object propertie to false
+        workgroup_test_fixture.areKeywordsRestricted = False
+
+        # check that it won't even try to associate a keyword
+        self.assertEqual(
+            self.isogeo.keyword.associate_workgroup(
+                workgroup=workgroup_test_fixture, keyword=random_keyword
+            ),
+            (True, "not necessary")
+        )
+
+        # check that it won't even try to dissociate a keyword
+        self.assertEqual(
+            self.isogeo.keyword.dissociate_workgroup(
+                workgroup=workgroup_test_fixture, keyword=random_keyword
+            ),
+            (True, "not necessary")
+        )
+
+        # set workgroup.areKeywordsRestricted to True for real this time
+        workgroup_test_fixture.areKeywordsRestricted = True
+        self.isogeo.workgroup.update(workgroup_test_fixture)
+
+        # pick a random isogeo keyword that is not already associated with fixture workgroup
+        isogeo_thesaurus_keywords = self.isogeo.keyword.thesaurus(
+            thesaurus_id=ISOGEO_THESAURUS_ID, page_size=100
+        )
+        isogeo_workgroup_keywords = self.isogeo.keyword.workgroup(
+            workgroup_id=workgroup_test_fixture._id, thesaurus_id=ISOGEO_THESAURUS_ID, whole_results=True
+        )
+        if isogeo_workgroup_keywords.results and len(isogeo_workgroup_keywords.results):
+            isogeo_workgroup_tags = [kw.get("_tag") for kw in isogeo_workgroup_keywords.results]
+            randow_keyword_dict = sample(
+                [kw_dict for kw_dict in isogeo_thesaurus_keywords.results if kw_dict.get("_tag") not in isogeo_workgroup_tags],
+                1
+            )[0]
+        else:
+            isogeo_workgroup_tags = []
+            randow_keyword_dict = sample(isogeo_thesaurus_keywords.results, 1)[0]
+        random_keyword = Keyword(**randow_keyword_dict)
+
+        # check that random_keyword is not already associated with fixture workgroup
+        self.assertFalse(random_keyword._tag in isogeo_workgroup_tags)
+
+        # associate random_keyword with fixture workgroup
+        self.isogeo.keyword.associate_workgroup(
+            workgroup=workgroup_test_fixture, keyword=random_keyword
+        )
+        # check random_keyword is actually associated with fixture workgroup
+        isogeo_workgroup_keywords = self.isogeo.keyword.workgroup(
+            workgroup_id=workgroup_test_fixture._id, thesaurus_id=ISOGEO_THESAURUS_ID, whole_results=True
+        )
+        self.assertTrue(any(kw_dict.get("_tag") == random_keyword._tag for kw_dict in isogeo_workgroup_keywords.results))
+        self.assertTrue(any(kw_dict.get("text") == random_keyword.text for kw_dict in isogeo_workgroup_keywords.results))
+        self.assertTrue(any(kw_dict.get("_id") == random_keyword._id for kw_dict in isogeo_workgroup_keywords.results))
+
+        # try to associate random_keyword with fixture workgroup again
+        # with check_exists=True
+        self.assertEqual(
+            self.isogeo.keyword.associate_workgroup(
+                workgroup=workgroup_test_fixture, keyword=random_keyword, check_exists=True
+            ),
+            (True, "already done")
+        )
+        # with check_exists=False
+        self.assertEqual(
+            self.isogeo.keyword.associate_workgroup(
+                workgroup=workgroup_test_fixture, keyword=random_keyword, check_exists=False
+            ),
+            (True, 409)
+        )
+
+        # dissociate random_keyword from fixture workgroup
+        self.isogeo.keyword.dissociate_workgroup(
+            workgroup=workgroup_test_fixture, keyword=random_keyword, check_exists=False
+        )
+        # check random_keyword is actually dissociated from fixture workgroup
+        isogeo_workgroup_keywords = self.isogeo.keyword.workgroup(
+            workgroup_id=workgroup_test_fixture._id, thesaurus_id=ISOGEO_THESAURUS_ID, whole_results=True
+        )
+        if isogeo_workgroup_keywords.results and len(isogeo_workgroup_keywords.results):
+            self.assertTrue(all(kw_dict.get("_tag") != random_keyword._tag for kw_dict in isogeo_workgroup_keywords.results))
+            self.assertTrue(all(kw_dict.get("text") != random_keyword.text for kw_dict in isogeo_workgroup_keywords.results))
+            self.assertTrue(all(kw_dict.get("_id") != random_keyword._id for kw_dict in isogeo_workgroup_keywords.results))
+        else:
+            pass
+
+        # try to dissociate random_keyword from fixture workgroup again
+        # with check_exists=True
+        self.assertEqual(
+            self.isogeo.keyword.dissociate_workgroup(
+                workgroup=workgroup_test_fixture, keyword=random_keyword, check_exists=True
+            ),
+            (True, "already done")
+        )
+        # with check_exists=False
+        self.assertEqual(
+            self.isogeo.keyword.dissociate_workgroup(
+                workgroup=workgroup_test_fixture, keyword=random_keyword, check_exists=False
+            ),
+            (True, 404)
+        )
+
+        # set workgroup.areKeywordsRestricted to True for real this time
+        workgroup_test_fixture.areKeywordsRestricted = False
+        self.isogeo.workgroup.update(workgroup_test_fixture)
+
+    def test_associate_and_dissociate_workgroup_otherThesaurus(self):
+        """POST :group/{workgroup_uuid}/keywords/{keyword_uuid}"""
+
+        # pick a random inspire keyword
+        random_keyword = Keyword(
+            **sample(
+                self.isogeo.keyword.thesaurus(
+                    thesaurus_id=INSPIRE_THESAURUS_ID, whole_results=True
+                ).results,
+                1
+            )[0]
+        )
+        # fetch fixture workgroup
+        workgroup_test_fixture = self.isogeo.workgroup.get(WORKGROUP_TEST_FIXTURE_UUID)
+
+        # check that it will raise an error trying to associate an inspire keyword
+        with self.assertRaises(ValueError):
+            self.isogeo.keyword.associate_workgroup(
+                workgroup=workgroup_test_fixture, keyword=random_keyword
+            )
+        # check that it will raise an error trying to dissociate an inspire keyword
+        with self.assertRaises(ValueError):
+            self.isogeo.keyword.dissociate_workgroup(
+                workgroup=workgroup_test_fixture, keyword=random_keyword
+            )
 
 
 # ##############################################################################
