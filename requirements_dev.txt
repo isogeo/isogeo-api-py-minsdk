@@ -27,7 +27,7 @@ pytest==6.2.*
 pytest-cov==3.0.*
 pytest-randomly==3.11.*
 pytest-rerunfailures==10.*
-tox==3.23.*
+tox==3.24.*
 
 # Documentation (for devs)
 # -----------------------
