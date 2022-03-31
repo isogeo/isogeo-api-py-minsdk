@@ -31,6 +31,7 @@ class Link(object):
         {
             '_id': string (uuid),
             'actions': list,
+            'fileName': string,
             'kind': string,
             'parent_resource': string (uuid),
             'size': int,
@@ -43,6 +44,7 @@ class Link(object):
     ATTR_TYPES = {
         "_id": str,
         "actions": list,
+        "fileName": str,
         "kind": str,
         "link": dict,
         "parent_resource": str,
@@ -54,6 +56,7 @@ class Link(object):
 
     ATTR_CREA = {
         "actions": list,
+        "fileName": str,
         "kind": str,
         "link": dict,
         "title": str,
@@ -68,6 +71,7 @@ class Link(object):
         self,
         _id: str = None,
         actions: list = None,
+        fileName: str = None,
         kind: str = None,
         link: dict = None,
         size: int = None,
@@ -82,6 +86,7 @@ class Link(object):
         # default values for the object attributes/properties
         self.__id = None
         self._actions = None
+        self._fileName = None
         self._kind = None
         self._link = None
         self._size = None
@@ -97,6 +102,8 @@ class Link(object):
             self.__id = _id
         if actions is not None:
             self._actions = actions
+        if fileName is not None:
+            self._fileName = fileName
         if kind is not None:
             self._kind = kind
         if link is not None:
@@ -148,6 +155,25 @@ class Link(object):
         """
 
         self._actions = actions
+
+    # fileName
+    @property
+    def fileName(self) -> list:
+        """Gets the fileName of this Link.
+
+        :return: The fileName of this Link.
+        :rtype: list
+        """
+        return self._fileName
+
+    @fileName.setter
+    def fileName(self, fileName: list):
+        """Sets the fileName of this Link.
+
+        :param list fileName: The fileName of this Link.
+        """
+
+        self._fileName = fileName
 
     # kind
     @property
