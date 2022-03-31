@@ -5,9 +5,9 @@
 
 ```python
 # for whole test
-python -m unittest tests.test_keywords_complete
+python -m unittest tests.test_keywords
 # for specific
-python -m unittest tests.test_keywords_complete.TestKeywordsComplete.test_keywords_create_basic
+python -m unittest tests.test_keywords.TestKeywordsComplete.test_keywords_create_basic
 ```
 """
 
@@ -25,6 +25,7 @@ from random import sample
 from socket import gethostname
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
+from pprint import pprint
 
 # 3rd party
 from dotenv import load_dotenv
@@ -501,8 +502,11 @@ class TestKeywordsComplete(unittest.TestCase):
         self.assertFalse(random_keyword._tag in groupTheme_workgroup_tags)
 
         # associate random_keyword with fixture workgroup
-        self.isogeo.keyword.associate_workgroup(
-            workgroup=workgroup_test_fixture, keyword=random_keyword
+        self.assertEqual(
+            self.isogeo.keyword.associate_workgroup(
+                workgroup=workgroup_test_fixture, keyword=random_keyword
+            ).status_code,
+            204
         )
         # check random_keyword is actually associated with fixture workgroup
         groupTheme_workgroup_keywords = self.isogeo.keyword.workgroup(

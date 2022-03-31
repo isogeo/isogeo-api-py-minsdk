@@ -953,6 +953,7 @@ class ApiKeyword:
                     partial(
                         self.thesaurus,
                         # filters
+                        thesaurus_id=kwargs.get("thesaurus_id"),
                         query=kwargs.get("query"),
                         include=kwargs.get("include"),
                         specific_md=kwargs.get("specific_md"),
