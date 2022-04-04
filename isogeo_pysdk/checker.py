@@ -49,6 +49,7 @@ FILTER_TYPES = {
     "dataset": "dataset",
     "raster-dataset": "rasterDataset",
     "vector-dataset": "vectorDataset",
+    "no-geo-dataset": "noGeoDataset",
     "resource": "resource",
     "service": "service",
 }
@@ -58,9 +59,9 @@ GEORELATIONS = ("contains", "disjoint", "equal", "intersects", "overlaps", "with
 EDIT_TABS = {
     "identification": ",".join(FILTER_TYPES),
     "history": ",".join(FILTER_TYPES),
-    "geography": "dataset, raster-dataset, vector-dataset, service",
-    "quality": "dataset, raster-dataset, vector-dataset, service",
-    "attributes": "vector-dataset, series",
+    "geography": "dataset, raster-dataset, vector-dataset, no-geo-dataset, service",
+    "quality": "dataset, raster-dataset, vector-dataset, no-geo-dataset, service",
+    "attributes": "vector-dataset, no-geo-dataset, series",
     "constraints": ",".join(FILTER_TYPES),
     "resources": ",".join(FILTER_TYPES),
     "contacts": ",".join(FILTER_TYPES),

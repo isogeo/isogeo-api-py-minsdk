@@ -85,7 +85,7 @@ def search_tags_as_filters(tags):
         # types
         elif tag.startswith("type"):
             md_types[tags.get(tag)] = tag
-            if tag in ("type:vector-dataset", "type:raster-dataset"):
+            if tag in ("type:vector-dataset", "type:raster-dataset", "type:no-geo-dataset"):
                 type_dataset += 1
             else:
                 pass
