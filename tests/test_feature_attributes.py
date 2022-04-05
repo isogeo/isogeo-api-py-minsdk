@@ -46,7 +46,8 @@ if Path("dev.env").exists():
 hostname = gethostname()
 
 # API access
-METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
+VECTOR_METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_VECTOR")
+DTNG_METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_DTNG")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
 
 # #############################################################################
@@ -102,11 +103,18 @@ class TestFeatureAttributes(unittest.TestCase):
         cls.li_fixtures_to_delete = []
 
         md = Metadata(title=get_test_marker(), type="vectorDataset")
-        cls.metadata_fixture_created = cls.isogeo.metadata.create(
+        cls.vector_metadata_fixture_created = cls.isogeo.metadata.create(
             WORKGROUP_TEST_FIXTURE_UUID, metadata=md
         )
-        cls.metadata_fixture_existing = cls.isogeo.metadata.get(
-            metadata_id=METADATA_TEST_FIXTURE_UUID
+        md = Metadata(title=get_test_marker(), type="noGeoDataset")
+        cls.dtng_metadata_fixture_created = cls.isogeo.metadata.create(
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=md
+        )
+        cls.vector_metadata_fixture_existing = cls.isogeo.metadata.get(
+            metadata_id=VECTOR_METADATA_TEST_FIXTURE_UUID
+        )
+        cls.dtng_metadata_fixture_existing = cls.isogeo.metadata.get(
+            metadata_id=DTNG_METADATA_TEST_FIXTURE_UUID
         )
 
     def setUp(self):
@@ -124,7 +132,8 @@ class TestFeatureAttributes(unittest.TestCase):
     def tearDownClass(cls):
         """Executed after the last test."""
         # clean created metadata
-        cls.isogeo.metadata.delete(cls.metadata_fixture_created._id)
+        cls.isogeo.metadata.delete(cls.vector_metadata_fixture_created._id)
+        cls.isogeo.metadata.delete(cls.dtng_metadata_fixture_created._id)
         # clean created licenses
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
@@ -153,7 +162,10 @@ class TestFeatureAttributes(unittest.TestCase):
 
         # create it online
         online_obj = self.isogeo.metadata.attributes.create(
-            metadata=self.metadata_fixture_existing, attribute=local_obj
+            metadata=self.vector_metadata_fixture_existing, attribute=local_obj
+        )
+        online_obj = self.isogeo.metadata.attributes.create(
+            metadata=self.dtng_metadata_fixture_existing, attribute=local_obj
         )
 
         # check
@@ -172,7 +184,10 @@ class TestFeatureAttributes(unittest.TestCase):
 
         # create it online
         online_obj = self.isogeo.metadata.attributes.create(
-            metadata=self.metadata_fixture_existing, attribute=local_obj
+            metadata=self.vector_metadata_fixture_existing, attribute=local_obj
+        )
+        online_obj = self.isogeo.metadata.attributes.create(
+            metadata=self.dtng_metadata_fixture_existing, attribute=local_obj
         )
 
         # check
@@ -180,7 +195,10 @@ class TestFeatureAttributes(unittest.TestCase):
 
         # should fail
         failed_creation = self.isogeo.metadata.attributes.create(
-            metadata=self.metadata_fixture_existing, attribute=local_obj
+            metadata=self.vector_metadata_fixture_existing, attribute=local_obj
+        )
+        failed_creation = self.isogeo.metadata.attributes.create(
+            metadata=self.dtng_metadata_fixture_existing, attribute=local_obj
         )
 
         # check
@@ -204,7 +222,11 @@ class TestFeatureAttributes(unittest.TestCase):
 
             # create it online
             self.isogeo.metadata.attributes.create(
-                metadata=self.metadata_fixture_existing, attribute=local_obj
+                metadata=self.vector_metadata_fixture_existing, attribute=local_obj
+            )
+            # create it online
+            self.isogeo.metadata.attributes.create(
+                metadata=self.dtng_metadata_fixture_existing, attribute=local_obj
             )
 
     # -- GET --
@@ -212,7 +234,10 @@ class TestFeatureAttributes(unittest.TestCase):
         """GET :resources/{metadata_uuid}/featureAttributes/}"""
         # retrieve workgroup featureAttributes
         md_featureAttributes = self.isogeo.metadata.attributes.listing(
-            self.metadata_fixture_existing
+            self.vector_metadata_fixture_existing
+        )
+        md_featureAttributes = self.isogeo.metadata.attributes.listing(
+            self.dtng_metadata_fixture_existing
         )
         # parse and test object loader
         for i in md_featureAttributes:
@@ -245,8 +270,13 @@ class TestFeatureAttributes(unittest.TestCase):
         """
         # basic usage - FROM a metadata with feature-attributes TO one without
         self.isogeo.metadata.attributes.import_from_dataset(
-            metadata_source=self.metadata_fixture_existing,
-            metadata_dest=self.metadata_fixture_created,
+            metadata_source=self.vector_metadata_fixture_existing,
+            metadata_dest=self.vector_metadata_fixture_created,
+            mode="add",
+        )
+        self.isogeo.metadata.attributes.import_from_dataset(
+            metadata_source=self.dtng_metadata_fixture_existing,
+            metadata_dest=self.dtng_metadata_fixture_created,
             mode="add",
         )
 

@@ -137,6 +137,29 @@ class TestIsogeoChecker(unittest.TestCase):
     # edition tabs
     def test_check_edit_tab_ok(self):
         """Test if a good tab is valid."""
+        # no-geo-dataset
+        tab_ok_i = checker.check_edit_tab(
+            tab="identification", md_type="no-geo-dataset"
+        )
+        tab_ok_h = checker.check_edit_tab(tab="history", md_type="no-geo-dataset")
+        tab_ok_g = checker.check_edit_tab(tab="geoContext", md_type="no-geo-dataset")
+        tab_ok_q = checker.check_edit_tab(tab="quality", md_type="no-geo-dataset")
+        tab_ok_a = checker.check_edit_tab(tab="attributes", md_type="no-geo-dataset")
+        tab_ok_c = checker.check_edit_tab(tab="constraints", md_type="no-geo-dataset")
+        tab_ok_r = checker.check_edit_tab(tab="resources", md_type="no-geo-dataset")
+        tab_ok_ct = checker.check_edit_tab(tab="contacts", md_type="no-geo-dataset")
+        tab_ok_ad = checker.check_edit_tab(tab="advanced", md_type="no-geo-dataset")
+        tab_ok_m = checker.check_edit_tab(tab="metadata", md_type="no-geo-dataset")
+        self.assertEqual(tab_ok_i, 1)
+        self.assertEqual(tab_ok_h, 1)
+        self.assertEqual(tab_ok_g, 1)
+        self.assertEqual(tab_ok_q, 1)
+        self.assertEqual(tab_ok_a, 1)
+        self.assertEqual(tab_ok_c, 1)
+        self.assertEqual(tab_ok_r, 1)
+        self.assertEqual(tab_ok_ct, 1)
+        self.assertEqual(tab_ok_ad, 1)
+        self.assertEqual(tab_ok_m, 1)
         # vector-dataset
         tab_ok_i = checker.check_edit_tab(
             tab="identification", md_type="vector-dataset"
@@ -346,6 +369,10 @@ class TestIsogeoChecker(unittest.TestCase):
     # metadata type switcher
     def test_md_type_switcher_ok(self):
         """Test metadata type converter with right values."""
+        # DTNG type switcher
+        self.assertEqual(checker._convert_md_type(("no-geo-dataset")), "noGeoDataset")
+        self.assertEqual(checker._convert_md_type(("noGeoDataset")), "no-geo-dataset")
+
         # vector type switcher
         self.assertEqual(checker._convert_md_type(("vector-dataset")), "vectorDataset")
         self.assertEqual(checker._convert_md_type(("vectorDataset")), "vector-dataset")

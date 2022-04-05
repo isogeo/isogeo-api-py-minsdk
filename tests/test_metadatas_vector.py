@@ -8,9 +8,9 @@
     .. code-block:: python
 
         # for whole test
-        python -m unittest tests.test_metadatas
+        python -m unittest tests.test_metadatas_vector
         # for specific
-        python -m unittest tests.test_metadatas.TestMetadatas.test_metadatas_create
+        python -m unittest tests.test_metadatas_vector.TestMetadatasVector.test_metadatas_create
 
 """
 
@@ -27,6 +27,7 @@ from pathlib import Path
 from socket import gethostname
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
+from pprint import pprint
 
 # 3rd party
 from dotenv import load_dotenv
@@ -66,7 +67,7 @@ def get_test_marker():
 # ##################################
 
 
-class TestMetadatas(unittest.TestCase):
+class TestMetadatasVector(unittest.TestCase):
     """Test Metadata model of Isogeo API."""
 
     # -- Standard methods --------------------------------------------------------
@@ -218,22 +219,6 @@ class TestMetadatas(unittest.TestCase):
             self.assertEqual(metadata.groupId, group._id)
             self.assertEqual(metadata.groupName, group.name)
 
-    # def test_search_specific_mds_bad(self):
-    #     """Searches filtering on specific metadata."""
-    #     # get random metadata within a small search
-    #     search = self.isogeo.metadata.search(
-    #         page_size=5,
-    #         # whole_results=0
-    #     )
-    #     metadata_id = sample(search.results, 1)[0].get("_id")
-
-    #     # # pass metadata UUID
-    #     # with self.assertRaises(TypeError):
-    #     #     self.isogeo.search(self.bearer,
-    #     #                         page_size=0,
-    #     #                         whole_results=0,
-    #     #                         specific_md=md)
-
     def test_metadatas_get_detailed(self):
         """GET :resources/{metadata_uuid}"""
         # retrieve fixture metadata
@@ -261,3 +246,29 @@ class TestMetadatas(unittest.TestCase):
         self.assertEqual(md_as_dict.get("modified"), metadata.modified)
         self.assertEqual(md_as_dict.get("created"), metadata.created)
         self.assertEqual(md_as_dict.get("modified"), metadata.modified)
+
+    def test_metadatas_update(self):
+        """GET :resources/{metadata_uuid}"""
+        # retrieve fixture metadata
+        metadata_toUpdate = self.isogeo.metadata.get(self.fixture_metadata._id)
+        self.assertIsInstance(metadata_toUpdate, Metadata)
+
+        # update object attributes values
+        metadata_toUpdate.abstract = "Test abstract"
+        metadata_toUpdate.geometry = "Point"
+
+        # update metadata and check return
+        self.assertIsInstance(
+            self.isogeo.metadata.update(metadata=metadata_toUpdate), Metadata
+        )
+
+        # get the metadata updated
+        updated_metadata = self.isogeo.metadata.get(
+            self.fixture_metadata._id, include="all"
+        )
+        # check return
+        self.assertIsInstance(updated_metadata, Metadata)
+
+        # updated attributes
+        self.assertEqual(updated_metadata.abstract, "Test abstract")
+        self.assertEqual(updated_metadata.geometry, "Point")

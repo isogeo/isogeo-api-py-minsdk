@@ -254,7 +254,9 @@ class TestSearch(unittest.TestCase):
             whole_results=0,
         )
         self.isogeo.search(
-            query="license:32f7e95ec4e94ca3bc1afda960003882:76c02a0baf594c77a569b3a1325aee30",
+            query="license:{}:76c02a0baf594c77a569b3a1325aee30".format(
+                WORKGROUP_TEST_FIXTURE_UUID
+            ),
             page_size=0,
             whole_results=0,
         )
@@ -264,59 +266,64 @@ class TestSearch(unittest.TestCase):
         self.isogeo.search(query="type:dataset", page_size=0, whole_results=0)
         self.isogeo.search(query="type:vector-dataset", page_size=0, whole_results=0)
         self.isogeo.search(query="type:raster-dataset", page_size=0, whole_results=0)
+        self.isogeo.search(query="type:no-geo-dataset", page_size=0, whole_results=0)
         self.isogeo.search(query="type:service", page_size=0, whole_results=0)
         self.isogeo.search(query="type:resource", page_size=0, whole_results=0)
         # workgroup - owner
         self.isogeo.search(
-            query="owner:32f7e95ec4e94ca3bc1afda960003882", page_size=0, whole_results=0
+            query="owner:{}".format(WORKGROUP_TEST_FIXTURE_UUID),
+            page_size=0,
+            whole_results=0,
         )
         # unknown
         self.isogeo.search(query="unknown:filter", page_size=0, whole_results=0)
 
-        def test_search_bad_parameter_query(self):
-            """Search with bad parameter."""
-            with self.assertRaises(ValueError):
-                self.isogeo.search(query="type:youpi")
-            with self.assertRaises(ValueError):
-                self.isogeo.search(query="action:yipiyo")
-            with self.assertRaises(ValueError):
-                self.isogeo.search(query="provider:youplaboum")
+    def test_search_bad_parameter_query(self):
+        """Search with bad parameter."""
+        with self.assertRaises(ValueError):
+            self.isogeo.search(query="type:youpi")
+        with self.assertRaises(ValueError):
+            self.isogeo.search(query="action:yipiyo")
+        with self.assertRaises(ValueError):
+            self.isogeo.search(query="provider:youplaboum")
 
-        def test_search_bad_parameter_geographic(self):
-            """Search with bad parameter."""
-            # geometric operator
-            with self.assertRaises(ValueError):
-                # georel should'nt be used without box or geo
-                self.isogeo.search(georel="intersects")
-            with self.assertRaises(ValueError):
-                # georel bad value
-                self.isogeo.search(bbox="-4.970,30.69418,8.258,51.237", georel="cross")
+    def test_search_bad_parameter_geographic(self):
+        """Search with bad parameter."""
+        # geometric operator
+        with self.assertRaises(ValueError):
+            # georel should'nt be used without box or geo
+            self.isogeo.search(georel="intersects")
+        with self.assertRaises(ValueError):
+            # georel bad value
+            self.isogeo.search(bbox="-4.970,30.69418,8.258,51.237", georel="cross")
 
-        def test_parameter_not_unique_search(self):
-            """SDK raises error for search with a parameter that must be
-            unique."""
-            with self.assertRaises(ValueError):
-                self.isogeo.search(
-                    query="coordinate-system:32517 coordinate-system:4326"
-                )
-            with self.assertRaises(ValueError):
-                self.isogeo.search(query="format:shp format:dwg")
-            with self.assertRaises(ValueError):
-                self.isogeo.search(
-                    query="owner:32f7e95ec4e94ca3bc1afda960003882 owner:08b3054757544463abd06f3ab51ee491"
-                )
-            with self.assertRaises(ValueError):
-                self.isogeo.search(query="type:vector-dataset type:raster-dataset")
-            # disabling check, it should not raise anything
+    def test_parameter_not_unique_search(self):
+        """SDK raises error for search with a parameter that must be
+        unique."""
+        with self.assertRaises(ValueError):
+            self.isogeo.search(query="coordinate-system:32517 coordinate-system:4326")
+        with self.assertRaises(ValueError):
+            self.isogeo.search(query="format:shp format:dwg")
+        with self.assertRaises(ValueError):
             self.isogeo.search(
-                query="coordinate-system:32517 coordinate-system:4326", check=0
+                query="owner:{} owner:08b3054757544463abd06f3ab51ee491".format(
+                    WORKGROUP_TEST_FIXTURE_UUID
+                )
             )
-            self.isogeo.search(query="format:shp format:dwg", check=0)
-            self.isogeo.search(
-                query="owner:32f7e95ec4e94ca3bc1afda960003882 owner:08b3054757544463abd06f3ab51ee491",
-                check=0,
-            )
-            self.isogeo.search(query="type:vector-dataset type:raster-dataset", check=0)
+        with self.assertRaises(ValueError):
+            self.isogeo.search(query="type:vector-dataset type:raster-dataset")
+        # disabling check, it should not raise anything
+        self.isogeo.search(
+            query="coordinate-system:32517 coordinate-system:4326", check=0
+        )
+        self.isogeo.search(query="format:shp format:dwg", check=0)
+        self.isogeo.search(
+            query="owner:{} owner:08b3054757544463abd06f3ab51ee491".format(
+                WORKGROUP_TEST_FIXTURE_UUID
+            ),
+            check=0,
+        )
+        self.isogeo.search(query="type:vector-dataset type:raster-dataset", check=0)
 
     def test_search_full(self):
         """Complete searches."""
