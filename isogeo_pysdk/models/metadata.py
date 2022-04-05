@@ -206,7 +206,6 @@ class Metadata(object):
         "abstract": str,
         "collectionContext": str,
         "collectionMethod": str,
-        "coordinateSystem": dict,
         "distance": float,
         "editionProfile": str,
         "encoding": str,
@@ -248,7 +247,7 @@ class Metadata(object):
         :rtype: Metadata
         """
         for k, v in cls.ATTR_MAP.items():
-            raw_object[k] = raw_object.pop(v, [])
+            raw_object[k] = raw_object.pop(v, None)
 
         return cls(**raw_object)
 
