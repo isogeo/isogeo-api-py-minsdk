@@ -19,7 +19,7 @@ pr:
 variables:
   packageFolderName: "isogeo_pysdk"
   pyPiPackageName: "isogeo-pysdk"
-  pythonVersion: "3.7"
+  pythonVersion: "3.7.7"
   vmImageName: "windows-2019"
 
 # -- STAGES ----------------------------------------------------------------------------
