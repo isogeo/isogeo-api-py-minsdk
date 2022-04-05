@@ -142,7 +142,7 @@ class TestIsogeoChecker(unittest.TestCase):
             tab="identification", md_type="no-geo-dataset"
         )
         tab_ok_h = checker.check_edit_tab(tab="history", md_type="no-geo-dataset")
-        tab_ok_g = checker.check_edit_tab(tab="geoContext", md_type="no-geo-dataset")
+        tab_ok_g = checker.check_edit_tab(tab="geography", md_type="no-geo-dataset")
         tab_ok_q = checker.check_edit_tab(tab="quality", md_type="no-geo-dataset")
         tab_ok_a = checker.check_edit_tab(tab="attributes", md_type="no-geo-dataset")
         tab_ok_c = checker.check_edit_tab(tab="constraints", md_type="no-geo-dataset")
