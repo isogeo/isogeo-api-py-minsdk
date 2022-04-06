@@ -198,8 +198,9 @@ class TestEnums(unittest.TestCase):
 
     def test_metadata_types(self):
         """Check metadata's types list."""
-        self.assertEqual(len(MetadataTypes), 5)
+        self.assertEqual(len(MetadataTypes), 6)
         self.assertTrue("rasterDataset" in MetadataTypes.__members__)
+        self.assertTrue("noGeoDataset" in MetadataTypes.__members__)
         self.assertFalse("Service" in MetadataTypes.__members__)
         for i in MetadataTypes:
             self.assertIsInstance(i.value, str)

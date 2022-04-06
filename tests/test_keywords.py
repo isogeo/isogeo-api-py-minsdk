@@ -25,7 +25,6 @@ from random import sample
 from socket import gethostname
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
-from pprint import pprint
 
 # 3rd party
 from dotenv import load_dotenv

@@ -174,6 +174,7 @@ class Metadata(object):
         "features": int,
         "format": str,
         "formatVersion": str,
+        "geoContext": str,
         "geometry": str,
         "keywords": list,
         "language": str,
@@ -205,7 +206,6 @@ class Metadata(object):
         "abstract": str,
         "collectionContext": str,
         "collectionMethod": str,
-        "coordinateSystem": dict,
         "distance": float,
         "editionProfile": str,
         "encoding": str,
@@ -213,6 +213,7 @@ class Metadata(object):
         "features": int,
         "format": str,
         "formatVersion": str,
+        "geoContext": str,
         "geometry": str,
         "language": str,
         "name": str,
@@ -246,7 +247,7 @@ class Metadata(object):
         :rtype: Metadata
         """
         for k, v in cls.ATTR_MAP.items():
-            raw_object[k] = raw_object.pop(v, [])
+            raw_object[k] = raw_object.pop(v, None)
 
         return cls(**raw_object)
 
@@ -275,6 +276,7 @@ class Metadata(object):
         features: int = None,
         format: str = None,
         formatVersion: str = None,
+        geoContext: str = None,
         geometry: str = None,
         keywords: list = None,
         language: str = None,
@@ -326,6 +328,7 @@ class Metadata(object):
         self._features = None
         self._format = None
         self._formatVersion = None
+        self._geoContext = None
         self._geometry = None
         self._keywords = None
         self._language = None
@@ -396,6 +399,8 @@ class Metadata(object):
             self._format = format
         if formatVersion is not None:
             self._formatVersion = formatVersion
+        if geoContext is not None:
+            self._geoContext = geoContext
         if geometry is not None:
             self._geometry = geometry
         if keywords is not None:
@@ -817,6 +822,25 @@ class Metadata(object):
         """
 
         self._formatVersion = formatVersion
+
+    # geographical context
+    @property
+    def geoContext(self) -> str:
+        """Gets the geoContext of this Metadata.
+
+        :return: The geoContext of this Metadata.
+        :rtype: str
+        """
+        return self._geoContext
+
+    @geoContext.setter
+    def geoContext(self, geoContext: str):
+        """Sets the  of this Metadata.
+
+        :param str geoContext: to be set
+        """
+
+        self._geoContext = geoContext
 
     # geometry
     @property

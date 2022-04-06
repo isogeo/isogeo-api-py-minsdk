@@ -27,6 +27,8 @@ logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
 utils = IsogeoUtils()
 
+available_resource_types = ["vectorDataset", "noGeoDataset"]
+
 
 # #############################################################################
 # ########## Classes ###############
@@ -62,9 +64,9 @@ class ApiFeatureAttribute:
         :param Metadata metadata: metadata (resource)
         """
         # check metadata type
-        if metadata.type != "vectorDataset":
+        if metadata.type not in available_resource_types:
             raise TypeError(
-                "Feature attributes routes are only available for metadata of vector datasets, not: {}".format(
+                "Feature attributes routes are only available for metadata of vector or datasets or DTNG, not: {}".format(
                     metadata.type
                 )
             )
@@ -186,9 +188,9 @@ class ApiFeatureAttribute:
 
         """
         # check metadata type
-        if metadata.type != "vectorDataset":
+        if metadata.type not in available_resource_types:
             raise TypeError(
-                "Feature attributes routes are only available for metadata of vector datasets, not: {}".format(
+                "Feature attributes routes are only available for metadata of vector datasets or DTNG, not: {}".format(
                     metadata.type
                 )
             )
@@ -342,7 +344,7 @@ class ApiFeatureAttribute:
     def import_from_dataset(
         self, metadata_source: Metadata, metadata_dest: Metadata, mode: str = "add", case_sensitive_matching: bool = True
     ) -> bool:
-        """Import feature-attributes from another vector metadata.
+        """Import feature-attributes from another vector (or DTNG) metadata.
 
         :param Metadata metadata_source: metadata from which to import the attributes
         :param Metadata metadata_dest: metadata where to import the attributes
@@ -354,7 +356,7 @@ class ApiFeatureAttribute:
         : param bool case_sensitive_matching: False to make featureattributes's name 
         matching case-insensitive when mode == "update"
 
-        :raises TypeError: if one metadata is not a vector
+        :raises TypeError: if one metadata is not a vector or DTNG
         :raises ValueError: if mode is not one of accepted value
 
         :Example:
@@ -372,11 +374,11 @@ class ApiFeatureAttribute:
 
         # check metadata type
         if (
-            metadata_source.type != "vectorDataset"
-            or metadata_dest.type != "vectorDataset"
+            metadata_source.type not in available_resource_types
+            or metadata_dest.type not in available_resource_types
         ):
             raise TypeError(
-                "Feature attributes routes are only available for metadata of vector datasets, not: {} or {}".format(
+                "Feature attributes routes are only available for metadata of vector datasets or DTNG, not: {} or {}".format(
                     metadata_source.type, metadata_dest.type
                 )
             )

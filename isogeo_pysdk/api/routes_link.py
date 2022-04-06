@@ -157,11 +157,12 @@ class ApiLink:
         return Link(**link_augmented)
 
     @ApiDecorators._check_bearer_validity
-    def create(self, metadata: Metadata, link: Link) -> Link:
+    def create(self, metadata: Metadata, link: Link, clean_actions: bool = True) -> Link:
         """Add a new link to a metadata (= resource).
 
         :param Metadata metadata: metadata (resource) to edit
         :param Link link: link object to create
+        :param bool clean_actions: if True, clean link actions depending on link kind
 
         :returns: the created link or a tuple with the request's response error code
 
@@ -232,9 +233,12 @@ class ApiLink:
             pass
 
         # check relation between link kind/actions
-        link.actions = self.clean_kind_action_liability(
-            link_actions=tuple(link.actions), link_kind=link.kind
-        )
+        if clean_actions:
+            link.actions = self.clean_kind_action_liability(
+                link_actions=tuple(link.actions), link_kind=link.kind
+            )
+        else:
+            pass
 
         # deprecation warnings
         if link.kind in (

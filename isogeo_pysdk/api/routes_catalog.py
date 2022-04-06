@@ -128,7 +128,7 @@ class ApiCatalog:
         wg_catalogs = req_wg_catalogs.json()
 
         # if caching use or store the workgroup catalogs
-        if caching and not self.api_client._wg_catalogs_names:
+        if caching:
             self.api_client._wg_catalogs_names = {
                 i.get("name"): i.get("_id") for i in wg_catalogs
             }
