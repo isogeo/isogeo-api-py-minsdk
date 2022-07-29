@@ -165,10 +165,10 @@ class Isogeo(OAuth2Session):
         else:
             self.auth_mode = auth_mode
 
-        if platform not in self.PLATFORM_VALUES:
+        if platform.lower() not in self.PLATFORM_VALUES:
             raise ValueError("'platform' argument value must be one of: {}".format(" | ".join(self.PLATFORM_VALUES)))
         else:
-            if platform == "custom":
+            if platform.lower() == "custom":
                 if not isinstance(isogeo_urls, dict):
                     raise TypeError("'isogeo_urls' argument must be a dict, not {}".format(type(isogeo_urls)))
                 elif isogeo_urls == {}:
@@ -204,7 +204,7 @@ class Isogeo(OAuth2Session):
         self._wg_specifications_names = {}  # workgroup specifications by names
 
         # checking internet connection
-        if not checker.check_internet_connection() and platform != "custom":
+        if not checker.check_internet_connection() and platform.lower() != "custom":
             raise EnvironmentError("Internet connection issue.")
         else:
             pass
@@ -233,7 +233,7 @@ class Isogeo(OAuth2Session):
             self.mng_url,
             self.oc_url,
             self.ssl,
-        ) = self.utils.set_base_url(platform, isogeo_urls)
+        ) = self.utils.set_base_url(platform.lower(), isogeo_urls)
 
         if self.api_url == "missing_url":
             raise ValueError("'app_url' is missing into isogeo_urls dict.")
