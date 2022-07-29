@@ -33,7 +33,11 @@ class ApiAbout:
     """Routes as methods of Isogeo API used to get platform informations."""
 
     def __init__(
-        self, platform: str = "prod", proxies: dict = None, protocol: str = "https"
+        self,
+        platform: str = "prod",
+        proxies: dict = None,
+        protocol: str = "https",
+        isogeo_urls: dict = {}
     ):
         self.proxies = proxies
         self.protocol = protocol
@@ -47,7 +51,7 @@ class ApiAbout:
             self.mng_url,
             self.oc_url,
             self.ssl,
-        ) = utils.set_base_url(platform)
+        ) = utils.set_base_url(platform, isogeo_urls)
         # initialize
         super(ApiAbout, self).__init__()
 
