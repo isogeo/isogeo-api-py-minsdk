@@ -270,7 +270,7 @@ class ApiApplication:
 
         # URL builder
         url_application_exists = "{}{}".format(
-            utils.get_request_base_url("applications"), application_id
+            self.utils.get_request_base_url("applications"), application_id
         )
 
         # request

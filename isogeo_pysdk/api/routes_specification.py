@@ -276,7 +276,7 @@ class ApiSpecification:
 
         # URL builder
         url_specification_exists = "{}{}".format(
-            utils.get_request_base_url("specifications"), specification_id
+            self.utils.get_request_base_url("specifications"), specification_id
         )
 
         # request

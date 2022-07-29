@@ -256,7 +256,7 @@ class ApiLicense:
 
         # URL builder
         url_license_exists = "{}{}".format(
-            utils.get_request_base_url("licenses"), license_id
+            self.utils.get_request_base_url("licenses"), license_id
         )
 
         # request

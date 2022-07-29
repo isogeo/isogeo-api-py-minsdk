@@ -282,7 +282,7 @@ class ApiContact:
 
         # URL builder
         url_contact_exists = "{}{}".format(
-            utils.get_request_base_url("contacts"), contact_id
+            self.utils.get_request_base_url("contacts"), contact_id
         )
 
         # request
