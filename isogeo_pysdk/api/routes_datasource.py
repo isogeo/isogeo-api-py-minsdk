@@ -19,7 +19,6 @@ from functools import lru_cache
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Datasource
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -27,7 +26,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -45,15 +43,7 @@ class ApiDatasource:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiDatasource, self).__init__()
 
@@ -81,7 +71,7 @@ class ApiDatasource:
             payload = None
 
         # request URL
-        url_datasources = utils.get_request_base_url(
+        url_datasources = self.utils.get_request_base_url(
             route="groups/{}/data-sources".format(workgroup_id)
         )
 
@@ -130,7 +120,7 @@ class ApiDatasource:
             pass
 
         # datasource route
-        url_datasource = utils.get_request_base_url(
+        url_datasource = self.utils.get_request_base_url(
             route="groups/{}/data-sources/{}".format(workgroup_id, datasource_id)
         )
 
@@ -212,7 +202,7 @@ class ApiDatasource:
             pass
 
         # build request url
-        url_datasource_create = utils.get_request_base_url(
+        url_datasource_create = self.utils.get_request_base_url(
             route="groups/{}/data-sources".format(workgroup_id)
         )
 
@@ -265,7 +255,7 @@ class ApiDatasource:
             pass
 
         # request URL
-        url_datasource_delete = utils.get_request_base_url(
+        url_datasource_delete = self.utils.get_request_base_url(
             route="groups/{}/data-sources/{}".format(workgroup_id, datasource_id)
         )
 
@@ -309,7 +299,7 @@ class ApiDatasource:
             pass
 
         # URL
-        url_datasource_exists = utils.get_request_base_url(
+        url_datasource_exists = self.utils.get_request_base_url(
             route="groups/{}/data-sources/{}".format(workgroup_id, datasource_id)
         )
 
@@ -356,7 +346,7 @@ class ApiDatasource:
             pass
 
         # URL
-        url_datasource_update = utils.get_request_base_url(
+        url_datasource_update = self.utils.get_request_base_url(
             route="groups/{}/data-sources/{}".format(workgroup_id, datasource._id)
         )
 

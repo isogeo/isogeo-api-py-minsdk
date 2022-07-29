@@ -17,7 +17,6 @@ import logging
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import FeatureAttribute, Metadata
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -25,7 +24,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 available_resource_types = ["vectorDataset", "noGeoDataset"]
 
@@ -45,15 +43,7 @@ class ApiFeatureAttribute:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiFeatureAttribute, self).__init__()
 
@@ -73,7 +63,7 @@ class ApiFeatureAttribute:
         else:
             pass
         # URL
-        url_feature_attributes = utils.get_request_base_url(
+        url_feature_attributes = self.utils.get_request_base_url(
             route="resources/{}/feature-attributes/".format(metadata._id)
         )
 
@@ -129,7 +119,7 @@ class ApiFeatureAttribute:
             pass
 
         # URL
-        url_feature_attribute = utils.get_request_base_url(
+        url_feature_attribute = self.utils.get_request_base_url(
             route="resources/{}/feature-attributes/{}".format(metadata_id, attribute_id)
         )
 
@@ -210,7 +200,7 @@ class ApiFeatureAttribute:
             attribute.dataType = ""
 
         # URL
-        url_feature_attribute_create = utils.get_request_base_url(
+        url_feature_attribute_create = self.utils.get_request_base_url(
             route="resources/{}/feature-attributes/".format(metadata._id)
         )
 
@@ -262,7 +252,7 @@ class ApiFeatureAttribute:
             pass
 
         # URL
-        url_feature_attribute_delete = utils.get_request_base_url(
+        url_feature_attribute_delete = self.utils.get_request_base_url(
             route="resources/{}/feature-attributes/{}".format(
                 attribute.parent_resource, attribute._id
             )
@@ -312,7 +302,7 @@ class ApiFeatureAttribute:
             pass
 
         # URL
-        url_feature_attribute_update = utils.get_request_base_url(
+        url_feature_attribute_update = self.utils.get_request_base_url(
             route="resources/{}/feature-attributes/{}".format(
                 attribute.parent_resource, attribute._id
             )

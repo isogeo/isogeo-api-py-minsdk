@@ -22,7 +22,6 @@ from requests.models import Response
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Application, Catalog, Share, Workgroup
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -30,7 +29,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -48,15 +46,7 @@ class ApiShare:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiShare, self).__init__()
 
@@ -75,12 +65,12 @@ class ApiShare:
             if not checker.check_is_uuid(workgroup_id):
                 raise ValueError("Workgroup ID is not a correct UUID.")
             else:
-                url_shares = utils.get_request_base_url(
+                url_shares = self.utils.get_request_base_url(
                     route="groups/{}/shares".format(workgroup_id)
                 )
         else:
             logger.debug("Listing shares for the authenticated application/user")
-            url_shares = utils.get_request_base_url(route="shares")
+            url_shares = self.utils.get_request_base_url(route="shares")
 
         # request
         req_shares = self.api_client.get(
@@ -129,7 +119,7 @@ class ApiShare:
             payload = None
 
         # URL
-        url_share = utils.get_request_base_url(route="shares/{}".format(share_id))
+        url_share = self.utils.get_request_base_url(route="shares/{}".format(share_id))
 
         # request
         req_share = self.api_client.get(
@@ -179,7 +169,7 @@ class ApiShare:
             pass
 
         # URL
-        url_share_create = utils.get_request_base_url(
+        url_share_create = self.utils.get_request_base_url(
             route="groups/{}/shares".format(workgroup_id)
         )
 
@@ -218,7 +208,7 @@ class ApiShare:
             pass
 
         # request URL
-        url_share_delete = utils.get_request_base_url(
+        url_share_delete = self.utils.get_request_base_url(
             route="shares/{}".format(share_id)
         )
 
@@ -251,7 +241,7 @@ class ApiShare:
             pass
 
         # URL
-        url_share_exists = utils.get_request_base_url(
+        url_share_exists = self.utils.get_request_base_url(
             route="shares/{}".format(share_id)
         )
 
@@ -285,7 +275,7 @@ class ApiShare:
             pass
 
         # URL
-        url_share_update = utils.get_request_base_url(
+        url_share_update = self.utils.get_request_base_url(
             route="shares/{}".format(share._id)
         )
 
@@ -353,7 +343,7 @@ class ApiShare:
             share.rights = []
 
         # URL
-        url_share_refresh = utils.get_request_base_url(
+        url_share_refresh = self.utils.get_request_base_url(
             route="shares/{}".format(share._id)
         )
 
@@ -388,7 +378,7 @@ class ApiShare:
             pass
 
         # URL
-        url_share_refresh = utils.get_request_base_url(
+        url_share_refresh = self.utils.get_request_base_url(
             route="shares/{}/refresh-token".format(share._id)
         )
 
@@ -440,7 +430,7 @@ class ApiShare:
             pass
 
         # URL
-        url_share_association = utils.get_request_base_url(
+        url_share_association = self.utils.get_request_base_url(
             route="shares/{}/applications/{}".format(share._id, application._id)
         )
 
@@ -491,7 +481,7 @@ class ApiShare:
             pass
 
         # URL
-        url_share_dissociation = utils.get_request_base_url(
+        url_share_dissociation = self.utils.get_request_base_url(
             route="shares/{}/applications/{}".format(share._id, application._id)
         )
 
@@ -532,7 +522,7 @@ class ApiShare:
             pass
 
         # URL
-        url_share_association = utils.get_request_base_url(
+        url_share_association = self.utils.get_request_base_url(
             route="shares/{}/catalogs/{}".format(share._id, catalog._id)
         )
 
@@ -573,7 +563,7 @@ class ApiShare:
             pass
 
         # URL
-        url_share_dissociation = utils.get_request_base_url(
+        url_share_dissociation = self.utils.get_request_base_url(
             route="shares/{}/catalogs/{}".format(share._id, catalog._id)
         )
 
@@ -624,7 +614,7 @@ class ApiShare:
             pass
 
         # URL
-        url_share_association = utils.get_request_base_url(
+        url_share_association = self.utils.get_request_base_url(
             route="shares/{}/groups/{}".format(share._id, group._id)
         )
 
@@ -676,7 +666,7 @@ class ApiShare:
             pass
 
         # URL
-        url_share_dissociation = utils.get_request_base_url(
+        url_share_dissociation = self.utils.get_request_base_url(
             route="shares/{}/groups/{}".format(share._id, group._id)
         )
 

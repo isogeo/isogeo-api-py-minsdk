@@ -23,7 +23,6 @@ from isogeo_pysdk.exceptions import AlreadyExistError
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Metadata
-from isogeo_pysdk.utils import IsogeoUtils
 
 # other routes
 from .routes_service_layers import ApiServiceLayer
@@ -35,7 +34,6 @@ from .routes_service_operations import ApiServiceOperation
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -56,15 +54,7 @@ class ApiService:
         ApiDecorators.api_client = api_client
 
         # ensure platform to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
 
         # sub routes
         self.layers = ApiServiceLayer(self.api_client)

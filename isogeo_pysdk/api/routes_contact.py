@@ -23,7 +23,6 @@ from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.enums import ContactRoles
 from isogeo_pysdk.models import Contact, Metadata
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -31,7 +30,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -49,15 +47,7 @@ class ApiContact:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiContact, self).__init__()
 
@@ -85,7 +75,7 @@ class ApiContact:
             payload = None
 
         # request URL
-        url_contacts = utils.get_request_base_url(
+        url_contacts = self.utils.get_request_base_url(
             route="groups/{}/contacts".format(workgroup_id)
         )
 
@@ -132,7 +122,7 @@ class ApiContact:
             pass
 
         # contact route
-        url_contact = utils.get_request_base_url(route="contacts/{}".format(contact_id))
+        url_contact = self.utils.get_request_base_url(route="contacts/{}".format(contact_id))
 
         # request
         req_contact = self.api_client.get(
@@ -209,7 +199,7 @@ class ApiContact:
             pass
 
         # build request url
-        url_contact_create = utils.get_request_base_url(
+        url_contact_create = self.utils.get_request_base_url(
             route="groups/{}/contacts".format(workgroup_id)
         )
 
@@ -258,7 +248,7 @@ class ApiContact:
             pass
 
         # request URL
-        url_contact_delete = utils.get_request_base_url(
+        url_contact_delete = self.utils.get_request_base_url(
             route="groups/{}/contacts/{}".format(workgroup_id, contact_id)
         )
 
@@ -325,7 +315,7 @@ class ApiContact:
             pass
 
         # URL
-        url_contact_update = utils.get_request_base_url(
+        url_contact_update = self.utils.get_request_base_url(
             route="groups/{}/contacts/{}".format(contact.owner.get("_id"), contact._id)
         )
 
@@ -409,7 +399,7 @@ class ApiContact:
             pass
 
         # URL
-        url_contact_association = utils.get_request_base_url(
+        url_contact_association = self.utils.get_request_base_url(
             route="resources/{}/contacts/{}".format(metadata._id, contact._id)
         )
 
@@ -455,7 +445,7 @@ class ApiContact:
             pass
 
         # URL
-        url_contact_dissociation = utils.get_request_base_url(
+        url_contact_dissociation = self.utils.get_request_base_url(
             route="resources/{}/contacts/{}".format(metadata._id, contact._id)
         )
 

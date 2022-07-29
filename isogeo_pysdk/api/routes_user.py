@@ -19,7 +19,6 @@ from functools import lru_cache
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Contact, User
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -27,7 +26,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -45,15 +43,7 @@ class ApiUser:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiUser, self).__init__()
 
@@ -82,7 +72,7 @@ class ApiUser:
         payload = {"_include": "memberships"}
 
         # request URL
-        url_users = utils.get_request_base_url(route="users")
+        url_users = self.utils.get_request_base_url(route="users")
 
         # request
         req_users = self.api_client.get(
@@ -124,7 +114,7 @@ class ApiUser:
             payload = None
 
         # URL
-        url_user = utils.get_request_base_url(route="users/{}".format(user_id))
+        url_user = self.utils.get_request_base_url(route="users/{}".format(user_id))
 
         # request
         req_user = self.api_client.get(
@@ -179,7 +169,7 @@ class ApiUser:
             pass
 
         # URL
-        url_user_create = utils.get_request_base_url(route="users")
+        url_user_create = self.utils.get_request_base_url(route="users")
 
         # request
         req_new_user = self.api_client.post(
@@ -217,7 +207,7 @@ class ApiUser:
             pass
 
         # URL
-        url_user_delete = utils.get_request_base_url(route="users/{}".format(user._id))
+        url_user_delete = self.utils.get_request_base_url(route="users/{}".format(user._id))
 
         # request
         req_user_delete = self.api_client.delete(
@@ -264,7 +254,7 @@ class ApiUser:
             pass
 
         # URL
-        url_user_update = utils.get_request_base_url(route="users/{}".format(user._id))
+        url_user_update = self.utils.get_request_base_url(route="users/{}".format(user._id))
 
         # request
         req_user_update = self.api_client.put(
@@ -295,7 +285,7 @@ class ApiUser:
             "This route doesn't work in 2019. See: https://github.com/isogeo/isogeo-api/issues/7"
         )
         # URL builder
-        url_user_memberships = utils.get_request_base_url(
+        url_user_memberships = self.utils.get_request_base_url(
             route="users/{}/memberships".format(user_id)
         )
 
@@ -371,7 +361,7 @@ class ApiUser:
             user_subscription["isInterested"] = bool(subscribe)
 
         # URL
-        url_user_update = utils.get_request_base_url(route="users/{}".format(user._id))
+        url_user_update = self.utils.get_request_base_url(route="users/{}".format(user._id))
 
         # request
         req_user_update = self.api_client.put(

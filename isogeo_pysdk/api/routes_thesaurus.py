@@ -19,7 +19,6 @@ from uuid import UUID
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Thesaurus
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -27,7 +26,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -45,15 +43,7 @@ class ApiThesaurus:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiThesaurus, self).__init__()
 
@@ -61,7 +51,7 @@ class ApiThesaurus:
     def thesauri(self, caching: bool = 1) -> list:
         """Get all thesauri."""
         # URL builder
-        url_thesauri = utils.get_request_base_url(route="thesauri")
+        url_thesauri = self.utils.get_request_base_url(route="thesauri")
 
         # request
         req_thesauri = self.api_client.get(
@@ -115,7 +105,7 @@ class ApiThesaurus:
             payload = None
 
         # URL builder
-        url_thesaurus = utils.get_request_base_url(
+        url_thesaurus = self.utils.get_request_base_url(
             route="thesauri/{}".format(thesaurus_id)
         )
 

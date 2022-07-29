@@ -21,7 +21,6 @@ from requests.models import Response
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Condition, License, Metadata
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -29,7 +28,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -47,15 +45,7 @@ class ApiLicense:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiLicense, self).__init__()
 
@@ -85,7 +75,7 @@ class ApiLicense:
             payload = None
 
         # request URL
-        url_licenses = utils.get_request_base_url(
+        url_licenses = self.utils.get_request_base_url(
             route="groups/{}/licenses".format(workgroup_id)
         )
 
@@ -128,7 +118,7 @@ class ApiLicense:
             pass
 
         # license route
-        url_license = utils.get_request_base_url(route="licenses/{}".format(license_id))
+        url_license = self.utils.get_request_base_url(route="licenses/{}".format(license_id))
 
         # request
         req_license = self.api_client.get(
@@ -184,7 +174,7 @@ class ApiLicense:
             pass
 
         # build request url
-        url_license_create = utils.get_request_base_url(
+        url_license_create = self.utils.get_request_base_url(
             route="groups/{}/licenses".format(workgroup_id)
         )
 
@@ -232,7 +222,7 @@ class ApiLicense:
             pass
 
         # request URL
-        url_license_delete = utils.get_request_base_url(
+        url_license_delete = self.utils.get_request_base_url(
             route="groups/{}/licenses/{}".format(workgroup_id, license_id)
         )
 
@@ -299,7 +289,7 @@ class ApiLicense:
             pass
 
         # URL
-        url_license_update = utils.get_request_base_url(
+        url_license_update = self.utils.get_request_base_url(
             route="groups/{}/licenses/{}".format(license.owner.get("_id"), license._id)
         )
 

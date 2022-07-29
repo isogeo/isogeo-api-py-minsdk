@@ -18,7 +18,6 @@ import logging
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import ServiceOperation, Metadata
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global ################
@@ -26,7 +25,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -44,15 +42,7 @@ class ApiServiceOperation:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiServiceOperation, self).__init__()
 
@@ -73,7 +63,7 @@ class ApiServiceOperation:
             pass
 
         # URL
-        url_service_operations = utils.get_request_base_url(
+        url_service_operations = self.utils.get_request_base_url(
             route="resources/{}/operations/".format(metadata._id)
         )
 
@@ -119,7 +109,7 @@ class ApiServiceOperation:
             pass
 
         # URL
-        url_service_operation = utils.get_request_base_url(
+        url_service_operation = self.utils.get_request_base_url(
             route="resources/{}/operations/{}".format(metadata_id, operation_id)
         )
 
@@ -164,7 +154,7 @@ class ApiServiceOperation:
             pass
 
         # URL
-        url_service_operation_create = utils.get_request_base_url(
+        url_service_operation_create = self.utils.get_request_base_url(
             route="resources/{}/operations/".format(metadata._id)
         )
 
@@ -216,7 +206,7 @@ class ApiServiceOperation:
     #         pass
 
     #     # URL
-    #     url_service_operation_delete = utils.get_request_base_url(
+    #     url_service_operation_delete = self.utils.get_request_base_url(
     #         route="resources/{}/operations/{}".format(operation.parent_resource, operation._id)
     #     )
 
@@ -262,7 +252,7 @@ class ApiServiceOperation:
     #         pass
 
     #     # URL
-    #     url_service_operation_update = utils.get_request_base_url(
+    #     url_service_operation_update = self.utils.get_request_base_url(
     #         route="resources/{}/operations/{}".format(operation.parent_resource, operation._id)
     #     )
 
@@ -373,7 +363,7 @@ class ApiServiceOperation:
     #         pass
 
     #     # URL
-    #     url_operation_association = utils.get_request_base_url(
+    #     url_operation_association = self.utils.get_request_base_url(
     #         route="resources/{}/operations/{}/dataset/{}".format(
     #             service._id, operation._id, dataset._id
     #         )
@@ -468,7 +458,7 @@ class ApiServiceOperation:
     #         pass
 
     #     # URL
-    #     url_operation_dissociation = utils.get_request_base_url(
+    #     url_operation_dissociation = self.utils.get_request_base_url(
     #         route="resources/{}/operations/{}/dataset/{}".format(
     #             service._id, operation._id, dataset._id
     #         )

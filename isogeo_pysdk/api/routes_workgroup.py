@@ -23,7 +23,6 @@ from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.enums import WorkgroupStatisticsTags
 from isogeo_pysdk.models import Contact, Invitation, Workgroup
-from isogeo_pysdk.utils import IsogeoUtils
 
 # other routes
 from .routes_coordinate_systems import ApiCoordinateSystem
@@ -34,7 +33,6 @@ from .routes_coordinate_systems import ApiCoordinateSystem
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -52,15 +50,7 @@ class ApiWorkgroup:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
 
         # sub routes
         self.srs = ApiCoordinateSystem(self.api_client)
@@ -86,7 +76,7 @@ class ApiWorkgroup:
             payload = None
 
         # request URL
-        url_workgroups = utils.get_request_base_url(route="groups")
+        url_workgroups = self.utils.get_request_base_url(route="groups")
 
         # request
         req_workgroups = self.api_client.get(
@@ -138,7 +128,7 @@ class ApiWorkgroup:
             payload = None
 
         # URL
-        url_workgroup = utils.get_request_base_url(
+        url_workgroup = self.utils.get_request_base_url(
             route="groups/{}".format(workgroup_id)
         )
 
@@ -195,7 +185,7 @@ class ApiWorkgroup:
             pass
 
         # URL
-        url_workgroup_create = utils.get_request_base_url(route="groups")
+        url_workgroup_create = self.utils.get_request_base_url(route="groups")
 
         # request
         req_new_workgroup = self.api_client.post(
@@ -236,7 +226,7 @@ class ApiWorkgroup:
             pass
 
         # URL
-        url_workgroup_delete = utils.get_request_base_url(
+        url_workgroup_delete = self.utils.get_request_base_url(
             route="groups/{}".format(workgroup_id)
         )
 
@@ -271,7 +261,7 @@ class ApiWorkgroup:
             pass
 
         # URL builder
-        url_workgroup_exists = utils.get_request_base_url(
+        url_workgroup_exists = self.utils.get_request_base_url(
             route="groups/{}".format(workgroup_id)
         )
 
@@ -307,7 +297,7 @@ class ApiWorkgroup:
             pass
 
         # URL
-        url_workgroup_update = utils.get_request_base_url(
+        url_workgroup_update = self.utils.get_request_base_url(
             route="groups/{}".format(workgroup._id)
         )
 
@@ -372,7 +362,7 @@ class ApiWorkgroup:
             pass
 
         # URL builder
-        url_workgroup_limits = utils.get_request_base_url(
+        url_workgroup_limits = self.utils.get_request_base_url(
             route="/groups/{}/limits".format(workgroup_id)
         )
 
@@ -408,7 +398,7 @@ class ApiWorkgroup:
             pass
 
         # URL builder
-        url_workgroup_memberships = utils.get_request_base_url(
+        url_workgroup_memberships = self.utils.get_request_base_url(
             route="/groups/{}/memberships".format(workgroup_id)
         )
 
@@ -444,7 +434,7 @@ class ApiWorkgroup:
             pass
 
         # URL builder
-        url_workgroup_statistics = utils.get_request_base_url(
+        url_workgroup_statistics = self.utils.get_request_base_url(
             route="groups/{}/statistics".format(workgroup_id)
         )
 
@@ -492,7 +482,7 @@ class ApiWorkgroup:
             )
 
         # URL builder
-        url_workgroup_statistics = utils.get_request_base_url(
+        url_workgroup_statistics = self.utils.get_request_base_url(
             route="groups/{}/statistics/tag/{}".format(workgroup_id, tag)
         )
 

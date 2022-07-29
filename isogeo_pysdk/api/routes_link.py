@@ -26,7 +26,6 @@ from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.enums import LinkActions, LinkKinds, LinkTypes
 from isogeo_pysdk.models import Link, Metadata
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -34,7 +33,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -52,15 +50,7 @@ class ApiLink:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiLink, self).__init__()
 
@@ -71,7 +61,7 @@ class ApiLink:
         :param Metadata metadata: metadata (resource)
         """
         # request URL
-        url_links = utils.get_request_base_url(
+        url_links = self.utils.get_request_base_url(
             route="resources/{}/links/".format(metadata._id)
         )
 
@@ -131,7 +121,7 @@ class ApiLink:
             pass
 
         # URL
-        url_link = utils.get_request_base_url(
+        url_link = self.utils.get_request_base_url(
             route="resources/{}/links/{}".format(metadata_id, link_id)
         )
 
@@ -264,7 +254,7 @@ class ApiLink:
             )
 
         # URL
-        url_link_create = utils.get_request_base_url(
+        url_link_create = self.utils.get_request_base_url(
             route="resources/{}/links".format(metadata._id)
         )
 
@@ -314,7 +304,7 @@ class ApiLink:
             pass
 
         # URL
-        url_link_delete = utils.get_request_base_url(
+        url_link_delete = self.utils.get_request_base_url(
             route="resources/{}/links/{}".format(link.parent_resource, link._id)
         )
 
@@ -356,7 +346,7 @@ class ApiLink:
             pass
 
         # URL
-        url_link_update = utils.get_request_base_url(
+        url_link_update = self.utils.get_request_base_url(
             route="resources/{}/links/{}".format(link.parent_resource, link._id)
         )
 
@@ -420,7 +410,7 @@ class ApiLink:
             pass
 
         # request URL
-        url_download_hosted = utils.get_request_base_url(route=link.url)
+        url_download_hosted = self.utils.get_request_base_url(route=link.url)
 
         # request
         req_download_hosted = self.api_client.get(
@@ -446,7 +436,7 @@ class ApiLink:
 
         # remove special characters
         if encode_clean:
-            filename = utils.encoded_words_to_text(filename)
+            filename = self.utils.encoded_words_to_text(filename)
             filename = re.sub(r"[^\w\-_\. ]", "", filename)
 
         # end of method
@@ -536,7 +526,7 @@ class ApiLink:
             )
 
         # URL
-        url_link_create = utils.get_request_base_url(
+        url_link_create = self.utils.get_request_base_url(
             route="resources/{}/links".format(metadata._id)
         )
 
@@ -644,7 +634,7 @@ class ApiLink:
 
         """
         # request URL
-        url_links = utils.get_request_base_url(route="link-kinds/")
+        url_links = self.utils.get_request_base_url(route="link-kinds/")
 
         # request
         req_links = self.api_client.get(

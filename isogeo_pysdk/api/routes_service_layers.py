@@ -21,7 +21,6 @@ from requests.models import Response
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import ServiceLayer, Metadata
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global ################
@@ -29,7 +28,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -47,15 +45,7 @@ class ApiServiceLayer:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiServiceLayer, self).__init__()
 
@@ -76,7 +66,7 @@ class ApiServiceLayer:
             pass
 
         # URL
-        url_service_layers = utils.get_request_base_url(
+        url_service_layers = self.utils.get_request_base_url(
             route="resources/{}/layers/".format(metadata._id)
         )
 
@@ -121,7 +111,7 @@ class ApiServiceLayer:
             pass
 
         # URL
-        url_service_layer = utils.get_request_base_url(
+        url_service_layer = self.utils.get_request_base_url(
             route="resources/{}/layers/{}".format(metadata_id, layer_id)
         )
 
@@ -164,7 +154,7 @@ class ApiServiceLayer:
             pass
 
         # URL
-        url_service_layer_create = utils.get_request_base_url(
+        url_service_layer_create = self.utils.get_request_base_url(
             route="resources/{}/layers/".format(metadata._id)
         )
 
@@ -216,7 +206,7 @@ class ApiServiceLayer:
             pass
 
         # URL
-        url_service_layer_delete = utils.get_request_base_url(
+        url_service_layer_delete = self.utils.get_request_base_url(
             route="resources/{}/layers/{}".format(layer.parent_resource, layer._id)
         )
 
@@ -262,7 +252,7 @@ class ApiServiceLayer:
             pass
 
         # URL
-        url_service_layer_update = utils.get_request_base_url(
+        url_service_layer_update = self.utils.get_request_base_url(
             route="resources/{}/layers/{}".format(layer.parent_resource, layer._id)
         )
 
@@ -373,7 +363,7 @@ class ApiServiceLayer:
             pass
 
         # URL
-        url_layer_association = utils.get_request_base_url(
+        url_layer_association = self.utils.get_request_base_url(
             route="resources/{}/layers/{}/dataset/{}".format(
                 service._id, layer._id, dataset._id
             )
@@ -468,7 +458,7 @@ class ApiServiceLayer:
             pass
 
         # URL
-        url_layer_dissociation = utils.get_request_base_url(
+        url_layer_dissociation = self.utils.get_request_base_url(
             route="resources/{}/layers/{}/dataset/{}".format(
                 service._id, layer._id, dataset._id
             )

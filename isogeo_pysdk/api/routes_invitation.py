@@ -18,7 +18,6 @@ import logging
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Invitation
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -26,7 +25,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -44,15 +42,7 @@ class ApiInvitation:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiInvitation, self).__init__()
 
@@ -73,7 +63,7 @@ class ApiInvitation:
             pass
 
         # URL builder
-        url_workgroup_invitations = utils.get_request_base_url(
+        url_workgroup_invitations = self.utils.get_request_base_url(
             route="groups/{}/invitations".format(workgroup_id)
         )
 
@@ -113,7 +103,7 @@ class ApiInvitation:
         >>> isogeo.invitation.create(WORKGROUP_UUID, new_invit)
         """
         # URL
-        url_invitation_create = utils.get_request_base_url(
+        url_invitation_create = self.utils.get_request_base_url(
             route="groups/{}/invitations".format(workgroup_id)
         )
 
@@ -149,7 +139,7 @@ class ApiInvitation:
             pass
 
         # URL
-        url_invitation = utils.get_request_base_url(
+        url_invitation = self.utils.get_request_base_url(
             route="invitations/{}".format(invitation_id)
         )
 
@@ -177,7 +167,7 @@ class ApiInvitation:
         :param class invitation: Invitation model object to accept
         """
         # URL
-        url_invitation_accept = utils.get_request_base_url(
+        url_invitation_accept = self.utils.get_request_base_url(
             route="invitations/{}/accept".format(invitation._id)
         )
 
@@ -213,7 +203,7 @@ class ApiInvitation:
         :param class invitation: Invitation model object to decline
         """
         # URL
-        url_invitation_refuse = utils.get_request_base_url(
+        url_invitation_refuse = self.utils.get_request_base_url(
             route="invitations/{}/refuse".format(invitation._id)
         )
 
@@ -257,7 +247,7 @@ class ApiInvitation:
             pass
 
         # URL
-        url_invitation_delete = utils.get_request_base_url(
+        url_invitation_delete = self.utils.get_request_base_url(
             route="invitations/{}".format(invitation_id)
         )
 
@@ -292,7 +282,7 @@ class ApiInvitation:
             pass
 
         # URL
-        url_invitation_update = utils.get_request_base_url(
+        url_invitation_update = self.utils.get_request_base_url(
             route="invitations/{}".format(invitation._id)
         )
 

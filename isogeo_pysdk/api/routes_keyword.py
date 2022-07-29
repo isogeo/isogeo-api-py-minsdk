@@ -20,7 +20,6 @@ from functools import partial
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Keyword, KeywordSearch, Metadata, Workgroup
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -28,7 +27,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -58,15 +56,7 @@ class ApiKeyword:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiKeyword, self).__init__()
 
@@ -102,7 +92,7 @@ class ApiKeyword:
             payload = None
 
         # URL
-        url_metadata_keywords = utils.get_request_base_url(
+        url_metadata_keywords = self.utils.get_request_base_url(
             route="resources/{}/keywords/".format(metadata_id)
         )
 
@@ -180,7 +170,7 @@ class ApiKeyword:
         }
 
         # URL
-        url_thesauri_keywords = utils.get_request_base_url(
+        url_thesauri_keywords = self.utils.get_request_base_url(
             route="thesauri/{}/keywords/search".format(thesaurus_id)
         )
 
@@ -365,7 +355,7 @@ class ApiKeyword:
             pass
 
         # URL
-        url_workgroup_keywords = utils.get_request_base_url(
+        url_workgroup_keywords = self.utils.get_request_base_url(
             route="groups/{}/keywords/search".format(workgroup_id)
         )
 
@@ -418,7 +408,7 @@ class ApiKeyword:
             payload = None
 
         # keyword route
-        url_keyword = utils.get_request_base_url(route="keywords/{}".format(keyword_id))
+        url_keyword = self.utils.get_request_base_url(route="keywords/{}".format(keyword_id))
 
         # request
         req_keyword = self.api_client.get(
@@ -481,7 +471,7 @@ class ApiKeyword:
             pass
 
         # URL
-        url_keyword_create = utils.get_request_base_url(
+        url_keyword_create = self.utils.get_request_base_url(
             route="thesauri/{}/keywords".format(thesaurus_id)
         )
 
@@ -546,7 +536,7 @@ class ApiKeyword:
             pass
 
         # URL
-        url_keyword_delete = utils.get_request_base_url(
+        url_keyword_delete = self.utils.get_request_base_url(
             route="thesauri/{}/keywords/{}".format(
                 thesaurus_id, keyword._id
             )
@@ -644,7 +634,7 @@ class ApiKeyword:
             pass
 
         # URL
-        url_keyword_associate = utils.get_request_base_url(
+        url_keyword_associate = self.utils.get_request_base_url(
             route="resources/{}/keywords/{}".format(metadata._id, keyword._id)
         )
 
@@ -699,7 +689,7 @@ class ApiKeyword:
             pass
 
         # URL
-        url_keyword_dissociate = utils.get_request_base_url(
+        url_keyword_dissociate = self.utils.get_request_base_url(
             route="resources/{}/keywords/{}".format(metadata._id, keyword._id)
         )
 
@@ -789,7 +779,7 @@ class ApiKeyword:
             pass
 
         # URL
-        url_keyword_associate_with_workgroup = utils.get_request_base_url(
+        url_keyword_associate_with_workgroup = self.utils.get_request_base_url(
             route="groups/{}/keywords/{}".format(workgroup._id, keyword._id)
         )
 
@@ -891,7 +881,7 @@ class ApiKeyword:
             pass
 
         # URL
-        url_keyword_dissociate_with_workgroup = utils.get_request_base_url(
+        url_keyword_dissociate_with_workgroup = self.utils.get_request_base_url(
             route="groups/{}/keywords/{}".format(workgroup._id, keyword._id)
         )
 
@@ -939,7 +929,7 @@ class ApiKeyword:
         :rtype: KeywordSearch
         """
         # prepare async searches
-        total_pages = utils.pages_counter(total_results, page_size=100)
+        total_pages = self.utils.pages_counter(total_results, page_size=100)
         li_offsets = [offset * 100 for offset in range(0, total_pages)]
         logger.debug("Async search launched with {} pages.".format(total_pages))
 

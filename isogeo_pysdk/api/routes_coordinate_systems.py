@@ -21,7 +21,6 @@ from requests.models import Response
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import CoordinateSystem, Metadata, Workgroup
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -29,7 +28,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -47,15 +45,7 @@ class ApiCoordinateSystem:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiCoordinateSystem, self).__init__()
 
@@ -82,7 +72,7 @@ class ApiCoordinateSystem:
         # check if workgroup or global
         if workgroup_id is None:
             # request URL
-            url_coordinate_systems = utils.get_request_base_url(
+            url_coordinate_systems = self.utils.get_request_base_url(
                 route="coordinate-systems"
             )
         else:
@@ -92,7 +82,7 @@ class ApiCoordinateSystem:
                     "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
                 )
             # request URL
-            url_coordinate_systems = utils.get_request_base_url(
+            url_coordinate_systems = self.utils.get_request_base_url(
                 route="groups/{}/coordinate-systems".format(workgroup_id)
             )
 
@@ -150,7 +140,7 @@ class ApiCoordinateSystem:
         # check if workgroup or global
         if workgroup_id is None:
             # request URL
-            url_coordinate_system = utils.get_request_base_url(
+            url_coordinate_system = self.utils.get_request_base_url(
                 route="coordinate-systems/{}".format(coordinate_system_code)
             )
         else:
@@ -160,7 +150,7 @@ class ApiCoordinateSystem:
                     "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
                 )
             # request URL
-            url_coordinate_system = utils.get_request_base_url(
+            url_coordinate_system = self.utils.get_request_base_url(
                 route="groups/{}/coordinate-systems/{}".format(
                     workgroup_id, coordinate_system_code
                 )
@@ -224,7 +214,7 @@ class ApiCoordinateSystem:
             pass
 
         # URL
-        url_srs_association = utils.get_request_base_url(
+        url_srs_association = self.utils.get_request_base_url(
             route="resources/{}/coordinate-system".format(metadata._id)
         )
 
@@ -261,7 +251,7 @@ class ApiCoordinateSystem:
             pass
 
         # URL
-        url_coordinateSystem_dissociation = utils.get_request_base_url(
+        url_coordinateSystem_dissociation = self.utils.get_request_base_url(
             route="resources/{}/coordinate-system".format(metadata._id)
         )
 
@@ -316,7 +306,7 @@ class ApiCoordinateSystem:
             pass
 
         # request URL
-        url_coordinate_system_association = utils.get_request_base_url(
+        url_coordinate_system_association = self.utils.get_request_base_url(
             route="groups/{}/coordinate-systems/{}".format(
                 workgroup._id, coordinate_system.code
             )
@@ -367,7 +357,7 @@ class ApiCoordinateSystem:
             pass
 
         # request URL
-        url_coordinate_system_dissociation = utils.get_request_base_url(
+        url_coordinate_system_dissociation = self.utils.get_request_base_url(
             route="groups/{}/coordinate-systems/{}".format(
                 workgroup_id, coordinate_system_code
             )

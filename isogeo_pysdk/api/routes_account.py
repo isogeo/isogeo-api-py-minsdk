@@ -19,7 +19,6 @@ from functools import lru_cache
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import User
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -27,7 +26,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -45,15 +43,7 @@ class ApiAccount:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiAccount, self).__init__()
 
@@ -72,7 +62,7 @@ class ApiAccount:
             payload = None
 
         # request URL
-        url_account = utils.get_request_base_url(route="account")
+        url_account = self.utils.get_request_base_url(route="account")
 
         # request
         req_account = self.api_client.get(
@@ -110,7 +100,7 @@ class ApiAccount:
             pass
 
         # URL
-        url_account_update = utils.get_request_base_url(route="account")
+        url_account_update = self.utils.get_request_base_url(route="account")
 
         # request
         req_account_update = self.api_client.put(
@@ -156,7 +146,7 @@ class ApiAccount:
         1
         """
         # URL builder
-        url_user_memberships = utils.get_request_base_url(route="account/memberships")
+        url_user_memberships = self.utils.get_request_base_url(route="account/memberships")
 
         # request
         req_user_memberships = self.api_client.get(

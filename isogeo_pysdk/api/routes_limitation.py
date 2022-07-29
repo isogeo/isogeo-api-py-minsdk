@@ -18,7 +18,6 @@ import logging
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Limitation, Metadata
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -26,7 +25,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -44,15 +42,7 @@ class ApiLimitation:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiLimitation, self).__init__()
 
@@ -63,7 +53,7 @@ class ApiLimitation:
         :param Metadata metadata: metadata (resource)
         """
         # request URL
-        url_limitations = utils.get_request_base_url(
+        url_limitations = self.utils.get_request_base_url(
             route="resources/{}/limitations/".format(metadata._id)
         )
 
@@ -117,7 +107,7 @@ class ApiLimitation:
             pass
 
         # URL
-        url_limitation = utils.get_request_base_url(
+        url_limitation = self.utils.get_request_base_url(
             route="resources/{}/limitations/{}".format(metadata_id, limitation_id)
         )
 
@@ -190,7 +180,7 @@ class ApiLimitation:
                 )
 
         # URL
-        url_limitation_create = utils.get_request_base_url(
+        url_limitation_create = self.utils.get_request_base_url(
             route="resources/{}/limitations/".format(metadata._id)
         )
 
@@ -240,7 +230,7 @@ class ApiLimitation:
             pass
 
         # URL
-        url_limitation_delete = utils.get_request_base_url(
+        url_limitation_delete = self.utils.get_request_base_url(
             route="resources/{}/limitations/{}".format(
                 limitation.parent_resource, limitation._id
             )
@@ -286,7 +276,7 @@ class ApiLimitation:
             pass
 
         # URL
-        url_limitation_update = utils.get_request_base_url(
+        url_limitation_update = self.utils.get_request_base_url(
             route="resources/{}/limitations/{}".format(
                 limitation.parent_resource, limitation._id
             )
