@@ -53,6 +53,7 @@ class TestIsogeoUtils(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         cls.utils = IsogeoUtils()
+        cls.utils.set_base_url()
 
         # ignore warnings related to the QA self-signed cert
         if environ.get("ISOGEO_PLATFORM").lower() == "qa":
@@ -194,7 +195,7 @@ class TestIsogeoUtils(unittest.TestCase):
         resource_url = self.utils.get_request_base_url("resources")
         self.assertEqual(
             resource_url,
-            "https://{}.isogeo.com/resources/?_lang=fr".format(self.utils.api_url),
+            "https://{}/resources/?_lang=fr".format(self.utils.api_url),
         )
 
     # -- URLs Builders - view on web app -------------------------------------
@@ -206,6 +207,7 @@ class TestIsogeoUtils(unittest.TestCase):
             md_id="0269803d50c446b09f5060ef7fe3e22b",
             share_id="1e07910d365449b59b6596a9b428ecd9",
             share_token="TokenOhDearToken",
+            oc_url="open.isogeo.com"
         )
         self.assertEqual(
             oc_url,
