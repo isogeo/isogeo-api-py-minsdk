@@ -74,7 +74,10 @@ _dtm_simple = "%Y-%m-%d"  # 2018-06-04
 class IsogeoUtils(object):
     """Complementary set of utilitary methods and functions to make it easier using Isogeo API."""
 
-    API_URLS = {"prod": "api", "qa": "api.qa"}
+    API_URLS = {
+        "prod": "v1.api.isogeo.com",
+        "qa": "v1.api.qa.isogeo.com"
+    }
 
     APP_URLS = {
         "prod": "https://app.isogeo.com",
@@ -124,7 +127,7 @@ class IsogeoUtils(object):
         },
         "oc": {
             "args": ("md_id", "share_id", "share_token"),
-            "url": "https://open.isogeo.com/s/{share_id}" "/{share_token}/r/{md_id}",
+            "url": "https://{oc_url}/s/{share_id}" "/{share_token}/r/{md_id}",
         },
         "pixup_portal": {
             "args": ("md_id", "portal_url"),
@@ -140,26 +143,18 @@ class IsogeoUtils(object):
         :param dict proxies: dictionary of proxy settings as described in
          requests. See: http://docs.python-requests.org/en/master/user/advanced/#proxies
         """
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = self.set_base_url()
         self.proxies = proxies
         super(IsogeoUtils, self).__init__()
 
-    def set_base_url(self, platform: str = "prod"):
+    def set_base_url(self, platform: str = "prod", dict_urls: dict = {}):
         """Set Isogeo base URLs according to platform.
 
         :param str platform: platform to use. Options:
 
           * prod [DEFAULT]
           * qa
-          * int
+          * custom
+        :param dict dict_urls: Only needed when platform is "custom", a dictionnary of specific Isogeo URLs.
         """
         platform = platform.lower()
         self.platform = platform
@@ -167,26 +162,37 @@ class IsogeoUtils(object):
             self.ssl = True
         elif platform == "qa":
             self.ssl = False
+        elif platform == "custom":
+            self.ssl = False
+            pass
         else:
             raise ValueError(
                 3,
-                "Platform must be one of: {}".format(" | ".join(self.API_URLS.keys())),
+                "Platform must be one of: {}".format(" | ".join(["prod", "qa", "custom"])),
             )
+
         # set values
-        self.api_url = self.API_URLS.get(platform)
-        self.app_url = self.APP_URLS.get(platform)
-        self.csw_url = self.CSW_URLS.get(platform)
-        self.mng_url = self.MNG_URLS.get(platform)
-        self.oc_url = self.OC_URLS.get(platform)
+        if platform == "custom":
+            self.api_url = dict_urls.get("api_url", "missing_url")
+            self.app_url = dict_urls.get("app_url", "missing_url")
+            self.csw_url = dict_urls.get("csw_url", "missing_url")
+            self.mng_url = dict_urls.get("mng_url", "missing_url")
+            self.oc_url = dict_urls.get("oc_url", "missing_url")
+        else:
+            self.api_url = self.API_URLS.get(platform)
+            self.app_url = self.APP_URLS.get(platform)
+            self.csw_url = self.CSW_URLS.get(platform)
+            self.mng_url = self.MNG_URLS.get(platform)
+            self.oc_url = self.OC_URLS.get(platform)
 
         # method ending
         return (
             platform.lower(),
-            self.API_URLS.get(platform),
-            self.APP_URLS.get(platform),
-            self.CSW_URLS.get(platform),
-            self.MNG_URLS.get(platform),
-            self.OC_URLS.get(platform),
+            self.api_url,
+            self.app_url,
+            self.csw_url,
+            self.mng_url,
+            self.oc_url,
             self.ssl,
         )
 
@@ -367,15 +373,13 @@ class IsogeoUtils(object):
         logger.warning(DeprecationWarning("Use 'api.ApiAbout' instead."))
         # which component
         if component == "api":
-            version_url = "{}://v1.{}.isogeo.com/about".format(prot, self.api_url)
+            version_url = "{}://{}/about".format(prot, self.api_url)
         elif component == "db":
-            version_url = "{}://v1.{}.isogeo.com/about/database".format(
+            version_url = "{}://{}/about/database".format(
                 prot, self.api_url
             )
-        elif component == "app" and self.platform == "prod" or self.platform is None:
-            version_url = "https://app.isogeo.com/about"
-        elif component == "app" and self.platform == "qa":
-            version_url = "https://qa-isogeo-app.azurewebsites.net/about"
+        elif component == "app":
+            version_url = "{}/about".format(self.app_url)
         else:
             raise ValueError(
                 "Incorrect component value: {} for platform {}. Must be one of: api [default], db, app.".format(
@@ -399,7 +403,7 @@ class IsogeoUtils(object):
         :param str route: route to format
         :param str prot: https [DEFAULT] or http
         """
-        return "{}://{}.isogeo.com/{}/?_lang={}".format(
+        return "{}://{}/{}/?_lang={}".format(
             prot, self.api_url, route, self.lang
         )
 
