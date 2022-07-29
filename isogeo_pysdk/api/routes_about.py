@@ -51,7 +51,7 @@ class ApiAbout:
             self.mng_url,
             self.oc_url,
             self.ssl,
-        ) = utils.set_base_url(platform, isogeo_urls)
+        ) = utils.set_base_url(platform.lower(), isogeo_urls)
         # initialize
         super(ApiAbout, self).__init__()
 
@@ -105,8 +105,15 @@ class ApiAbout:
         with Session() as req_session:
             req_session.proxies = self.proxies
             # request
+            if self.platform == "prod":
+                id_url = "id.api.isogeo.com"
+            elif self.platform == "qa":
+                id_url = "id.api.qa.isogeo.com"
+            else:
+                raise ValueError("This method is not implement yet fpr custom Isogeo API config (neither PROD nor QA).")
+
             req_api_version = req_session.get(
-                url="{}://id.{}.isogeo.com/about".format(self.protocol, self.api_url),
+                url="{}://{}/about".format(self.protocol, id_url),
                 proxies=self.proxies,
                 verify=self.ssl,
             )
@@ -126,7 +133,7 @@ class ApiAbout:
             req_session.proxies = self.proxies
             # request
             req_api_version = req_session.get(
-                url="{}://daemons.isogeo.com/about".format(self.protocol),
+                url="{}://scan.isogeo.com/about".format(self.protocol),
                 proxies=self.proxies,
                 verify=self.ssl,
             )
@@ -146,7 +153,7 @@ class ApiAbout:
             req_session.proxies = self.proxies
             # request
             req_api_version = req_session.get(
-                url="{}://services.{}.isogeo.com/about".format(
+                url="{}://services.{}/about".format(
                     self.protocol, self.api_url
                 ),
                 proxies=self.proxies,
