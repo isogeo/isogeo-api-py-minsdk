@@ -67,6 +67,7 @@ class Isogeo(OAuth2Session):
         See: `Requests <http://2.python-requests.org/en/master/api/#requests.adapters.HTTPAdapter>`_
     :param int pool_maxsize: custom the maximum number of connections to save in the pool.\
         See: `Requests <http://2.python-requests.org/en/master/api/#requests.adapters.HTTPAdapter>`_
+    :param dict isogeo_urls: Only needed when platform is "custom", a dictionnary of specific Isogeo URLs.
 
     :returns: authenticated requests Session you can use to send requests to the API.
     :rtype: requests_oauthlib.OAuth2Session
@@ -129,6 +130,7 @@ class Isogeo(OAuth2Session):
         },
         "guess": {},
     }
+    PLATFORM_VALUES = ["qa", "prod", "custom"]
 
     def __init__(
         self,
@@ -143,9 +145,11 @@ class Isogeo(OAuth2Session):
         max_retries: int = 2,
         pool_connections: int = 20,
         pool_maxsize: int = 50,
+        isogeo_urls: dict = {},
         # additional
         **kwargs,
     ):
+
         # some vars
         self.app_name = app_name  # custom settings
         client_id = kwargs.get("client_id")
@@ -160,6 +164,19 @@ class Isogeo(OAuth2Session):
             )
         else:
             self.auth_mode = auth_mode
+
+        if platform not in self.PLATFORM_VALUES:
+            raise ValueError("'platform' argument value must be one of: {}".format(" | ".join(self.PLATFORM_VALUES)))
+        else:
+            if platform == "custom":
+                if not isinstance(isogeo_urls, dict):
+                    raise TypeError("'isogeo_urls' argument must be a dict, not {}".format(type(isogeo_urls)))
+                elif isogeo_urls == {}:
+                    raise ValueError("'isogeo_urls' argument value cannot be empty if 'platform' argument value is 'custom'")
+                else:
+                    pass
+            else:
+                pass
 
         # -- CACHE
         # platform
@@ -187,7 +204,7 @@ class Isogeo(OAuth2Session):
         self._wg_specifications_names = {}  # workgroup specifications by names
 
         # checking internet connection
-        if not checker.check_internet_connection():
+        if not checker.check_internet_connection() and platform != "custom":
             raise EnvironmentError("Internet connection issue.")
         else:
             pass
@@ -207,6 +224,7 @@ class Isogeo(OAuth2Session):
             pass
 
         # platform to request
+        self.utils = IsogeoUtils()
         (
             self.platform,
             self.api_url,
@@ -215,7 +233,12 @@ class Isogeo(OAuth2Session):
             self.mng_url,
             self.oc_url,
             self.ssl,
-        ) = utils.set_base_url(platform)
+        ) = self.utils.set_base_url(platform, isogeo_urls)
+
+        if self.api_url == "missing_url":
+            raise ValueError("'app_url' is missing into isogeo_urls dict.")
+        else:
+            pass
 
         # max retries
         if max_retries > 0:
@@ -235,7 +258,7 @@ class Isogeo(OAuth2Session):
             self.lang = "en"
         else:
             self.lang = lang.lower()
-        utils.set_lang_and_locale(self.lang)
+        self.utils.set_lang_and_locale(self.lang)
 
         # handling proxy parameters
         # see: http://docs.python-requests.org/en/latest/user/advanced/#proxies
