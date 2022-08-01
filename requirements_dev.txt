@@ -17,7 +17,7 @@
 # Lint and formatting
 # -----------------------
 black==22.3.0
-flake8==3.9.*
+flake8==5.0.*
 pre-commit==2.19.*
 
 # Tests
