@@ -149,6 +149,9 @@ class TestServiceLayers(unittest.TestCase):
             layer=layer_new,
         )
 
+        self.assertIsInstance(layer_new, ServiceLayer)
+        self.assertEqual(layer_new.name, layer_name)
+        self.assertEqual(layer_new.titles, layer_title)
         # add created layer to deletion
         self.li_fixtures_to_delete.append(layer_new)
 
