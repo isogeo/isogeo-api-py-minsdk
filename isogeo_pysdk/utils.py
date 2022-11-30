@@ -164,7 +164,6 @@ class IsogeoUtils(object):
             self.ssl = False
         elif platform == "custom":
             self.ssl = False
-            pass
         else:
             raise ValueError(
                 3,
@@ -174,10 +173,16 @@ class IsogeoUtils(object):
         # set values
         if platform == "custom":
             self.api_url = dict_urls.get("api_url", "missing_url")
-            self.app_url = dict_urls.get("app_url", "missing_url")
-            self.csw_url = dict_urls.get("csw_url", "missing_url")
-            self.mng_url = dict_urls.get("mng_url", "missing_url")
-            self.oc_url = dict_urls.get("oc_url", "missing_url")
+            if self.api_url.startswith("https://"):
+                self.api_url = self.api_url.replace("https://", "")
+            elif self.api_url.startswith("http://"):
+                self.self.api_url = self.api_url.replace("http://", "")
+            else:
+                pass
+            self.app_url = dict_urls.get("app_url", self.APP_URLS.get("qa"))
+            self.csw_url = dict_urls.get("csw_url", self.CSW_URLS.get("qa"))
+            self.mng_url = dict_urls.get("mng_url", self.MNG_URLS.get("qa"))
+            self.oc_url = dict_urls.get("oc_url", self.OC_URLS.get("qa"))
         else:
             self.api_url = self.API_URLS.get(platform)
             self.app_url = self.APP_URLS.get(platform)
