@@ -183,7 +183,7 @@ class TestMetadatasNoGeo(unittest.TestCase):
 
     def test_metadatas_in_search_results(self):
         """GET :resources/search."""
-        search = self.isogeo.search(include="all")
+        search = self.isogeo.search(group=WORKGROUP_TEST_FIXTURE_UUID, include="all")
         if isinstance(search, tuple):
             logging.warning(
                 "Search request failed: {} - {}".format(search[0], search[1])

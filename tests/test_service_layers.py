@@ -132,7 +132,7 @@ class TestServiceLayers(unittest.TestCase):
     def test_layers_create_basic(self):
         """POST :groups/{metadata_uuid}/layers/}"""
         # var
-        layer_name = strftime("%Y-%m-%d", gmtime())
+        layer_name = strftime("%Y-%m-%d_%H%M%S", gmtime())
         layer_title = [
             {
                 "lang": "fr",

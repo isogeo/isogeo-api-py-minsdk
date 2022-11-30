@@ -27,7 +27,6 @@ from pathlib import Path
 from socket import gethostname
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
-from pprint import pprint
 
 # 3rd party
 from dotenv import load_dotenv
@@ -183,7 +182,7 @@ class TestMetadatasVector(unittest.TestCase):
 
     def test_metadatas_in_search_results(self):
         """GET :resources/search."""
-        search = self.isogeo.search(include="all")
+        search = self.isogeo.search(group=WORKGROUP_TEST_FIXTURE_UUID, include="all")
         if isinstance(search, tuple):
             logging.warning(
                 "Search request failed: {} - {}".format(search[0], search[1])
