@@ -110,7 +110,7 @@ class ApiAbout:
             elif self.platform == "qa":
                 id_url = "id.api.qa.isogeo.com"
             else:
-                raise ValueError("This method is not implement yet fpr custom Isogeo API config (neither PROD nor QA).")
+                raise ValueError("This method is not implement yet for custom Isogeo API config (neither PROD nor QA).")
 
             req_api_version = req_session.get(
                 url="{}://{}/about".format(self.protocol, id_url),
