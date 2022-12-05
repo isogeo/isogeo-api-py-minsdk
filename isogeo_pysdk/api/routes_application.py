@@ -19,7 +19,6 @@ from functools import lru_cache
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Application, Workgroup
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -27,7 +26,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -45,19 +43,10 @@ class ApiApplication:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiApplication, self).__init__()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
         self,
@@ -88,7 +77,7 @@ class ApiApplication:
                     "Workgroup ID is not a correct UUID: {}".format(workgroup_id)
                 )
             else:
-                url_applications = utils.get_request_base_url(
+                url_applications = self.utils.get_request_base_url(
                     route="groups/{}/applications".format(workgroup_id)
                 )
         else:
@@ -97,7 +86,7 @@ class ApiApplication:
                     self.api_client._user.contact.name
                 )
             )
-            url_applications = utils.get_request_base_url(route="applications")
+            url_applications = self.utils.get_request_base_url(route="applications")
 
         # request
         req_applications = self.api_client.get(
@@ -155,7 +144,7 @@ class ApiApplication:
             payload = None
 
         # URL
-        url_application = utils.get_request_base_url(
+        url_application = self.utils.get_request_base_url(
             route="applications/{}".format(application_id)
         )
 
@@ -205,7 +194,7 @@ class ApiApplication:
             pass
 
         # URL
-        url_application_create = utils.get_request_base_url(route="applications")
+        url_application_create = self.utils.get_request_base_url(route="applications")
 
         # request
         req_new_application = self.api_client.post(
@@ -244,7 +233,7 @@ class ApiApplication:
             pass
 
         # request URL
-        url_application_delete = utils.get_request_base_url(
+        url_application_delete = self.utils.get_request_base_url(
             route="applications/{}".format(application_id)
         )
 
@@ -280,7 +269,7 @@ class ApiApplication:
 
         # URL builder
         url_application_exists = "{}{}".format(
-            utils.get_request_base_url("applications"), application_id
+            self.utils.get_request_base_url("applications"), application_id
         )
 
         # request
@@ -315,7 +304,7 @@ class ApiApplication:
             pass
 
         # URL
-        url_application_update = utils.get_request_base_url(
+        url_application_update = self.utils.get_request_base_url(
             route="applications/{}".format(application._id)
         )
 
@@ -345,7 +334,6 @@ class ApiApplication:
         return new_application
 
     # -- Routes to manage the related objects ------------------------------------------
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def workgroups(self, application_id: str = None) -> list:
         """Get all groups associated with an application.
@@ -367,7 +355,7 @@ class ApiApplication:
         #     payload = None
 
         # URL
-        url_application_groups = utils.get_request_base_url(
+        url_application_groups = self.utils.get_request_base_url(
             route="applications/{}/groups".format(application_id)
         )
 
@@ -464,7 +452,7 @@ class ApiApplication:
             pass
 
         # URL
-        url_application_association = utils.get_request_base_url(
+        url_application_association = self.utils.get_request_base_url(
             route="applications/{}/groups/{}".format(application._id, workgroup._id)
         )
 
@@ -519,7 +507,7 @@ class ApiApplication:
             pass
 
         # URL
-        url_application_dissociation = utils.get_request_base_url(
+        url_application_dissociation = self.utils.get_request_base_url(
             route="applications/{}/groups/{}".format(application._id, workgroup._id)
         )
 

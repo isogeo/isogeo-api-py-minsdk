@@ -21,7 +21,6 @@ from functools import lru_cache, partial
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import MetadataSearch
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Globals ###############
@@ -29,7 +28,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -59,21 +57,12 @@ class ApiSearch:
         ApiDecorators.api_client = api_client
 
         # ensure platform to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
 
         # initialize
         super(ApiSearch, self).__init__()
 
     # -- Routes to search --------------------------------------------------------------
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def search(
         self,
@@ -207,10 +196,10 @@ class ApiSearch:
         # URL
         if group is None:
             logger.debug("Searching as application")
-            url_resources_search = utils.get_request_base_url(route="resources/search")
+            url_resources_search = self.utils.get_request_base_url(route="resources/search")
         elif checker.check_is_uuid(group):
             logger.debug("Searching as group")
-            url_resources_search = utils.get_request_base_url(
+            url_resources_search = self.utils.get_request_base_url(
                 route="groups/{}/resources/search".format(group)
             )
         else:
@@ -350,7 +339,7 @@ class ApiSearch:
 
         # store tags in dicts
         if tags_as_dicts:
-            new_tags = utils.tags_to_dict(
+            new_tags = self.utils.tags_to_dict(
                 tags=req_metadata_search.tags, prev_query=req_metadata_search.query
             )
             # clear
@@ -378,7 +367,7 @@ class ApiSearch:
         :rtype: MetadataSearch
         """
         # prepare async searches
-        total_pages = utils.pages_counter(total_results, page_size=100)
+        total_pages = self.utils.pages_counter(total_results, page_size=100)
         li_offsets = [offset * 100 for offset in range(0, total_pages)]
         logger.debug("Async search launched with {} pages.".format(total_pages))
 

@@ -23,7 +23,6 @@ from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.enums import WorkgroupStatisticsTags
 from isogeo_pysdk.models import Contact, Invitation, Workgroup
-from isogeo_pysdk.utils import IsogeoUtils
 
 # other routes
 from .routes_coordinate_systems import ApiCoordinateSystem
@@ -34,7 +33,6 @@ from .routes_coordinate_systems import ApiCoordinateSystem
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -52,15 +50,7 @@ class ApiWorkgroup:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
 
         # sub routes
         self.srs = ApiCoordinateSystem(self.api_client)
@@ -69,7 +59,6 @@ class ApiWorkgroup:
         super(ApiWorkgroup, self).__init__()
 
     # -- Routes to manage the  Workgroup objects ---------------------------------------
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
         self, include: tuple = ("_abilities", "limits"), caching: bool = 1
@@ -86,7 +75,7 @@ class ApiWorkgroup:
             payload = None
 
         # request URL
-        url_workgroups = utils.get_request_base_url(route="groups")
+        url_workgroups = self.utils.get_request_base_url(route="groups")
 
         # request
         req_workgroups = self.api_client.get(
@@ -115,7 +104,6 @@ class ApiWorkgroup:
         # end of method
         return wg_workgroups
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(
         self, workgroup_id: str, include: tuple = ("_abilities", "limits")
@@ -138,7 +126,7 @@ class ApiWorkgroup:
             payload = None
 
         # URL
-        url_workgroup = utils.get_request_base_url(
+        url_workgroup = self.utils.get_request_base_url(
             route="groups/{}".format(workgroup_id)
         )
 
@@ -195,7 +183,7 @@ class ApiWorkgroup:
             pass
 
         # URL
-        url_workgroup_create = utils.get_request_base_url(route="groups")
+        url_workgroup_create = self.utils.get_request_base_url(route="groups")
 
         # request
         req_new_workgroup = self.api_client.post(
@@ -236,7 +224,7 @@ class ApiWorkgroup:
             pass
 
         # URL
-        url_workgroup_delete = utils.get_request_base_url(
+        url_workgroup_delete = self.utils.get_request_base_url(
             route="groups/{}".format(workgroup_id)
         )
 
@@ -271,7 +259,7 @@ class ApiWorkgroup:
             pass
 
         # URL builder
-        url_workgroup_exists = utils.get_request_base_url(
+        url_workgroup_exists = self.utils.get_request_base_url(
             route="groups/{}".format(workgroup_id)
         )
 
@@ -307,7 +295,7 @@ class ApiWorkgroup:
             pass
 
         # URL
-        url_workgroup_update = utils.get_request_base_url(
+        url_workgroup_update = self.utils.get_request_base_url(
             route="groups/{}".format(workgroup._id)
         )
 
@@ -347,7 +335,6 @@ class ApiWorkgroup:
             workgroup_id=workgroup_id, invitation=invitation
         )
 
-    @lru_cache()
     def invitations(self, workgroup_id: str) -> dict:
         """Returns active invitations (including expired) for the specified workgroup. Just a
         shortcut.
@@ -356,7 +343,6 @@ class ApiWorkgroup:
         """
         return self.api_client.invitation.listing(workgroup_id=workgroup_id)
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def limits(self, workgroup_id: str) -> dict:
         """Returns limits for the specified workgroup.
@@ -372,7 +358,7 @@ class ApiWorkgroup:
             pass
 
         # URL builder
-        url_workgroup_limits = utils.get_request_base_url(
+        url_workgroup_limits = self.utils.get_request_base_url(
             route="/groups/{}/limits".format(workgroup_id)
         )
 
@@ -392,7 +378,6 @@ class ApiWorkgroup:
 
         return req_workgroup_limits.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def memberships(self, workgroup_id: str) -> dict:
         """Returns memberships for the specified workgroup.
@@ -408,7 +393,7 @@ class ApiWorkgroup:
             pass
 
         # URL builder
-        url_workgroup_memberships = utils.get_request_base_url(
+        url_workgroup_memberships = self.utils.get_request_base_url(
             route="/groups/{}/memberships".format(workgroup_id)
         )
 
@@ -428,7 +413,6 @@ class ApiWorkgroup:
 
         return req_workgroup_memberships.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics(self, workgroup_id: str) -> dict:
         """Returns statistics for the specified workgroup.
@@ -444,7 +428,7 @@ class ApiWorkgroup:
             pass
 
         # URL builder
-        url_workgroup_statistics = utils.get_request_base_url(
+        url_workgroup_statistics = self.utils.get_request_base_url(
             route="groups/{}/statistics".format(workgroup_id)
         )
 
@@ -464,7 +448,6 @@ class ApiWorkgroup:
 
         return req_workgroup_statistics.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics_by_tag(self, workgroup_id: str, tag: str) -> dict:
         """Returns statistics for the specified workgroup.
@@ -492,7 +475,7 @@ class ApiWorkgroup:
             )
 
         # URL builder
-        url_workgroup_statistics = utils.get_request_base_url(
+        url_workgroup_statistics = self.utils.get_request_base_url(
             route="groups/{}/statistics/tag/{}".format(workgroup_id, tag)
         )
 
@@ -520,7 +503,6 @@ class ApiWorkgroup:
         return req_workgroup_statistics.json()
 
     # -- Aliased methods ------------------------------------------------------
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def coordinate_systems(self, workgroup_id: str, caching: bool = 1) -> list:
         """Returns coordinate-systems for the specified workgroup. It's just an alias for the

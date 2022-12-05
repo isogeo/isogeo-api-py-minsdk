@@ -21,7 +21,6 @@ from requests.models import Response
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Metadata
-from isogeo_pysdk.utils import IsogeoUtils
 
 # other routes
 from .routes_event import ApiEvent
@@ -40,7 +39,6 @@ from .routes_service_operations import ApiServiceOperation
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -58,15 +56,7 @@ class ApiMetadata:
         ApiDecorators.api_client = api_client
 
         # ensure platform to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
 
         # sub routes
         self.attributes = ApiFeatureAttribute(self.api_client)
@@ -82,7 +72,6 @@ class ApiMetadata:
         # initialize
         super(ApiMetadata, self).__init__()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(self, metadata_id: str, include: tuple or str = ()) -> Metadata:
         """Get complete or partial metadata about a specific metadata (= resource).
@@ -109,7 +98,7 @@ class ApiMetadata:
         }
 
         # URL
-        url_resource = utils.get_request_base_url(
+        url_resource = self.utils.get_request_base_url(
             route="resources/{}".format(metadata_id)
         )
 
@@ -185,7 +174,7 @@ class ApiMetadata:
             pass
 
         # build request url
-        url_metadata_create = utils.get_request_base_url(
+        url_metadata_create = self.utils.get_request_base_url(
             route="groups/{}/resources".format(workgroup_id)
         )
 
@@ -232,7 +221,7 @@ class ApiMetadata:
             pass
 
         # request URL
-        url_metadata_delete = utils.get_request_base_url(
+        url_metadata_delete = self.utils.get_request_base_url(
             route="resources/{}".format(metadata_id)
         )
 
@@ -267,7 +256,7 @@ class ApiMetadata:
             pass
 
         # request URL
-        url_metadata_exists = utils.get_request_base_url(
+        url_metadata_exists = self.utils.get_request_base_url(
             route="resources/{}".format(resource_id)
         )
 
@@ -344,7 +333,7 @@ class ApiMetadata:
             pass
 
         # URL builder
-        url_metadata_update = utils.get_request_base_url(
+        url_metadata_update = self.utils.get_request_base_url(
             route="resources/{}".format(metadata._id)
         )
 
@@ -400,7 +389,7 @@ class ApiMetadata:
             pass
 
         # URL
-        url_metadata_dl_xml = utils.get_request_base_url(
+        url_metadata_dl_xml = self.utils.get_request_base_url(
             route="resources/{}.xml".format(metadata._id)
         )
 
@@ -423,7 +412,6 @@ class ApiMetadata:
         return req_metadata_dl_xml
 
     # -- Routes to manage subresources -------------------------------------------------
-    @lru_cache()
     def catalogs(self, metadata: Metadata) -> list:
         """Returns asssociated catalogs with a metadata. Just a shortcut.
 

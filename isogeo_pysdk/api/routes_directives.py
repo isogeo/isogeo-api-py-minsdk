@@ -17,7 +17,6 @@ import logging
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -25,7 +24,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -44,15 +42,7 @@ class ApiDirective:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiDirective, self).__init__()
 
@@ -63,7 +53,7 @@ class ApiDirective:
         :param bool caching: option to cache the response
         """
         # request URL
-        url_directives = utils.get_request_base_url(route="directives")
+        url_directives = self.utils.get_request_base_url(route="directives")
 
         # request
         req_directives = self.api_client.get(

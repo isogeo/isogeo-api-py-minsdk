@@ -22,7 +22,6 @@ from requests import Response
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Conformity, Metadata
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -30,7 +29,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -48,19 +46,10 @@ class ApiConformity:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiConformity, self).__init__()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(self, metadata_id: str) -> list:
         """List metadata's conformity specifications with complete information.
@@ -79,7 +68,7 @@ class ApiConformity:
             pass
 
         # URL
-        url_metadata_conformities = utils.get_request_base_url(
+        url_metadata_conformities = self.utils.get_request_base_url(
             route="resources/{}/specifications/".format(metadata_id)
         )
 
@@ -126,7 +115,7 @@ class ApiConformity:
             pass
 
         # URL
-        url_conformity_create = utils.get_request_base_url(
+        url_conformity_create = self.utils.get_request_base_url(
             route="resources/{}/specifications/{}".format(
                 metadata._id, conformity.specification._id
             )
@@ -198,7 +187,7 @@ class ApiConformity:
             pass
 
         # URL
-        url_conformity_delete = utils.get_request_base_url(
+        url_conformity_delete = self.utils.get_request_base_url(
             route="resources/{}/specifications/{}".format(
                 metadata._id, specification_id
             )

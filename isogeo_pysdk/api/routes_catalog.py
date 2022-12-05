@@ -25,7 +25,6 @@ from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.enums import CatalogStatisticsTags
 from isogeo_pysdk.models import Catalog, Metadata
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -33,7 +32,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -51,19 +49,10 @@ class ApiCatalog:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiCatalog, self).__init__()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
         self,
@@ -106,7 +95,7 @@ class ApiCatalog:
             payload = None
 
         # request URL
-        url_catalogs = utils.get_request_base_url(
+        url_catalogs = self.utils.get_request_base_url(
             route="groups/{}/catalogs".format(workgroup_id)
         )
 
@@ -136,7 +125,6 @@ class ApiCatalog:
         # end of method
         return wg_catalogs
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def metadata(self, metadata_id: str) -> list:
         """List metadata's catalogs with complete information.
@@ -155,7 +143,7 @@ class ApiCatalog:
             pass
 
         # URL
-        url_metadata_catalogs = utils.get_request_base_url(
+        url_metadata_catalogs = self.utils.get_request_base_url(
             route="resources/{}/catalogs/".format(metadata_id)
         )
 
@@ -176,7 +164,6 @@ class ApiCatalog:
         # end of method
         return req_metadata_catalogs.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(
         self,
@@ -210,7 +197,7 @@ class ApiCatalog:
             payload = None
 
         # catalog route
-        url_catalog = utils.get_request_base_url(
+        url_catalog = self.utils.get_request_base_url(
             route="groups/{}/catalogs/{}".format(workgroup_id, catalog_id)
         )
 
@@ -273,7 +260,7 @@ class ApiCatalog:
             pass
 
         # build request url
-        url_catalog_create = utils.get_request_base_url(
+        url_catalog_create = self.utils.get_request_base_url(
             route="groups/{}/catalogs".format(workgroup_id)
         )
 
@@ -325,7 +312,7 @@ class ApiCatalog:
             pass
 
         # request URL
-        url_catalog_delete = utils.get_request_base_url(
+        url_catalog_delete = self.utils.get_request_base_url(
             route="groups/{}/catalogs/{}".format(workgroup_id, catalog_id)
         )
 
@@ -366,7 +353,7 @@ class ApiCatalog:
             pass
 
         # URL builder
-        url_catalog_exists = utils.get_request_base_url(
+        url_catalog_exists = self.utils.get_request_base_url(
             route="groups/{}/catalogs/{}".format(workgroup_id, catalog_id)
         )
 
@@ -400,7 +387,7 @@ class ApiCatalog:
             pass
 
         # URL
-        url_catalog_update = utils.get_request_base_url(
+        url_catalog_update = self.utils.get_request_base_url(
             route="groups/{}/catalogs/{}".format(catalog.owner.get("_id"), catalog._id)
         )
 
@@ -480,7 +467,7 @@ class ApiCatalog:
             pass
 
         # URL
-        url_catalog_association = utils.get_request_base_url(
+        url_catalog_association = self.utils.get_request_base_url(
             route="catalogs/{}/resources/{}".format(catalog._id, metadata._id)
         )
 
@@ -525,7 +512,7 @@ class ApiCatalog:
             pass
 
         # URL
-        url_catalog_dissociation = utils.get_request_base_url(
+        url_catalog_dissociation = self.utils.get_request_base_url(
             route="catalogs/{}/resources/{}".format(catalog._id, metadata._id)
         )
 
@@ -546,7 +533,6 @@ class ApiCatalog:
         # end of method
         return req_catalog_dissociation
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def shares(self, catalog_id: str) -> list:
         """Returns shares for the specified catalog.
@@ -563,7 +549,7 @@ class ApiCatalog:
             pass
 
         # URL builder
-        url_catalog_shares = utils.get_request_base_url(
+        url_catalog_shares = self.utils.get_request_base_url(
             route="catalogs/{}/shares".format(catalog_id)
         )
 
@@ -583,7 +569,6 @@ class ApiCatalog:
 
         return req_catalog_shares.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics(self, catalog_id: str) -> dict:
         """Returns statistics for the specified catalog.
@@ -597,7 +582,7 @@ class ApiCatalog:
             pass
 
         # URL builder
-        url_catalog_statistics = utils.get_request_base_url(
+        url_catalog_statistics = self.utils.get_request_base_url(
             route="catalogs/{}/statistics".format(catalog_id)
         )
 
@@ -617,7 +602,6 @@ class ApiCatalog:
 
         return req_catalog_statistics.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics_by_tag(self, catalog_id: str, tag: str) -> dict:
         """Returns statistics on a specific tag for the specified catalog.
@@ -642,7 +626,7 @@ class ApiCatalog:
             )
 
         # URL builder
-        url_catalog_statistics = utils.get_request_base_url(
+        url_catalog_statistics = self.utils.get_request_base_url(
             route="catalogs/{}/statistics/tag/{}".format(catalog_id, tag)
         )
 

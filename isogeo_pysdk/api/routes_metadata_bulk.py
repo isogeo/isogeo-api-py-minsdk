@@ -15,7 +15,6 @@ import logging
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import BulkReport, BulkRequest, Metadata
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Globals ###############
@@ -23,7 +22,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -86,15 +84,7 @@ class ApiBulk:
         ApiDecorators.api_client = api_client
 
         # ensure platform to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
 
         # initialize
         super(ApiBulk, self).__init__()
@@ -162,7 +152,7 @@ class ApiBulk:
         """
 
         # build request url
-        url_metadata_bulk = utils.get_request_base_url(route="resources")
+        url_metadata_bulk = self.utils.get_request_base_url(route="resources")
 
         # request
         req_metadata_bulk = self.api_client.post(

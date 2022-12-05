@@ -22,7 +22,6 @@ from requests import Response
 from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.models import Condition, License, Metadata
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -30,7 +29,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -48,19 +46,10 @@ class ApiCondition:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiCondition, self).__init__()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(self, metadata_id: str) -> list:
         """List metadata's conditions with complete information.
@@ -79,7 +68,7 @@ class ApiCondition:
             pass
 
         # URL
-        url_metadata_conditions = utils.get_request_base_url(
+        url_metadata_conditions = self.utils.get_request_base_url(
             route="resources/{}/conditions/".format(metadata_id)
         )
 
@@ -100,7 +89,6 @@ class ApiCondition:
         # end of method
         return req_metadata_conditions.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(self, metadata_id: str, condition_id: str) -> Condition:
         """Get details about a specific condition.
@@ -124,7 +112,7 @@ class ApiCondition:
             pass
 
         # condition route
-        url_condition = utils.get_request_base_url(
+        url_condition = self.utils.get_request_base_url(
             route="resources/{}/conditions/{}".format(metadata_id, condition_id)
         )
 
@@ -177,7 +165,7 @@ class ApiCondition:
             pass
 
         # URL
-        url_condition_create = utils.get_request_base_url(
+        url_condition_create = self.utils.get_request_base_url(
             route="resources/{}/conditions".format(metadata._id)
         )
 
@@ -227,7 +215,7 @@ class ApiCondition:
             pass
 
         # URL
-        url_condition_delete = utils.get_request_base_url(
+        url_condition_delete = self.utils.get_request_base_url(
             route="resources/{}/conditions/{}".format(metadata._id, condition._id)
         )
 

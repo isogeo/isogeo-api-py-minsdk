@@ -67,7 +67,7 @@ class TestAuthentication(unittest.TestCase):
             pass
 
         # ignore warnings related to the QA self-signed cert
-        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+        if environ.get("ISOGEO_PLATFORM").lower() in ["qa", "custom"]:
             urllib3.disable_warnings()
 
         # API credentials settings

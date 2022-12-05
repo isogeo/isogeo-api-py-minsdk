@@ -33,7 +33,11 @@ class ApiAbout:
     """Routes as methods of Isogeo API used to get platform informations."""
 
     def __init__(
-        self, platform: str = "prod", proxies: dict = None, protocol: str = "https"
+        self,
+        platform: str = "prod",
+        proxies: dict = None,
+        protocol: str = "https",
+        isogeo_urls: dict = {}
     ):
         self.proxies = proxies
         self.protocol = protocol
@@ -47,11 +51,10 @@ class ApiAbout:
             self.mng_url,
             self.oc_url,
             self.ssl,
-        ) = utils.set_base_url(platform)
+        ) = utils.set_base_url(platform.lower(), isogeo_urls)
         # initialize
         super(ApiAbout, self).__init__()
 
-    @lru_cache()
     def api(self) -> str:
         """Get API version."""
         with Session() as req_session:
@@ -72,7 +75,6 @@ class ApiAbout:
         # end of method
         return req_api_version.json().get("version")
 
-    @lru_cache()
     def database(self) -> str:
         """Get database version."""
         with Session() as req_session:
@@ -95,14 +97,20 @@ class ApiAbout:
         # end of method
         return req_api_version.json().get("version")
 
-    @lru_cache()
     def authentication(self) -> str:
         """Get authentication server (ID) version."""
         with Session() as req_session:
             req_session.proxies = self.proxies
             # request
+            if self.platform == "prod":
+                id_url = "id.api.isogeo.com"
+            elif self.platform == "qa":
+                id_url = "id.api.qa.isogeo.com"
+            else:
+                raise ValueError("This method is not implement yet for custom Isogeo API config (neither PROD nor QA).")
+
             req_api_version = req_session.get(
-                url="{}://id.{}.isogeo.com/about".format(self.protocol, self.api_url),
+                url="{}://{}/about".format(self.protocol, id_url),
                 proxies=self.proxies,
                 verify=self.ssl,
             )
@@ -115,14 +123,13 @@ class ApiAbout:
         # end of method
         return req_api_version.json().get("version")
 
-    @lru_cache()
     def scan(self) -> str:
         """Get daemon version."""
         with Session() as req_session:
             req_session.proxies = self.proxies
             # request
             req_api_version = req_session.get(
-                url="{}://daemons.isogeo.com/about".format(self.protocol),
+                url="{}://scan.isogeo.com/about".format(self.protocol),
                 proxies=self.proxies,
                 verify=self.ssl,
             )
@@ -135,14 +142,13 @@ class ApiAbout:
         # end of method
         return req_api_version.json().get("version")
 
-    @lru_cache()
     def services(self) -> str:
         """Get services.api version."""
         with Session() as req_session:
             req_session.proxies = self.proxies
             # request
             req_api_version = req_session.get(
-                url="{}://services.{}.isogeo.com/about".format(
+                url="{}://services.{}/about".format(
                     self.protocol, self.api_url
                 ),
                 proxies=self.proxies,

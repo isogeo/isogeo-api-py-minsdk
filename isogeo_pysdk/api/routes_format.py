@@ -23,7 +23,6 @@ from isogeo_pysdk.checker import IsogeoChecker
 from isogeo_pysdk.decorators import ApiDecorators
 from isogeo_pysdk.enums import MetadataTypes
 from isogeo_pysdk.models import Format
-from isogeo_pysdk.utils import IsogeoUtils
 
 # #############################################################################
 # ########## Global #############
@@ -31,7 +30,6 @@ from isogeo_pysdk.utils import IsogeoUtils
 
 logger = logging.getLogger(__name__)
 checker = IsogeoChecker()
-utils = IsogeoUtils()
 
 
 # #############################################################################
@@ -49,15 +47,7 @@ class ApiFormat:
         ApiDecorators.api_client = api_client
 
         # ensure platform and others params to request
-        (
-            self.platform,
-            self.api_url,
-            self.app_url,
-            self.csw_url,
-            self.mng_url,
-            self.oc_url,
-            self.ssl,
-        ) = utils.set_base_url(self.api_client.platform)
+        self.utils = api_client.utils
         # initialize
         super(ApiFormat, self).__init__()
 
@@ -94,7 +84,7 @@ class ApiFormat:
         # URL
         if data_type:
             if MetadataTypes.has_value(data_type):
-                url_formats = utils.get_request_base_url(
+                url_formats = self.utils.get_request_base_url(
                     route="formats/{}".format(data_type)
                 )
                 logger.debug(
@@ -109,7 +99,7 @@ class ApiFormat:
                     )
                 )
         else:
-            url_formats = utils.get_request_base_url(route="formats/")
+            url_formats = self.utils.get_request_base_url(route="formats/")
             logger.debug("Listing all available geographic formats...")
 
         # request
@@ -167,7 +157,7 @@ class ApiFormat:
         """
 
         # format route
-        url_format = utils.get_request_base_url(route="formats/{}".format(format_code))
+        url_format = self.utils.get_request_base_url(route="formats/{}".format(format_code))
 
         # request
         req_format = self.api_client.get(
@@ -233,7 +223,7 @@ class ApiFormat:
             pass
 
         # URL
-        url_format_create = utils.get_request_base_url(route="formats")
+        url_format_create = self.utils.get_request_base_url(route="formats")
 
         # request
         req_new_format = self.api_client.post(
@@ -263,7 +253,7 @@ class ApiFormat:
         :param Format frmt: Format model object to delete
         """
         # URL
-        url_format_delete = utils.get_request_base_url(
+        url_format_delete = self.utils.get_request_base_url(
             route="formats/{}".format(frmt.code)
         )
 
@@ -314,7 +304,7 @@ class ApiFormat:
             pass
 
         # URL
-        url_format_update = utils.get_request_base_url(
+        url_format_update = self.utils.get_request_base_url(
             route="formats/{}".format(frmt.code)
         )
 
@@ -373,7 +363,7 @@ class ApiFormat:
         payload = {"q": query, "_limit": page_size, "_offset": offset}
 
         # URL
-        url_formats_search_nogeo = utils.get_request_base_url(
+        url_formats_search_nogeo = self.utils.get_request_base_url(
             route="formats/resource/search"
         )
 

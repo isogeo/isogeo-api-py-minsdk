@@ -53,9 +53,10 @@ class TestIsogeoUtils(unittest.TestCase):
     def setUpClass(cls):
         """Executed when module is loaded before any test."""
         cls.utils = IsogeoUtils()
+        cls.utils.set_base_url()
 
         # ignore warnings related to the QA self-signed cert
-        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+        if environ.get("ISOGEO_PLATFORM").lower() in ["qa", "custom"]:
             urllib3.disable_warnings()
 
     # standard methods
@@ -71,6 +72,15 @@ class TestIsogeoUtils(unittest.TestCase):
     def test_get_isogeo_version_api(self):
         """Check API version."""
         # prod
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url(platform="prod")
         version_api_prod = self.utils.get_isogeo_version(component="api")
         version_api_naive_prod = self.utils.get_isogeo_version()
         # qa
@@ -85,13 +95,29 @@ class TestIsogeoUtils(unittest.TestCase):
         ) = self.utils.set_base_url(platform="qa")
         version_api_qa = self.utils.get_isogeo_version(component="api")
         version_api_naive_qa = self.utils.get_isogeo_version()
+        # custom
+        (
+            platform,
+            api_url,
+            app_url,
+            csw_url,
+            mng_url,
+            oc_url,
+            ssl,
+        ) = self.utils.set_base_url(platform="custom", dict_urls={"api_url": environ.get("ISOGEO_API_URL")})
+        version_api_custom = self.utils.get_isogeo_version(component="api")
+        version_api_naive_custom = self.utils.get_isogeo_version()
+
         # check
         self.assertIsInstance(version_api_prod, str)
         self.assertIsInstance(version_api_naive_prod, str)
         self.assertIsInstance(version_api_qa, str)
         self.assertIsInstance(version_api_naive_qa, str)
+        self.assertIsInstance(version_api_custom, str)
+        self.assertIsInstance(version_api_naive_custom, str)
         self.assertEqual(version_api_prod, version_api_naive_prod)
-        self.assertEqual(version_api_qa, version_api_naive_prod)
+        self.assertEqual(version_api_qa, version_api_naive_qa)
+        self.assertEqual(version_api_custom, version_api_naive_custom)
 
     def test_get_isogeo_version_app(self):
         """Check APP version."""
@@ -194,7 +220,7 @@ class TestIsogeoUtils(unittest.TestCase):
         resource_url = self.utils.get_request_base_url("resources")
         self.assertEqual(
             resource_url,
-            "https://{}.isogeo.com/resources/?_lang=fr".format(self.utils.api_url),
+            "https://{}/resources/?_lang=fr".format(self.utils.api_url),
         )
 
     # -- URLs Builders - view on web app -------------------------------------
@@ -206,6 +232,7 @@ class TestIsogeoUtils(unittest.TestCase):
             md_id="0269803d50c446b09f5060ef7fe3e22b",
             share_id="1e07910d365449b59b6596a9b428ecd9",
             share_token="TokenOhDearToken",
+            oc_url="open.isogeo.com"
         )
         self.assertEqual(
             oc_url,

@@ -27,7 +27,6 @@ from pathlib import Path
 from socket import gethostname
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
-from pprint import pprint
 
 # 3rd party
 from dotenv import load_dotenv
@@ -87,17 +86,30 @@ class TestMetadatasNoGeo(unittest.TestCase):
         cls.li_fixtures_to_delete = []
 
         # ignore warnings related to the QA self-signed cert
-        if environ.get("ISOGEO_PLATFORM").lower() == "qa":
+        if environ.get("ISOGEO_PLATFORM").lower() in ["qa", "custom"]:
             urllib3.disable_warnings()
 
         # API connection
-        cls.isogeo = Isogeo(
-            auth_mode="user_legacy",
-            client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
-            client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
-            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
-            platform=environ.get("ISOGEO_PLATFORM", "qa"),
-        )
+        if environ.get("ISOGEO_PLATFORM").lower() == "custom":
+            isogeo_urls = {
+                "api_url": environ.get("ISOGEO_API_URL")
+            }
+            cls.isogeo = Isogeo(
+                client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+                client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
+                auth_mode="user_legacy",
+                auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+                platform=environ.get("ISOGEO_PLATFORM").lower(),
+                isogeo_urls=isogeo_urls
+            )
+        else:
+            cls.isogeo = Isogeo(
+                auth_mode="user_legacy",
+                client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+                client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
+                auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+                platform=environ.get("ISOGEO_PLATFORM", "qa"),
+            )
         # getting a token
         cls.isogeo.connect(
             username=environ.get("ISOGEO_USER_NAME"),
@@ -183,7 +195,7 @@ class TestMetadatasNoGeo(unittest.TestCase):
 
     def test_metadatas_in_search_results(self):
         """GET :resources/search."""
-        search = self.isogeo.search(include="all")
+        search = self.isogeo.search(group=WORKGROUP_TEST_FIXTURE_UUID, include="all")
         if isinstance(search, tuple):
             logging.warning(
                 "Search request failed: {} - {}".format(search[0], search[1])
