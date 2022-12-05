@@ -39,19 +39,22 @@ class ServiceLayer(object):
                     "lang": "string",
                     "value": "string"
                 }
-            ]
+            ],
+            "title": "string"
         }
     """
 
     ATTR_TYPES = {
         "_id": str,
         "dataset": dict,
+        "datasets": list,
         "name": str,
         "mimeTypes": str,
         "titles": list,
+        "title": str,
     }
 
-    ATTR_CREA = {"name": str, "titles": list}
+    ATTR_CREA = {"name": str, "titles": list, "title": str}
 
     ATTR_MAP = {"name": "id"}
 
@@ -59,10 +62,12 @@ class ServiceLayer(object):
         self,
         _id: str = None,
         dataset: dict = None,
+        datasets: list = None,
         id: str = None,
         name: str = None,  # = id in API model but it's a reserved keyword in Python
         mimeTypes: str = None,
         titles: list = None,
+        title: str = None,
         # additional parameters
         parent_resource: str = None,
     ):
@@ -71,9 +76,11 @@ class ServiceLayer(object):
         # default values for the object attributes/properties
         self.__id = None
         self._dataset = None
+        self._datasets = None
         self._name = None
         self._mimeTypes = None
         self._titles = None
+        self._title = None
         # additional parameters
         self.parent_resource = parent_resource
 
@@ -85,12 +92,16 @@ class ServiceLayer(object):
             self._name = id
         if dataset is not None:
             self._dataset = dataset
+        if datasets is not None:
+            self._datasets = datasets
         if name is not None:
             self._name = name
         if mimeTypes is not None:
             self._mimeTypes = mimeTypes
         if titles is not None:
             self._titles = titles
+        if title is not None:
+            self._title = title
         # additional parameters
         if parent_resource is not None:
             self._parent_resource = parent_resource
@@ -124,6 +135,25 @@ class ServiceLayer(object):
         """
 
         self._dataset = dataset
+
+    # service layer associated datasets
+    @property
+    def datasets(self) -> list:
+        """Gets the datasets used for Isogeo filters of this ServiceLayer.
+
+        :return: The datasets of this ServiceLayer.
+        :rtype: list
+        """
+        return self._datasets
+
+    @datasets.setter
+    def datasets(self, datasets: list):
+        """Sets the datasets used into Isogeo filters of this ServiceLayer.
+
+        :param list datasets: the datasets of this ServiceLayer.
+        """
+
+        self._datasets = datasets
 
     # service layer name
     @property
@@ -181,6 +211,25 @@ class ServiceLayer(object):
         """
 
         self._titles = titles
+
+    # title
+    @property
+    def title(self) -> str:
+        """Gets the title of this ServiceLayer.
+
+        :return: The title of this ServiceLayer.
+        :rtype: str
+        """
+        return self._title
+
+    @title.setter
+    def title(self, title: str):
+        """Sets the title of this ServiceLayer.
+
+        :param str title: The title of this ServiceLayer.
+        """
+
+        self._title = title
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:
