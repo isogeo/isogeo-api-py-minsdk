@@ -47,7 +47,6 @@ class ApiAccount:
         # initialize
         super(ApiAccount, self).__init__()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(self, include: tuple = ("_abilities",), caching: bool = 1) -> User:
         """Get authenticated user account(= profile) informations.
@@ -125,7 +124,6 @@ class ApiAccount:
         return User(**req_account_update.json())
 
     # -- Routes to manage the related objects ------------------------------------------
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def memberships(self) -> list:
         """Returns memberships for the authenticated user.

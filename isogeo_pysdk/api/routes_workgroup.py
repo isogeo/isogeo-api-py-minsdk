@@ -59,7 +59,6 @@ class ApiWorkgroup:
         super(ApiWorkgroup, self).__init__()
 
     # -- Routes to manage the  Workgroup objects ---------------------------------------
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
         self, include: tuple = ("_abilities", "limits"), caching: bool = 1
@@ -105,7 +104,6 @@ class ApiWorkgroup:
         # end of method
         return wg_workgroups
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(
         self, workgroup_id: str, include: tuple = ("_abilities", "limits")
@@ -337,7 +335,6 @@ class ApiWorkgroup:
             workgroup_id=workgroup_id, invitation=invitation
         )
 
-    @lru_cache()
     def invitations(self, workgroup_id: str) -> dict:
         """Returns active invitations (including expired) for the specified workgroup. Just a
         shortcut.
@@ -346,7 +343,6 @@ class ApiWorkgroup:
         """
         return self.api_client.invitation.listing(workgroup_id=workgroup_id)
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def limits(self, workgroup_id: str) -> dict:
         """Returns limits for the specified workgroup.
@@ -382,7 +378,6 @@ class ApiWorkgroup:
 
         return req_workgroup_limits.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def memberships(self, workgroup_id: str) -> dict:
         """Returns memberships for the specified workgroup.
@@ -418,7 +413,6 @@ class ApiWorkgroup:
 
         return req_workgroup_memberships.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics(self, workgroup_id: str) -> dict:
         """Returns statistics for the specified workgroup.
@@ -454,7 +448,6 @@ class ApiWorkgroup:
 
         return req_workgroup_statistics.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics_by_tag(self, workgroup_id: str, tag: str) -> dict:
         """Returns statistics for the specified workgroup.
@@ -510,7 +503,6 @@ class ApiWorkgroup:
         return req_workgroup_statistics.json()
 
     # -- Aliased methods ------------------------------------------------------
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def coordinate_systems(self, workgroup_id: str, caching: bool = 1) -> list:
         """Returns coordinate-systems for the specified workgroup. It's just an alias for the

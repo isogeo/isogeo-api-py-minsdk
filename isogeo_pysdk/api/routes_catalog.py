@@ -53,7 +53,6 @@ class ApiCatalog:
         # initialize
         super(ApiCatalog, self).__init__()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
         self,
@@ -126,7 +125,6 @@ class ApiCatalog:
         # end of method
         return wg_catalogs
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def metadata(self, metadata_id: str) -> list:
         """List metadata's catalogs with complete information.
@@ -166,7 +164,6 @@ class ApiCatalog:
         # end of method
         return req_metadata_catalogs.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(
         self,
@@ -536,7 +533,6 @@ class ApiCatalog:
         # end of method
         return req_catalog_dissociation
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def shares(self, catalog_id: str) -> list:
         """Returns shares for the specified catalog.
@@ -573,7 +569,6 @@ class ApiCatalog:
 
         return req_catalog_shares.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics(self, catalog_id: str) -> dict:
         """Returns statistics for the specified catalog.
@@ -607,7 +602,6 @@ class ApiCatalog:
 
         return req_catalog_statistics.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def statistics_by_tag(self, catalog_id: str, tag: str) -> dict:
         """Returns statistics on a specific tag for the specified catalog.

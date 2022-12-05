@@ -47,7 +47,6 @@ class ApiDatasource:
         # initialize
         super(ApiDatasource, self).__init__()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
         self, workgroup_id: str = None, include: tuple = None, caching: bool = 1

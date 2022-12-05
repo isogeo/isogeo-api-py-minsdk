@@ -51,7 +51,6 @@ class ApiContact:
         # initialize
         super(ApiContact, self).__init__()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
         self, workgroup_id: str = None, include: tuple = ("count",), caching: bool = 1

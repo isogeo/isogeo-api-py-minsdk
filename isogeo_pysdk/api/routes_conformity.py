@@ -50,7 +50,6 @@ class ApiConformity:
         # initialize
         super(ApiConformity, self).__init__()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(self, metadata_id: str) -> list:
         """List metadata's conformity specifications with complete information.

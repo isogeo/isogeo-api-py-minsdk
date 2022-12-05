@@ -82,7 +82,6 @@ class ApiLink:
         # end of method
         return req_links.json()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(self, metadata_id: str, link_id: str) -> Link:
         """Get details about a specific link.

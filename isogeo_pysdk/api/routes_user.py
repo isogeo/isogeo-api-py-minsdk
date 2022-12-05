@@ -48,7 +48,6 @@ class ApiUser:
         super(ApiUser, self).__init__()
 
     # -- Routes to manage the  User objects ---------------------------------------
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(self) -> list:
         """Get registered users.

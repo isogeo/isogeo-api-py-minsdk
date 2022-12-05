@@ -50,7 +50,6 @@ class ApiSpecification:
         # initialize
         super(ApiSpecification, self).__init__()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def listing(
         self,

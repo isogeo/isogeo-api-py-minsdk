@@ -63,7 +63,6 @@ class ApiSearch:
         super(ApiSearch, self).__init__()
 
     # -- Routes to search --------------------------------------------------------------
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def search(
         self,

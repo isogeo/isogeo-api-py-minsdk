@@ -55,7 +55,6 @@ class ApiAbout:
         # initialize
         super(ApiAbout, self).__init__()
 
-    @lru_cache()
     def api(self) -> str:
         """Get API version."""
         with Session() as req_session:
@@ -76,7 +75,6 @@ class ApiAbout:
         # end of method
         return req_api_version.json().get("version")
 
-    @lru_cache()
     def database(self) -> str:
         """Get database version."""
         with Session() as req_session:
@@ -99,7 +97,6 @@ class ApiAbout:
         # end of method
         return req_api_version.json().get("version")
 
-    @lru_cache()
     def authentication(self) -> str:
         """Get authentication server (ID) version."""
         with Session() as req_session:
@@ -126,7 +123,6 @@ class ApiAbout:
         # end of method
         return req_api_version.json().get("version")
 
-    @lru_cache()
     def scan(self) -> str:
         """Get daemon version."""
         with Session() as req_session:
@@ -146,7 +142,6 @@ class ApiAbout:
         # end of method
         return req_api_version.json().get("version")
 
-    @lru_cache()
     def services(self) -> str:
         """Get services.api version."""
         with Session() as req_session:

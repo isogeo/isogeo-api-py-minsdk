@@ -72,7 +72,6 @@ class ApiMetadata:
         # initialize
         super(ApiMetadata, self).__init__()
 
-    @lru_cache()
     @ApiDecorators._check_bearer_validity
     def get(self, metadata_id: str, include: tuple or str = ()) -> Metadata:
         """Get complete or partial metadata about a specific metadata (= resource).
@@ -413,7 +412,6 @@ class ApiMetadata:
         return req_metadata_dl_xml
 
     # -- Routes to manage subresources -------------------------------------------------
-    @lru_cache()
     def catalogs(self, metadata: Metadata) -> list:
         """Returns asssociated catalogs with a metadata. Just a shortcut.
 
