@@ -343,7 +343,7 @@ class ApiFeatureAttribute:
             - 'add': add the attributes except those with a duplicated name
             - 'update': update only the attributes with the same name
             - 'update_or_add': update the attributes with the same name or create
-        : param bool case_sensitive_matching: False to make featureattributes's name 
+        : param bool case_sensitive_matching: False to make featureattributes's name
         matching case-insensitive when mode == "update"
 
         :raises TypeError: if one metadata is not a vector or DTNG
