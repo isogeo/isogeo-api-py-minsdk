@@ -54,7 +54,7 @@ stages:
 
       - script: |
           python -m flake8  ./$(packageFolderName)/ --count --select=E9,F63,F7,F82 --show-source --statistics
-          python -m flake8  ./$(packageFolderName)/ --count --exit-zero --max-complexity=15 --max-line-length=100 --ignore E501,W505
+          python -m flake8  ./$(packageFolderName)/ --count --exit-zero --max-complexity=15 --max-line-length=100 --ignore E501,W505,C901,W503
         displayName: "Static code analisis (PEP8 conformance, imports...) with flake8"
 
       # save formatted code to use later avoiding git clone again
