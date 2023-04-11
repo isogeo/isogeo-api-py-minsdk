@@ -376,8 +376,12 @@ class ApiFeatureAttribute:
             pass
 
         # retrieving attributes in source and destination to compare and adapt
-        attributes_source = self.listing(metadata_source)
+        if metadata_source.featureAttributes and metadata_source.featureAttributes is not None and metadata_source.featureAttributes != []:
+            attributes_source = metadata_source.featureAttributes
+        else:
+            attributes_source = self.listing(metadata_source)
         attributes_dest = self.listing(metadata_dest)
+
         attributes_dest_names = [attr.get("name") for attr in attributes_dest]
         attributes_dest_names_low = [attr.get("name").lower() for attr in attributes_dest]
 
