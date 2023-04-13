@@ -376,7 +376,7 @@ class ApiFeatureAttribute:
             pass
 
         # retrieving attributes in source and destination to compare and adapt
-        if metadata_source.featureAttributes and metadata_source.featureAttributes is not None and metadata_source.featureAttributes != []:
+        if hasattr(metadata_source, "featureAttributes") and isinstance(metadata_source.featureAttributes, list) and len(metadata_source.featureAttributes):
             attributes_source = metadata_source.featureAttributes
         else:
             attributes_source = self.listing(metadata_source)
