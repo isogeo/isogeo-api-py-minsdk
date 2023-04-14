@@ -41,7 +41,11 @@ class ServiceLayer(object):
                 }
             ],
             "title": "string",
-            "type": "string
+            "type": "string,
+            "targetDataset": {
+                "format": string,
+                "name": string
+            }
         }
     """
 
@@ -52,12 +56,19 @@ class ServiceLayer(object):
         "noGeoDatasets": list,
         "name": str,
         "mimeTypes": str,
+        "targetDataset": dict,
         "titles": list,
         "title": str,
         "type": str,
     }
 
-    ATTR_CREA = {"name": str, "titles": list, "title": str, "type": str}
+    ATTR_CREA = {
+        "name": str,
+        "targetDataset": dict,
+        "titles": list,
+        "title": str,
+        "type": str
+    }
 
     ATTR_MAP = {"name": "id"}
 
@@ -70,6 +81,7 @@ class ServiceLayer(object):
         id: str = None,
         name: str = None,  # = id in API model but it's a reserved keyword in Python
         mimeTypes: str = None,
+        targetDataset: dict = None,  # only used with POST to indentify dataset metadata to associated the layer with
         titles: list = None,
         title: str = None,
         type: str = None,
@@ -85,6 +97,7 @@ class ServiceLayer(object):
         self._noGeoDatasets = None
         self._name = None
         self._mimeTypes = None
+        self._targetDataset = None
         self._titles = None
         self._title = None
         self._type = None
@@ -107,6 +120,8 @@ class ServiceLayer(object):
             self._name = name
         if mimeTypes is not None:
             self._mimeTypes = mimeTypes
+        if targetDataset is not None:
+            self._targetDataset = targetDataset
         if titles is not None:
             self._titles = titles
         if title is not None:
@@ -223,6 +238,30 @@ class ServiceLayer(object):
 
         self._mimeTypes = mimeTypes
 
+    # targetDataset
+    @property
+    def targetDataset(self) -> dict:
+        """Gets the targetDataset of this ServiceLayer.
+
+        :return: The targetDataset of this ServiceLayer.
+        :rtype: dict
+        """
+        return self._targetDataset
+
+    @targetDataset.setter
+    def targetDataset(self, targetDataset: dict):
+        """Sets the targetDataset of this ServiceLayer.
+
+        :param dict targetDataset: The targetDataset of this ServiceLayer.
+        """
+        if not isinstance(targetDataset, dict):
+            raise TypeError("'targetDataset' argument value must be a dict, not: {}".format(type(targetDataset)))
+        elif "name" not in targetDataset:
+            raise ValueError("'targetDataset' must have a key named 'name'.")
+        else:
+            pass
+        self._targetDataset = targetDataset
+
     # titles
     @property
     def titles(self) -> list:
@@ -285,6 +324,8 @@ class ServiceLayer(object):
                     type, " | ".join([e.name for e in ServiceLayerTypes])
                 )
             )
+        else:
+            pass
 
         self._type = type
 
