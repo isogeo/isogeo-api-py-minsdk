@@ -343,7 +343,7 @@ class ApiFeatureAttribute:
             - 'add': add the attributes except those with a duplicated name
             - 'update': update only the attributes with the same name
             - 'update_or_add': update the attributes with the same name or create
-        : param bool case_sensitive_matching: False to make featureattributes's name 
+        : param bool case_sensitive_matching: False to make featureattributes's name
         matching case-insensitive when mode == "update"
 
         :raises TypeError: if one metadata is not a vector or DTNG
@@ -376,8 +376,12 @@ class ApiFeatureAttribute:
             pass
 
         # retrieving attributes in source and destination to compare and adapt
-        attributes_source = self.listing(metadata_source)
+        if hasattr(metadata_source, "featureAttributes") and isinstance(metadata_source.featureAttributes, list) and len(metadata_source.featureAttributes):
+            attributes_source = metadata_source.featureAttributes
+        else:
+            attributes_source = self.listing(metadata_source)
         attributes_dest = self.listing(metadata_dest)
+
         attributes_dest_names = [attr.get("name") for attr in attributes_dest]
         attributes_dest_names_low = [attr.get("name").lower() for attr in attributes_dest]
 

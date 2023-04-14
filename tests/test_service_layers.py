@@ -168,7 +168,52 @@ class TestServiceLayers(unittest.TestCase):
         # add created layer to deletion
         self.li_fixtures_to_delete.append(layer_new)
 
-    def test_layers_association(self):
+    def test_layers_create_sophisticated(self):
+        """POST :groups/{metadata_uuid}/layers/}"""
+        # var
+        metadata_name = "increible_nombre_de_dtng_{}".format(self.discriminator)
+        metadata_no_geo_dataset = self.isogeo.metadata.create(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            metadata=Metadata(
+                type="noGeoDataset",
+                title="{} - {}".format(get_test_marker(), self.discriminator),
+                name=metadata_name
+            ),
+        )
+
+        layer_name = strftime("%Y-%m-%d_%H%M%S", gmtime())
+        layer_title = "{} - {}".format(get_test_marker(), self.discriminator)
+        layer_targetDataset = {
+            "name": metadata_no_geo_dataset.name
+        }
+        layer_type = "table"
+
+        # create object locally
+        layer_new = ServiceLayer(
+            name=layer_name,
+            title=layer_title,
+            targetDataset=layer_targetDataset,
+            type=layer_type
+        )
+
+        # create it online
+        layer_new = self.isogeo.metadata.layers.create(
+            metadata=self.isogeo.metadata.get(METADATA_TEST_SERVICE_FIXTURE_UUID),
+            layer=layer_new,
+        )
+
+        self.assertIsInstance(layer_new, ServiceLayer)
+        self.assertEqual(layer_new.name, layer_name)
+        self.assertEqual(layer_new.title, layer_title)
+        self.assertEqual(layer_new.type, layer_type)
+        self.assertTrue(hasattr(layer_new, "noGeoDatasets"))
+        self.assertTrue(any(dtng_md.get("_id") == metadata_no_geo_dataset._id for dtng_md in layer_new.noGeoDatasets))
+
+        # add created layer to deletion
+        self.li_fixtures_to_delete.append(layer_new)
+        self.isogeo.metadata.delete(metadata_no_geo_dataset._id)
+
+    def test_layers_association_vector_dataset(self):
         """POST
         :resources/{service_uuid}/layers/{layer_uuid}/dataset/{dataset_uuid}"""
         # fixtures
@@ -192,15 +237,10 @@ class TestServiceLayers(unittest.TestCase):
 
         # vars
         layer_name = "{} - {}".format(get_test_marker(), self.discriminator)
-        layer_title = [
-            {
-                "lang": "fr",
-                "value": "{} - {}".format(get_test_marker(), self.discriminator),
-            }
-        ]
+        layer_title = "{} - {}".format(get_test_marker(), self.discriminator)
 
         # create object locally
-        layer_new = ServiceLayer(name=layer_name, titles=layer_title)
+        layer_new = ServiceLayer(name=layer_name, title=layer_title)
 
         # create it online
         layer_created = self.isogeo.metadata.layers.create(
@@ -225,6 +265,8 @@ class TestServiceLayers(unittest.TestCase):
 
         # test results
         self.assertIsInstance(li_associated_layers[0].get("dataset"), dict)
+        self.assertIsInstance(li_associated_layers[0].get("datasets"), list)
+        self.assertTrue(any(dataset_md.get("_id") == metadata_dataset._id for dataset_md in li_associated_layers[0].get("datasets")))
         ServiceLayer(**li_associated_layers[0])
 
         # -- dissociate
@@ -235,6 +277,71 @@ class TestServiceLayers(unittest.TestCase):
         # add created layer to deletion
         self.isogeo.metadata.delete(metadata_service._id)
         self.isogeo.metadata.delete(metadata_dataset._id)
+
+    def test_layers_association_no_geo_dataset(self):
+        """POST
+        :resources/{service_uuid}/layers/{layer_uuid}/dataset/{dataset_uuid}"""
+        # fixtures
+        metadata_service = self.isogeo.services.create(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            service_type="ogc",
+            service_format="wms",
+            service_url="https://magosm.magellium.com/geoserver/ows?service=wms&version=1.3.0&request=GetCapabilities",
+            service_title="{}_{}".format(
+                hostname, strftime("%Y-%m-%d_%H%M%S", gmtime())
+            ),
+            check_exists=0,
+        )
+        metadata_no_geo_dataset = self.isogeo.metadata.create(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID,
+            metadata=Metadata(
+                type="noGeoDataset",
+                title="{} - {}".format(get_test_marker(), self.discriminator),
+            ),
+        )
+
+        # vars
+        layer_name = "{} - {}".format(get_test_marker(), self.discriminator)
+        layer_title = "{} - {}".format(get_test_marker(), self.discriminator)
+        layer_type = "table"
+
+        # create object locally
+        layer_new = ServiceLayer(name=layer_name, title=layer_title, type=layer_type)
+
+        # create it online
+        layer_created = self.isogeo.metadata.layers.create(
+            metadata=metadata_service, layer=layer_new
+        )
+
+        # associate it
+        self.isogeo.metadata.layers.associate_metadata(
+            service=metadata_service, layer=layer_created, dataset=metadata_no_geo_dataset
+        )
+
+        # check association result
+        service_updated = self.isogeo.metadata.get(
+            metadata_id=metadata_service._id, include=("layers",)
+        )
+
+        li_associated_layers = [
+            layer
+            for layer in service_updated.layers
+            if layer.get("noGeoDatasets") is not None
+        ]
+
+        # test results
+        self.assertIsInstance(li_associated_layers[0].get("noGeoDatasets"), list)
+        self.assertTrue(any(dataset_md.get("_id") == metadata_no_geo_dataset._id for dataset_md in li_associated_layers[0].get("noGeoDatasets")))
+        ServiceLayer(**li_associated_layers[0])
+
+        # -- dissociate
+        self.isogeo.metadata.layers.dissociate_metadata(
+            service=metadata_service, layer=layer_created, dataset=metadata_no_geo_dataset
+        )
+
+        # add created layer to deletion
+        self.isogeo.metadata.delete(metadata_service._id)
+        self.isogeo.metadata.delete(metadata_no_geo_dataset._id)
 
     # -- GET --
     def test_layers_listing(self):
