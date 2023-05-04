@@ -353,6 +353,8 @@ class ApiServiceLayer:
             "vectorDataset",
             "raster-dataset",
             "vector-dataset",
+            "noGeoDataset",
+            "no-geo-dataset",
         ):
             raise TypeError(
                 "Datasets association with layers routes are only available for metadata of datasets, not: {}".format(
@@ -448,6 +450,8 @@ class ApiServiceLayer:
             "vectorDataset",
             "raster-dataset",
             "vector-dataset",
+            "noGeoDataset",
+            "no-geo-dataset",
         ):
             raise TypeError(
                 "Datasets association with layers routes are only available for metadata of datasets, not: {}".format(

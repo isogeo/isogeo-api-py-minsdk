@@ -14,8 +14,8 @@
 # standard library
 import pprint
 
-# submodels
-# from isogeo_pysdk.models.resource import Resource as Metadata
+# package
+from isogeo_pysdk.enums import ServiceLayerTypes
 
 
 # #############################################################################
@@ -40,7 +40,12 @@ class ServiceLayer(object):
                     "value": "string"
                 }
             ],
-            "title": "string"
+            "title": "string",
+            "type": "string,
+            "targetDataset": {
+                "format": string,
+                "name": string
+            }
         }
     """
 
@@ -48,13 +53,22 @@ class ServiceLayer(object):
         "_id": str,
         "dataset": dict,
         "datasets": list,
+        "noGeoDatasets": list,
         "name": str,
         "mimeTypes": str,
+        "targetDataset": dict,
         "titles": list,
         "title": str,
+        "type": str,
     }
 
-    ATTR_CREA = {"name": str, "titles": list, "title": str}
+    ATTR_CREA = {
+        "name": str,
+        "targetDataset": dict,
+        "titles": list,
+        "title": str,
+        "type": str
+    }
 
     ATTR_MAP = {"name": "id"}
 
@@ -63,11 +77,14 @@ class ServiceLayer(object):
         _id: str = None,
         dataset: dict = None,
         datasets: list = None,
+        noGeoDatasets: list = None,
         id: str = None,
         name: str = None,  # = id in API model but it's a reserved keyword in Python
         mimeTypes: str = None,
+        targetDataset: dict = None,  # only used with POST to indentify dataset metadata to associated the layer with
         titles: list = None,
         title: str = None,
+        type: str = None,
         # additional parameters
         parent_resource: str = None,
     ):
@@ -77,10 +94,13 @@ class ServiceLayer(object):
         self.__id = None
         self._dataset = None
         self._datasets = None
+        self._noGeoDatasets = None
         self._name = None
         self._mimeTypes = None
+        self._targetDataset = None
         self._titles = None
         self._title = None
+        self._type = None
         # additional parameters
         self.parent_resource = parent_resource
 
@@ -94,14 +114,20 @@ class ServiceLayer(object):
             self._dataset = dataset
         if datasets is not None:
             self._datasets = datasets
+        if noGeoDatasets is not None:
+            self._noGeoDatasets = noGeoDatasets
         if name is not None:
             self._name = name
         if mimeTypes is not None:
             self._mimeTypes = mimeTypes
+        if targetDataset is not None:
+            self._targetDataset = targetDataset
         if titles is not None:
             self._titles = titles
         if title is not None:
             self._title = title
+        if type is not None:
+            self._type = type
         # additional parameters
         if parent_resource is not None:
             self._parent_resource = parent_resource
@@ -155,6 +181,25 @@ class ServiceLayer(object):
 
         self._datasets = datasets
 
+    # service layer associated no geo datasets
+    @property
+    def noGeoDatasets(self) -> list:
+        """Gets the noGeoDatasets used for Isogeo filters of this ServiceLayer.
+
+        :return: The noGeoDatasets of this ServiceLayer.
+        :rtype: list
+        """
+        return self._noGeoDatasets
+
+    @noGeoDatasets.setter
+    def noGeoDatasets(self, noGeoDatasets: list):
+        """Sets the noGeoDatasets used into Isogeo filters of this ServiceLayer.
+
+        :param list noGeoDatasets: the noGeoDatasets of this ServiceLayer.
+        """
+
+        self._noGeoDatasets = noGeoDatasets
+
     # service layer name
     @property
     def name(self) -> str:
@@ -193,6 +238,30 @@ class ServiceLayer(object):
 
         self._mimeTypes = mimeTypes
 
+    # targetDataset
+    @property
+    def targetDataset(self) -> dict:
+        """Gets the targetDataset of this ServiceLayer.
+
+        :return: The targetDataset of this ServiceLayer.
+        :rtype: dict
+        """
+        return self._targetDataset
+
+    @targetDataset.setter
+    def targetDataset(self, targetDataset: dict):
+        """Sets the targetDataset of this ServiceLayer.
+
+        :param dict targetDataset: The targetDataset of this ServiceLayer.
+        """
+        if not isinstance(targetDataset, dict):
+            raise TypeError("'targetDataset' argument value must be a dict, not: {}".format(type(targetDataset)))
+        elif "name" not in targetDataset:
+            raise ValueError("'targetDataset' must have a key named 'name'.")
+        else:
+            pass
+        self._targetDataset = targetDataset
+
     # titles
     @property
     def titles(self) -> list:
@@ -230,6 +299,35 @@ class ServiceLayer(object):
         """
 
         self._title = title
+
+    # type
+    @property
+    def type(self) -> str:
+        """Gets the type of this ServiceLayer.
+
+        :return: The type of this ServiceLayer.
+        :rtype: str
+        """
+        return self._type
+
+    @type.setter
+    def type(self, type: str):
+        """Sets the type of this ServiceLayer.
+
+        :param str type: The type of this ServiceLayer. Must be one of "group", "layer" or "table".
+        """
+
+        # check type value
+        if type not in ServiceLayerTypes.__members__:
+            raise ValueError(
+                "link type '{}' is not an accepted value. Must be one of: {}.".format(
+                    type, " | ".join([e.name for e in ServiceLayerTypes])
+                )
+            )
+        else:
+            pass
+
+        self._type = type
 
     # -- METHODS -----------------------------------------------------------------------
     def to_dict(self) -> dict:

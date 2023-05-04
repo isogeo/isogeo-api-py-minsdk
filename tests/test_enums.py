@@ -41,6 +41,7 @@ from isogeo_pysdk.enums import (
     MetadataTypes,
     MetadataSubresources,
     SearchGeoRelations,
+    ServiceLayerTypes,
     SessionStatus,
     ShareTypes,
     UserRoles,
@@ -211,6 +212,14 @@ class TestEnums(unittest.TestCase):
         self.assertTrue("contains" in SearchGeoRelations.__members__)
         self.assertFalse("Overlaps" in SearchGeoRelations.__members__)
         for i in SearchGeoRelations:
+            self.assertIsInstance(i.value, int)
+
+    def test_service_layer_type(self):
+        """Check service layer types values list."""
+        self.assertEqual(len(ServiceLayerTypes), 3)
+        self.assertTrue("group" in ServiceLayerTypes.__members__)
+        self.assertFalse("Group" in ServiceLayerTypes.__members__)
+        for i in LinkTypes:
             self.assertIsInstance(i.value, int)
 
     def test_session_status(self):

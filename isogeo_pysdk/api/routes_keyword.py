@@ -762,17 +762,20 @@ class ApiKeyword:
             workgroup_existing_keywords = self.workgroup(
                 workgroup_id=workgroup._id, whole_results=True
             ).results
-            # fetch all workgroup's keywords' tags
-            workgroup_existing_keywords = [
-                kw.get("_tag")
-                for kw in workgroup_existing_keywords
-                if kw.get("_tag").startswith("keyword:isogeo:") or kw.get("_tag").startswith("keyword:group-theme:")
-            ]
-
-            # then compare
-            if keyword._tag in workgroup_existing_keywords:
-                # return checker as true
-                return True, "already done"
+            if workgroup_existing_keywords is not None:
+                # fetch all workgroup's keywords' tags
+                workgroup_existing_keywords_tag = [
+                    kw.get("_tag")
+                    for kw in workgroup_existing_keywords
+                    if kw.get("_tag").startswith("keyword:isogeo:")
+                    or kw.get("_tag").startswith("keyword:group-theme:")
+                ]
+                # then compare
+                if keyword._tag in workgroup_existing_keywords_tag:
+                    # return checker as true
+                    return True, "already done"
+                else:
+                    pass
             else:
                 pass
         else:

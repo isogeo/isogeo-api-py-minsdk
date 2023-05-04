@@ -147,7 +147,7 @@ class TestFeatureAttributes(unittest.TestCase):
         # clean created metadata
         cls.isogeo.metadata.delete(cls.vector_metadata_fixture_created._id)
         cls.isogeo.metadata.delete(cls.dtng_metadata_fixture_created._id)
-        # clean created licenses
+        # clean created attributes
         if len(cls.li_fixtures_to_delete):
             for i in cls.li_fixtures_to_delete:
                 cls.isogeo.metadata.attributes.delete(attribute=i)
@@ -278,20 +278,101 @@ class TestFeatureAttributes(unittest.TestCase):
             self.assertEqual(attribute.parent_resource, i.get("parent_resource"))
 
     # -- SPECIAL ---------
-    def test_featureAttributes_import(self):
+    def test_featureAttributes_import_create_listing_source_featureAttributes(self):
         """Import feature-attributes from a metadata to another one.
         """
         # basic usage - FROM a metadata with feature-attributes TO one without
+        vector_metadata_fixture_existing_attributes = self.isogeo.metadata.attributes.listing(
+            self.vector_metadata_fixture_existing
+        )
         self.isogeo.metadata.attributes.import_from_dataset(
             metadata_source=self.vector_metadata_fixture_existing,
             metadata_dest=self.vector_metadata_fixture_created,
             mode="add",
+        )
+        vector_metadata_fixture_created_attributes = self.isogeo.metadata.attributes.listing(
+            self.vector_metadata_fixture_created
+        )
+        for fAttr_created in vector_metadata_fixture_created_attributes:
+            for key in fAttr_created:
+                if key != "_id":
+                    self.assertTrue(
+                        any(
+                            fAttr_existing.get(key) == fAttr_created.get(key) for fAttr_existing in vector_metadata_fixture_existing_attributes
+                        )
+                    )
+                else:
+                    pass
+        dtng_metadata_fixture_existing_attributes = self.isogeo.metadata.attributes.listing(
+            self.dtng_metadata_fixture_existing
         )
         self.isogeo.metadata.attributes.import_from_dataset(
             metadata_source=self.dtng_metadata_fixture_existing,
             metadata_dest=self.dtng_metadata_fixture_created,
             mode="add",
         )
+        dtng_metadata_fixture_created_attributes = self.isogeo.metadata.attributes.listing(
+            self.dtng_metadata_fixture_created
+        )
+        for fAttr_created in dtng_metadata_fixture_created_attributes:
+            for key in fAttr_created:
+                if key != "_id":
+                    self.assertTrue(
+                        any(
+                            fAttr_existing.get(key) == fAttr_created.get(key) for fAttr_existing in dtng_metadata_fixture_existing_attributes
+                        )
+                    )
+                else:
+                    pass
+
+    def test_featureAttributes_import_create_using_source_featureAttributes(self):
+        """Import feature-attributes from a metadata to another one.
+        """
+        # basic usage - FROM a metadata with feature-attributes TO one without
+        vector_metadata_fixture_existing_attributes = self.isogeo.metadata.attributes.listing(
+            self.vector_metadata_fixture_existing
+        )
+        self.vector_metadata_fixture_existing.featureAttributes = vector_metadata_fixture_existing_attributes
+        self.isogeo.metadata.attributes.import_from_dataset(
+            metadata_source=self.vector_metadata_fixture_existing,
+            metadata_dest=self.vector_metadata_fixture_created,
+            mode="add",
+        )
+        vector_metadata_fixture_created_attributes = self.isogeo.metadata.attributes.listing(
+            self.vector_metadata_fixture_created
+        )
+        for fAttr_created in vector_metadata_fixture_created_attributes:
+            for key in fAttr_created:
+                if key != "_id":
+                    self.assertTrue(
+                        any(
+                            fAttr_existing.get(key) == fAttr_created.get(key) for fAttr_existing in vector_metadata_fixture_existing_attributes
+                        )
+                    )
+                else:
+                    pass
+        dtng_metadata_fixture_existing_attributes = self.isogeo.metadata.attributes.listing(
+            self.dtng_metadata_fixture_existing
+        )
+        self.dtng_metadata_fixture_existing.featureAttributes = dtng_metadata_fixture_existing_attributes
+        self.isogeo.metadata.attributes.import_from_dataset(
+            metadata_source=self.dtng_metadata_fixture_existing,
+            metadata_dest=self.dtng_metadata_fixture_created,
+            mode="add",
+        )
+        dtng_metadata_fixture_created_attributes = self.isogeo.metadata.attributes.listing(
+            self.dtng_metadata_fixture_created
+        )
+        for fAttr_created in dtng_metadata_fixture_created_attributes:
+            for key in fAttr_created:
+                if key != "_id":
+                    self.assertTrue(
+                        any(
+                            fAttr_existing.get(key) == fAttr_created.get(key) for fAttr_existing in dtng_metadata_fixture_existing_attributes
+                        )
+                    )
+                else:
+                    pass
 
 
 # ##############################################################################

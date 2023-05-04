@@ -21,6 +21,6 @@
     ],
     "python.testing.unittestEnabled": false,
     // Specific extensions
-    "restructuredtext.confPath": "${workspaceFolder}\\docs",
     "autoDocstring.customTemplatePath": ".vscode\\docstring-config.mustache",
+    "esbonio.sphinx.confDir": "${workspaceFolder}\\docs",
 }
