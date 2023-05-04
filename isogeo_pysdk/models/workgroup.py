@@ -66,6 +66,8 @@ class Workgroup(object):
             },
             'hasCswClient': True,
             'hasScanFme': True,
+            'hasFlashScan': True,
+            'hasAGSScan': True,
             'keywordsCasing': 'lowercase',
             'limits': {
                 'canDiffuse': False,
@@ -104,6 +106,8 @@ class Workgroup(object):
         "contact": Contact,
         "hasCswClient": bool,
         "hasScanFme": bool,
+        "hasFlashScan": bool,
+        "hasAGSScan": bool,
         "limits": dict,
         "keywordsCasing": str,
         "metadataLanguage": str,
@@ -146,6 +150,8 @@ class Workgroup(object):
         contact: Contact = None,
         hasCswClient: bool = None,
         hasScanFme: bool = None,
+        hasFlashScan: bool = None,
+        hasAGSScan: bool = None,
         keywordsCasing: str = None,
         limits: dict = None,
         metadataLanguage: str = None,
@@ -166,6 +172,8 @@ class Workgroup(object):
         self._contact = Contact
         self._hasCswClient = None
         self._hasScanFme = None
+        self._hasFlashScan = None
+        self._hasAGSScan = None
         self._keywordsCasing = None
         self._limits = None
         self._metadataLanguage = None
@@ -195,6 +203,10 @@ class Workgroup(object):
             self._hasCswClient = hasCswClient
         if hasScanFme is not None:
             self._hasScanFme = hasScanFme
+        if hasFlashScan is not None:
+            self._hasFlashScan = hasFlashScan
+        if hasAGSScan is not None:
+            self._hasAGSScan = hasAGSScan
         if keywordsCasing is not None:
             self._keywordsCasing = keywordsCasing
         if limits is not None:
@@ -384,6 +396,44 @@ class Workgroup(object):
         """
 
         self._hasScanFme = hasScanFme
+
+    # hasFlashScan
+    @property
+    def hasFlashScan(self) -> bool:
+        """Find out if the group has access to the Scan.
+
+        :return: The hasFlashScan value of this Workgroup.
+        :rtype: bool
+        """
+        return self._hasFlashScan
+
+    @hasFlashScan.setter
+    def hasFlashScan(self, hasFlashScan: bool):
+        """Sets the access of the group to the Scan.
+
+        :param bool hasFlashScan: The hasFlashScan of this Workgroup. Must be one of GROUP_KIND_VALUES
+        """
+
+        self._hasFlashScan = hasFlashScan
+
+    # hasAGSScan
+    @property
+    def hasAGSScan(self) -> bool:
+        """Find out if the group has access to the Scan.
+
+        :return: The hasAGSScan value of this Workgroup.
+        :rtype: bool
+        """
+        return self._hasAGSScan
+
+    @hasAGSScan.setter
+    def hasAGSScan(self, hasAGSScan: bool):
+        """Sets the access of the group to the Scan.
+
+        :param bool hasAGSScan: The hasAGSScan of this Workgroup. Must be one of GROUP_KIND_VALUES
+        """
+
+        self._hasAGSScan = hasAGSScan
 
     # keywordsCasing
     @property
