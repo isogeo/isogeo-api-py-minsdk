@@ -25,7 +25,7 @@ python-dotenv==0.20.*
 pytest==7.2.*
 pytest-cov==3.0.*
 pytest-randomly==3.12.*
-pytest-rerunfailures==10.*
+pytest-rerunfailures==11.*
 tox==3.25.*
 
 # Documentation (for devs)
