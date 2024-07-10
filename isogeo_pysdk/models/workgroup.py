@@ -68,6 +68,7 @@ class Workgroup(object):
             'hasScanFme': True,
             'hasFlashScan': True,
             'hasAGSScan': True,
+            'baseMapUrl': 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             'keywordsCasing': 'lowercase',
             'limits': {
                 'canDiffuse': False,
@@ -108,6 +109,7 @@ class Workgroup(object):
         "hasScanFme": bool,
         "hasFlashScan": bool,
         "hasAGSScan": bool,
+        "baseMapUrl": str,
         "limits": dict,
         "keywordsCasing": str,
         "metadataLanguage": str,
@@ -152,6 +154,7 @@ class Workgroup(object):
         hasScanFme: bool = None,
         hasFlashScan: bool = None,
         hasAGSScan: bool = None,
+        baseMapUrl: str = None,
         keywordsCasing: str = None,
         limits: dict = None,
         metadataLanguage: str = None,
@@ -174,6 +177,7 @@ class Workgroup(object):
         self._hasScanFme = None
         self._hasFlashScan = None
         self._hasAGSScan = None
+        self._baseMapUrl = None
         self._keywordsCasing = None
         self._limits = None
         self._metadataLanguage = None
@@ -207,6 +211,8 @@ class Workgroup(object):
             self._hasFlashScan = hasFlashScan
         if hasAGSScan is not None:
             self._hasAGSScan = hasAGSScan
+        if baseMapUrl is not None:
+            self._baseMapUrl = baseMapUrl
         if keywordsCasing is not None:
             self._keywordsCasing = keywordsCasing
         if limits is not None:
@@ -322,7 +328,7 @@ class Workgroup(object):
     def canCreateLegacyServiceLinks(self, canCreateLegacyServiceLinks: str):
         """Sets the canCreateLegacyServiceLinks of this Workgroup.
 
-        :param str canCreateLegacyServiceLinks: The canCreateLegacyServiceLinks of this Workgroup. Must be one of GROUP_KIND_VALUES
+        :param str canCreateLegacyServiceLinks: The canCreateLegacyServiceLinks of this Workgroup.
         """
 
         self._canCreateLegacyServiceLinks = canCreateLegacyServiceLinks
@@ -373,7 +379,7 @@ class Workgroup(object):
     def hasCswClient(self, hasCswClient: bool):
         """Sets the hasCswClient of this Workgroup.
 
-        :param bool hasCswClient: The hasCswClient of this Workgroup. Must be one of GROUP_KIND_VALUES
+        :param bool hasCswClient: The hasCswClient of this Workgroup.
         """
 
         self._hasCswClient = hasCswClient
@@ -392,7 +398,7 @@ class Workgroup(object):
     def hasScanFme(self, hasScanFme: bool):
         """Sets the access of the group to the Scan.
 
-        :param bool hasScanFme: The hasScanFme of this Workgroup. Must be one of GROUP_KIND_VALUES
+        :param bool hasScanFme: The hasScanFme of this Workgroup.
         """
 
         self._hasScanFme = hasScanFme
@@ -411,7 +417,7 @@ class Workgroup(object):
     def hasFlashScan(self, hasFlashScan: bool):
         """Sets the access of the group to the Scan.
 
-        :param bool hasFlashScan: The hasFlashScan of this Workgroup. Must be one of GROUP_KIND_VALUES
+        :param bool hasFlashScan: The hasFlashScan of this Workgroup.
         """
 
         self._hasFlashScan = hasFlashScan
@@ -430,10 +436,29 @@ class Workgroup(object):
     def hasAGSScan(self, hasAGSScan: bool):
         """Sets the access of the group to the Scan.
 
-        :param bool hasAGSScan: The hasAGSScan of this Workgroup. Must be one of GROUP_KIND_VALUES
+        :param bool hasAGSScan: The hasAGSScan of this Workgroup.
         """
 
         self._hasAGSScan = hasAGSScan
+
+    # baseMapUrl
+    @property
+    def baseMapUrl(self) -> str:
+        """Gets the baseMapUrl of this Workgroup.
+
+        :return: The baseMapUrl value of this Workgroup.
+        :rtype: str
+        """
+        return self._baseMapUrl
+
+    @baseMapUrl.setter
+    def baseMapUrl(self, baseMapUrl: str):
+        """Sets the baseMapUrl of this Workgroup.
+
+        :param str baseMapUrl: The baseMapUrl of this Workgroup.
+        """
+
+        self._baseMapUrl = baseMapUrl
 
     # keywordsCasing
     @property
@@ -449,7 +474,7 @@ class Workgroup(object):
     def keywordsCasing(self, keywordsCasing: str):
         """Sets the keywordsCasing of this Workgroup.
 
-        :param str keywordsCasing: The keywordsCasing of this Workgroup. Must be one of GROUP_KIND_VALUES
+        :param str keywordsCasing: The keywordsCasing of this Workgroup.
         """
 
         self._keywordsCasing = keywordsCasing
@@ -487,7 +512,7 @@ class Workgroup(object):
     def metadataLanguage(self, metadataLanguage: str):
         """Sets the metadataLanguage of this Workgroup.
 
-        :param str metadataLanguage: The metadataLanguage of this Workgroup. Must be one of GROUP_KIND_VALUES
+        :param str metadataLanguage: The metadataLanguage of this Workgroup.
         """
 
         self._metadataLanguage = metadataLanguage
@@ -506,7 +531,7 @@ class Workgroup(object):
     def themeColor(self, themeColor: str):
         """Sets the themeColor of this Workgroup.
 
-        :param str themeColor: The themeColor of this Workgroup. Must be one of GROUP_KIND_VALUES
+        :param str themeColor: The themeColor of this Workgroup.
         """
 
         self._themeColor = themeColor
