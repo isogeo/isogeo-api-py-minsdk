@@ -250,7 +250,6 @@ stages:
 
     # see: https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#sep-python-upload
     - script: |
-        $(PYPI_TOKEN)
         python -m pip install -U pip twine --cache-dir ./.pipcache
         python -m twine upload ./dist/* -r pypi -u __token__ -p $(PYPI_TOKEN) --verbose --skip-existing
       continueOnError: true
