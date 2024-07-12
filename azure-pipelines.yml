@@ -140,7 +140,7 @@ stages:
 
 - stage: Deploy
   displayName: Build and Deploy
-  dependsOn: Test
+  dependsOn: Lint
   condition: succeeded()
 
   jobs:
