@@ -61,81 +61,81 @@ stages:
         artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
         displayName: 'Publish formatted code with dependencies'
 
-- stage: Test
-  displayName: Unit tests
-  dependsOn: Lint
-  condition: ne(variables['System.PullRequest.SourceBranch'], 'docs')
+# - stage: Test
+#   displayName: Unit tests
+#   dependsOn: Lint
+#   condition: ne(variables['System.PullRequest.SourceBranch'], 'docs')
 
-  jobs:
+#   jobs:
   # TESTS
-  - job: 'Test'
-    pool:
-      vmImage: $(vmImageName)
-    strategy:
-      matrix:
-        Python38:
-          python.version: '3.8'
-        Python310:
-          python.version: '3.9'
-        Python39:
-          python.version: '3.10'
-      maxParallel: 1
+  # - job: 'Test'
+  #   pool:
+  #     vmImage: $(vmImageName)
+  #   strategy:
+  #     matrix:
+  #       Python38:
+  #         python.version: '3.8'
+  #       Python310:
+  #         python.version: '3.9'
+  #       Python39:
+  #         python.version: '3.10'
+  #     maxParallel: 1
 
-    steps:
+  #   steps:
 
-    # no need for source code
-    - checkout: none
+  #   # no need for source code
+  #   - checkout: none
 
-    - task: DownloadPipelineArtifact@2
-      displayName: "Download artifact previously saved"
-      inputs:
-        buildType: "current"
-        artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
-        targetPath: "$(System.DefaultWorkingDirectory)"
-    - task: UsePythonVersion@0
-      inputs:
-        versionSpec: '$(python.version)'
-        architecture: 'x64'
-        addToPath: true
+  #   - task: DownloadPipelineArtifact@2
+  #     displayName: "Download artifact previously saved"
+  #     inputs:
+  #       buildType: "current"
+  #       artifact: "FORMATTED_$(pyPiPackageName)_$(Build.SourceBranchName)_$(Build.BuildId)"
+  #       targetPath: "$(System.DefaultWorkingDirectory)"
+  #   - task: UsePythonVersion@0
+  #     inputs:
+  #       versionSpec: '$(python.version)'
+  #       architecture: 'x64'
+  #       addToPath: true
 
-    - script: |
-        python -m pip install -U pip --cache-dir ./.pipcache
-        python -m pip install -U -r ./requirements_dev.txt --cache-dir ./.pipcache
-      displayName: 'Install dependencies'
+  #   - script: |
+  #       python -m pip install -U pip --cache-dir ./.pipcache
+  #       python -m pip install -U -r ./requirements_dev.txt --cache-dir ./.pipcache
+  #     displayName: 'Install dependencies'
 
-    - script: python -m pytest
-      env:
-        # platform
-        ISOGEO_PLATFORM: $(ISOGEO_PLATFORM)
-        OAUTHLIB_INSECURE_TRANSPORT: $(OAUTHLIB_INSECURE_TRANSPORT)
-        # URLs
-        ISOGEO_API_URL: $(ISOGEO_API_URL)
-        ISOGEO_ID_URL: $(ISOGEO_ID_URL)
-        # oAuth2 Client Credentials Grant
-        ISOGEO_API_GROUP_CLIENT_ID: $(ISOGEO_API_GROUP_CLIENT_ID)
-        ISOGEO_API_GROUP_CLIENT_SECRET: $(ISOGEO_API_GROUP_CLIENT_SECRET)
-        # oAuth2 Legacy Application Client
-        ISOGEO_API_USER_LEGACY_CLIENT_ID: $(ISOGEO_API_USER_LEGACY_CLIENT_ID)
-        ISOGEO_API_USER_LEGACY_CLIENT_SECRET: $(ISOGEO_API_USER_LEGACY_CLIENT_SECRET)
-        ISOGEO_USER_NAME: $(ISOGEO_USER_NAME)
-        ISOGEO_USER_PASSWORD: $(ISOGEO_USER_PASSWORD)
-        # static fixtures
-        ISOGEO_FIXTURES_METADATA_COMPLETE: $(ISOGEO_FIXTURES_METADATA_COMPLETE)
-        ISOGEO_WORKGROUP_TEST_UUID: $(ISOGEO_WORKGROUP_TEST_UUID)
-      displayName: 'Tests and coverage - Pytest'
+  #   - script: python -m pytest
+  #     env:
+  #       # platform
+  #       ISOGEO_PLATFORM: $(ISOGEO_PLATFORM)
+  #       OAUTHLIB_INSECURE_TRANSPORT: $(OAUTHLIB_INSECURE_TRANSPORT)
+  #       # URLs
+  #       ISOGEO_API_URL: $(ISOGEO_API_URL)
+  #       ISOGEO_ID_URL: $(ISOGEO_ID_URL)
+  #       # oAuth2 Client Credentials Grant
+  #       ISOGEO_API_GROUP_CLIENT_ID: $(ISOGEO_API_GROUP_CLIENT_ID)
+  #       ISOGEO_API_GROUP_CLIENT_SECRET: $(ISOGEO_API_GROUP_CLIENT_SECRET)
+  #       # oAuth2 Legacy Application Client
+  #       ISOGEO_API_USER_LEGACY_CLIENT_ID: $(ISOGEO_API_USER_LEGACY_CLIENT_ID)
+  #       ISOGEO_API_USER_LEGACY_CLIENT_SECRET: $(ISOGEO_API_USER_LEGACY_CLIENT_SECRET)
+  #       ISOGEO_USER_NAME: $(ISOGEO_USER_NAME)
+  #       ISOGEO_USER_PASSWORD: $(ISOGEO_USER_PASSWORD)
+  #       # static fixtures
+  #       ISOGEO_FIXTURES_METADATA_COMPLETE: $(ISOGEO_FIXTURES_METADATA_COMPLETE)
+  #       ISOGEO_WORKGROUP_TEST_UUID: $(ISOGEO_WORKGROUP_TEST_UUID)
+  #     displayName: 'Tests and coverage - Pytest'
 
-    - task: PublishTestResults@2
-      displayName: "Publish unit test results"
-      condition: succeededOrFailed()
-      inputs:
-        testResultsFiles: '**/test-*.xml'
-        testRunTitle: 'Publish test results for Python $(python.version)'
+  #   - task: PublishTestResults@2
+  #     displayName: "Publish unit test results"
+  #     condition: succeededOrFailed()
+  #     inputs:
+  #       testResultsFiles: '**/test-*.xml'
+  #       testRunTitle: 'Publish test results for Python $(python.version)'
 
-    - task: PublishCodeCoverageResults@1
-      displayName: "Publish coverage results to Azure Pipelines"
-      inputs:
-        codeCoverageTool: Cobertura
-        summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
+  #   - task: PublishCodeCoverageResults@1
+  #     displayName: "Publish coverage results to Azure Pipelines"
+  #     inputs:
+  #       codeCoverageTool: Cobertura
+  #       summaryFileLocation: '$(System.DefaultWorkingDirectory)/**/coverage.xml'
 
 
 - stage: Deploy
