@@ -248,16 +248,9 @@ stages:
         artifact: '$(pyPiPackageName)_$(Build.SourceVersion)'
         targetPath: "$(System.DefaultWorkingDirectory)/dist/"
 
-    - task: TwineAuthenticate@1
-      inputs:
-        pythonUploadServiceConnection: 'pypi'
-    
-    - script: $(PYPIRC_PATH)
-    - script: type $(PYPIRC_PATH)
-
     # see: https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#sep-python-upload
     - script: |
         python -m pip install -U pip twine --cache-dir ./.pipcache
-        python -m twine upload ./dist/* -r pypi --config-file $(PYPIRC_PATH) --verbose --skip-existing
+        python -m twine upload ./dist/* -r pypi -u __token__ -p $(PYPI_TOKEN) --verbose --skip-existing
       continueOnError: true
       displayName: "Upload to PyPi"
