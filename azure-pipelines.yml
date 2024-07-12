@@ -251,6 +251,9 @@ stages:
     - task: TwineAuthenticate@1
       inputs:
         pythonUploadServiceConnection: 'pypi'
+    
+    - script: $(PYPIRC_PATH)
+    - script: type $(PYPIRC_PATH)
 
     # see: https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#sep-python-upload
     - script: |
