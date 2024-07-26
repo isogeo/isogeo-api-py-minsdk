@@ -56,6 +56,7 @@ class ServiceLayer(object):
         "noGeoDatasets": list,
         "name": str,
         "mimeTypes": str,
+        "parentUid": str,
         "targetDataset": dict,
         "titles": list,
         "title": str,
@@ -64,6 +65,7 @@ class ServiceLayer(object):
 
     ATTR_CREA = {
         "name": str,
+        "parentUid": str,
         "targetDataset": dict,
         "titles": list,
         "title": str,
@@ -80,6 +82,7 @@ class ServiceLayer(object):
         noGeoDatasets: list = None,
         id: str = None,
         name: str = None,  # = id in API model but it's a reserved keyword in Python
+        parentUid: str = None,
         mimeTypes: str = None,
         targetDataset: dict = None,  # only used with POST to indentify dataset metadata to associated the layer with
         titles: list = None,
@@ -97,6 +100,7 @@ class ServiceLayer(object):
         self._noGeoDatasets = None
         self._name = None
         self._mimeTypes = None
+        self._parentUid = None
         self._targetDataset = None
         self._titles = None
         self._title = None
@@ -120,6 +124,8 @@ class ServiceLayer(object):
             self._name = name
         if mimeTypes is not None:
             self._mimeTypes = mimeTypes
+        if parentUid is not None:
+            self._parentUid = parentUid
         if targetDataset is not None:
             self._targetDataset = targetDataset
         if titles is not None:
@@ -237,6 +243,25 @@ class ServiceLayer(object):
         """
 
         self._mimeTypes = mimeTypes
+
+    # parentUid
+    @property
+    def parentUid(self) -> str:
+        """Gets the parentUid of this ServiceLayer.
+
+        :return: The parentUid of this ServiceLayer.
+        :rtype: str
+        """
+        return self._parentUid
+
+    @parentUid.setter
+    def parentUid(self, parentUid: str):
+        """Sets the parentUid of this ServiceLayer.
+
+        :param str parentUid: The parentUid of this ServiceLayer.
+        """
+
+        self._parentUid = parentUid
 
     # targetDataset
     @property
