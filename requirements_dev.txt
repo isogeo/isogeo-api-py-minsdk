@@ -24,7 +24,7 @@ flake8==3.9.*
 python-dotenv==0.20.*
 pytest==7.2.*
 pytest-cov==3.0.*
-pytest-randomly==3.12.*
+pytest-randomly==3.16.*
 pytest-rerunfailures==10.*
 tox==3.25.*
 
