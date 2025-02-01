@@ -16,7 +16,7 @@
 
 # Lint and formatting
 # -----------------------
-black==22.10.0
+black==25.1.0
 flake8==3.9.*
 
 # Tests
