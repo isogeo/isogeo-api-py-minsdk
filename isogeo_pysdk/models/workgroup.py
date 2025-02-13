@@ -67,6 +67,7 @@ class Workgroup(object):
             'hasCswClient': True,
             'hasScanFme': True,
             'hasFlashScan': True,
+            'hasNewScriptScan': True,
             'hasAGSScan': True,
             'baseMapUrl': 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
             'keywordsCasing': 'lowercase',
@@ -108,6 +109,7 @@ class Workgroup(object):
         "hasCswClient": bool,
         "hasScanFme": bool,
         "hasFlashScan": bool,
+        "hasNewScriptScan": bool,
         "hasAGSScan": bool,
         "baseMapUrl": str,
         "limits": dict,
@@ -153,6 +155,7 @@ class Workgroup(object):
         hasCswClient: bool = None,
         hasScanFme: bool = None,
         hasFlashScan: bool = None,
+        hasNewScriptScan: bool = None,
         hasAGSScan: bool = None,
         baseMapUrl: str = None,
         keywordsCasing: str = None,
@@ -176,6 +179,7 @@ class Workgroup(object):
         self._hasCswClient = None
         self._hasScanFme = None
         self._hasFlashScan = None
+        self._hasNewScriptScan = None
         self._hasAGSScan = None
         self._baseMapUrl = None
         self._keywordsCasing = None
@@ -209,6 +213,8 @@ class Workgroup(object):
             self._hasScanFme = hasScanFme
         if hasFlashScan is not None:
             self._hasFlashScan = hasFlashScan
+        if hasNewScriptScan is not None:
+            self._hasNewScriptScan = hasNewScriptScan
         if hasAGSScan is not None:
             self._hasAGSScan = hasAGSScan
         if baseMapUrl is not None:
@@ -421,6 +427,25 @@ class Workgroup(object):
         """
 
         self._hasFlashScan = hasFlashScan
+
+    # hasNewScriptScan
+    @property
+    def hasNewScriptScan(self) -> bool:
+        """Find out if the group has access to the Scan without FME.
+
+        :return: The hasNewScriptScan value of this Workgroup.
+        :rtype: bool
+        """
+        return self._hasNewScriptScan
+
+    @hasNewScriptScan.setter
+    def hasNewScriptScan(self, hasNewScriptScan: bool):
+        """Sets the access of the group to the Scan without FME.
+
+        :param bool hasNewScriptScan: The hasNewScriptScan of this Workgroup.
+        """
+
+        self._hasNewScriptScan = hasNewScriptScan
 
     # hasAGSScan
     @property
