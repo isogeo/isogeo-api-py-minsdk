@@ -13,7 +13,6 @@
 
 # Standard library
 import logging
-from functools import lru_cache
 
 # 3rd party
 from requests.exceptions import Timeout
@@ -65,7 +64,7 @@ class ApiWorkgroup:
     ) -> list:
         """Get workgroups.
 
-        :param list include: additionnal subresource to include in the response
+        :param list include: additional subresource to include in the response
         :param bool caching: option to cache the response
         """
         # handling request parameters
