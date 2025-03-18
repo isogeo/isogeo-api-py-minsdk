@@ -70,6 +70,8 @@ class Workgroup(object):
             'hasNewScriptScan': True,
             'hasAGSScan': True,
             'baseMapUrl': 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            'isMultilingual': False,
+            'availableLanguages': []
             'keywordsCasing': 'lowercase',
             'limits': {
                 'canDiffuse': False,
@@ -112,6 +114,8 @@ class Workgroup(object):
         "hasNewScriptScan": bool,
         "hasAGSScan": bool,
         "baseMapUrl": str,
+        "isMultilingual": bool,
+        "availableLanguages": list,
         "limits": dict,
         "keywordsCasing": str,
         "metadataLanguage": str,
@@ -158,6 +162,8 @@ class Workgroup(object):
         hasNewScriptScan: bool = None,
         hasAGSScan: bool = None,
         baseMapUrl: str = None,
+        isMultilingual: bool = None,
+        availableLanguages: list = None,
         keywordsCasing: str = None,
         limits: dict = None,
         metadataLanguage: str = None,
@@ -182,6 +188,8 @@ class Workgroup(object):
         self._hasNewScriptScan = None
         self._hasAGSScan = None
         self._baseMapUrl = None
+        self._isMultilingual = None
+        self._availableLanguages = None
         self._keywordsCasing = None
         self._limits = None
         self._metadataLanguage = None
@@ -219,6 +227,10 @@ class Workgroup(object):
             self._hasAGSScan = hasAGSScan
         if baseMapUrl is not None:
             self._baseMapUrl = baseMapUrl
+        if isMultilingual is not None:
+            self._isMultilingual = isMultilingual
+        if availableLanguages is not None:
+            self._availableLanguages = availableLanguages
         if keywordsCasing is not None:
             self._keywordsCasing = keywordsCasing
         if limits is not None:
@@ -485,6 +497,44 @@ class Workgroup(object):
 
         self._baseMapUrl = baseMapUrl
 
+    # isMultilingual
+    @property
+    def isMultilingual(self) -> bool:
+        """Find out if the group is multilingual.
+
+        :return: The isMultilingual value of this Workgroup.
+        :rtype: bool
+        """
+        return self._isMultilingual
+
+    @isMultilingual.setter
+    def isMultilingual(self, isMultilingual: bool):
+        """Sets the access of the group to multilingualism features.
+
+        :param bool isMultilingual: The isMultilingual of this Workgroup.
+        """
+
+        self._isMultilingual = isMultilingual
+
+    # availableLanguages
+    @property
+    def availableLanguages(self) -> list:
+        """Gets the availableLanguages of this Workgroup.
+
+        :return: The availableLanguages of this Workgroup.
+        :rtype: list
+        """
+        return self._availableLanguages
+
+    @availableLanguages.setter
+    def availableLanguages(self, availableLanguages: list):
+        """Sets the availableLanguages of this Workgroup.
+
+        :param list availableLanguages: to be set
+        """
+
+        self._availableLanguages = availableLanguages
+
     # keywordsCasing
     @property
     def keywordsCasing(self) -> str:
@@ -635,7 +685,6 @@ class Workgroup(object):
             elif isinstance(value, Contact):
                 for i in attr:
                     result[i] = value.to_dict_creation().get(i.split(".")[1])
-                # result[attr] = value.to_dict_creation().get(attr.split(".")[1])
             # handle other nested objects with 'to_dict' method
             elif hasattr(value, "to_dict"):
                 result[attr] = value.to_dict()
