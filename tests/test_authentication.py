@@ -162,26 +162,7 @@ class TestAuthentication(unittest.TestCase):
                 proxy="this_is_my_string_proxy",
             )
 
-    def test_successed_auth_legacy_prod(self):
-        """When a search works, check the response structure."""
-        isogeo = Isogeo(
-            auth_mode="user_legacy",
-            client_id=self.client_id,
-            client_secret=self.client_secret,
-            auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
-            platform="qa",
-        )
-        isogeo.connect(
-            username=environ.get("ISOGEO_USER_NAME"),
-            password=environ.get("ISOGEO_USER_PASSWORD"),
-        )
-        self.assertIsInstance(isogeo.token, dict)
-        self.assertEqual(len(isogeo.token), 5)
-
-        # close
-        isogeo.close()
-
-    def test_successed_auth_legacy_qa(self):
+    def test_succeeded_auth_legacy_qa(self):
         """Try to connect to QA platform."""
         isogeo = Isogeo(
             auth_mode="user_legacy",

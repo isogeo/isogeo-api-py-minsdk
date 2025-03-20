@@ -23,6 +23,7 @@ from socket import gethostname
 from sys import exit, _getframe
 from time import gmtime, strftime
 import unittest
+import urllib3
 
 # 3rd party
 from dotenv import load_dotenv
@@ -79,6 +80,10 @@ class TestDatasources(unittest.TestCase):
 
         # class vars and attributes
         cls.li_fixtures_to_delete = []
+
+        # ignore warnings related to the QA self-signed cert
+        if environ.get("ISOGEO_PLATFORM").lower() in ["qa", "custom"]:
+            urllib3.disable_warnings()
 
         # API connection
         if environ.get("ISOGEO_PLATFORM").lower() == "custom":
