@@ -190,8 +190,9 @@ class TestEnums(unittest.TestCase):
 
     def test_metadata_subresources(self):
         """Check metadata's subresources list."""
-        self.assertEqual(len(MetadataSubresources), 14)
+        self.assertEqual(len(MetadataSubresources), 15)
         self.assertTrue("tags" in MetadataSubresources.__members__)
+        self.assertTrue("translations" in MetadataSubresources.__members__)
         self.assertTrue(MetadataSubresources.has_value("feature-attributes"))
         self.assertFalse("Links" in MetadataSubresources.__members__)
         for i in MetadataSubresources:

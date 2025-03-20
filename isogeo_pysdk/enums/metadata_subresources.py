@@ -58,6 +58,7 @@ class MetadataSubresources(Enum):
     serviceLayers = "serviceLayers"
     specifications = "specifications"
     tags = "tags"
+    translations = "translations"
 
     @classmethod
     def has_value(cls, value):
