@@ -65,7 +65,6 @@ class Metadata(object):
                 "contact": {
                 "_created": "string (date-time)",
                 "_id": "string (uuid)",
-                "_modified": "string (date-time)",
                 "addressLine1": "string",
                 "addressLine2": "string",
                 "addressLine3": "string",
@@ -147,7 +146,8 @@ class Metadata(object):
             "height": "integer (int32)",
             "keywords": [
                 {}
-            ]
+            ],
+            "_fieldsLanguage": "string"
         }
     """
 
@@ -158,6 +158,7 @@ class Metadata(object):
         "_creator": dict,
         "_id": str,
         "_modified": str,
+        "_fieldsLanguage": str,
         "abstract": str,
         "collectionContext": str,
         "collectionMethod": str,
@@ -195,6 +196,7 @@ class Metadata(object):
         "thumbnailUrl": str,
         "title": str,
         "topologicalConsistency": str,
+        "translations": list,
         "type": str,
         "updateFrequency": str,
         "validFrom": str,
@@ -260,6 +262,7 @@ class Metadata(object):
         _creator: dict = None,
         _id: str = None,
         _modified: str = None,
+        _fieldsLanguage: str = None,
         abstract: str = None,
         collectionContext: str = None,
         collectionMethod: str = None,
@@ -297,6 +300,7 @@ class Metadata(object):
         thumbnailUrl: str = None,
         title: str = None,
         topologicalConsistency: str = None,
+        translations: list = None,
         type: str = None,
         updateFrequency: str = None,
         validFrom: str = None,
@@ -312,6 +316,7 @@ class Metadata(object):
         self.__creator = None
         self.__id = None
         self.__modified = None
+        self.__fieldsLanguage = None
         self._abstract = None
         self._collectionContext = None
         self._collectionMethod = None
@@ -349,6 +354,7 @@ class Metadata(object):
         self._thumbnailUrl = None
         self._title = None
         self._topologicalConsistency = None
+        self._translations = None
         self._type = None
         self._updateFrequency = None
         self._validFrom = None
@@ -367,6 +373,8 @@ class Metadata(object):
             self.__id = _id
         if _modified is not None:
             self.__modified = _modified
+        if _fieldsLanguage is not None:
+            self.__fieldsLanguage = _fieldsLanguage
         if abstract is not None:
             self._abstract = abstract
         if collectionContext is not None:
@@ -439,6 +447,8 @@ class Metadata(object):
             self._title = title
         if topologicalConsistency is not None:
             self._topologicalConsistency = topologicalConsistency
+        if translations is not None:
+            self._translations = translations
         if type is not None:
             self._type = type
         if updateFrequency is not None:
@@ -453,7 +463,7 @@ class Metadata(object):
         # warn about unsupported attributes
         # if len(kwargs):
         #     logger.warning(
-        #         "Folllowings fields were not expected and have been ignored. "
+        #         "Following fields were not expected and have been ignored. "
         #         "Maybe consider adding them to the model: {}.".format(
         #             " | ".join(kwargs.keys())
         #         )
@@ -465,7 +475,7 @@ class Metadata(object):
     def _abilities(self) -> list:
         """Gets the abilities of this Metadata.
 
-        :return: The abilities of this Metadata.
+        :return: The _abilities of this Metadata.
         :rtype: list
         """
         return self.__abilities
@@ -476,7 +486,7 @@ class Metadata(object):
         """Gets the creation datetime of the Metadata. Datetime format is:
         `%Y-%m-%dT%H:%M:%S+00:00`.
 
-        :return: The created of this Metadata.
+        :return: The _created of this Metadata.
         :rtype: str
         """
         return self.__created
@@ -487,10 +497,22 @@ class Metadata(object):
         """Gets the last modification datetime of this Metadata. Datetime format is:
         `%Y-%m-%dT%H:%M:%S+00:00`.
 
-        :return: The modified of this Metadata.
+        :return: The _modified of this Metadata.
         :rtype: str
         """
         return self.__modified
+
+    # _fieldsLanguage
+    @property
+    def _fieldsLanguage(self) -> str:
+        """Appears only in JSONs returned in response to a GET request about
+        multilingual group metadatas. Indicates the language the API has finally chosen
+        to return the title and abstract in.
+
+        :return: The _fieldsLanguage of this Metadata.
+        :rtype: str
+        """
+        return self.__fieldsLanguage
 
     # metadata owner
     @property
@@ -711,19 +733,19 @@ class Metadata(object):
 
     # envelope
     @property
-    def envelope(self) -> str:
+    def envelope(self) -> dict:
         """Gets the envelope of this Metadata.
 
         :return: The envelope of this Metadata.
-        :rtype: str
+        :rtype: dict
         """
         return self._envelope
 
     @envelope.setter
-    def envelope(self, envelope: str):
+    def envelope(self, envelope: dict):
         """Sets the  of this Metadata.
 
-        :param str envelope: to be set
+        :param dict envelope: to be set
         """
 
         self._envelope = envelope
@@ -863,19 +885,19 @@ class Metadata(object):
 
     # keywords
     @property
-    def keywords(self) -> str:
+    def keywords(self) -> list:
         """Gets the keywords of this Metadata.
 
         :return: The keywords of this Metadata.
-        :rtype: str
+        :rtype: list
         """
         return self._keywords
 
     @keywords.setter
-    def keywords(self, keywords: str):
+    def keywords(self, keywords: list):
         """Sets the  of this Metadata.
 
-        :param str keywords: to be set
+        :param list keywords: to be set
         """
 
         self._keywords = keywords
@@ -920,38 +942,38 @@ class Metadata(object):
 
     # limitations
     @property
-    def limitations(self) -> str:
+    def limitations(self) -> list:
         """Gets the limitations of this Metadata.
 
         :return: The limitations of this Metadata.
-        :rtype: str
+        :rtype: list
         """
         return self._limitations
 
     @limitations.setter
-    def limitations(self, limitations: str):
+    def limitations(self, limitations: list):
         """Sets the  of this Metadata.
 
-        :param str limitations: to be set
+        :param list limitations: to be set
         """
 
         self._limitations = limitations
 
     # links
     @property
-    def links(self) -> str:
+    def links(self) -> list:
         """Gets the links of this Metadata.
 
         :return: The links of this Metadata.
-        :rtype: str
+        :rtype: list
         """
         return self._links
 
     @links.setter
-    def links(self, links: str):
+    def links(self, links: list):
         """Sets the  of this Metadata.
 
-        :param str links: to be set
+        :param list links: to be set
         """
 
         self._links = links
@@ -1122,38 +1144,38 @@ class Metadata(object):
 
     # specifications
     @property
-    def specifications(self) -> str:
+    def specifications(self) -> list:
         """Gets the specifications of this Metadata.
 
         :return: The specifications of this Metadata.
-        :rtype: str
+        :rtype: list
         """
         return self._specifications
 
     @specifications.setter
-    def specifications(self, specifications: str):
-        """Sets the  of this Metadata.
+    def specifications(self, specifications: list):
+        """Sets the specifications of this Metadata.
 
-        :param str specifications: to be set
+        :param list specifications: to be set
         """
 
         self._specifications = specifications
 
     # tags
     @property
-    def tags(self) -> str:
+    def tags(self) -> list:
         """Gets the tags of this Metadata.
 
         :return: The tags of this Metadata.
-        :rtype: str
+        :rtype: list
         """
         return self._tags
 
     @tags.setter
-    def tags(self, tags: str):
+    def tags(self, tags: list):
         """Sets the  of this Metadata.
 
-        :param str tags: to be set
+        :param list tags: to be set
         """
 
         self._tags = tags
@@ -1205,6 +1227,25 @@ class Metadata(object):
         """
 
         self._topologicalConsistency = topologicalConsistency
+
+    # translations
+    @property
+    def translations(self) -> list:
+        """Gets the translations of this Metadata.
+
+        :return: The translations of this Metadata.
+        :rtype: list
+        """
+        return self._translations
+
+    @translations.setter
+    def translations(self, translations: list):
+        """Sets the translations of this Metadata.
+
+        :param list translations: to be set
+        """
+
+        self._translations = translations
 
     # type
     @property
