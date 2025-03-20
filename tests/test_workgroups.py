@@ -157,6 +157,46 @@ class TestWorkgroups(unittest.TestCase):
         # add created workgroup to deletion
         self.li_fixtures_to_delete.append(new_workgroup._id)
 
+    def test_workgroups_create_multilingual(self):
+        """POST :groups/}"""
+        # var
+        workgroup_name = "{} - {}".format(get_test_marker(), self.discriminator)
+
+        # create local object
+        contact_owner = Contact(
+            name=workgroup_name, email="test@isogeo.com"
+        )  # to create a workgroup, a contact is required
+
+        # first test, specifying no metadataLanguage and no availableLanguages
+        workgroup = Workgroup(contact=contact_owner, isMultilingual=True)
+        with self.assertRaises(ValueError):
+            self.isogeo.workgroup.create(workgroup=workgroup, check_multilingualism=1)
+        # second test, specifying no metadataLanguage but availableLanguages
+        workgroup = Workgroup(
+            contact=contact_owner,
+            isMultilingual=True,
+            availableLanguages=[{"iid": 1, "code": "en"}]
+        )
+        with self.assertRaises(ValueError):
+            self.isogeo.workgroup.create(workgroup=workgroup, check_multilingualism=1)
+        # third test, specifying metadataLanguage that does not belong to availableLanguages
+        workgroup = Workgroup(
+            contact=contact_owner,
+            isMultilingual=True,
+            availableLanguages=[{"iid": 1, "code": "en"}],
+            metadataLanguage="fr"
+        )
+        with self.assertRaises(ValueError):
+            self.isogeo.workgroup.create(workgroup=workgroup, check_multilingualism=1)
+        # fourth test, specifying metadataLanguage but no availableLanguages
+        workgroup = Workgroup(
+            contact=contact_owner,
+            isMultilingual=True,
+            metadataLanguage="fr"
+        )
+        with self.assertRaises(ValueError):
+            self.isogeo.workgroup.create(workgroup=workgroup, check_multilingualism=1)
+
     # def test_workgroups_create_complete(self):
     #     """POST :groups/}"""
     #     # to create a workgroup, a contact is required
@@ -307,40 +347,80 @@ class TestWorkgroups(unittest.TestCase):
             )
 
     # -- PUT/PATCH --
-    # def test_workgroups_update(self):
-    #     """PUT :groups/{workgroup_uuid}"""
-    #     # create local object
-    #     contact_owner = Contact(
-    #         name=get_test_marker()
-    #     )  # to create a workgroup, a contact is required
-    #     workgroup_local = Workgroup(contact=contact_owner)
+    def test_workgroups_update(self):
+        """PUT :groups/{workgroup_uuid}"""
+        workgroup_name = get_test_marker()
+        # create local object
+        contact_owner = Contact(
+            name=workgroup_name, email="test@isogeo.com"
+        )  # to create a workgroup, a contact is required
+        workgroup_local = Workgroup(contact=contact_owner)
 
-    #     workgroup_fixture = self.isogeo.workgroup.create(
-    #         workgroup=workgroup_local,
-    #         check_exists=0,
-    #     )
+        workgroup_fixture = self.isogeo.workgroup.create(
+            workgroup=workgroup_local,
+            check_exists=0,
+        )
 
-    #     # modify local object
-    #     workgroup_fixture.contact["name"] = "{} - {}".format(
-    #         get_test_marker(), self.discriminator
-    #     )
+        # modify local object
+        workgroup_fixture.hasAGSScan = True
+        workgroup_fixture.hasCswClient = True
+        workgroup_fixture.hasFlashScan = True
+        workgroup_fixture.hasNewScriptScan = True
+        workgroup_fixture.hasScanFme = True
+        workgroup_fixture.areKeywordsRestricted = False
+        workgroup_fixture.metadataLanguage = "fr"
 
-    #     # update the online workgroup
-    #     workgroup_fixture = self.isogeo.workgroup.update(
-    #         workgroup_fixture
-    #     )
+        # update the online workgroup
+        workgroup_fixture = self.isogeo.workgroup.update(workgroup_fixture)
+        # check if the change is effective
+        workgroup_fixture_updated = self.isogeo.workgroup.get(workgroup_fixture._id)
 
-    #     # check if the change is effective
-    #     workgroup_fixture_updated = self.isogeo.workgroup.get(
-    #         workgroup_fixture._id
-    #     )
-    #     self.assertEqual(
-    #         workgroup_fixture_updated.contact.get("name"),
-    #         "{} - {}".format(get_test_marker(), self.discriminator),
-    #     )
+        self.assertTrue(workgroup_fixture_updated.hasAGSScan)
+        self.assertTrue(workgroup_fixture.hasCswClient)
+        self.assertTrue(workgroup_fixture.hasFlashScan)
+        self.assertTrue(workgroup_fixture.hasNewScriptScan)
+        self.assertTrue(workgroup_fixture.hasScanFme)
+        self.assertFalse(workgroup_fixture.areKeywordsRestricted)
+        self.assertEqual(workgroup_fixture.metadataLanguage, "fr")
 
-    #     # add created workgroup to deletion
-    #     self.li_fixtures_to_delete.append(workgroup_fixture_updated._id)
+        # add created workgroup to deletion
+        self.li_fixtures_to_delete.append(workgroup_fixture_updated._id)
+
+    def test_workgroups_update_multilingual(self):
+        """PUT :groups/{workgroup_uuid}"""
+        workgroup_name = get_test_marker()
+        # create local object
+        contact_owner = Contact(
+            name=workgroup_name, email="test@isogeo.com"
+        )  # to create a workgroup, a contact is required
+        workgroup_local = Workgroup(contact=contact_owner)
+
+        workgroup_fixture = self.isogeo.workgroup.create(
+            workgroup=workgroup_local,
+            check_exists=0,
+        )
+
+        # modify local object
+        workgroup_fixture.isMultilingual = True
+
+        # first test, specifying no metadataLanguage and no availableLanguages
+        with self.assertRaises(ValueError):
+            self.isogeo.workgroup.update(workgroup=workgroup_fixture, check_multilingualism=1)
+        # second test, specifying no metadataLanguage but availableLanguages
+        workgroup_fixture.availableLanguages = [{"iid": 1, "code": "en"}]
+        with self.assertRaises(ValueError):
+            self.isogeo.workgroup.update(workgroup=workgroup_fixture, check_multilingualism=1)
+        # third test, specifying metadataLanguage that does not belong to availableLanguages
+        workgroup_fixture.availableLanguages = "fr"
+        with self.assertRaises(ValueError):
+            self.isogeo.workgroup.update(workgroup=workgroup_fixture, check_multilingualism=1)
+        # fourth test, specifying metadataLanguage but no availableLanguages
+        workgroup_fixture.availableLanguages = []
+        with self.assertRaises(ValueError):
+            self.isogeo.workgroup.update(workgroup=workgroup_fixture, check_multilingualism=1)
+
+        # add created workgroup to deletion
+        self.li_fixtures_to_delete.append(workgroup_fixture._id)
 
 
 # ##############################################################################

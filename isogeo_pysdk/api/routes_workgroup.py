@@ -57,6 +57,28 @@ class ApiWorkgroup:
         # initialize
         super(ApiWorkgroup, self).__init__()
 
+    def check_multilingualism_attr(self, workgroup: Workgroup):
+        is_ok = True
+        error_message = ""
+        if workgroup.isMultilingual:
+            if not workgroup.availableLanguages:
+                error_message = "Workgroup.availableLanguages is required and could not be None if Workgroup.isMultilingual = True"
+                is_ok = False
+            elif not len(workgroup.availableLanguages):
+                error_message = "Workgroup.availableLanguages could not be empty if Workgroup.isMultilingual = True"
+                is_ok = False
+            elif workgroup.metadataLanguage is None:
+                error_message = "Workgroup.metadataLanguage is required and could not be None if Workgroup.isMultilingual = True"
+                is_ok = False
+            else:
+                availableLanguages_codes = [lang.get("code") for lang in workgroup.availableLanguages]
+                if workgroup.metadataLanguage not in availableLanguages_codes:
+                    error_message = "Wrong Workgroup.metadataLanguage value '{}', should be one of Workgroup.avaiLableLanguages: {}".format(
+                        workgroup.metadataLanguage, ", ".join(availableLanguages_codes)
+                    )
+                    is_ok = False
+        return is_ok, error_message
+
     # -- Routes to manage the  Workgroup objects ---------------------------------------
     @ApiDecorators._check_bearer_validity
     def listing(
@@ -148,7 +170,7 @@ class ApiWorkgroup:
         return Workgroup(**req_workgroup.json())
 
     @ApiDecorators._check_bearer_validity
-    def create(self, workgroup: Workgroup, check_exists: int = 1) -> Workgroup:
+    def create(self, workgroup: Workgroup, check_exists: int = 1, check_multilingualism: int = 0) -> Workgroup:
         """Add a new workgroup to Isogeo.
 
         :param class workgroup: Workgroup model object to create
@@ -162,7 +184,7 @@ class ApiWorkgroup:
             workgroup.contact, Contact
         ):
             raise ValueError(
-                "`workgroup.contact.name`is required to create a workgroup."
+                "`workgroup.contact.name` is required to create a workgroup."
             )
 
         # check if workgroup already exists in workgroup
@@ -180,6 +202,12 @@ class ApiWorkgroup:
                 return False
         else:
             pass
+
+        # check metadataLanguage for multilingualism
+        if check_multilingualism:
+            check_multilingualism_attr = self.check_multilingualism_attr(workgroup)
+            if not check_multilingualism_attr[0]:
+                raise ValueError(check_multilingualism_attr[1])
 
         # URL
         url_workgroup_create = self.utils.get_request_base_url(route="groups")
@@ -279,7 +307,7 @@ class ApiWorkgroup:
         return req_workgroup_exists
 
     @ApiDecorators._check_bearer_validity
-    def update(self, workgroup: Workgroup, caching: bool = 1) -> Workgroup:
+    def update(self, workgroup: Workgroup, caching: bool = 1, check_multilingualism: int = 0) -> Workgroup:
         """Update a workgroup owned by a workgroup.
 
         :param class workgroup: Workgroup model object to update
@@ -292,6 +320,12 @@ class ApiWorkgroup:
             )
         else:
             pass
+
+        # check metadataLanguage for multilingualism
+        if check_multilingualism:
+            check_multilingualism_attr = self.check_multilingualism_attr(workgroup)
+            if not check_multilingualism_attr[0]:
+                raise ValueError(check_multilingualism_attr[1])
 
         # URL
         url_workgroup_update = self.utils.get_request_base_url(
