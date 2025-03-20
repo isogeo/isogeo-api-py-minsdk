@@ -150,7 +150,7 @@ class TestMetadatasNoGeo(unittest.TestCase):
     # -- TESTS ---------------------------------------------------------
     # -- MODEL --
     def test_metadatas_title_or_name(self):
-        """Model integrated method to retrive title or name."""
+        """Model integrated method to retrieve title or name."""
         # title but no name
         md_title_no_name = Metadata(
             title="BD Topo® - My title really inspires the masses - Villenave d'Ornon"
