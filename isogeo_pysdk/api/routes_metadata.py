@@ -12,7 +12,7 @@
 
 # Standard library
 import logging
-from functools import lru_cache
+from typing import Union
 
 # 3rd party
 from requests.models import Response
@@ -73,7 +73,7 @@ class ApiMetadata:
         super(ApiMetadata, self).__init__()
 
     @ApiDecorators._check_bearer_validity
-    def get(self, metadata_id: str, include: tuple or str = ()) -> Metadata:
+    def get(self, metadata_id: str, include: Union[tuple, str] = (), lang: str = None) -> Metadata:
         """Get complete or partial metadata about a specific metadata (= resource).
 
         :param str metadata_id: metadata UUID to get
@@ -99,7 +99,7 @@ class ApiMetadata:
 
         # URL
         url_resource = self.utils.get_request_base_url(
-            route="resources/{}".format(metadata_id)
+            route="resources/{}".format(metadata_id), lang=lang
         )
 
         # request
