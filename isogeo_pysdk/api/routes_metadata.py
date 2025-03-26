@@ -122,7 +122,7 @@ class ApiMetadata:
 
     @ApiDecorators._check_bearer_validity
     def create(
-        self, workgroup_id: str, metadata: Metadata, return_basic_or_complete: int = 0
+        self, workgroup_id: str, metadata: Metadata, return_basic_or_complete: int = 0, lang: str = None
     ) -> Metadata:
         """Add a new metadata to a workgroup.
 
@@ -175,7 +175,7 @@ class ApiMetadata:
 
         # build request url
         url_metadata_create = self.utils.get_request_base_url(
-            route="groups/{}/resources".format(workgroup_id)
+            route="groups/{}/resources".format(workgroup_id), lang=lang
         )
 
         # request
