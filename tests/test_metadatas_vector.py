@@ -259,6 +259,120 @@ class TestMetadatasVector(unittest.TestCase):
         self.assertEqual(md_as_dict.get("created"), metadata.created)
         self.assertEqual(md_as_dict.get("modified"), metadata.modified)
 
+    def test_metadatas_create_basic(self):
+        """POST :groups/{group_uuid}/resources"""
+        # initiate metadata local object
+        metadata_toCreate = Metadata(type="vectorDataset")
+        metadata_title = "{} - {}".format(get_test_marker(), self.discriminator)
+        workgroup_id = WORKGROUP_TEST_FIXTURE_UUID
+
+        # assert ValueError is raised because there is no title
+        with self.assertRaises(ValueError):
+            self.isogeo.metadata.create(
+                workgroup_id=workgroup_id,
+                metadata=metadata_toCreate
+            )
+
+        # add a title to local object
+        metadata_toCreate.title = metadata_title
+
+        # create it online
+        created_metadata = self.isogeo.metadata.create(
+            workgroup_id=workgroup_id,
+            metadata=metadata_toCreate
+        )
+
+        # checks
+        self.assertIsInstance(created_metadata, Metadata)
+
+        self.assertTrue(hasattr(created_metadata, "_id"))
+        self.assertIsNot(created_metadata._id, None)
+        self.assertIsInstance(created_metadata._id, str)
+        self.assertIsNot(len(created_metadata._id), 0)
+
+        self.li_fixtures_to_delete.append(created_metadata._id)
+
+        self.assertTrue(hasattr(created_metadata, "_created"))
+        self.assertIsNot(created_metadata._created, None)
+        self.assertIsInstance(created_metadata._created, str)
+        self.assertIsNot(len(created_metadata._created), 0)
+
+        self.assertTrue(hasattr(created_metadata, "_creator"))
+        self.assertIsNot(created_metadata._creator, None)
+        self.assertIsInstance(created_metadata._creator, dict)
+        self.assertIsNot(len(created_metadata._creator), 0)
+
+        self.assertTrue(hasattr(created_metadata, "_modified"))
+        self.assertIsNot(created_metadata._modified, None)
+        self.assertIsInstance(created_metadata._modified, str)
+        self.assertIsNot(len(created_metadata._modified), 0)
+
+        self.assertEqual(created_metadata.editionProfile, "manual")
+        self.assertEqual(created_metadata.title, metadata_title)
+
+    def test_metadatas_create_complete(self):
+        """POST :groups/{group_uuid}/resources"""
+        # initiate metadata local object
+        metadata_toCreate = Metadata(type="vectorDataset")
+        metadata_title = "{} - {}".format(get_test_marker(), self.discriminator)
+        workgroup_id = WORKGROUP_TEST_FIXTURE_UUID
+
+        # assert ValueError is raised because there is no title
+        with self.assertRaises(ValueError):
+            self.isogeo.metadata.create(
+                workgroup_id=workgroup_id,
+                metadata=metadata_toCreate,
+                return_basic_or_complete=1
+            )
+
+        # add a title to local object
+        metadata_toCreate.title = metadata_title
+
+        # create it online
+        created_metadata = self.isogeo.metadata.create(
+            workgroup_id=workgroup_id,
+            metadata=metadata_toCreate,
+            return_basic_or_complete=1
+        )
+
+        # checks
+        self.assertIsInstance(created_metadata, Metadata)
+
+        self.assertTrue(hasattr(created_metadata, "_id"))
+        self.assertIsNot(created_metadata._id, None)
+        self.assertIsInstance(created_metadata._id, str)
+        self.assertIsNot(len(created_metadata._id), 0)
+
+        self.li_fixtures_to_delete.append(created_metadata._id)
+
+        self.assertTrue(hasattr(created_metadata, "_created"))
+        self.assertIsNot(created_metadata._created, None)
+        self.assertIsInstance(created_metadata._created, str)
+        self.assertIsNot(len(created_metadata._created), 0)
+
+        self.assertTrue(hasattr(created_metadata, "_creator"))
+        self.assertIsNot(created_metadata._creator, None)
+        self.assertIsInstance(created_metadata._creator, dict)
+        self.assertIsNot(len(created_metadata._creator), 0)
+
+        self.assertTrue(hasattr(created_metadata, "_modified"))
+        self.assertIsNot(created_metadata._modified, None)
+        self.assertIsInstance(created_metadata._modified, str)
+        self.assertIsNot(len(created_metadata._modified), 0)
+
+        self.assertTrue(hasattr(created_metadata, "groupId"))
+        self.assertIsNot(created_metadata.groupId, None)
+        self.assertIsInstance(created_metadata.groupId, str)
+        self.assertEqual(created_metadata.groupId, created_metadata._creator.get("_id"))
+
+        self.assertTrue(hasattr(created_metadata, "groupName"))
+        self.assertIsNot(created_metadata.groupName, None)
+        self.assertIsInstance(created_metadata.groupName, str)
+        self.assertEqual(created_metadata.groupName, created_metadata._creator.get("contact").get("name"))
+
+        self.assertEqual(created_metadata.editionProfile, "manual")
+
+        self.assertEqual(created_metadata.title, metadata_title)
     def test_metadatas_update(self):
         """PUT :resources/{metadata_uuid}"""
         # retrieve fixture metadata
