@@ -48,6 +48,7 @@ hostname = gethostname()
 # API access
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+WORKGROUP_TEST_FIXTURE_UUID_ML = environ.get("ISOGEO_WORKGROUP_TEST_UUID_ML")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -157,7 +158,7 @@ class TestWorkgroups(unittest.TestCase):
         # add created workgroup to deletion
         self.li_fixtures_to_delete.append(new_workgroup._id)
 
-    def test_workgroups_create_multilingual(self):
+    def test_workgroups_create_checking_multilingualism(self):
         """POST :groups/}"""
         # var
         workgroup_name = "{} - {}".format(get_test_marker(), self.discriminator)
@@ -285,6 +286,34 @@ class TestWorkgroups(unittest.TestCase):
 
         self.assertIsInstance(workgroup, Workgroup)
 
+    def test_workgroup_detailed_multilingual(self):
+        """GET :groups/{workgroup_uuid}"""
+        # retrieve multilingual workgroup
+        multilingual_workgroup = self.isogeo.workgroup.get(WORKGROUP_TEST_FIXTURE_UUID_ML)
+
+        self.assertIsInstance(multilingual_workgroup, Workgroup)
+
+        self.assertTrue(hasattr(multilingual_workgroup, "metadataLanguage"))
+        self.assertIsNot(multilingual_workgroup.metadataLanguage, None)
+        self.assertIsInstance(multilingual_workgroup.metadataLanguage, str)
+        self.assertIsNot(len(multilingual_workgroup.metadataLanguage), 0)
+
+        self.assertTrue(hasattr(multilingual_workgroup, "isMultilingual"))
+        self.assertIsNot(multilingual_workgroup.isMultilingual, None)
+        self.assertIsInstance(multilingual_workgroup.isMultilingual, bool)
+        self.assertTrue(multilingual_workgroup.isMultilingual)
+
+        self.assertTrue(hasattr(multilingual_workgroup, "availableLanguages"))
+        self.assertIsNot(multilingual_workgroup.availableLanguages, None)
+        self.assertIsInstance(multilingual_workgroup.availableLanguages, list)
+        self.assertIsNot(len(multilingual_workgroup.availableLanguages), 0)
+        self.assertTrue(
+            all(
+                "code" in language and isinstance(language.get("code"), str)
+                for language in multilingual_workgroup.availableLanguages
+            )
+        )
+
     def test_workgroup_coordinate_systems(self):
         """GET :groups/{workgroup_uuid}/coordinate-systems."""
         # get
@@ -387,6 +416,39 @@ class TestWorkgroups(unittest.TestCase):
         self.li_fixtures_to_delete.append(workgroup_fixture_updated._id)
 
     def test_workgroups_update_multilingual(self):
+
+        # retrieve multilingual workgroup
+        multilingual_workgroup = self.isogeo.workgroup.get(WORKGROUP_TEST_FIXTURE_UUID_ML)
+        initial_metadataLanguage = multilingual_workgroup.metadataLanguage
+
+        self.assertIsInstance(multilingual_workgroup, Workgroup)
+
+        self.assertTrue(hasattr(multilingual_workgroup, "metadataLanguage"))
+        self.assertIsNot(multilingual_workgroup.metadataLanguage, None)
+        self.assertIsInstance(multilingual_workgroup.metadataLanguage, str)
+        self.assertIsNot(len(multilingual_workgroup.metadataLanguage), 0)
+
+        multilingual_workgroup.metadataLanguage = "pt"
+        with self.assertRaises(ValueError):
+            self.isogeo.workgroup.update(workgroup=multilingual_workgroup, check_multilingualism=1)
+        multilingual_workgroup.metadataLanguage = None
+        with self.assertRaises(ValueError):
+            self.isogeo.workgroup.update(workgroup=multilingual_workgroup, check_multilingualism=1)
+
+        new_metadataLanguage = "fr" if initial_metadataLanguage != "fr" else "en"
+        multilingual_workgroup.metadataLanguage = new_metadataLanguage
+        self.isogeo.workgroup.update(workgroup=multilingual_workgroup, check_multilingualism=1)
+        multilingual_workgroup_updated = self.isogeo.workgroup.get(multilingual_workgroup._id)
+
+        self.assertEqual(multilingual_workgroup_updated.metadataLanguage, new_metadataLanguage)
+
+        multilingual_workgroup.metadataLanguage = initial_metadataLanguage
+        self.isogeo.workgroup.update(workgroup=multilingual_workgroup, check_multilingualism=1)
+        multilingual_workgroup_reset = self.isogeo.workgroup.get(multilingual_workgroup._id)
+
+        self.assertEqual(multilingual_workgroup_reset.metadataLanguage, initial_metadataLanguage)
+
+    def test_workgroups_update_checking_multilingualism(self):
         """PUT :groups/{workgroup_uuid}"""
         workgroup_name = get_test_marker()
         # create local object
@@ -399,10 +461,14 @@ class TestWorkgroups(unittest.TestCase):
             workgroup=workgroup_local,
             check_exists=0,
         )
+        # add created workgroup to deletion
+        self.li_fixtures_to_delete.append(workgroup_fixture._id)
+
+        self.assertTrue(hasattr(workgroup_fixture, "metadataLanguage"))
+        self.assertIsNone(workgroup_fixture.metadataLanguage)
 
         # modify local object
         workgroup_fixture.isMultilingual = True
-
         # first test, specifying no metadataLanguage and no availableLanguages
         with self.assertRaises(ValueError):
             self.isogeo.workgroup.update(workgroup=workgroup_fixture, check_multilingualism=1)
@@ -411,16 +477,13 @@ class TestWorkgroups(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.isogeo.workgroup.update(workgroup=workgroup_fixture, check_multilingualism=1)
         # third test, specifying metadataLanguage that does not belong to availableLanguages
-        workgroup_fixture.availableLanguages = "fr"
+        workgroup_fixture.metadataLanguage = "fr"
         with self.assertRaises(ValueError):
             self.isogeo.workgroup.update(workgroup=workgroup_fixture, check_multilingualism=1)
         # fourth test, specifying metadataLanguage but no availableLanguages
         workgroup_fixture.availableLanguages = []
         with self.assertRaises(ValueError):
             self.isogeo.workgroup.update(workgroup=workgroup_fixture, check_multilingualism=1)
-
-        # add created workgroup to deletion
-        self.li_fixtures_to_delete.append(workgroup_fixture._id)
 
 
 # ##############################################################################
