@@ -343,7 +343,7 @@ class ApiFeatureAttribute:
             - 'add': add the attributes except those with a duplicated name
             - 'update': update only the attributes with the same name
             - 'update_or_add': update the attributes with the same name or create
-        : param bool case_sensitive_matching: False to make featureattributes's name
+        : param bool case_sensitive_matching: False to make feature attributes's name
         matching case-insensitive when mode == "update"
 
         :raises TypeError: if one metadata is not a vector or DTNG
@@ -362,11 +362,10 @@ class ApiFeatureAttribute:
         """
         accepted_modes = ("add", "update", "update_or_add")
 
+        is_src_md_type_ok = metadata_source.type in available_resource_types
+        is_dst_md_type_ok = metadata_dest.type in available_resource_types
         # check metadata type
-        if (
-            metadata_source.type not in available_resource_types
-            or metadata_dest.type not in available_resource_types
-        ):
+        if not is_src_md_type_ok or not is_dst_md_type_ok:
             raise TypeError(
                 "Feature attributes routes are only available for metadata of vector datasets or DTNG, not: {} or {}".format(
                     metadata_source.type, metadata_dest.type
