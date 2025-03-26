@@ -1523,7 +1523,7 @@ class Metadata(object):
         :param tuple included_attributes: object attributes to include in hash. Default: \
             {("coordinateSystem","envelope","features","featuresAttributes","format","geometry","groupId","name","path","series","title","type")})
         """
-        # instanciate the hash
+        # instantiate the hash
         hasher = sha256()
 
         # parse attributes

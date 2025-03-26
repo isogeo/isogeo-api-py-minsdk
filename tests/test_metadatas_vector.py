@@ -150,7 +150,7 @@ class TestMetadatasVector(unittest.TestCase):
     # -- TESTS ---------------------------------------------------------
     # -- MODEL --
     def test_metadatas_title_or_name(self):
-        """Model integrated method to retrive title or name."""
+        """Model integrated method to retrieve title or name."""
         # title but no name
         md_title_no_name = Metadata(
             title="BD Topo® - My title really inspires the masses - Villenave d'Ornon"
@@ -260,7 +260,7 @@ class TestMetadatasVector(unittest.TestCase):
         self.assertEqual(md_as_dict.get("modified"), metadata.modified)
 
     def test_metadatas_update(self):
-        """GET :resources/{metadata_uuid}"""
+        """PUT :resources/{metadata_uuid}"""
         # retrieve fixture metadata
         metadata_toUpdate = self.isogeo.metadata.get(self.fixture_metadata._id)
         self.assertIsInstance(metadata_toUpdate, Metadata)

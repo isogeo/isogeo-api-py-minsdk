@@ -137,7 +137,7 @@ class ApiSearch:
         :param tuple specific_md: list of metadata UUIDs to filter on
         :param tuple include: subresources that should be returned. See: :py:class:`enums.MetadataSubresources`.
         :param bool whole_results: option to return all results or only the page size. *False* by DEFAULT.
-        :param bool check: option to check query parameters and avoid erros. *True* by DEFAULT.
+        :param bool check: option to check query parameters and avoid errors. *True* by DEFAULT.
         :param bool augment: option to improve API response by adding some tags on the fly (like shares_id)
         :param int expected_total: if different of None, value will be used to paginate. Can save a request.
         :param bool tags_as_dicts: option to store tags as key/values by filter.

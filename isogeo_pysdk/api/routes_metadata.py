@@ -128,13 +128,13 @@ class ApiMetadata:
 
         :param str workgroup_id: identifier of the owner workgroup
         :param Metadata metadata: Metadata model object to create
-        :param int return_basic_or_complete: creation of metada uses a bulk script.\
+        :param int return_basic_or_complete: creation of metadata uses a bulk script.\
           So, by default API does not return the complete object but the minimal info.\
           This option allow to overrides the basic behavior. Options:
 
           - 0 = dry (only the _id, title and attributes passed for the creation) [DEFAULT]
-          - 1 = basic without any include (requires an additionnal request)
-          - 2 = complete with all include (requires an additionnal request)
+          - 1 = basic without any include (requires an additional request)
+          - 2 = complete with all include (requires an additional request)
 
         :rtype: Metadata
 
@@ -413,7 +413,7 @@ class ApiMetadata:
 
     # -- Routes to manage subresources -------------------------------------------------
     def catalogs(self, metadata: Metadata) -> list:
-        """Returns asssociated catalogs with a metadata. Just a shortcut.
+        """Returns associated catalogs with a metadata. Just a shortcut.
 
         :param Metadata metadata: metadata object
 
@@ -424,7 +424,7 @@ class ApiMetadata:
     def keywords(
         self, metadata: Metadata, include: tuple = ("_abilities", "count", "thesaurus")
     ) -> list:
-        """Returns asssociated keywords with a metadata. Just a shortcut.
+        """Returns associated keywords with a metadata. Just a shortcut.
 
         :param Metadata metadata: metadata object
         :param tuple include: subresources that should be returned. Available values:

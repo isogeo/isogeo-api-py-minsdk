@@ -72,7 +72,7 @@ _dtm_simple = "%Y-%m-%d"  # 2018-06-04
 
 
 class IsogeoUtils(object):
-    """Complementary set of utilitary methods and functions to make it easier using Isogeo API."""
+    """Complementary set of utility methods and functions to make it easier using Isogeo API."""
 
     API_URLS = {
         "prod": "v1.api.isogeo.com",
@@ -138,7 +138,7 @@ class IsogeoUtils(object):
     lang = "fr"
 
     def __init__(self, proxies: dict = dict()):
-        """Instanciate IsogeoUtils module.
+        """Instantiate IsogeoUtils module.
 
         :param dict proxies: dictionary of proxy settings as described in
          requests. See: http://docs.python-requests.org/en/master/user/advanced/#proxies
@@ -154,7 +154,7 @@ class IsogeoUtils(object):
           * prod [DEFAULT]
           * qa
           * custom
-        :param dict dict_urls: Only needed when platform is "custom", a dictionnary of specific Isogeo URLs.
+        :param dict dict_urls: Only needed when platform is "custom", a dictionary of specific Isogeo URLs.
         """
         platform = platform.lower()
         self.platform = platform
@@ -317,7 +317,7 @@ class IsogeoUtils(object):
         # handle Isogeo specific UUID in XML exports
         if "isogeo:metadata" in in_uuid:
             in_uuid = "urn:uuid:{}".format(in_uuid.split(":")[-1])
-            logging.debug("Isogeo UUUID URN spotted: {}".format(in_uuid))
+            logging.debug("Isogeo UUID URN spotted: {}".format(in_uuid))
         else:
             pass
         # operate
@@ -416,7 +416,7 @@ class IsogeoUtils(object):
         """Returns the edition URL of a metadata.
 
         :param Metadata metadata: metadata
-        :param str tab: target tab in the web form. Optionnal. Defaults to 'identification'.
+        :param str tab: target tab in the web form. Optional. Defaults to 'identification'.
         """
         # checks inputs
         if not isinstance(metadata, Metadata):
@@ -446,7 +446,7 @@ class IsogeoUtils(object):
         :param str webapp: web app destination
         :param dict kwargs: web app specific parameters. For example see WEBAPPS
         """
-        # build wbeapp URL depending on choosen webapp
+        # build webapp URL depending on chosen webapp
         if webapp in self.WEBAPPS:
             webapp_args = self.WEBAPPS.get(webapp).get("args")
             # check kwargs parameters
@@ -707,7 +707,7 @@ class IsogeoUtils(object):
                 tags_as_dicts.get("owners")[v] = k
                 continue
             elif k.startswith("provider"):
-                # providers are particular bcause its value is always null.
+                # providers are particular because its value is always null.
                 tags_as_dicts.get("providers")[k.split(":")[1]] = k
                 continue
             elif k.startswith("share"):
