@@ -402,14 +402,15 @@ class IsogeoUtils(object):
         return version_req.json().get("version")
 
     # -- URLs builders -------------------------------------------------------
-    def get_request_base_url(self, route: str, prot: str = "https") -> str:
+    def get_request_base_url(self, route: str, prot: str = "https", lang: str = None) -> str:
         """Build the request url for the specified route.
 
         :param str route: route to format
         :param str prot: https [DEFAULT] or http
         """
+        lang_code = lang if lang else self.lang
         return "{}://{}/{}/?_lang={}".format(
-            prot, self.api_url, route, self.lang
+            prot, self.api_url, route, lang_code
         )
 
     def get_edit_url(self, metadata: Metadata, tab: str = "identification") -> str:
