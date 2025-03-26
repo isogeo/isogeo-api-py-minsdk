@@ -277,7 +277,7 @@ class ApiMetadata:
         return True
 
     @ApiDecorators._check_bearer_validity
-    def update(self, metadata: Metadata, _http_method: str = "PATCH") -> Metadata:
+    def update(self, metadata: Metadata, _http_method: str = "PATCH", lang: str = None) -> Metadata:
         """Update a metadata, but **ONLY** the root attributes, not the subresources.
 
         Certain attributes of the Metadata object to update are required:
@@ -334,7 +334,7 @@ class ApiMetadata:
 
         # URL builder
         url_metadata_update = self.utils.get_request_base_url(
-            route="resources/{}".format(metadata._id)
+            route="resources/{}".format(metadata._id), lang=lang
         )
 
         # HTTP method according to the metadata.type
