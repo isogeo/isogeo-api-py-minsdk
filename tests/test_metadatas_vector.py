@@ -50,6 +50,8 @@ hostname = gethostname()
 # API access
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+METADATA_TEST_FIXTURE_UUID_ML = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE_ML")
+WORKGROUP_TEST_FIXTURE_UUID_ML = environ.get("ISOGEO_WORKGROUP_TEST_UUID_ML")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -373,6 +375,160 @@ class TestMetadatasVector(unittest.TestCase):
         self.assertEqual(created_metadata.editionProfile, "manual")
 
         self.assertEqual(created_metadata.title, metadata_title)
+
+    def test_metadatas_create_basic_multilingual(self):
+        """POST :groups/{group_uuid}/resources"""
+        # initiate metadata local object
+        metadata_title = "{} - {}".format(get_test_marker(), self.discriminator)
+        metadata_abstract = f"{metadata_title} ABSTRACT"
+        metadata_toCreate = Metadata(type="vectorDataset", abstract=metadata_abstract)
+        workgroup_id = WORKGROUP_TEST_FIXTURE_UUID_ML
+        lang_code = "fr"
+
+        # assert ValueError is raised because there is no title
+        with self.assertRaises(ValueError):
+            self.isogeo.metadata.create(
+                workgroup_id=workgroup_id,
+                metadata=metadata_toCreate,
+                lang=lang_code
+            )
+
+        # add a title to local object
+        metadata_toCreate.title = metadata_title
+        # create it online
+        created_metadata = self.isogeo.metadata.create(
+            workgroup_id=workgroup_id,
+            metadata=metadata_toCreate,
+            lang=lang_code
+        )
+        # fetch it with translations
+        created_metadata_with_translations = self.isogeo.metadata.get(
+            metadata_id=created_metadata._id,
+            lang=lang_code,
+            include=("translations",)
+        )
+
+        # checks
+        self.assertIsInstance(created_metadata, Metadata)
+
+        self.assertTrue(hasattr(created_metadata, "_id"))
+        self.assertIsNot(created_metadata._id, None)
+        self.assertIsInstance(created_metadata._id, str)
+        self.assertIsNot(len(created_metadata._id), 0)
+
+        self.li_fixtures_to_delete.append(created_metadata._id)
+
+        self.assertTrue(hasattr(created_metadata, "_created"))
+        self.assertIsNot(created_metadata._created, None)
+        self.assertIsInstance(created_metadata._created, str)
+        self.assertIsNot(len(created_metadata._created), 0)
+
+        self.assertTrue(hasattr(created_metadata, "_creator"))
+        self.assertIsNot(created_metadata._creator, None)
+        self.assertIsInstance(created_metadata._creator, dict)
+        self.assertIsNot(len(created_metadata._creator), 0)
+
+        self.assertTrue(hasattr(created_metadata, "_modified"))
+        self.assertIsNot(created_metadata._modified, None)
+        self.assertIsInstance(created_metadata._modified, str)
+        self.assertIsNot(len(created_metadata._modified), 0)
+
+        self.assertEqual(created_metadata.editionProfile, "manual")
+        self.assertEqual(created_metadata.title, metadata_title)
+        self.assertEqual(created_metadata.abstract, metadata_abstract)
+
+        self.assertEqual(created_metadata_with_translations._fieldsLanguage, lang_code)
+        self.assertTrue(hasattr(created_metadata_with_translations, "translations"))
+        self.assertIsNot(created_metadata_with_translations.translations, None)
+        self.assertIsInstance(created_metadata_with_translations.translations, list)
+        self.assertIsNot(len(created_metadata_with_translations.translations), 0)
+        self.assertTrue(
+            any(
+                trans.get("languageCode") == lang_code and trans.get("title") == metadata_title and trans.get("abstract") == metadata_abstract
+                for trans in created_metadata_with_translations.translations
+            )
+        )
+
+    def test_metadatas_create_complete_multilingual(self):
+        """POST :groups/{group_uuid}/resources"""
+        # initiate metadata local object
+        metadata_title = "{} - {}".format(get_test_marker(), self.discriminator)
+        metadata_abstract = f"{metadata_title} ABSTRACT"
+        metadata_toCreate = Metadata(type="vectorDataset", abstract=metadata_abstract)
+        workgroup_id = WORKGROUP_TEST_FIXTURE_UUID_ML
+        lang_code = "fr"
+
+        # assert ValueError is raised because there is no title
+        with self.assertRaises(ValueError):
+            self.isogeo.metadata.create(
+                workgroup_id=workgroup_id,
+                metadata=metadata_toCreate,
+                return_basic_or_complete=2,
+                lang=lang_code
+            )
+
+        # add a title to local object
+        metadata_toCreate.title = metadata_title
+
+        # create it online
+        created_metadata = self.isogeo.metadata.create(
+            workgroup_id=workgroup_id,
+            metadata=metadata_toCreate,
+            return_basic_or_complete=2,
+            lang=lang_code
+        )
+
+        # checks
+        self.assertIsInstance(created_metadata, Metadata)
+
+        self.assertTrue(hasattr(created_metadata, "_id"))
+        self.assertIsNot(created_metadata._id, None)
+        self.assertIsInstance(created_metadata._id, str)
+        self.assertIsNot(len(created_metadata._id), 0)
+
+        self.li_fixtures_to_delete.append(created_metadata._id)
+
+        self.assertTrue(hasattr(created_metadata, "_created"))
+        self.assertIsNot(created_metadata._created, None)
+        self.assertIsInstance(created_metadata._created, str)
+        self.assertIsNot(len(created_metadata._created), 0)
+
+        self.assertTrue(hasattr(created_metadata, "_creator"))
+        self.assertIsNot(created_metadata._creator, None)
+        self.assertIsInstance(created_metadata._creator, dict)
+        self.assertIsNot(len(created_metadata._creator), 0)
+
+        self.assertTrue(hasattr(created_metadata, "_modified"))
+        self.assertIsNot(created_metadata._modified, None)
+        self.assertIsInstance(created_metadata._modified, str)
+        self.assertIsNot(len(created_metadata._modified), 0)
+
+        self.assertTrue(hasattr(created_metadata, "groupId"))
+        self.assertIsNot(created_metadata.groupId, None)
+        self.assertIsInstance(created_metadata.groupId, str)
+        self.assertEqual(created_metadata.groupId, created_metadata._creator.get("_id"))
+
+        self.assertTrue(hasattr(created_metadata, "groupName"))
+        self.assertIsNot(created_metadata.groupName, None)
+        self.assertIsInstance(created_metadata.groupName, str)
+        self.assertEqual(created_metadata.groupName, created_metadata._creator.get("contact").get("name"))
+
+        self.assertEqual(created_metadata.editionProfile, "manual")
+        self.assertEqual(created_metadata.title, metadata_title)
+        self.assertEqual(created_metadata.abstract, metadata_abstract)
+
+        self.assertEqual(created_metadata._fieldsLanguage, lang_code)
+        self.assertTrue(hasattr(created_metadata, "translations"))
+        self.assertIsNot(created_metadata.translations, None)
+        self.assertIsInstance(created_metadata.translations, list)
+        self.assertIsNot(len(created_metadata.translations), 0)
+        self.assertTrue(
+            any(
+                trans.get("languageCode") == lang_code and trans.get("title") == metadata_title and trans.get("abstract") == metadata_abstract
+                for trans in created_metadata.translations
+            )
+        )
+
     def test_metadatas_update(self):
         """PUT :resources/{metadata_uuid}"""
         # retrieve fixture metadata
