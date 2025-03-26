@@ -728,7 +728,7 @@ class IsogeoUtils(object):
             )
         else:
             pass
-        # output dict struture
+        # output dict structure
         logging.debug(prev_query)
         query_as_dicts = {
             "_tags": {
@@ -816,7 +816,7 @@ class IsogeoUtils(object):
                 query_tags.get("owners")[tags.get(t)] = t
                 continue
             elif t.startswith("provider"):
-                # providers are particular bcause its value is always null.
+                # providers are particular because its value is always null.
                 query_tags.get("providers")[k.split(":")[1]] = k
                 continue
             elif t.startswith("share"):
@@ -965,7 +965,7 @@ class IsogeoUtils(object):
     # -- HELPERS ---------------------------------------------------------------
     @classmethod
     def hlpr_datetimes(cls, in_date: str, try_again: bool = 1) -> datetime:
-        """Helper to handle differnts dates formats.
+        """Helper to handle different dates formats.
         See: https://github.com/isogeo/isogeo-api-py-minsdk/issues/85
 
         :param dict raw_object: metadata dictionary returned by a request.json()
