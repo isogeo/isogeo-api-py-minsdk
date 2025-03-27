@@ -266,6 +266,109 @@ class TestMetadatasVector(unittest.TestCase):
         self.assertEqual(md_as_dict.get("created"), metadata.created)
         self.assertEqual(md_as_dict.get("modified"), metadata.modified)
 
+    def test_metadatas_get_detailed_multilingual(self):
+        """GET :resources/{metadata_uuid}"""
+        # retrieve fixture metadata
+        metadata = self.isogeo.metadata.get(
+            METADATA_TEST_FIXTURE_UUID_ML, include="all"
+        )
+        # check object
+        self.assertIsInstance(metadata, Metadata)
+        # check attributes
+        self.assertTrue(hasattr(metadata, "_id"))
+        self.assertTrue(hasattr(metadata, "_created"))
+        self.assertTrue(hasattr(metadata, "_creator"))
+        self.assertTrue(hasattr(metadata, "_modified"))
+        self.assertTrue(hasattr(metadata, "abstract"))
+        self.assertTrue(hasattr(metadata, "created"))
+        self.assertTrue(hasattr(metadata, "modified"))
+        # specific to implementation
+        self.assertTrue(hasattr(metadata, "groupId"))
+        self.assertTrue(hasattr(metadata, "groupName"))
+        # specific to multilingualism
+        self.assertTrue(hasattr(metadata, "_fieldsLanguage"))
+        self.assertTrue(hasattr(metadata, "translations"))
+        self.assertIsInstance(metadata.translations, list)
+        self.assertEqual(len(metadata.translations), 3)
+        self.assertTrue(
+            all(
+                all(
+                    key in trans for key in ["languageCode", "title", "abstract"]
+                ) and all(
+                    len(trans.get(key)) for key in ["languageCode", "title", "abstract"]
+                ) for trans in metadata.translations
+            )
+        )
+        # check method to dict
+        md_as_dict = metadata.to_dict()
+        self.assertIsInstance(md_as_dict, dict)
+        # compare values
+        self.assertEqual(md_as_dict.get("_id"), metadata._id)
+        self.assertEqual(md_as_dict.get("_created"), metadata._created)
+        self.assertEqual(md_as_dict.get("modified"), metadata.modified)
+        self.assertEqual(md_as_dict.get("created"), metadata.created)
+        self.assertEqual(md_as_dict.get("modified"), metadata.modified)
+
+    def test_metadatas_get_detailed_multilingual_fr(self):
+        """GET :resources/{metadata_uuid}"""
+        # retrieve fixture metadata
+        lang_code = "fr"
+        expected_title = "Fiche complète"
+        expected_abstract = "Résumé en français"
+        metadata = self.isogeo.metadata.get(
+            METADATA_TEST_FIXTURE_UUID_ML, include="all", lang=lang_code
+        )
+
+        self.assertEqual(metadata.title, expected_title)
+        self.assertEqual(metadata.abstract, expected_abstract)
+        self.assertEqual(metadata._fieldsLanguage, lang_code)
+        translation = [
+            trans for trans in metadata.translations
+            if trans.get("languageCode") == lang_code
+        ][0]
+        self.assertEqual(translation.get("title"), expected_title)
+        self.assertEqual(translation.get("abstract"), expected_abstract)
+
+    def test_metadatas_get_detailed_multilingual_en(self):
+        """GET :resources/{metadata_uuid}"""
+        # retrieve fixture metadata
+        lang_code = "en"
+        expected_title = "Title in english"
+        expected_abstract = "English summary"
+        metadata = self.isogeo.metadata.get(
+            METADATA_TEST_FIXTURE_UUID_ML, include="all", lang=lang_code
+        )
+
+        self.assertEqual(metadata.title, expected_title)
+        self.assertEqual(metadata.abstract, expected_abstract)
+        self.assertEqual(metadata._fieldsLanguage, lang_code)
+        translation = [
+            trans for trans in metadata.translations
+            if trans.get("languageCode") == lang_code
+        ][0]
+        self.assertEqual(translation.get("title"), expected_title)
+        self.assertEqual(translation.get("abstract"), expected_abstract)
+
+    def test_metadatas_get_detailed_multilingual_es(self):
+        """GET :resources/{metadata_uuid}"""
+        # retrieve fixture metadata
+        lang_code = "es"
+        expected_title = "Hoja de metadatos completa"
+        expected_abstract = "Resumen en español"
+        metadata = self.isogeo.metadata.get(
+            METADATA_TEST_FIXTURE_UUID_ML, include="all", lang=lang_code
+        )
+
+        self.assertEqual(metadata.title, expected_title)
+        self.assertEqual(metadata.abstract, expected_abstract)
+        self.assertEqual(metadata._fieldsLanguage, lang_code)
+        translation = [
+            trans for trans in metadata.translations
+            if trans.get("languageCode") == lang_code
+        ][0]
+        self.assertEqual(translation.get("title"), expected_title)
+        self.assertEqual(translation.get("abstract"), expected_abstract)
+
     def test_metadatas_create_basic(self):
         """POST :groups/{group_uuid}/resources"""
         # initiate metadata local object
