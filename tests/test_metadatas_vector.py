@@ -123,6 +123,10 @@ class TestMetadatasVector(unittest.TestCase):
         cls.fixture_metadata = cls.isogeo.metadata.create(
             WORKGROUP_TEST_FIXTURE_UUID, metadata=md
         )
+        md.abstract = get_test_marker()
+        cls.fixture_metadata_ml = cls.isogeo.metadata.create(
+            WORKGROUP_TEST_FIXTURE_UUID_ML, metadata=md, lang="fr"
+        )
 
     def setUp(self):
         """Executed before each test."""
@@ -141,6 +145,7 @@ class TestMetadatasVector(unittest.TestCase):
         """Executed after the last test."""
         # clean created metadata
         cls.isogeo.metadata.delete(cls.fixture_metadata._id)
+        cls.isogeo.metadata.delete(cls.fixture_metadata_ml._id)
 
         # clean created metadatas
         if len(cls.li_fixtures_to_delete):
@@ -554,3 +559,113 @@ class TestMetadatasVector(unittest.TestCase):
         # updated attributes
         self.assertEqual(updated_metadata.abstract, "Test abstract")
         self.assertEqual(updated_metadata.geometry, "Point")
+
+    def test_metadatas_update_multilingual(self):
+        """PUT :resources/{metadata_uuid}"""
+        # retrieve fixture metadata
+        metadata_toUpdate = self.isogeo.metadata.get(
+            self.fixture_metadata_ml._id, ("translations",), "fr"
+        )
+        self.assertIsInstance(metadata_toUpdate, Metadata)
+        self.assertEqual(metadata_toUpdate._fieldsLanguage, "fr")
+        self.assertEqual(metadata_toUpdate.title, self.fixture_metadata_ml.title)
+        french_translations = [
+            trans for trans in metadata_toUpdate.translations
+            if trans.get("languageCode") == "fr"
+        ]
+        self.assertEqual(len(french_translations), 1)
+        french_translation = french_translations[0]
+        self.assertEqual(french_translation.get("title"), self.fixture_metadata_ml.title)
+
+        # FRENCH
+        french_abstract = "Résumé en français"
+        # update object attributes values
+        metadata_toUpdate.abstract = french_abstract
+        # update metadata and check return
+        self.assertIsInstance(
+            self.isogeo.metadata.update(metadata=metadata_toUpdate, _http_method="PUT", lang="fr"), Metadata
+        )
+        # get the metadata updated
+        updated_metadata = self.isogeo.metadata.get(
+            metadata_toUpdate._id, include=("translations",), lang="fr"
+        )
+        # check return
+        self.assertIsInstance(updated_metadata, Metadata)
+        # updated attributes
+        self.assertEqual(updated_metadata.title, self.fixture_metadata_ml.title)
+        self.assertEqual(updated_metadata.abstract, french_abstract)
+        # multilingualism attributes
+        self.assertEqual(updated_metadata._fieldsLanguage, "fr")
+        french_translations = [
+            trans for trans in updated_metadata.translations
+            if trans.get("languageCode") == "fr"
+        ]
+        self.assertEqual(len(french_translations), 1)
+        french_translation = french_translations[0]
+        self.assertEqual(french_translation.get("title"), self.fixture_metadata_ml.title)
+        self.assertEqual(french_translation.get("abstract"), french_abstract)
+
+        # SPANISH
+        spanish_title = "Título en español"
+        # update object attributes values
+        metadata_toUpdate.title = spanish_title
+        metadata_toUpdate.abstract = None
+        metadata_toUpdate.geometry = "Point"
+        # update metadata and check return
+        self.assertIsInstance(
+            self.isogeo.metadata.update(metadata=metadata_toUpdate, _http_method="PUT", lang="es"), Metadata
+        )
+        # get the metadata updated
+        updated_metadata = self.isogeo.metadata.get(
+            metadata_toUpdate._id, include=("translations",), lang="es"
+        )
+        # check return
+        self.assertIsInstance(updated_metadata, Metadata)
+        # updated attributes
+        self.assertEqual(updated_metadata.title, spanish_title)
+        self.assertEqual(updated_metadata.geometry, "Point")
+        # multilingualism attributes
+        self.assertEqual(updated_metadata._fieldsLanguage, "es")
+        spanish_translations = [
+            trans for trans in updated_metadata.translations
+            if trans.get("languageCode") == "es"
+        ]
+        self.assertEqual(len(spanish_translations), 1)
+        spanish_translation = spanish_translations[0]
+        self.assertEqual(spanish_translation.get("title"), spanish_title)
+        self.assertIsNone(spanish_translation.get("abstract"))
+
+        # ENGLISH
+        english_title = "Title in English"
+        english_abstract = "English summary"
+        # update object attributes values
+        metadata_toUpdate.title = english_title
+        metadata_toUpdate.abstract = english_abstract
+        metadata_toUpdate.features = 55
+        # update metadata and check return
+        self.assertIsInstance(
+            self.isogeo.metadata.update(metadata=metadata_toUpdate, _http_method="PUT", lang="en"), Metadata
+        )
+        # get the metadata updated
+        updated_metadata = self.isogeo.metadata.get(
+            metadata_toUpdate._id, include=("translations",), lang="en"
+        )
+        # check return
+        self.assertIsInstance(updated_metadata, Metadata)
+        # updated attributes
+        self.assertEqual(updated_metadata.title, english_title)
+        self.assertEqual(updated_metadata.abstract, english_abstract)
+        self.assertEqual(updated_metadata.features, 55)
+        # multilingualism attributes
+        self.assertEqual(updated_metadata._fieldsLanguage, "en")
+        english_translations = [
+            trans for trans in updated_metadata.translations
+            if trans.get("languageCode") == "en"
+        ]
+        self.assertEqual(len(english_translations), 1)
+        english_translation = english_translations[0]
+        self.assertEqual(english_translation.get("title"), english_title)
+        self.assertEqual(english_translation.get("abstract"), english_abstract)
+
+        # final check
+        self.assertEqual(len(updated_metadata.translations), 3)
