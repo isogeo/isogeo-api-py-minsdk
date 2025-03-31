@@ -205,7 +205,7 @@ class IsogeoUtils(object):
     def set_lang_and_locale(cls, lang: str):
         """Set requests language and the matching locale.
 
-        :param str lang: language code to set API localization ("en" or "fr"). Defaults to 'fr'.
+        :param str lang: language code to set API localization ("en", "es", "pt" or "fr"). Defaults to 'fr'.
         """
         lang = lang.lower()
 
@@ -214,11 +214,19 @@ class IsogeoUtils(object):
             if opersys == "win32":
                 if lang.lower() == "fr":
                     locale.setlocale(locale.LC_ALL, "french")
+                elif lang.lower() == "es":
+                    locale.setlocale(locale.LC_ALL, "spanish")
+                elif lang.lower() == "pt":
+                    locale.setlocale(locale.LC_ALL, "portuguese")
                 else:
                     locale.setlocale(locale.LC_ALL, "english")
             else:
                 if lang.lower() == "fr":
                     locale.setlocale(locale.LC_ALL, str("fr_FR.utf8"))
+                elif lang.lower() == "es":
+                    locale.setlocale(locale.LC_ALL, str("es_ES.utf8"))
+                elif lang.lower() == "pt":
+                    locale.setlocale(locale.LC_ALL, str("pt_BR.utf8"))
                 else:
                     locale.setlocale(locale.LC_ALL, str("en_GB.utf8"))
         except locale.Error as e:
@@ -227,7 +235,7 @@ class IsogeoUtils(object):
             )
         logger.debug("Locale set to: {}".format(locale.getlocale()))
 
-        cls.lang = lang
+        cls.lang = lang.lower()
 
     @classmethod
     def cache_clearer(cls, only_already_hit: bool = 1):

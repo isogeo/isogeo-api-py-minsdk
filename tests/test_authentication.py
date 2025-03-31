@@ -107,12 +107,51 @@ class TestAuthentication(unittest.TestCase):
             )
             isogeo.connect()
 
-    def test_other_language(self):
-        """Try to get other language."""
+    def test_language_en(self):
+        """Instantiate main module in english"""
         isogeo = Isogeo(
-            client_id=self.client_id, client_secret=self.client_secret, lang="ES"
+            client_id=self.client_id, client_secret=self.client_secret, lang="en"
         )
-        # if other language passed the English is applied
+        self.assertEqual(isogeo.lang, "en")
+
+        # close
+        isogeo.close()
+
+    def test_language_fr(self):
+        """Instantiate main module in french"""
+        isogeo = Isogeo(
+            client_id=self.client_id, client_secret=self.client_secret, lang="FR"
+        )
+        self.assertEqual(isogeo.lang, "fr")
+
+        # close
+        isogeo.close()
+
+    def test_language_es(self):
+        """Instantiate main module in spanish"""
+        isogeo = Isogeo(
+            client_id=self.client_id, client_secret=self.client_secret, lang="es"
+        )
+        self.assertEqual(isogeo.lang, "es")
+
+        # close
+        isogeo.close()
+
+    def test_language_pt(self):
+        """Instantiate main module in portuguese"""
+        isogeo = Isogeo(
+            client_id=self.client_id, client_secret=self.client_secret, lang="PT"
+        )
+        self.assertEqual(isogeo.lang, "pt")
+
+        # close
+        isogeo.close()
+
+    def test_other_language(self):
+        """Instantiate main module whit unhandled language"""
+        isogeo = Isogeo(
+            client_id=self.client_id, client_secret=self.client_secret, lang="CA"
+        )
         self.assertEqual(isogeo.lang, "en")
 
         # close

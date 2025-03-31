@@ -72,13 +72,41 @@ li_contacts_en = (
     "User",
 )
 
+li_contacts_es = (
+    "Autor",
+    "Punto de contacto",
+    "Custodio",
+    "Distribuidor",
+    "Creador",
+    "Propietario",
+    "Investigador principal",
+    "Procesador",
+    "Editor",
+    "Proveedor de recursos",
+    "Usuario"
+)
+
+li_contacts_pt = (
+    "Autor",
+    "Ponto de contato",
+    "Custodiante",
+    "Distribuidor",
+    "Criador",
+    "Proprietário",
+    "Pesquisador principal",
+    "Processador",
+    "Editor",
+    "Fornecedor de recursos",
+    "Usuário"
+)
+
 # #############################################################################
 # ########## Classes ###############
 # ##################################
 
 
 class TestIsogeoTranslator(unittest.TestCase):
-    """Test translation of specific words wihtin Isogeo API."""
+    """Test translation of specific words within Isogeo API."""
 
     # -- Standard methods --------------------------------------------------------
     @classmethod
@@ -156,6 +184,13 @@ class TestIsogeoTranslator(unittest.TestCase):
         for role in self.li_contacts_roles:
             self.assertIn(tr.tr("roles", role), li_contacts_fr)
 
+    def test_translation_es(self):
+        """Some French translations get from the subclass."""
+        tr = IsogeoTranslator("es")
+        # contacts roles
+        for role in self.li_contacts_roles:
+            self.assertIn(tr.tr("roles", role), li_contacts_es)
+
     def test_translation_en(self):
         """Some English translations get from the subclass."""
         tr = IsogeoTranslator("EN")
@@ -163,12 +198,19 @@ class TestIsogeoTranslator(unittest.TestCase):
         for role in self.li_contacts_roles:
             self.assertIn(tr.tr("roles", role), li_contacts_en)
 
-    def test_translation_bad(self):
+    def test_translation_bad_en(self):
         """Test translation of inexistent word.."""
-        tr = IsogeoTranslator("EN")
+        tr = IsogeoTranslator("en")
         with self.assertRaises(ValueError):
             for role in self.li_contacts_roles:
                 self.assertIn(tr.tr("BAD_SUBDOMAIN", role), li_contacts_en)
+
+    def test_translation_bad_pt(self):
+        """Test translation of inexistent word.."""
+        tr = IsogeoTranslator("PT")
+        with self.assertRaises(ValueError):
+            for role in self.li_contacts_roles:
+                self.assertIn(tr.tr("BAD_SUBDOMAIN", role), li_contacts_pt)
 
 
 # #############################################################################

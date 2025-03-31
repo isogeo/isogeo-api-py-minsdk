@@ -1,7 +1,7 @@
 # -*- coding: UTF-8 -*-
 #! python3  # noqa E265
 
-"""Additionnal strings to be translated from Isogeo API."""
+"""Additional strings to be translated from Isogeo API."""
 
 # ##############################################################################
 # ########## Globals ###############
@@ -22,7 +22,7 @@ dict_md_fields_fr = {
     "limitations": {
         "title": "Limitations",
         "add": "Ajouter une nouvelle limitation",
-        "edit": "Editer la limitation",
+        "edit": "Éditer la limitation",
         "restriction": "Restriction :",
         "description": "Description :",
         "type": "Type :",
@@ -169,6 +169,187 @@ dict_md_fields_en = {
     },
 }
 
+dict_md_fields_es = {
+    "restrictions": {
+        "none": " ",
+        "copyright": "Derechos de autor",
+        "patent": "Patente",
+        "patentPending": "Patente pendiente",
+        "trademark": "Marca registrada",
+        "license": "Licencia",
+        "intellectualPropertyRights": "Derechos de propiedad intelectual",
+        "restricted": "Restringido",
+        "other": "Otro"
+    },
+    "limitations": {
+        "title": "Limitaciones",
+        "add": "Agregar nueva limitación",
+        "edit": "Editar limitación",
+        "restriction": "Restricción:",
+        "description": "Descripción:",
+        "type": "Tipo:",
+        "directive": "Directiva:",
+        "legal": "Legal",
+        "security": "Seguridad"
+    },
+    "conditions": {
+        "license": "Licencia:",
+        "noLicense": "Sin licencia adjunta"
+    },
+    "constraintType": {
+        "none": " ",
+        "access": "Acceso",
+        "usage": "Uso"
+    },
+    "formatTypes": {
+        "dataset": "Conjunto de datos",
+        "vectorDataset": "Vectorial",
+        "vector-dataset": "Vectorial",
+        "noGeoDataset": "Conjunto de datos (tabular no geográfico)",
+        "no-geo-dataset": "Conjunto de datos (tabular no geográfico)",
+        "rasterDataset": "Raster",
+        "raster-dataset": "Raster",
+        "resource": "Recursos",
+        "series": "Serie",
+        "service": "Servicio"
+    },
+    "roles": {
+        "author": "Autor",
+        "pointOfContact": "Punto de contacto",
+        "custodian": "Custodio",
+        "distributor": "Distribuidor",
+        "originator": "Creador",
+        "owner": "Propietario",
+        "principalInvestigator": "Investigador principal",
+        "processor": "Procesador",
+        "publisher": "Editor",
+        "resourceProvider": "Proveedor de recursos",
+        "user": "Usuario"
+    },
+    "frequencyTypes": {
+        "frequencyUpdateHelp": "Cada ",
+        "years": "año(s)",
+        "months": "mes(es)",
+        "weeks": "semana(s)",
+        "days": "día(s)",
+        "hours": "hora(s)",
+        "minutes": "minuto(s)",
+        "seconds": "segundo(s)"
+    },
+    "frequencyShortTypes": {
+        "Y": "año(s)",
+        "M": "mes(es)",
+        "W": "semana(s)",
+        "D": "día(s)",
+        "H": "hora(s)",
+        "m": "minuto(s)",
+        "S": "segundo(s)"
+    },
+    "events": {
+        "update": "Actualización",
+        "creation": "Creación",
+        "published": "Publicación"
+    },
+    "quality": {
+        "specification": "Especificación",
+        "conformant": "Conformidad",
+        "isConform": "Conforme",
+        "isNotConform": "No conforme",
+        "topologicalConsistency": "Consistencia topológica"
+    }
+}
+
+dict_md_fields_pt = {
+    "restrictions": {
+        "none": " ",
+        "copyright": "Direitos autorais",
+        "patent": "Patente",
+        "patentPending": "Patente pendente",
+        "trademark": "Marca registrada",
+        "license": "Licença",
+        "intellectualPropertyRights": "Direitos de propriedade intelectual",
+        "restricted": "Restrito",
+        "other": "Outro"
+    },
+    "limitations": {
+        "title": "Limitações",
+        "add": "Adicionar nova limitação",
+        "edit": "Editar limitação",
+        "restriction": "Restrição:",
+        "description": "Descrição:",
+        "type": "Tipo:",
+        "directive": "Diretiva:",
+        "legal": "Legal",
+        "security": "Segurança"
+    },
+    "conditions": {
+        "license": "Licença:",
+        "noLicense": "Sem licença anexada"
+    },
+    "constraintType": {
+        "none": " ",
+        "access": "Acesso",
+        "usage": "Uso"
+    },
+    "formatTypes": {
+        "dataset": "Conjunto de dados",
+        "vectorDataset": "Vetorial",
+        "vector-dataset": "Vetorial",
+        "noGeoDataset": "Conjunto de dados (tabular não geográfico)",
+        "no-geo-dataset": "Conjunto de dados (tabular não geográfico)",
+        "rasterDataset": "Raster",
+        "raster-dataset": "Raster",
+        "resource": "Recursos",
+        "series": "Série",
+        "service": "Serviço"
+    },
+    "roles": {
+        "author": "Autor",
+        "pointOfContact": "Ponto de contato",
+        "custodian": "Custodiante",
+        "distributor": "Distribuidor",
+        "originator": "Criador",
+        "owner": "Proprietário",
+        "principalInvestigator": "Pesquisador principal",
+        "processor": "Processador",
+        "publisher": "Editor",
+        "resourceProvider": "Fornecedor de recursos",
+        "user": "Usuário"
+    },
+    "frequencyTypes": {
+        "frequencyUpdateHelp": "A cada ",
+        "years": "ano(s)",
+        "months": "mês(es)",
+        "weeks": "semana(s)",
+        "days": "dia(s)",
+        "hours": "hora(s)",
+        "minutes": "minuto(s)",
+        "seconds": "segundo(s)"
+    },
+    "frequencyShortTypes": {
+        "Y": "ano(s)",
+        "M": "mês(es)",
+        "W": "semana(s)",
+        "D": "dia(s)",
+        "H": "hora(s)",
+        "m": "minuto(s)",
+        "S": "segundo(s)"
+    },
+    "events": {
+        "update": "Atualização",
+        "creation": "Criação",
+        "published": "Publicação"
+    },
+    "quality": {
+        "specification": "Especificação",
+        "conformant": "Conformidade",
+        "isConform": "Conforme",
+        "isNotConform": "Não conforme",
+        "topologicalConsistency": "Consistência topológica"
+    }
+}
+
+
 # ##############################################################################
 # ########## Classes ###############
 # ##################################
@@ -185,8 +366,12 @@ class IsogeoTranslator(object):
 
         :param str lang: language code to apply. EN or FR.
         """
-        if lang.upper() == "FR":
+        if lang.lower() == "fr":
             self.translations = dict_md_fields_fr
+        elif lang.lower() == "es":
+            self.translations = dict_md_fields_es
+        elif lang.lower() == "pt":
+            self.translations = dict_md_fields_pt
         else:
             self.translations = dict_md_fields_en
 

@@ -59,7 +59,7 @@ class Isogeo(OAuth2Session):
     :param str auth_mode: oAuth2 authentication flow to use. Must be one of 'AUTH_MODES'
     :param str platform: to request production or quality assurance
     :param dict proxy: dictionary of proxy settings as described in `Requests <https://2.python-requests.org/en/master/user/advanced/#proxies>`_
-    :param str lang: API localization ("en" or "fr"). Defaults to 'fr'.
+    :param str lang: API localization ("en", "es", "pt" or "fr"). Defaults to 'fr'.
     :param str app_name: to custom the application name and user-agent
     :param int max_retries: custom the maximum number of retries each connection should attempt.\
         See: `Requests <http://2.python-requests.org/en/master/api/#requests.adapters.HTTPAdapter>`_
@@ -251,9 +251,9 @@ class Isogeo(OAuth2Session):
         self.pool_maxsize = pool_maxsize
 
         # setting language
-        if lang.lower() not in ("fr", "en"):
+        if lang.lower() not in ("fr", "en", "es", "pt"):
             logger.warning(
-                "Isogeo API is only available in English ('en', default) or French ('fr'). Language has been set on English."
+                "Isogeo API is only available in English ('en', default), Spanish ('es), Portuguese ('pt') or French ('fr'). Language has been set on English."
             )
             self.lang = "en"
         else:
