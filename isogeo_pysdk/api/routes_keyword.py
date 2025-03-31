@@ -384,7 +384,7 @@ class ApiKeyword:
         """Get details about a specific keyword.
 
         :param str keyword_id: keyword UUID
-        :param tuple include: additionnal subresource to include in the response
+        :param tuple include: additional subresource to include in the response
 
 
         :Example:
@@ -594,7 +594,7 @@ class ApiKeyword:
         else:
             pass
 
-        # check if kyword is already associated
+        # check if keyword is already associated
         if check_exists:
             # retrieve metadata existing keywords
             if metadata.tags:
