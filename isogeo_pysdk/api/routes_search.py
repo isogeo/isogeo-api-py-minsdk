@@ -84,7 +84,9 @@ class ApiSearch:
         # results size
         page_size: int = 20,
         offset: int = 0,
-        # specific options of implemention
+        # multilingualism
+        lang: str = None,
+        # specific options of implementation
         augment: bool = False,
         check: bool = True,
         expected_total: int = None,
@@ -188,7 +190,7 @@ class ApiSearch:
         }
 
         # check query parameters
-        if query and check:
+        if check:
             checker.check_request_parameters(payload)
         else:
             pass
@@ -196,11 +198,13 @@ class ApiSearch:
         # URL
         if group is None:
             logger.debug("Searching as application")
-            url_resources_search = self.utils.get_request_base_url(route="resources/search")
+            url_resources_search = self.utils.get_request_base_url(
+                route="resources/search", lang=lang
+            )
         elif checker.check_is_uuid(group):
             logger.debug("Searching as group")
             url_resources_search = self.utils.get_request_base_url(
-                route="groups/{}/resources/search".format(group)
+                route="groups/{}/resources/search".format(group), lang=lang
             )
         else:
             raise ValueError
@@ -228,6 +232,8 @@ class ApiSearch:
                     check=0,
                     page_size=0,
                     whole_results=0,
+                    # multilingualism
+                    lang=lang
                 ).total
             else:
                 total_results = expected_total
@@ -260,6 +266,8 @@ class ApiSearch:
                     check=0,
                     page_size=100,
                     whole_results=0,
+                    # multilingualism
+                    lang=lang
                 )
             else:
                 # store search args as dict
@@ -302,7 +310,7 @@ class ApiSearch:
                 # properly close the loop
                 self.loop.close()
 
-        # cASE - NO PAGINATION NEEDED
+        # CASE - NO PAGINATION NEEDED
         elif page_size == 0 or not whole_results:
             logger.debug(
                 "Simple search with page parameters offset={} - page_size={}".format(
