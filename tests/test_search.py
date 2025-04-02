@@ -47,6 +47,8 @@ hostname = gethostname()
 # API access
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+METADATA_TEST_FIXTURE_UUID_ML = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE_ML")
+WORKGROUP_TEST_FIXTURE_UUID_ML = environ.get("ISOGEO_WORKGROUP_TEST_UUID_ML")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -120,6 +122,35 @@ class TestSearch(unittest.TestCase):
     def tearDown(self):
         """Executed after each test."""
         sleep(0.5)
+
+    def authenticate_as_user_legacy(self):
+        # API connection
+        if environ.get("ISOGEO_PLATFORM").lower() == "custom":
+            isogeo_urls = {
+                "api_url": environ.get("ISOGEO_API_URL")
+            }
+            isogeo_client = Isogeo(
+                client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+                client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
+                auth_mode="user_legacy",
+                auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+                platform=environ.get("ISOGEO_PLATFORM").lower(),
+                isogeo_urls=isogeo_urls
+            )
+        else:
+            isogeo_client = Isogeo(
+                auth_mode="user_legacy",
+                client_id=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_ID"),
+                client_secret=environ.get("ISOGEO_API_USER_LEGACY_CLIENT_SECRET"),
+                auto_refresh_url="{}/oauth/token".format(environ.get("ISOGEO_ID_URL")),
+                platform=environ.get("ISOGEO_PLATFORM", "qa"),
+            )
+        # getting a token
+        isogeo_client.connect(
+            username=environ.get("ISOGEO_USER_NAME"),
+            password=environ.get("ISOGEO_USER_PASSWORD"),
+        )
+        return isogeo_client
 
     @classmethod
     def tearDownClass(cls):
@@ -218,7 +249,7 @@ class TestSearch(unittest.TestCase):
         self.isogeo.search(page_size=0, whole_results=0, include=())
 
     def test_search_includes_bad(self):
-        """Include sub_resrouces require a list."""
+        """Include sub_resources require a list."""
         with self.assertRaises(TypeError):
             self.isogeo.search(page_size=0, whole_results=0, include="links")
 
@@ -300,15 +331,15 @@ class TestSearch(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.isogeo.search(query="provider:youplaboum")
 
-    # def test_search_bad_parameter_geographic(self):
-    #     """Search with bad parameter."""
-    #     # geometric operator
-    #     with self.assertRaises(ValueError):
-    #         # georel should'nt be used without box or geo
-    #         self.isogeo.search(georel="intersects")
-    #     with self.assertRaises(ValueError):
-    #         # georel bad value
-    #         self.isogeo.search(bbox="-4.970,30.69418,8.258,51.237", georel="cross")
+    def test_search_bad_parameter_geographic(self):
+        """Search with bad parameter."""
+        # geometric operator
+        with self.assertRaises(ValueError):
+            # georel should'nt be used without box or geo
+            self.isogeo.search(georel="intersects")
+        with self.assertRaises(ValueError):
+            # georel bad value
+            self.isogeo.search(bbox="-4.970,30.69418,8.258,51.237", georel="cross")
 
     def test_parameter_not_unique_search(self):
         """SDK raises error for search with a parameter that must be
@@ -337,6 +368,192 @@ class TestSearch(unittest.TestCase):
             check=0,
         )
         self.isogeo.search(query="type:vector-dataset type:raster-dataset", check=0)
+
+    def test_search_multilingual_fr(self):
+        """Searches filtering on specific metadata."""
+
+        # launch 1 searches in french about a specific resource
+        lang_code = "fr"
+        expected_title = "Fiche complète"
+        expected_abstract = "Résumé en français"
+        search = self.isogeo.search(
+            whole_results=1,
+            lang=lang_code,
+            specific_md=(METADATA_TEST_FIXTURE_UUID_ML,),
+            include=("translations",)
+        )
+        metadata = search.results[0]
+
+        self.assertEqual(len(search.results), 1)
+        self.assertTrue(len(metadata.get("translations")) > 0)
+        self.assertIn("translations", metadata)
+        translation = [
+            trans for trans in metadata.get("translations")
+            if trans.get("languageCode") == lang_code
+        ][0]
+        self.assertEqual(translation.get("title"), expected_title)
+        self.assertEqual(translation.get("abstract"), expected_abstract)
+        self.assertIn("_fieldsLanguage", metadata)
+        self.assertEqual(metadata.get("_fieldsLanguage"), lang_code)
+        self.assertEqual(metadata.get("title"), expected_title)
+        self.assertEqual(metadata.get("abstract"), expected_abstract)
+
+    def test_search_multilingual_en(self):
+        """Searches filtering on specific metadata."""
+
+        # launch 1 searches in english about a specific resource
+        lang_code = "en"
+        expected_title = "Title in english"
+        expected_abstract = "English summary"
+        search = self.isogeo.search(
+            whole_results=1,
+            lang=lang_code,
+            specific_md=(METADATA_TEST_FIXTURE_UUID_ML,),
+            include=("translations",)
+        )
+        metadata = search.results[0]
+
+        self.assertEqual(len(search.results), 1)
+        self.assertTrue(len(metadata.get("translations")) > 0)
+        self.assertIn("translations", metadata)
+        translation = [
+            trans for trans in metadata.get("translations")
+            if trans.get("languageCode") == lang_code
+        ][0]
+        self.assertEqual(translation.get("title"), expected_title)
+        self.assertEqual(translation.get("abstract"), expected_abstract)
+        self.assertIn("_fieldsLanguage", metadata)
+        self.assertEqual(metadata.get("_fieldsLanguage"), lang_code)
+        self.assertEqual(metadata.get("title"), expected_title)
+        self.assertEqual(metadata.get("abstract"), expected_abstract)
+
+    def test_search_multilingual_es(self):
+        """Searches filtering on specific metadata."""
+
+        # launch 1 searches in spanish about a specific resource
+        lang_code = "es"
+        expected_title = "Hoja de metadatos completa"
+        expected_abstract = "Resumen en español"
+        search = self.isogeo.search(
+            whole_results=1,
+            lang=lang_code,
+            specific_md=(METADATA_TEST_FIXTURE_UUID_ML,),
+            include=("translations",)
+        )
+        metadata = search.results[0]
+
+        self.assertEqual(len(search.results), 1)
+        self.assertTrue(len(metadata.get("translations")) > 0)
+        self.assertIn("translations", metadata)
+        translation = [
+            trans for trans in metadata.get("translations")
+            if trans.get("languageCode") == lang_code
+        ][0]
+        self.assertEqual(translation.get("title"), expected_title)
+        self.assertEqual(translation.get("abstract"), expected_abstract)
+        self.assertIn("_fieldsLanguage", metadata)
+        self.assertEqual(metadata.get("_fieldsLanguage"), lang_code)
+        self.assertEqual(metadata.get("title"), expected_title)
+        self.assertEqual(metadata.get("abstract"), expected_abstract)
+
+    def test_search_group_multilingual_fr(self):
+        """Searches filtering on specific metadata."""
+        isogeo_client = self.authenticate_as_user_legacy()
+
+        # launch 1 searches in french about a specific resource
+        lang_code = "fr"
+        expected_title = "Fiche complète"
+        expected_abstract = "Résumé en français"
+        search = isogeo_client.search(
+            group=WORKGROUP_TEST_FIXTURE_UUID_ML,
+            whole_results=1,
+            lang=lang_code,
+            specific_md=(METADATA_TEST_FIXTURE_UUID_ML,),
+            include=("translations",)
+        )
+        metadata = search.results[0]
+
+        self.assertEqual(len(search.results), 1)
+        self.assertTrue(len(metadata.get("translations")) > 0)
+        self.assertIn("translations", metadata)
+        translation = [
+            trans for trans in metadata.get("translations")
+            if trans.get("languageCode") == lang_code
+        ][0]
+        self.assertEqual(translation.get("title"), expected_title)
+        self.assertEqual(translation.get("abstract"), expected_abstract)
+        self.assertIn("_fieldsLanguage", metadata)
+        self.assertEqual(metadata.get("_fieldsLanguage"), lang_code)
+        self.assertEqual(metadata.get("title"), expected_title)
+        self.assertEqual(metadata.get("abstract"), expected_abstract)
+
+        isogeo_client.close()
+
+    def test_search_group_multilingual_en(self):
+        """Searches filtering on specific metadata."""
+        isogeo_client = self.authenticate_as_user_legacy()
+
+        # launch 1 searches in english about a specific resource
+        lang_code = "en"
+        expected_title = "Title in english"
+        expected_abstract = "English summary"
+        search = isogeo_client.search(
+            group=WORKGROUP_TEST_FIXTURE_UUID_ML,
+            whole_results=1,
+            lang=lang_code,
+            specific_md=(METADATA_TEST_FIXTURE_UUID_ML,),
+            include=("translations",)
+        )
+        metadata = search.results[0]
+
+        self.assertEqual(len(search.results), 1)
+        self.assertTrue(len(metadata.get("translations")) > 0)
+        self.assertIn("translations", metadata)
+        translation = [
+            trans for trans in metadata.get("translations")
+            if trans.get("languageCode") == lang_code
+        ][0]
+        self.assertEqual(translation.get("title"), expected_title)
+        self.assertEqual(translation.get("abstract"), expected_abstract)
+        self.assertIn("_fieldsLanguage", metadata)
+        self.assertEqual(metadata.get("_fieldsLanguage"), lang_code)
+        self.assertEqual(metadata.get("title"), expected_title)
+        self.assertEqual(metadata.get("abstract"), expected_abstract)
+
+        isogeo_client.close()
+
+    def test_search_group_multilingual_es(self):
+        """Searches filtering on specific metadata."""
+        isogeo_client = self.authenticate_as_user_legacy()
+
+        # launch 1 searches in spanish about a specific resource
+        lang_code = "es"
+        expected_title = "Hoja de metadatos completa"
+        expected_abstract = "Resumen en español"
+        search = isogeo_client.search(
+            group=WORKGROUP_TEST_FIXTURE_UUID_ML,
+            whole_results=1,
+            lang=lang_code,
+            specific_md=(METADATA_TEST_FIXTURE_UUID_ML,),
+            include=("translations",)
+        )
+        metadata = search.results[0]
+
+        self.assertEqual(len(search.results), 1)
+        self.assertTrue(len(metadata.get("translations")) > 0)
+        self.assertIn("translations", metadata)
+        translation = [
+            trans for trans in metadata.get("translations")
+            if trans.get("languageCode") == lang_code
+        ][0]
+        self.assertEqual(translation.get("title"), expected_title)
+        self.assertEqual(translation.get("abstract"), expected_abstract)
+        self.assertIn("_fieldsLanguage", metadata)
+        self.assertEqual(metadata.get("_fieldsLanguage"), lang_code)
+        self.assertEqual(metadata.get("title"), expected_title)
+        self.assertEqual(metadata.get("abstract"), expected_abstract)
+
+        isogeo_client.close()
 
     def test_search_full(self):
         """Complete searches."""
