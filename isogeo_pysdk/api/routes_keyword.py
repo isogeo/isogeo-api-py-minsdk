@@ -437,6 +437,66 @@ class ApiKeyword:
         return Keyword(**req_keyword.json())
 
     @ApiDecorators._check_bearer_validity
+    def get_from_text(
+        self,
+        text: str,
+        thesaurus_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
+        include: tuple = ("_abilities", "count", "thesaurus"),
+        lang: str = None
+    ) -> list:
+        """Get details about a specific keyword.
+
+        :param str keyword_id: keyword UUID
+        :param tuple include: additional subresource to include in the response
+
+
+        :Example:
+
+        >>> # get a metadata with its tags (or keywords)
+        >>> md = isogeo.metadata.get(METADATA_UUID, include=("tags",))
+        >>> # list Isogeo keywords
+        >>> li_keywords_uuids = [
+            tag[8:] for tag in self.metadata_source.tags
+            if tag.startswith("keyword:isogeo:")
+            ]
+        >>> # pick a random one
+        >>> random_keyword = sample(li_keywords_uuid, 1)[0]
+        >>> # get its details
+        >>> keyword = isogeo.keyword.get(random_keyword)
+        """
+        # request parameter
+        if isinstance(include, (tuple, list)):
+            payload = {
+                "text": text,
+                "_include": ",".join(include)
+            }
+        else:
+            payload = None
+
+        # keyword route
+        url_keyword_from_text = self.utils.get_request_base_url(
+            route="thesauri/{}/keywords".format(thesaurus_id), lang=lang
+        )
+
+        # request
+        req_keyword_from_text = self.api_client.get(
+            url=url_keyword_from_text,
+            headers=self.api_client.header,
+            params=payload,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_keyword_from_text)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_keyword_from_text.json()
+
+    @ApiDecorators._check_bearer_validity
     def create(self, keyword: Keyword, thesaurus_id: str = "1616597fbc4348c8b11ef9d59cf594c8", check_exists: bool = 0) -> Keyword:
         """Add a new keyword to the Isogeo thesaurus.
 
