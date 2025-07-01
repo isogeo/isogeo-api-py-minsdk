@@ -382,7 +382,10 @@ class ApiKeyword:
 
     @ApiDecorators._check_bearer_validity
     def get(
-        self, keyword_id: str, include: tuple = ("_abilities", "count", "thesaurus")
+        self,
+        keyword_id: str,
+        include: tuple = ("_abilities", "count", "thesaurus"),
+        lang: str = None
     ) -> Keyword:
         """Get details about a specific keyword.
 
@@ -411,7 +414,9 @@ class ApiKeyword:
             payload = None
 
         # keyword route
-        url_keyword = self.utils.get_request_base_url(route="keywords/{}".format(keyword_id))
+        url_keyword = self.utils.get_request_base_url(
+            route="keywords/{}".format(keyword_id), lang=lang
+        )
 
         # request
         req_keyword = self.api_client.get(
