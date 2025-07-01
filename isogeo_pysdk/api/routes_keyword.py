@@ -285,6 +285,7 @@ class ApiKeyword:
         specific_tag: list = [],
         include: tuple = ("_abilities", "count", "thesaurus"),
         whole_results: bool = True,
+        lang: str = None
     ) -> KeywordSearch:
         """Search for keywords within a specific group's used thesauri.
 
@@ -358,7 +359,7 @@ class ApiKeyword:
 
         # URL
         url_workgroup_keywords = self.utils.get_request_base_url(
-            route="groups/{}/keywords/search".format(workgroup_id)
+            route="groups/{}/keywords/search".format(workgroup_id), lang=lang
         )
 
         # request
