@@ -65,6 +65,7 @@ class ApiKeyword:
         self,
         metadata_id: str = None,
         include: tuple = ("_abilities", "count", "thesaurus"),
+        lang: str = None
     ) -> list:
         """List a metadata's keywords with complete information.
 
@@ -93,7 +94,7 @@ class ApiKeyword:
 
         # URL
         url_metadata_keywords = self.utils.get_request_base_url(
-            route="resources/{}/keywords/".format(metadata_id)
+            route="resources/{}/keywords/".format(metadata_id), lang=lang
         )
 
         # request
