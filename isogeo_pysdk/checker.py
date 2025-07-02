@@ -14,6 +14,7 @@ import warnings
 from collections import Counter
 from json import JSONDecodeError
 from uuid import UUID
+from typing import Union
 
 # modules
 from isogeo_pysdk.enums import LinkActions, MetadataSubresources
@@ -107,12 +108,12 @@ class IsogeoChecker(object):
                 return True
             return False
 
-    def check_api_response(self, response) -> True or tuple:
+    def check_api_response(self, response) -> Union[bool, tuple]:
         """Check API response and raise exceptions if needed.
 
         :param requests.models.Response response: request response to check
 
-        :rtype: True or tuple
+        :rtype: bool or tuple
 
         :Example:
         >>> checker.check_api_response(<Response [500]>)
@@ -157,7 +158,7 @@ class IsogeoChecker(object):
             if i in li_filters_must_be_unique and filters_count.get(i) > 1:
                 raise ValueError(
                     "This query filter must be unique: {}"
-                    " and it occured {} times.".format(i, filters_count.get(i))
+                    " and it occurred {} times.".format(i, filters_count.get(i))
                 )
 
         # dict
@@ -338,7 +339,7 @@ class IsogeoChecker(object):
         """
         if isinstance(specific_md, (list, tuple)):
             if len(specific_md) > 0:
-                # checking UUIDs and poping bad ones
+                # checking UUIDs and popping bad ones
                 specific_md = list(specific_md)
                 for md in specific_md:
                     if not self.check_is_uuid(md):
@@ -429,7 +430,7 @@ class IsogeoChecker(object):
         :param str resource: subresource to check.
         """
         warnings.warn(
-            "subresource in URL is deprecated." " Use _include mecanism instead.",
+            "subresource in URL is deprecated." " Use _include mechanism instead.",
             DeprecationWarning,
         )
         l_subresources = (
