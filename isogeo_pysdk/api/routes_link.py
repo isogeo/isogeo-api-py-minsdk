@@ -566,7 +566,7 @@ class ApiLink:
         return Link(**link_augmented)
 
     # -- Routes to manage the related objects ------------------------------------------
-    @lru_cache(maxsize=512)
+    # @lru_cache(maxsize=512)
     @ApiDecorators._check_bearer_validity
     def kinds_actions(self, caching: bool = 1) -> list:
         """Get the relation between kinds and action for links.
@@ -657,7 +657,7 @@ class ApiLink:
         return req_links.json()
 
     # -- Helpers -----------------------------------------------------------------------
-    @lru_cache(maxsize=512)
+    # @lru_cache(maxsize=512)
     def clean_kind_action_liability(self, link_actions: tuple, link_kind: str) -> tuple:
         """Link available actions depend on link kind. Relationships between kinds and actions are
         described in the `/link-kinds` route. This is a helper checking the liability between
