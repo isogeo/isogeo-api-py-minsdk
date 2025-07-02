@@ -191,7 +191,7 @@ class ApiDatasource:
                 self.listing(workgroup_id=workgroup_id, include=())
             # check
             if datasource.location in self.api_client._wg_datasources_urls:
-                logging.debug(
+                logger.debug(
                     "Datasource with the same url (location) already exists: {}. Use 'datasource_update' instead.".format(
                         datasource.location
                     )

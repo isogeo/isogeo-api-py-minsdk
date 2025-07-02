@@ -18,6 +18,7 @@ from functools import wraps
 # ########## Globals ###############
 # ##################################
 
+logger = logging.getLogger(__name__)
 
 # #############################################################################
 # ########## Classes ###############
@@ -48,9 +49,9 @@ class ApiDecorators(object):
                 self.api_client.refresh_token(
                     token_url=self.api_client.auto_refresh_url
                 )
-                logging.debug("Token was about to expire, so has been renewed.")
+                logger.debug("Token was about to expire, so has been renewed.")
             else:
-                logging.debug("Token is still valid.")
+                logger.debug("Token is still valid.")
 
             # let continue running the original function
             return decorated_func(*args, **kwargs)

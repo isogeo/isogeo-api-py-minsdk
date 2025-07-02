@@ -325,7 +325,7 @@ class IsogeoUtils(object):
         # handle Isogeo specific UUID in XML exports
         if "isogeo:metadata" in in_uuid:
             in_uuid = "urn:uuid:{}".format(in_uuid.split(":")[-1])
-            logging.debug("Isogeo UUID URN spotted: {}".format(in_uuid))
+            logger.debug("Isogeo UUID URN spotted: {}".format(in_uuid))
         else:
             pass
         # operate
@@ -364,7 +364,7 @@ class IsogeoUtils(object):
                 encoded_word_regex, in_encoded_words
             ).groups()
         except AttributeError:
-            logging.debug("Input text was not encoded into base64 or quori")
+            logger.debug("Input text was not encoded into base64 or quori")
             return in_encoded_words
 
         # decode depending on encoding
@@ -660,7 +660,7 @@ class IsogeoUtils(object):
                 if v in tags_as_dicts.get("catalogs") and duplicated != "ignore":
                     _duplicate_mng(tags_as_dicts.get("catalogs"), (v, k))
                 else:
-                    logging.debug(
+                    logger.debug(
                         "Duplicated catalog name: {}. Last catalog is retained.".format(
                             v
                         )
@@ -671,7 +671,7 @@ class IsogeoUtils(object):
                 if v in tags_as_dicts.get("contacts") and duplicated != "ignore":
                     _duplicate_mng(tags_as_dicts.get("contacts"), (v, k))
                 else:
-                    logging.debug(
+                    logger.debug(
                         "Duplicated contact name: {}. Last contact is retained.".format(
                             v
                         )
@@ -685,7 +685,7 @@ class IsogeoUtils(object):
                 if v in tags_as_dicts.get("data-sources") and duplicated != "ignore":
                     _duplicate_mng(tags_as_dicts.get("data-sources"), (v, k))
                 else:
-                    logging.debug(
+                    logger.debug(
                         "Duplicated data-source name: {}. Last data-source is retained.".format(
                             v
                         )
@@ -705,7 +705,7 @@ class IsogeoUtils(object):
                 if v in tags_as_dicts.get("licenses") and duplicated != "ignore":
                     _duplicate_mng(tags_as_dicts.get("licenses"), (v, k))
                 else:
-                    logging.debug(
+                    logger.debug(
                         "Duplicated license name: {}. Last license is retained.".format(
                             v
                         )
@@ -727,7 +727,7 @@ class IsogeoUtils(object):
                 continue
             # ignored tags
             else:
-                logging.debug("A tag has been ignored during parsing: {}".format(k))
+                logger.debug("A tag has been ignored during parsing: {}".format(k))
 
         # -- QUERY TAGS -------------
         # handle share case
@@ -738,7 +738,7 @@ class IsogeoUtils(object):
         else:
             pass
         # output dict structure
-        logging.debug(prev_query)
+        logger.debug(prev_query)
         query_as_dicts = {
             "_tags": {
                 "actions": {},
@@ -769,7 +769,7 @@ class IsogeoUtils(object):
                 if v in query_tags.get("catalogs") and duplicated != "ignore":
                     _duplicate_mng(query_tags.get("catalogs"), (v, k))
                 else:
-                    logging.debug(
+                    logger.debug(
                         "Duplicated catalog name: {}. Last catalog is retained.".format(
                             v
                         )
@@ -780,7 +780,7 @@ class IsogeoUtils(object):
                 if v in query_tags.get("contacts") and duplicated != "ignore":
                     _duplicate_mng(query_tags.get("contacts"), (v, k))
                 else:
-                    logging.debug(
+                    logger.debug(
                         "Duplicated contact name: {}. Last contact is retained.".format(
                             v
                         )
@@ -794,7 +794,7 @@ class IsogeoUtils(object):
                 if v in query_tags.get("data-sources") and duplicated != "ignore":
                     _duplicate_mng(query_tags.get("data-sources"), (v, k))
                 else:
-                    logging.debug(
+                    logger.debug(
                         "Duplicated data-source name: {}. Last data-source is retained.".format(
                             v
                         )
@@ -814,7 +814,7 @@ class IsogeoUtils(object):
                 if v in query_tags.get("licenses") and duplicated != "ignore":
                     _duplicate_mng(query_tags.get("licenses"), (v, k))
                 else:
-                    logging.debug(
+                    logger.debug(
                         "Duplicated license name: {}. Last license is retained.".format(
                             v
                         )
@@ -836,7 +836,7 @@ class IsogeoUtils(object):
                 continue
             # ignored tags
             else:
-                logging.debug(
+                logger.debug(
                     "A query tag has been ignored during parsing: {}".format(t)
                 )
 

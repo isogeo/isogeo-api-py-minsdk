@@ -102,9 +102,9 @@ class IsogeoChecker(object):
             sock.close()
             return True
         except Exception as e:
-            logging.error(e)
+            logger.error(e)
             if proxies is not None:
-                logging.debug("Proxy detected. Ignoring error...")
+                logger.debug("Proxy detected. Ignoring error...")
                 return True
             return False
 
@@ -131,7 +131,7 @@ class IsogeoChecker(object):
                 resp_error_msg = ""
 
             # log it
-            logging.error(
+            logger.error(
                 "{}: {} - {} - URL: {}".format(
                     response.status_code,
                     response.reason,
@@ -148,7 +148,7 @@ class IsogeoChecker(object):
         """
         # -- SEMANTIC QUERY ---------------------------------------------------
         li_args = parameters.get("q").split()
-        logging.debug(li_args)
+        logger.debug(li_args)
 
         # Unicity
         li_filters = [i.split(":")[0] for i in li_args]
@@ -213,7 +213,7 @@ class IsogeoChecker(object):
                 dico_query["type"].append(i.split(":")[1:][0])
                 continue
             else:
-                # logging.debug(i.split(":")[1], i.split(":")[1].isdigit())
+                # logger.debug(i.split(":")[1], i.split(":")[1].isdigit())
                 dico_query["text"].append(i)
                 continue
 
@@ -239,7 +239,7 @@ class IsogeoChecker(object):
                 "provider value must be one of: {}".format(" | ".join(FILTER_PROVIDERS))
             )
         else:
-            logging.debug(dico_filters)
+            logger.debug(dico_filters)
 
         # -- GEOGRAPHIC -------------------------------------------------------
         in_box = parameters.get("box")
@@ -282,7 +282,7 @@ class IsogeoChecker(object):
             uid = UUID(uuid_str)
             return uid.hex == uuid_str.replace("-", "").replace("urn:uuid:", "")
         except ValueError as e:
-            logging.warning(
+            logger.warning(
                 "uuid ValueError. {} ({}) -- {}".format(type(uuid_str), uuid_str, e)
             )
             return False
@@ -344,7 +344,7 @@ class IsogeoChecker(object):
                 for md in specific_md:
                     if not self.check_is_uuid(md):
                         specific_md.remove(md)
-                        logging.warning(
+                        logger.warning(
                             "Incorrect metadata UUID has been removed: {}".format(md)
                         )
                 # joining survivors
@@ -451,14 +451,14 @@ class IsogeoChecker(object):
                 subresource = subresource
             elif subresource == "tags":
                 subresource = "keywords"
-                logging.debug(
+                logger.debug(
                     "'tags' is an include not a subresource."
                     " Don't worry, it has be automatically renamed "
                     "into 'keywords' which is the correct subresource."
                 )
             elif subresource == "serviceLayers":
                 subresource = "layers"
-                logging.debug(
+                logger.debug(
                     "'serviceLayers' is an include not a subresource."
                     " Don't worry, it has be automatically renamed "
                     "into 'layers' which is the correct subresource."

@@ -188,7 +188,7 @@ class ApiContact:
                 self.listing(workgroup_id=workgroup_id, include=())
             # check
             if contact.email in self.api_client._wg_contacts_emails:
-                logging.debug(
+                logger.debug(
                     "Contact with the same email already exists: {}. Use 'contact_update' instead.".format(
                         contact.email
                     )
