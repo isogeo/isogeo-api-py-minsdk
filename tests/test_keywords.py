@@ -48,8 +48,10 @@ hostname = gethostname()
 # API access
 METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
 WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+METADATA_TEST_FIXTURE_UUID_ML = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE_ML")
+WORKGROUP_TEST_FIXTURE_UUID_ML = environ.get("ISOGEO_WORKGROUP_TEST_UUID_ML")
 
-# shorctuts
+# shortcuts
 ISOGEO_THESAURUS_ID = "1616597fbc4348c8b11ef9d59cf594c8"
 GROUPTHEME_THESAURUS_ID = "0edc90b138ef41e593cf47fbca2cb1ad"
 INSPIRE_THESAURUS_ID = "926c676c380046d7af99bcae343ac813"
@@ -122,6 +124,9 @@ class TestKeywordsComplete(unittest.TestCase):
         cls.metadata_fixture_existing = cls.isogeo.metadata.get(
             metadata_id=METADATA_TEST_FIXTURE_UUID
         )
+        cls.metadata_fixture_ml_existing = cls.isogeo.metadata.get(
+            metadata_id=METADATA_TEST_FIXTURE_UUID_ML
+        )
 
     def setUp(self):
         """Executed before each test."""
@@ -133,6 +138,13 @@ class TestKeywordsComplete(unittest.TestCase):
     def tearDown(self):
         """Executed after each test."""
         sleep(0.5)
+
+    def fetch_specific_thesaurus_kw(self, keywords: list, thesaurus_code: str = "isogeo"):
+        specific_thesaurus_keywords = [
+            kw for kw in keywords
+            if kw.get("_tag").startswith(f"keyword:{thesaurus_code}:")
+        ]
+        return specific_thesaurus_keywords
 
     @classmethod
     def tearDownClass(cls):
@@ -150,7 +162,7 @@ class TestKeywordsComplete(unittest.TestCase):
     # -- TESTS ---------------------------------------------------------
 
     # -- POST --
-    def test_keywords_create_basic_nochecking_exists(self):
+    def test_keywords_create_basic_unchecking_exists(self):
         """POST :thesauri/{isogeo_thesaurus_uuid}/keywords/}"""
         # var
         keyword_text = "{} - {}".format(get_test_marker(), self.discriminator)
@@ -224,7 +236,7 @@ class TestKeywordsComplete(unittest.TestCase):
                 (keyword_new, thesaurus_id)
             )
 
-    def test_keywords_create_similar_nochecking_exists(self):
+    def test_keywords_create_similar_unchecking_exists(self):
         """POST :thesauri/{isogeo_thesaurus_uuid}/keywords/}
 
         Handling case when the keyword already exists
@@ -304,21 +316,294 @@ class TestKeywordsComplete(unittest.TestCase):
 
     # -- GET --
     def test_keywords_list_metadata(self):
-        """GET :resources/{metadata_uuid}/keywords/}"""
+        """GET :resources/{metadata_uuid}/keywords"""
         # retrieve metadata keywords from keywords api module
         keywords_metadata = self.isogeo.keyword.metadata(
             metadata_id=METADATA_TEST_FIXTURE_UUID
         )
         self.assertIsInstance(keywords_metadata, list)
+        self.assertIsNot(len(keywords_metadata), 0)
 
-        # retrieve metadata keywords from metadata api module (shortut)
+        keywords_metadata_inspire = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "inspire-theme"
+        )
+        self.assertIsInstance(keywords_metadata_inspire, list)
+        self.assertIsNot(len(keywords_metadata_inspire), 0)
+
+        keywords_metadata_group = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "group-theme"
+        )
+        self.assertIsInstance(keywords_metadata_group, list)
+        self.assertIsNot(len(keywords_metadata_group), 0)
+
+        keywords_metadata_isogeo = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "isogeo"
+        )
+        self.assertIsInstance(keywords_metadata_isogeo, list)
+        self.assertIsNot(len(keywords_metadata_isogeo), 0)
+
+        # retrieve metadata keywords from metadata api module (shortcut)
         metadata_keywords = self.isogeo.metadata.keywords(
             metadata=self.metadata_fixture_existing
         )
         self.assertIsInstance(metadata_keywords, list)
+        self.assertIsNot(len(metadata_keywords), 0)
+
+        metadata_keywords_inspire = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "inspire-theme"
+        )
+        self.assertIsInstance(metadata_keywords_inspire, list)
+        self.assertIsNot(len(metadata_keywords_inspire), 0)
+
+        metadata_keywords_group = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "group-theme"
+        )
+        self.assertIsInstance(metadata_keywords_group, list)
+        self.assertIsNot(len(metadata_keywords_group), 0)
+
+        metadata_keywords_isogeo = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "isogeo"
+        )
+        self.assertIsInstance(metadata_keywords_isogeo, list)
+        self.assertIsNot(len(metadata_keywords_isogeo), 0)
 
         # compare both
         self.assertEqual(keywords_metadata, metadata_keywords)
+        self.assertEqual(keywords_metadata_inspire, metadata_keywords_inspire)
+        self.assertEqual(keywords_metadata_group, metadata_keywords_group)
+        self.assertEqual(keywords_metadata_isogeo, metadata_keywords_isogeo)
+
+    def test_keywords_list_metadata_multilingual(self):
+        """GET :resources/{metadata_uuid}/keywords"""
+        # retrieve metadata keywords from keywords api module
+        keywords_metadata = self.isogeo.keyword.metadata(
+            metadata_id=METADATA_TEST_FIXTURE_UUID_ML
+        )
+        self.assertIsInstance(keywords_metadata, list)
+        self.assertIsNot(len(keywords_metadata), 0)
+
+        keywords_metadata_inspire = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "inspire-theme"
+        )
+        self.assertIsInstance(keywords_metadata_inspire, list)
+        self.assertIsNot(len(keywords_metadata_inspire), 0)
+
+        keywords_metadata_group = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "group-theme"
+        )
+        self.assertIsInstance(keywords_metadata_group, list)
+        self.assertIsNot(len(keywords_metadata_group), 0)
+
+        keywords_metadata_isogeo = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "isogeo"
+        )
+        self.assertIsInstance(keywords_metadata_isogeo, list)
+        self.assertIsNot(len(keywords_metadata_isogeo), 0)
+
+        # retrieve metadata keywords from metadata api module (shortcut)
+        metadata_keywords = self.isogeo.metadata.keywords(
+            metadata=self.metadata_fixture_ml_existing
+        )
+        self.assertIsInstance(metadata_keywords, list)
+        self.assertIsNot(len(metadata_keywords), 0)
+
+        metadata_keywords_inspire = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "inspire-theme"
+        )
+        self.assertIsInstance(metadata_keywords_inspire, list)
+        self.assertIsNot(len(metadata_keywords_inspire), 0)
+
+        metadata_keywords_group = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "group-theme"
+        )
+        self.assertIsInstance(metadata_keywords_group, list)
+        self.assertIsNot(len(metadata_keywords_group), 0)
+
+        metadata_keywords_isogeo = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "isogeo"
+        )
+        self.assertIsInstance(metadata_keywords_isogeo, list)
+        self.assertIsNot(len(metadata_keywords_isogeo), 0)
+
+        # compare both
+        self.assertEqual(keywords_metadata, metadata_keywords)
+        self.assertEqual(keywords_metadata_inspire, metadata_keywords_inspire)
+        self.assertEqual(keywords_metadata_group, metadata_keywords_group)
+        self.assertEqual(keywords_metadata_isogeo, metadata_keywords_isogeo)
+
+    def test_keywords_list_metadata_multilingual_fr(self):
+        """GET :resources/{metadata_uuid}/keywords"""
+        # retrieve metadata keywords from keywords api module
+        keywords_metadata = self.isogeo.keyword.metadata(
+            metadata_id=METADATA_TEST_FIXTURE_UUID_ML, lang="fr"
+        )
+        self.assertIsInstance(keywords_metadata, list)
+        self.assertIsNot(len(keywords_metadata), 0)
+
+        keywords_metadata_inspire = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "inspire-theme"
+        )
+        self.assertIsInstance(keywords_metadata_inspire, list)
+        self.assertIsNot(len(keywords_metadata_inspire), 0)
+
+        keywords_metadata_group = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "group-theme"
+        )
+        self.assertIsInstance(keywords_metadata_group, list)
+        self.assertIsNot(len(keywords_metadata_group), 0)
+
+        keywords_metadata_isogeo = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "isogeo"
+        )
+        self.assertIsInstance(keywords_metadata_isogeo, list)
+        self.assertIsNot(len(keywords_metadata_isogeo), 0)
+
+        # retrieve metadata keywords from metadata api module (shortcut)
+        metadata_keywords = self.isogeo.metadata.keywords(
+            metadata=self.metadata_fixture_ml_existing, lang="fr"
+        )
+        self.assertIsInstance(metadata_keywords, list)
+        self.assertIsNot(len(metadata_keywords), 0)
+
+        metadata_keywords_inspire = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "inspire-theme"
+        )
+        self.assertIsInstance(metadata_keywords_inspire, list)
+        self.assertIsNot(len(metadata_keywords_inspire), 0)
+
+        metadata_keywords_group = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "group-theme"
+        )
+        self.assertIsInstance(metadata_keywords_group, list)
+        self.assertIsNot(len(metadata_keywords_group), 0)
+
+        metadata_keywords_isogeo = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "isogeo"
+        )
+        self.assertIsInstance(metadata_keywords_isogeo, list)
+        self.assertIsNot(len(metadata_keywords_isogeo), 0)
+
+        # compare both
+        self.assertEqual(keywords_metadata, metadata_keywords)
+        self.assertEqual(keywords_metadata_inspire, metadata_keywords_inspire)
+        self.assertEqual(keywords_metadata_group, metadata_keywords_group)
+        self.assertEqual(keywords_metadata_isogeo, metadata_keywords_isogeo)
+
+    def test_keywords_list_metadata_multilingual_en(self):
+        """GET :resources/{metadata_uuid}/keywords"""
+        # retrieve metadata keywords from keywords api module
+        keywords_metadata = self.isogeo.keyword.metadata(
+            metadata_id=METADATA_TEST_FIXTURE_UUID_ML, lang="en"
+        )
+        self.assertIsInstance(keywords_metadata, list)
+        self.assertIsNot(len(keywords_metadata), 0)
+
+        keywords_metadata_inspire = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "inspire-theme"
+        )
+        self.assertIsInstance(keywords_metadata_inspire, list)
+        self.assertIsNot(len(keywords_metadata_inspire), 0)
+
+        keywords_metadata_group = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "group-theme"
+        )
+        self.assertIsInstance(keywords_metadata_group, list)
+        self.assertIsNot(len(keywords_metadata_group), 0)
+
+        keywords_metadata_isogeo = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "isogeo"
+        )
+        self.assertIsInstance(keywords_metadata_isogeo, list)
+        self.assertIsNot(len(keywords_metadata_isogeo), 0)
+
+        # retrieve metadata keywords from metadata api module (shortcut)
+        metadata_keywords = self.isogeo.metadata.keywords(
+            metadata=self.metadata_fixture_ml_existing, lang="en"
+        )
+        self.assertIsInstance(metadata_keywords, list)
+        self.assertIsNot(len(metadata_keywords), 0)
+
+        metadata_keywords_inspire = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "inspire-theme"
+        )
+        self.assertIsInstance(metadata_keywords_inspire, list)
+        self.assertIsNot(len(metadata_keywords_inspire), 0)
+
+        metadata_keywords_group = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "group-theme"
+        )
+        self.assertIsInstance(metadata_keywords_group, list)
+        self.assertIsNot(len(metadata_keywords_group), 0)
+
+        metadata_keywords_isogeo = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "isogeo"
+        )
+        self.assertIsInstance(metadata_keywords_isogeo, list)
+        self.assertIsNot(len(metadata_keywords_isogeo), 0)
+
+        # compare both
+        self.assertEqual(keywords_metadata, metadata_keywords)
+        self.assertEqual(keywords_metadata_inspire, metadata_keywords_inspire)
+        self.assertEqual(keywords_metadata_group, metadata_keywords_group)
+        self.assertEqual(keywords_metadata_isogeo, metadata_keywords_isogeo)
+
+    def test_keywords_list_metadata_multilingual_es(self):
+        """GET :resources/{metadata_uuid}/keywords"""
+        # retrieve metadata keywords from keywords api module
+        keywords_metadata = self.isogeo.keyword.metadata(
+            metadata_id=METADATA_TEST_FIXTURE_UUID_ML, lang="es"
+        )
+        self.assertIsInstance(keywords_metadata, list)
+        self.assertIsNot(len(keywords_metadata), 0)
+
+        keywords_metadata_inspire = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "inspire-theme"
+        )
+        self.assertIsInstance(keywords_metadata_inspire, list)
+        self.assertIsNot(len(keywords_metadata_inspire), 0)
+
+        keywords_metadata_group = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "group-theme"
+        )
+        self.assertIsInstance(keywords_metadata_group, list)
+        self.assertIsNot(len(keywords_metadata_group), 0)
+
+        keywords_metadata_isogeo = self.fetch_specific_thesaurus_kw(
+            keywords_metadata, "isogeo"
+        )
+        self.assertIsInstance(keywords_metadata_isogeo, list)
+        self.assertIsNot(len(keywords_metadata_isogeo), 0)
+
+        # retrieve metadata keywords from metadata api module (shortcut)
+        metadata_keywords = self.isogeo.metadata.keywords(
+            metadata=self.metadata_fixture_ml_existing, lang="es"
+        )
+        self.assertIsInstance(metadata_keywords, list)
+        self.assertIsNot(len(metadata_keywords), 0)
+
+        metadata_keywords_inspire = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "inspire-theme"
+        )
+        self.assertIsInstance(metadata_keywords_inspire, list)
+        self.assertIsNot(len(metadata_keywords_inspire), 0)
+
+        metadata_keywords_group = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "group-theme"
+        )
+        self.assertIsInstance(metadata_keywords_group, list)
+        self.assertIsNot(len(metadata_keywords_group), 0)
+
+        metadata_keywords_isogeo = self.fetch_specific_thesaurus_kw(
+            metadata_keywords, "isogeo"
+        )
+        self.assertIsInstance(metadata_keywords_isogeo, list)
+        self.assertIsNot(len(metadata_keywords_isogeo), 0)
+
+        # compare both
+        self.assertEqual(keywords_metadata, metadata_keywords)
+        self.assertEqual(keywords_metadata_inspire, metadata_keywords_inspire)
+        self.assertEqual(keywords_metadata_group, metadata_keywords_group)
+        self.assertEqual(keywords_metadata_isogeo, metadata_keywords_isogeo)
 
     def test_keywords_search_workgroup(self):
         """GET :groups/{workgroup_uuid}/keywords/search}"""
@@ -501,14 +786,14 @@ class TestKeywordsComplete(unittest.TestCase):
         )
         if groupTheme_workgroup_keywords.results and len(groupTheme_workgroup_keywords.results):
             groupTheme_workgroup_tags = [kw.get("_tag") for kw in groupTheme_workgroup_keywords.results]
-            randow_keyword_dict = sample(
+            random_keyword_dict = sample(
                 [kw_dict for kw_dict in groupTheme_thesaurus_keywords.results if kw_dict.get("_tag") not in groupTheme_workgroup_tags],
                 1
             )[0]
         else:
             groupTheme_workgroup_tags = []
-            randow_keyword_dict = sample(groupTheme_thesaurus_keywords.results, 1)[0]
-        random_keyword = Keyword(**randow_keyword_dict)
+            random_keyword_dict = sample(groupTheme_thesaurus_keywords.results, 1)[0]
+        random_keyword = Keyword(**random_keyword_dict)
 
         # check that random_keyword is not already associated with fixture workgroup
         self.assertFalse(random_keyword._tag in groupTheme_workgroup_tags)
@@ -590,7 +875,7 @@ class TestKeywordsComplete(unittest.TestCase):
         # fetch fixture workgroup
         workgroup_test_fixture = self.isogeo.workgroup.get(WORKGROUP_TEST_FIXTURE_UUID)
 
-        # set workgroup.areKeywordsRestricted object propertie to false
+        # set workgroup.areKeywordsRestricted object property to false
         workgroup_test_fixture.areKeywordsRestricted = False
 
         # check that it won't even try to associate a keyword
@@ -622,14 +907,14 @@ class TestKeywordsComplete(unittest.TestCase):
         )
         if isogeo_workgroup_keywords.results and len(isogeo_workgroup_keywords.results):
             isogeo_workgroup_tags = [kw.get("_tag") for kw in isogeo_workgroup_keywords.results]
-            randow_keyword_dict = sample(
+            random_keyword_dict = sample(
                 [kw_dict for kw_dict in isogeo_thesaurus_keywords.results if kw_dict.get("_tag") not in isogeo_workgroup_tags],
                 1
             )[0]
         else:
             isogeo_workgroup_tags = []
-            randow_keyword_dict = sample(isogeo_thesaurus_keywords.results, 1)[0]
-        random_keyword = Keyword(**randow_keyword_dict)
+            random_keyword_dict = sample(isogeo_thesaurus_keywords.results, 1)[0]
+        random_keyword = Keyword(**random_keyword_dict)
 
         # check that random_keyword is not already associated with fixture workgroup
         self.assertFalse(random_keyword._tag in isogeo_workgroup_tags)
