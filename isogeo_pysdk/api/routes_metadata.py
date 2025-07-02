@@ -339,7 +339,7 @@ class ApiMetadata:
 
         # HTTP method according to the metadata.type
         if metadata.type == "service" and _http_method != "PUT":
-            return self.update(metadata=metadata, _http_method="PUT")
+            return self.update(metadata=metadata, _http_method="PUT", lang=lang)
 
         # request
         req_metadata_update = self.api_client.request(
