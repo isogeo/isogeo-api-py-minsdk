@@ -429,10 +429,10 @@ class IsogeoChecker(object):
 
         :param str resource: subresource to check.
         """
-        warnings.warn(
-            "subresource in URL is deprecated." " Use _include mechanism instead.",
-            DeprecationWarning,
-        )
+        # warnings.warn(
+        #     "subresource in URL is deprecated." " Use _include mechanism instead.",
+        #     DeprecationWarning,
+        # )
         l_subresources = (
             "conditions",
             "contacts",

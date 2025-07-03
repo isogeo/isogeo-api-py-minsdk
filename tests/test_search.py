@@ -195,11 +195,6 @@ class TestSearch(unittest.TestCase):
         self.assertTrue(hasattr(basic_search, "total"))
 
         # additional checks
-        print(
-            "Authenticated application has access to {} results".format(
-                basic_search.total
-            )
-        )
         self.assertIsInstance(basic_search.total, int)
         self.assertEqual(len(basic_search.results), 20)
 
