@@ -285,6 +285,8 @@ class ApiSearch:
                     # sorting
                     "order_by": order_by,
                     "order_dir": order_dir,
+                    # multilingualism
+                    "lang": lang
                 }
 
                 # check loop state
@@ -362,7 +364,7 @@ class ApiSearch:
         # end of method
         return req_metadata_search
 
-    # -- SEARCH SUBMETHODS
+    # -- SEARCH SUB METHODS
     async def search_metadata_asynchronous(
         self, total_results: int, max_workers: int = 10, **kwargs
     ) -> MetadataSearch:
@@ -410,6 +412,8 @@ class ApiSearch:
                         expected_total=total_results,
                         tags_as_dicts=0,
                         whole_results=0,
+                        # multilingualism
+                        lang=kwargs.get("lang")
                     ),
                 )
                 for offset in li_offsets
