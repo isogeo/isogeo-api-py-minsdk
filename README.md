@@ -62,7 +62,7 @@ Tests are performed for each published commit:
 - by [Azure Pipelines](https://dev.azure.com/isogeo/Python%20SDK/_build)
 
 ```powershell
-python -m pip install --upgrade -r tests/requirements_test.txt
+python -m pip install --upgrade -r requirements_dev.txt
 python -m pytest
 ```
 
