@@ -18,7 +18,7 @@ pr: none
 variables:
   packageFolderName: "isogeo_pysdk"
   pyPiPackageName: "isogeo-pysdk"
-  pythonVersion: "3.8"
+  pythonVersion: "3.9"
   vmImageName: "windows-2022"
 
 # -- STAGES ----------------------------------------------------------------------------
@@ -73,12 +73,12 @@ stages:
   #     vmImage: $(vmImageName)
   #   strategy:
   #     matrix:
-  #       Python38:
-  #         python.version: '3.8'
-  #       Python310:
-  #         python.version: '3.9'
   #       Python39:
+  #         python.version: '3.9'
+  #       Python310:
   #         python.version: '3.10'
+  #       Python311:
+  #         python.version: '3.11'
   #     maxParallel: 1
 
   #   steps:
