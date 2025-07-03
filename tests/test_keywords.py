@@ -19,12 +19,15 @@ python -m unittest tests.test_keywords.TestKeywordsComplete.test_keywords_create
 import logging
 import unittest
 import urllib3
+import json
 from os import environ
 from pathlib import Path
 from random import sample
 from socket import gethostname
 from sys import _getframe, exit
 from time import gmtime, sleep, strftime
+from collections import Counter
+import random
 
 # 3rd party
 from dotenv import load_dotenv
@@ -145,6 +148,15 @@ class TestKeywordsComplete(unittest.TestCase):
             if kw.get("_tag").startswith(f"keyword:{thesaurus_code}:")
         ]
         return specific_thesaurus_keywords
+
+    def make_dict_hashable(self, dictionary: dict, excluded_keys: list = []):
+
+        filtered_dict = dict(
+            (k, dictionary.get(k))
+            for k in dictionary if k not in excluded_keys
+        )
+        hashable_dict = json.dumps(filtered_dict, sort_keys=True, ensure_ascii=False)
+        return hashable_dict
 
     @classmethod
     def tearDownClass(cls):
@@ -707,6 +719,41 @@ class TestKeywordsComplete(unittest.TestCase):
                 self.assertEqual(keyword.text, i.get("text"))
                 self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
 
+    def test_keywords_search_thesaurus_multilingual_fr(self):
+        """GET :thesauri/{thesauri_uuid}/keywords/search}"""
+
+        # retrieve thesauri keywords
+        for thesaurus_id in [ISOGEO_THESAURUS_ID, GROUPTHEME_THESAURUS_ID]:
+            th_keywords = self.isogeo.keyword.thesaurus(
+                thesaurus_id=thesaurus_id, whole_results=False, page_size=20, lang="fr"
+            )
+            if th_keywords.total > 20:
+                self.assertEqual(len(th_keywords.results), 20)
+            else:
+                self.assertEqual(th_keywords.total, len(th_keywords.results))
+            # parse and test object loader
+            for i in th_keywords.results:
+                # load it
+                keyword = Keyword(**i)
+                # tests attributes structure
+                self.assertTrue(hasattr(keyword, "_abilities"))
+                self.assertTrue(hasattr(keyword, "_id"))
+                self.assertTrue(hasattr(keyword, "_tag"))
+                self.assertTrue(hasattr(keyword, "code"))
+                self.assertTrue(hasattr(keyword, "count"))
+                self.assertTrue(hasattr(keyword, "description"))
+                self.assertTrue(hasattr(keyword, "text"))
+                self.assertTrue(hasattr(keyword, "thesaurus"))
+                # tests attributes value
+                self.assertEqual(keyword._abilities, i.get("_abilities"))
+                self.assertEqual(keyword._id, i.get("_id"))
+                self.assertEqual(keyword._tag, i.get("_tag"))
+                self.assertEqual(keyword.code, i.get("code"))
+                self.assertEqual(keyword.count, i.get("count"))
+                self.assertEqual(keyword.description, i.get("description"))
+                self.assertEqual(keyword.text, i.get("text"))
+                self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
+
     def test_keywords_search_thesaurus_whole_results(self):
         """GET :thesauri/{thesauri_uuid}/keywords/search}"""
 
@@ -743,6 +790,56 @@ class TestKeywordsComplete(unittest.TestCase):
             self.assertEqual(keyword.text, i.get("text"))
             self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
 
+    def test_keywords_search_thesaurus_whole_results_multilingual(self):
+        """GET :thesauri/{thesauri_uuid}/keywords/search}"""
+
+        # retrieve all group themes in 4 different languages
+        groupThemes_fr = self.isogeo.keyword.thesaurus(
+            thesaurus_id=GROUPTHEME_THESAURUS_ID, whole_results=True, lang="fr"
+        ).results
+        groupThemes_en = self.isogeo.keyword.thesaurus(
+            thesaurus_id=GROUPTHEME_THESAURUS_ID, whole_results=True, lang="en"
+        ).results
+        groupThemes_es = self.isogeo.keyword.thesaurus(
+            thesaurus_id=GROUPTHEME_THESAURUS_ID, whole_results=True, lang="es"
+        ).results
+        groupThemes_pt = self.isogeo.keyword.thesaurus(
+            thesaurus_id=GROUPTHEME_THESAURUS_ID, whole_results=True, lang="pt"
+        ).results
+        # parse results to make theme easier to compare
+        groupThemes_fr_raw = [
+            self.make_dict_hashable(kw) for kw in groupThemes_fr
+        ]
+        groupThemes_en_raw = [
+            self.make_dict_hashable(kw) for kw in groupThemes_en
+        ]
+        groupThemes_es_raw = [
+            self.make_dict_hashable(kw) for kw in groupThemes_es
+        ]
+        groupThemes_pt_raw = [
+            self.make_dict_hashable(kw) for kw in groupThemes_pt
+        ]
+        groupThemes_fr_raw_noText = [
+            self.make_dict_hashable(kw, ["text"]) for kw in groupThemes_fr
+        ]
+        groupThemes_en_raw_noText = [
+            self.make_dict_hashable(kw, ["text"]) for kw in groupThemes_en
+        ]
+        groupThemes_es_raw_noText = [
+            self.make_dict_hashable(kw, ["text"]) for kw in groupThemes_es
+        ]
+        groupThemes_pt_raw_noText = [
+            self.make_dict_hashable(kw, ["text"]) for kw in groupThemes_pt
+        ]
+
+        self.assertNotEqual(Counter(groupThemes_en_raw), Counter(groupThemes_fr_raw))
+        self.assertNotEqual(Counter(groupThemes_es_raw), Counter(groupThemes_fr_raw))
+        self.assertNotEqual(Counter(groupThemes_pt_raw), Counter(groupThemes_fr_raw))
+
+        self.assertEqual(Counter(groupThemes_en_raw_noText), Counter(groupThemes_fr_raw_noText))
+        self.assertEqual(Counter(groupThemes_es_raw_noText), Counter(groupThemes_fr_raw_noText))
+        self.assertEqual(Counter(groupThemes_pt_raw_noText), Counter(groupThemes_fr_raw_noText))
+
     def test_keyword_detailed(self):
         """GET :keywords/{keyword_uuid}"""
 
@@ -750,6 +847,36 @@ class TestKeywordsComplete(unittest.TestCase):
         for thesaurus_id in [ISOGEO_THESAURUS_ID, GROUPTHEME_THESAURUS_ID]:
             thesaurus_keywords = self.isogeo.keyword.thesaurus(
                 thesaurus_id=thesaurus_id, page_size=50, include=("_abilities", "count", "thesaurus")
+            )
+            # pick one randomly
+            random_keyword_dict = sample(thesaurus_keywords.results, 1)[0]
+            random_keyword = self.isogeo.keyword.get(random_keyword_dict.get("_id"))
+            # tests attributes structure
+            self.assertTrue(hasattr(random_keyword, "_abilities"))
+            self.assertTrue(hasattr(random_keyword, "_id"))
+            self.assertTrue(hasattr(random_keyword, "_tag"))
+            self.assertTrue(hasattr(random_keyword, "code"))
+            self.assertTrue(hasattr(random_keyword, "count"))
+            self.assertTrue(hasattr(random_keyword, "description"))
+            self.assertTrue(hasattr(random_keyword, "text"))
+            self.assertTrue(hasattr(random_keyword, "thesaurus"))
+            self.assertEqual(random_keyword_dict.get("_abilities"), random_keyword._abilities)
+            self.assertEqual(random_keyword_dict.get("_id"), random_keyword._id)
+            self.assertEqual(random_keyword_dict.get("_tag"), random_keyword._tag)
+            self.assertEqual(random_keyword_dict.get("code"), random_keyword.code)
+            self.assertEqual(random_keyword_dict.get("count"), random_keyword.count)
+            self.assertEqual(random_keyword_dict.get("description"), random_keyword.description)
+            self.assertEqual(random_keyword_dict.get("text"), random_keyword.text)
+            self.assertEqual(random_keyword_dict.get("thesaurus"), random_keyword.thesaurus)
+
+    def test_keyword_detailed_multilingual(self):
+        """GET :keywords/{keyword_uuid}"""
+
+        # retrieve a random thesauri keywords
+        for thesaurus_id in [ISOGEO_THESAURUS_ID, GROUPTHEME_THESAURUS_ID]:
+            lang = random.choice(["fr", "en", "es", "pt"])
+            thesaurus_keywords = self.isogeo.keyword.thesaurus(
+                thesaurus_id=thesaurus_id, page_size=50, include=("_abilities", "count", "thesaurus"), lang=lang
             )
             # pick one randomly
             random_keyword_dict = sample(thesaurus_keywords.results, 1)[0]
