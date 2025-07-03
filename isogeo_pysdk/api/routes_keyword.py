@@ -213,6 +213,7 @@ class ApiKeyword:
                     # options
                     page_size=100,
                     whole_results=0,
+                    lang=lang
                 )
             else:
                 # store search args as dict
@@ -226,6 +227,8 @@ class ApiKeyword:
                     # sorting
                     "order_by": order_by,
                     "order_dir": order_dir,
+                    # multilingualism
+                    "lang": lang
                 }
 
                 # check loop state
@@ -987,7 +990,7 @@ class ApiKeyword:
         # end of method
         return req_keyword_dissociate
 
-    # -- SEARCH SUBMETHODS
+    # -- SEARCH SUB METHODS
     async def search_keyword_asynchronous(
         self, total_results: int, max_workers: int = 10, **kwargs
     ) -> KeywordSearch:
@@ -1027,6 +1030,8 @@ class ApiKeyword:
                         page_size=100,
                         # options
                         whole_results=0,
+                        # multilingualism
+                        lang=kwargs.get("lang"),
                     ),
                 )
                 for offset in li_offsets
