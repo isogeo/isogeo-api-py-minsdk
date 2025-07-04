@@ -1,11 +1,10 @@
 # Isogeo API Python SDK
 
-![PyPI](https://img.shields.io/pypi/v/isogeo-pysdk.svg?style=flat-square) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/isogeo-pysdk?style=flat-square)
+![PyPI](https://img.shields.io/pypi/v/isogeo-pysdk.svg?style=flat-default) ![PyPI - Python Version](https://img.shields.io/pypi/pyversions/isogeo-pysdk?style=flat-default)
 
 [![Build Status](https://dev.azure.com/isogeo/Python%20SDK/_apis/build/status/isogeo.isogeo-api-py-minsdk?branchName=master)](https://dev.azure.com/isogeo/Python%20SDK/_build/latest?definitionId=3&branchName=master)
-![Azure DevOps coverage](https://img.shields.io/azure-devops/coverage/isogeo/Python%20SDK/3?style=flat-square)
 
-[![Documentation Status](https://readthedocs.org/projects/isogeo-api-pysdk/badge/?version=latest)](https://isogeo-api-pysdk.readthedocs.io/en/latest/?badge=latest) [![Code style: black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+[![Documentation Status](https://app.readthedocs.org/projects/isogeo-api-pysdk/badge/?version=latest&style=flat-default)](https://app.readthedocs.org/projects/isogeo-api-pysdk/builds/?version__slug=latest)
 
 A Python package to use Isogeo REST API.
 
