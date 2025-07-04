@@ -8,7 +8,7 @@
 
 # make a virtualenv to perform packaging
 "-- STEP -- Creating temp virtualenv to perform dependencies packaging"
-py -3 -m venv .venv_tests
+py -3 -m venv .venv_docs
 ./.venv_tests/Scripts/activate
 
 # dependencies
@@ -19,7 +19,7 @@ python -m pip install -U -r ./requirements_dev.txt
 
 # remove previous builds
 "-- STEP -- Clean up previous build"
-rm -r docs/_build/*
+Remove-Item docs/_build/* -Recurse
 
 # build
 "-- STEP -- Build docs"
@@ -29,4 +29,4 @@ sphinx-apidoc -e -f -M -o ./docs/_apidoc ./isogeo_pysdk ./isogeo_pysdk/samples
 "-- STEP -- Get out the virtualenv"
 deactivate
 Invoke-Item ./docs/_build/html/index.html
-# rm -r .venv_docs
+Remove-Item .venv_docs -Recurse 
