@@ -236,7 +236,7 @@ class Isogeo(OAuth2Session):
         ) = self.utils.set_base_url(platform.lower(), isogeo_urls)
 
         if self.api_url == "missing_url":
-            raise ValueError("'app_url' is missing into isogeo_urls dict.")
+            raise ValueError("'api_url' is missing into isogeo_urls dict.")
         else:
             pass
 

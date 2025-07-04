@@ -114,10 +114,6 @@ class TestToken(unittest.TestCase):
         self.assertIn("refresh_token", isogeo.token)
         self.assertIn("expires_at", isogeo.token)
 
-        # check expires_at
-        print(datetime.utcfromtimestamp(isogeo.token.get("expires_at")))
-        print(datetime.utcnow())
-
         # close
         isogeo.close()
 

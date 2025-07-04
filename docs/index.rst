@@ -2,9 +2,9 @@ Isogeo Python SDK - Documentation
 =================================
 
 .. module:: isogeo-pysdk
-.. moduleauthor:: Julien M. (Isogeo)
+.. codeauthor:: Julien M. & Simon S.
 
-:Author: Julien M. (Isogeo)
+:Author: Julien M. & Simon S.
 :Source code: https://github.com/Isogeo/isogeo-api-py-minsdk/
 :Issues: https://github.com/Isogeo/isogeo-api-py-minsdk/issues
 

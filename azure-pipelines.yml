@@ -18,8 +18,8 @@ pr: none
 variables:
   packageFolderName: "isogeo_pysdk"
   pyPiPackageName: "isogeo-pysdk"
-  pythonVersion: "3.8"
-  vmImageName: "windows-2019"
+  pythonVersion: "3.9"
+  vmImageName: "windows-2022"
 
 # -- STAGES ----------------------------------------------------------------------------
 stages:
@@ -54,7 +54,7 @@ stages:
       - script: |
           python -m flake8  ./$(packageFolderName)/ --count --select=E9,F63,F7,F82 --show-source --statistics
           python -m flake8  ./$(packageFolderName)/ --count --exit-zero --max-complexity=15 --max-line-length=100 --ignore E501,W505,C901,W503
-        displayName: "Static code analisis (PEP8 conformance, imports...) with flake8"
+        displayName: "Static code analysis (PEP8 conformance, imports...) with flake8"
 
       # save formatted code to use later avoiding git clone again
       - publish: $(System.DefaultWorkingDirectory)
@@ -73,12 +73,12 @@ stages:
   #     vmImage: $(vmImageName)
   #   strategy:
   #     matrix:
-  #       Python38:
-  #         python.version: '3.8'
-  #       Python310:
-  #         python.version: '3.9'
   #       Python39:
+  #         python.version: '3.9'
+  #       Python310:
   #         python.version: '3.10'
+  #       Python311:
+  #         python.version: '3.11'
   #     maxParallel: 1
 
   #   steps:

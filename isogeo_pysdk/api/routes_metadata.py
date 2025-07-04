@@ -339,7 +339,7 @@ class ApiMetadata:
 
         # HTTP method according to the metadata.type
         if metadata.type == "service" and _http_method != "PUT":
-            return self.update(metadata=metadata, _http_method="PUT")
+            return self.update(metadata=metadata, _http_method="PUT", lang=lang)
 
         # request
         req_metadata_update = self.api_client.request(
@@ -422,7 +422,10 @@ class ApiMetadata:
         return self.api_client.catalog.metadata(metadata_id=metadata._id)
 
     def keywords(
-        self, metadata: Metadata, include: tuple = ("_abilities", "count", "thesaurus")
+        self,
+        metadata: Metadata,
+        include: tuple = ("_abilities", "count", "thesaurus"),
+        lang: str = None
     ) -> list:
         """Returns associated keywords with a metadata. Just a shortcut.
 
@@ -436,7 +439,7 @@ class ApiMetadata:
         :rtype: list
         """
         return self.api_client.keyword.metadata(
-            metadata_id=metadata._id, include=include
+            metadata_id=metadata._id, include=include, lang=lang
         )
 
 

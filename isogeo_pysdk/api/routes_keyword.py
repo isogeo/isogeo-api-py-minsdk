@@ -65,6 +65,7 @@ class ApiKeyword:
         self,
         metadata_id: str = None,
         include: tuple = ("_abilities", "count", "thesaurus"),
+        lang: str = None
     ) -> list:
         """List a metadata's keywords with complete information.
 
@@ -93,7 +94,7 @@ class ApiKeyword:
 
         # URL
         url_metadata_keywords = self.utils.get_request_base_url(
-            route="resources/{}/keywords/".format(metadata_id)
+            route="resources/{}/keywords/".format(metadata_id), lang=lang
         )
 
         # request
@@ -127,8 +128,9 @@ class ApiKeyword:
         specific_tag: list = [],
         include: tuple = ("_abilities", "count"),
         whole_results: bool = True,
+        lang: str = None
     ) -> KeywordSearch:
-        """Search for keywords within a specific thesaurus or a specific group.
+        """Search for keywords within a specific thesaurus.
 
         :param str thesaurus_id: thesaurus UUID
         :param str query: search terms, equivalent of **q** parameter in API.
@@ -171,7 +173,7 @@ class ApiKeyword:
 
         # URL
         url_thesauri_keywords = self.utils.get_request_base_url(
-            route="thesauri/{}/keywords/search".format(thesaurus_id)
+            route="thesauri/{}/keywords/search".format(thesaurus_id), lang=lang
         )
 
         if whole_results:
@@ -211,6 +213,7 @@ class ApiKeyword:
                     # options
                     page_size=100,
                     whole_results=0,
+                    lang=lang
                 )
             else:
                 # store search args as dict
@@ -224,6 +227,8 @@ class ApiKeyword:
                     # sorting
                     "order_by": order_by,
                     "order_dir": order_dir,
+                    # multilingualism
+                    "lang": lang
                 }
 
                 # check loop state
@@ -283,6 +288,7 @@ class ApiKeyword:
         specific_tag: list = [],
         include: tuple = ("_abilities", "count", "thesaurus"),
         whole_results: bool = True,
+        lang: str = None
     ) -> KeywordSearch:
         """Search for keywords within a specific group's used thesauri.
 
@@ -356,7 +362,7 @@ class ApiKeyword:
 
         # URL
         url_workgroup_keywords = self.utils.get_request_base_url(
-            route="groups/{}/keywords/search".format(workgroup_id)
+            route="groups/{}/keywords/search".format(workgroup_id), lang=lang
         )
 
         # request
@@ -379,7 +385,10 @@ class ApiKeyword:
 
     @ApiDecorators._check_bearer_validity
     def get(
-        self, keyword_id: str, include: tuple = ("_abilities", "count", "thesaurus")
+        self,
+        keyword_id: str,
+        include: tuple = ("_abilities", "count", "thesaurus"),
+        lang: str = None
     ) -> Keyword:
         """Get details about a specific keyword.
 
@@ -408,7 +417,9 @@ class ApiKeyword:
             payload = None
 
         # keyword route
-        url_keyword = self.utils.get_request_base_url(route="keywords/{}".format(keyword_id))
+        url_keyword = self.utils.get_request_base_url(
+            route="keywords/{}".format(keyword_id), lang=lang
+        )
 
         # request
         req_keyword = self.api_client.get(
@@ -427,6 +438,66 @@ class ApiKeyword:
 
         # end of method
         return Keyword(**req_keyword.json())
+
+    @ApiDecorators._check_bearer_validity
+    def get_from_text(
+        self,
+        text: str,
+        thesaurus_id: str = "1616597fbc4348c8b11ef9d59cf594c8",
+        include: tuple = ("_abilities", "count", "thesaurus"),
+        lang: str = None
+    ) -> list:
+        """Get details about a specific keyword.
+
+        :param str keyword_id: keyword UUID
+        :param tuple include: additional subresource to include in the response
+
+
+        :Example:
+
+        >>> # get a metadata with its tags (or keywords)
+        >>> md = isogeo.metadata.get(METADATA_UUID, include=("tags",))
+        >>> # list Isogeo keywords
+        >>> li_keywords_uuids = [
+            tag[8:] for tag in self.metadata_source.tags
+            if tag.startswith("keyword:isogeo:")
+            ]
+        >>> # pick a random one
+        >>> random_keyword = sample(li_keywords_uuid, 1)[0]
+        >>> # get its details
+        >>> keyword = isogeo.keyword.get(random_keyword)
+        """
+        # request parameter
+        if isinstance(include, (tuple, list)):
+            payload = {
+                "text": text,
+                "_include": ",".join(include)
+            }
+        else:
+            payload = None
+
+        # keyword route
+        url_keyword_from_text = self.utils.get_request_base_url(
+            route="thesauri/{}/keywords".format(thesaurus_id), lang=lang
+        )
+
+        # request
+        req_keyword_from_text = self.api_client.get(
+            url=url_keyword_from_text,
+            headers=self.api_client.header,
+            params=payload,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_keyword_from_text)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        # end of method
+        return req_keyword_from_text.json()
 
     @ApiDecorators._check_bearer_validity
     def create(self, keyword: Keyword, thesaurus_id: str = "1616597fbc4348c8b11ef9d59cf594c8", check_exists: bool = 0) -> Keyword:
@@ -919,7 +990,7 @@ class ApiKeyword:
         # end of method
         return req_keyword_dissociate
 
-    # -- SEARCH SUBMETHODS
+    # -- SEARCH SUB METHODS
     async def search_keyword_asynchronous(
         self, total_results: int, max_workers: int = 10, **kwargs
     ) -> KeywordSearch:
@@ -959,6 +1030,8 @@ class ApiKeyword:
                         page_size=100,
                         # options
                         whole_results=0,
+                        # multilingualism
+                        lang=kwargs.get("lang"),
                     ),
                 )
                 for offset in li_offsets

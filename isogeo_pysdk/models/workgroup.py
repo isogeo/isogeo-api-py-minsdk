@@ -15,7 +15,7 @@
 import logging
 import pprint
 
-# submodels
+# submodules
 from isogeo_pysdk.models.contact import Contact
 
 # #############################################################################

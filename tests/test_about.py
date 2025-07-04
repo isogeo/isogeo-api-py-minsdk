@@ -78,17 +78,17 @@ class TestAccount(unittest.TestCase):
         """Get platform components versions"""
         # PROD
         isogeo_about = ApiAbout()
-        print(isogeo_about.api())
-        print(isogeo_about.database())
-        print(isogeo_about.authentication())
+        # print(isogeo_about.api())
+        # print(isogeo_about.database())
+        # print(isogeo_about.authentication())
         # print(isogeo_about.scan())
         # print(isogeo_about.services())
 
         # QA
         isogeo_about = ApiAbout("qa")
-        print(isogeo_about.api())
-        print(isogeo_about.database())
-        print(isogeo_about.authentication())
+        # print(isogeo_about.api())
+        # print(isogeo_about.database())
+        # print(isogeo_about.authentication())
         # print(isogeo_about.scan())
         # print(isogeo_about.services())
 
@@ -97,8 +97,8 @@ class TestAccount(unittest.TestCase):
             platform="custom",
             isogeo_urls={"api_url": environ.get("ISOGEO_API_URL")}
         )
-        print(isogeo_about.api())
-        print(isogeo_about.database())
+        # print(isogeo_about.api())
+        # print(isogeo_about.database())
         # print(isogeo_about.authentication())
         # print(isogeo_about.scan())
         # print(isogeo_about.services())

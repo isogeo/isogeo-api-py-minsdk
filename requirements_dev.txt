@@ -6,7 +6,7 @@
 #
 #     pip install -r requirements.txt
 #
-#   It's higly recomended to use it within a virtualenv.
+#   It's highly recommended to use it within a virtualenv.
 #
 #
 #
@@ -15,32 +15,28 @@
 -r requirements.txt
 
 # Lint and formatting
-# -----------------------
-black==22.10.0
-flake8==3.9.*
+black~=24.4
+flake8~=7.0
 
 # Tests
-# -----------------------
-python-dotenv==0.20.*
-pytest==7.2.*
-pytest-cov==3.0.*
-pytest-randomly==3.12.*
-pytest-rerunfailures==10.*
-tox==3.25.*
+python-dotenv~=1.0
+pytest~=8.2
+pytest-cov~=5.0
+pytest-randomly~=3.15
+pytest-rerunfailures~=14.0
+tox~=4.15
 
 # Documentation (for devs)
-# -----------------------
-sphinx==7.4.*
-sphinx-autodoc-typehints==1.22.*
-sphinx-copybutton==0.5.*
-sphinx-markdown-tables==0.0.17  # to render markdown tables
-sphinx-rtd-theme==1.2.*
-recommonmark==0.7.*
+sphinx~=7.3
+sphinx-autodoc-typehints~=2.1
+sphinx-copybutton~=0.5
+sphinx-markdown-tables==0.0.17
+sphinx-rtd-theme~=2.0
+recommonmark~=0.7
 
 # Packaging
-# -----------------------
-twine
-wheel
+twine~=5.0
+wheel~=0.43
 
 # then it's possible to install from the repo:
 # https://github.com/Isogeo/isogeo-api-py-minsdk/archive/master.zip

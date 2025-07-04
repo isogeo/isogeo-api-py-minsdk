@@ -1,18 +1,10 @@
 {
     // Python env
     "python.envFile": "${workspaceFolder}/dev.env",
-    "python.pythonPath": "${workspaceFolder}/.venv/Scripts/python.exe",
+    "python.terminal.activateEnvironment": true,
     // Lint and formatting
     "editor.rulers": [88],
     "editor.wordWrapColumn": 88,
-    "python.formatting.provider": "black",
-    "python.formatting.blackArgs": ["--target-version=py37"],
-    "python.linting.enabled": true,
-    "python.linting.flake8Enabled": true,
-    "python.linting.flake8Args": [
-        "--config=setup.cfg",
-        "--verbose"
-    ],
     // Test
     "python.testing.pytestEnabled": true,
     "python.testing.pytestArgs": [
@@ -22,5 +14,4 @@
     "python.testing.unittestEnabled": false,
     // Specific extensions
     "autoDocstring.customTemplatePath": ".vscode\\docstring-config.mustache",
-    "esbonio.sphinx.confDir": "${workspaceFolder}\\docs",
 }

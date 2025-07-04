@@ -57,8 +57,8 @@ class ApiApplication:
         """Get all applications which are accessible by the authenticated user OR applications for a
         workgroup.
 
-        :param str workgroup_id: identifier of the owner workgroup. If `None`, then list applications for the autenticated user
-        :param tuple include: additionnal subresource to include in the response.
+        :param str workgroup_id: identifier of the owner workgroup. If `None`, then list applications for the authenticated user
+        :param tuple include: additional subresource to include in the response.
         :param bool caching: option to cache the response
         """
         # handling request parameters

@@ -14,6 +14,7 @@ import warnings
 from collections import Counter
 from json import JSONDecodeError
 from uuid import UUID
+from typing import Union
 
 # modules
 from isogeo_pysdk.enums import LinkActions, MetadataSubresources
@@ -101,18 +102,18 @@ class IsogeoChecker(object):
             sock.close()
             return True
         except Exception as e:
-            logging.error(e)
+            logger.error(e)
             if proxies is not None:
-                logging.debug("Proxy detected. Ignoring error...")
+                logger.debug("Proxy detected. Ignoring error...")
                 return True
             return False
 
-    def check_api_response(self, response) -> True or tuple:
+    def check_api_response(self, response) -> Union[bool, tuple]:
         """Check API response and raise exceptions if needed.
 
         :param requests.models.Response response: request response to check
 
-        :rtype: True or tuple
+        :rtype: bool or tuple
 
         :Example:
         >>> checker.check_api_response(<Response [500]>)
@@ -130,7 +131,7 @@ class IsogeoChecker(object):
                 resp_error_msg = ""
 
             # log it
-            logging.error(
+            logger.error(
                 "{}: {} - {} - URL: {}".format(
                     response.status_code,
                     response.reason,
@@ -147,7 +148,7 @@ class IsogeoChecker(object):
         """
         # -- SEMANTIC QUERY ---------------------------------------------------
         li_args = parameters.get("q").split()
-        logging.debug(li_args)
+        logger.debug(li_args)
 
         # Unicity
         li_filters = [i.split(":")[0] for i in li_args]
@@ -157,7 +158,7 @@ class IsogeoChecker(object):
             if i in li_filters_must_be_unique and filters_count.get(i) > 1:
                 raise ValueError(
                     "This query filter must be unique: {}"
-                    " and it occured {} times.".format(i, filters_count.get(i))
+                    " and it occurred {} times.".format(i, filters_count.get(i))
                 )
 
         # dict
@@ -212,7 +213,7 @@ class IsogeoChecker(object):
                 dico_query["type"].append(i.split(":")[1:][0])
                 continue
             else:
-                # logging.debug(i.split(":")[1], i.split(":")[1].isdigit())
+                # logger.debug(i.split(":")[1], i.split(":")[1].isdigit())
                 dico_query["text"].append(i)
                 continue
 
@@ -238,7 +239,7 @@ class IsogeoChecker(object):
                 "provider value must be one of: {}".format(" | ".join(FILTER_PROVIDERS))
             )
         else:
-            logging.debug(dico_filters)
+            logger.debug(dico_filters)
 
         # -- GEOGRAPHIC -------------------------------------------------------
         in_box = parameters.get("box")
@@ -281,7 +282,7 @@ class IsogeoChecker(object):
             uid = UUID(uuid_str)
             return uid.hex == uuid_str.replace("-", "").replace("urn:uuid:", "")
         except ValueError as e:
-            logging.warning(
+            logger.warning(
                 "uuid ValueError. {} ({}) -- {}".format(type(uuid_str), uuid_str, e)
             )
             return False
@@ -338,12 +339,12 @@ class IsogeoChecker(object):
         """
         if isinstance(specific_md, (list, tuple)):
             if len(specific_md) > 0:
-                # checking UUIDs and poping bad ones
+                # checking UUIDs and popping bad ones
                 specific_md = list(specific_md)
                 for md in specific_md:
                     if not self.check_is_uuid(md):
                         specific_md.remove(md)
-                        logging.warning(
+                        logger.warning(
                             "Incorrect metadata UUID has been removed: {}".format(md)
                         )
                 # joining survivors
@@ -428,10 +429,10 @@ class IsogeoChecker(object):
 
         :param str resource: subresource to check.
         """
-        warnings.warn(
-            "subresource in URL is deprecated." " Use _include mecanism instead.",
-            DeprecationWarning,
-        )
+        # warnings.warn(
+        #     "subresource in URL is deprecated." " Use _include mechanism instead.",
+        #     DeprecationWarning,
+        # )
         l_subresources = (
             "conditions",
             "contacts",
@@ -450,14 +451,14 @@ class IsogeoChecker(object):
                 subresource = subresource
             elif subresource == "tags":
                 subresource = "keywords"
-                logging.debug(
+                logger.debug(
                     "'tags' is an include not a subresource."
                     " Don't worry, it has be automatically renamed "
                     "into 'keywords' which is the correct subresource."
                 )
             elif subresource == "serviceLayers":
                 subresource = "layers"
-                logging.debug(
+                logger.debug(
                     "'serviceLayers' is an include not a subresource."
                     " Don't worry, it has be automatically renamed "
                     "into 'layers' which is the correct subresource."
