@@ -130,7 +130,7 @@ class ApiKeyword:
         whole_results: bool = True,
         lang: str = None
     ) -> KeywordSearch:
-        """Search for keywords within a specific thesaurus or a specific group.
+        """Search for keywords within a specific thesaurus.
 
         :param str thesaurus_id: thesaurus UUID
         :param str query: search terms, equivalent of **q** parameter in API.
