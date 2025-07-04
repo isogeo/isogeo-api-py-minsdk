@@ -1,0 +1,80 @@
+[build-system]
+requires = ["setuptools>=61", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "isogeo-pysdk"
+version = "3.9.0"  # sera surchargé dynamiquement via isogeo_pysdk.__about__
+description = "Python SDK for Isogeo API"
+readme = "README.md"
+requires-python = ">=3.9,<4"
+license = { file = "LICENSE" }
+authors = [
+  { name = "Isogeo", email = "contact@isogeo.com" }
+]
+keywords = [
+  "GIS", "metadata", "INSPIRE", "Isogeo", "API", "REST", "geographical data", "ISO19139"
+]
+classifiers = [
+  "Intended Audience :: Developers",
+  "Intended Audience :: Information Technology",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Development Status :: 5 - Production/Stable",
+  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
+  "Operating System :: OS Independent",
+  "Topic :: Software Development :: Libraries :: Python Modules"
+]
+dependencies = [
+  "requests>=2.20.0",
+  "requests-oauthlib>=1.2.0"
+]
+
+[project.optional-dependencies]
+dev = ["black", "python-dotenv"]
+test = ["pytest", "pytest-cov"]
+
+[project.urls]
+Docs = "https://isogeo-api-pysdk.readthedocs.io/"
+BugReports = "https://github.com/isogeo/isogeo-api-py-minsdk/issues/"
+Source = "https://github.com/isogeo/isogeo-api-py-minsdk/"
+"Isogeo API" = "http://help.isogeo.com/api/"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+exclude = ["contrib", "docs", "tests", "tests.*", "*.tests", "*.tests.*"]
+
+[tool.pytest.ini_options]
+addopts = """
+    -s
+    -W ignore::urllib3.exceptions.InsecureRequestWarning
+    --junitxml=junit/test-results.xml
+    --cov-config=.coveragerc
+    --cov=isogeo_pysdk
+    --cov-report=xml
+    --cov-report=html
+    --cov-append tests
+    --ignore=tests/_wip
+    --maxfail=1
+    --reruns 0
+"""
+junit_family = "xunit2"
+minversion = "5.0"
+norecursedirs = ".* build dev development dist docs CVS fixtures _darcs {arch} *.egg venv _wip"
+python_files = "test_*.py"
+testpaths = ["tests"]
+
+[tool.flake8]
+count = true
+exclude = [".git", "__pycache__", "docs/conf.py", "old", "build", "dist", ".venv*", ".tox"]
+ignore = ["C901", "E121", "E123", "E126", "E203", "E226", "E231", "E24", "E501", "E704", "W503", "W504", "W505"]
+max-complexity = 20
+max-doc-length = 130
+max-line-length = 100
+output-file = "dev_flake8_report.txt"
+statistics = true
+tee = true
