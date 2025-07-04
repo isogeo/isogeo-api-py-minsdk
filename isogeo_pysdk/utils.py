@@ -176,7 +176,7 @@ class IsogeoUtils(object):
             if self.api_url.startswith("https://"):
                 self.api_url = self.api_url.replace("https://", "")
             elif self.api_url.startswith("http://"):
-                self.self.api_url = self.api_url.replace("http://", "")
+                self.api_url = self.api_url.replace("http://", "")
             else:
                 pass
             self.app_url = dict_urls.get("app_url", self.APP_URLS.get("qa"))
