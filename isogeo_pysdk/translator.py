@@ -88,6 +88,11 @@ dict_md_fields_fr = {
         "isNotConform": "Non conforme",
         "topologicalConsistency": "Cohérence topologique",
     },
+    "linkActions": {
+        "download": "Télécharger",
+        "view": "Visualiser",
+        "other": "Autre",
+    },
 }
 
 dict_md_fields_en = {
@@ -166,6 +171,11 @@ dict_md_fields_en = {
         "isConform": "Conformant",
         "isNotConform": "Not conformant",
         "topologicalConsistency": "Topological consistency",
+    },
+    "linkActions": {
+        "download": "Download",
+        "view": "View",
+        "other": "Other",
     },
 }
 
@@ -256,7 +266,12 @@ dict_md_fields_es = {
         "isConform": "Conforme",
         "isNotConform": "No conforme",
         "topologicalConsistency": "Consistencia topológica"
-    }
+    },
+    "linkActions": {
+        "download": "Descargar",
+        "view": "Visualización",
+        "other": "Otro",
+    },
 }
 
 dict_md_fields_pt = {
@@ -346,7 +361,12 @@ dict_md_fields_pt = {
         "isConform": "Conforme",
         "isNotConform": "Não conforme",
         "topologicalConsistency": "Consistência topológica"
-    }
+    },
+    "linkActions": {
+        "download": "Descarregar",
+        "view": "Visualização",
+        "other": "Outros",
+    },
 }
 
 
@@ -412,5 +432,7 @@ if __name__ == "__main__":
     # English
     translator_en = IsogeoTranslator("EN")
     print(translator_en.tr("roles", "pointOfContact"))
+    print(translator_en.translations.get("frequencyShortTypes"))
+    print(translator_en.translations.get("linkActions"))
     # print(dict_md_fields_fr.get("roles"))
     # print(dict_md_fields_fr.get("frequencyTypes"))
