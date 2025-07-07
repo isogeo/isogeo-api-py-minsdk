@@ -680,7 +680,7 @@ class ApiKeyword:
                     tag for tag in metadata.tags if tag.startswith("keyword:isogeo:") or tag.startswith("keyword:group-theme:")
                 ]
             elif metadata.keywords:
-                # if not, maybe the metadata has been passed with subresuorces: so use it
+                # if not, maybe the metadata has been passed with subresources: so use it
                 metadata_existing_keywords = [
                     tag
                     for tag in metadata.keywords
