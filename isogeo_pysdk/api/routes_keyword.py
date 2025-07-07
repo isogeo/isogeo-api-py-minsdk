@@ -158,6 +158,11 @@ class ApiKeyword:
 
         :rtype: KeywordSearch
         """
+        # check thesaurus UUID
+        if not checker.check_is_uuid(thesaurus_id):
+            raise ValueError("Thesaurus ID is not a correct UUID.")
+        else:
+            pass
 
         # handling request parameters
         payload = {
@@ -352,7 +357,8 @@ class ApiKeyword:
                 whole_results=False,
             ).total
 
-            # avoid to launch async searches if it's possible in one request
+            # The only thing to do is to set page size because
+            # there is no limit to the number of results with this specific request <3
             if total_results > page_size:
                 payload["_limit"] = total_results
             else:
