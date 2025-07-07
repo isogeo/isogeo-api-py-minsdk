@@ -48,16 +48,15 @@ if Path("dev.env").exists():
 # host machine name - used as discriminator
 hostname = gethostname()
 
-# API access
-METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
-WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
-METADATA_TEST_FIXTURE_UUID_ML = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE_ML")
-WORKGROUP_TEST_FIXTURE_UUID_ML = environ.get("ISOGEO_WORKGROUP_TEST_UUID_ML")
-
 # shortcuts
 ISOGEO_THESAURUS_ID = "1616597fbc4348c8b11ef9d59cf594c8"
 GROUPTHEME_THESAURUS_ID = "0edc90b138ef41e593cf47fbca2cb1ad"
 INSPIRE_THESAURUS_ID = "926c676c380046d7af99bcae343ac813"
+METADATA_TEST_FIXTURE_UUID = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE")
+WORKGROUP_TEST_FIXTURE_UUID = environ.get("ISOGEO_WORKGROUP_TEST_UUID")
+METADATA_TEST_FIXTURE_UUID_ML = environ.get("ISOGEO_FIXTURES_METADATA_COMPLETE_ML")
+WORKGROUP_TEST_FIXTURE_UUID_ML = environ.get("ISOGEO_WORKGROUP_TEST_UUID_ML")
+GROUP_THEME_TEST_FIXTURE_TRANSLATED_UUID = environ.get("ISOGEO_FIXTURE_GROUP_THEME_TRANSLATED")
 
 # #############################################################################
 # ########## Helpers ###############
@@ -687,7 +686,7 @@ class TestKeywordsComplete(unittest.TestCase):
     def test_keywords_search_workgroup_whole_results_multilingual(self):
         """GET :groups/{workgroup_uuid}/keywords/{search}?_lang="""
         # retrieve workgroup keywords
-        wg_keywords_searches = [        
+        wg_keywords_searches = [
             self.isogeo.keyword.workgroup(
                 workgroup_id=WORKGROUP_TEST_FIXTURE_UUID_ML,
                 whole_results=1, lang="fr"
@@ -770,7 +769,6 @@ class TestKeywordsComplete(unittest.TestCase):
 
         self.assertEqual(Counter(wg_groupThemes_en_raw_noText), Counter(wg_groupThemes_fr_raw_noText))
         self.assertEqual(Counter(wg_groupThemes_es_raw_noText), Counter(wg_groupThemes_fr_raw_noText))
-
 
     def test_keywords_search_thesaurus(self):
         """GET :thesauri/{thesauri_uuid}/keywords/{search}"""
@@ -928,6 +926,48 @@ class TestKeywordsComplete(unittest.TestCase):
         self.assertEqual(Counter(groupThemes_es_raw_noText), Counter(groupThemes_fr_raw_noText))
         self.assertEqual(Counter(groupThemes_pt_raw_noText), Counter(groupThemes_fr_raw_noText))
 
+    def test_keyword_get_groupTheme_multilingual(self):
+        """GET :keywords/{keyword_uuid}?_lang="""
+
+        groupTheme_fr = self.isogeo.keyword.get(
+            keyword_id=GROUP_THEME_TEST_FIXTURE_TRANSLATED_UUID, lang="fr"
+        )
+        groupTheme_en = self.isogeo.keyword.get(
+            keyword_id=GROUP_THEME_TEST_FIXTURE_TRANSLATED_UUID, lang="en"
+        )
+        groupTheme_es = self.isogeo.keyword.get(
+            keyword_id=GROUP_THEME_TEST_FIXTURE_TRANSLATED_UUID, lang="es"
+        )
+        groupTheme_pt = self.isogeo.keyword.get(
+            keyword_id=GROUP_THEME_TEST_FIXTURE_TRANSLATED_UUID, lang="pt"
+        )
+        # parse and test object loader
+        for keyword in [groupTheme_fr, groupTheme_en, groupTheme_es, groupTheme_pt]:
+            # tests attributes structure
+            self.assertTrue(hasattr(keyword, "_abilities"))
+            self.assertTrue(hasattr(keyword, "_id"))
+            self.assertTrue(hasattr(keyword, "_tag"))
+            self.assertTrue(hasattr(keyword, "code"))
+            self.assertTrue(hasattr(keyword, "count"))
+            self.assertTrue(hasattr(keyword, "description"))
+            self.assertTrue(hasattr(keyword, "text"))
+            self.assertTrue(hasattr(keyword, "thesaurus"))
+
+        # compare each version of the group theme
+        for attr in Keyword.ATTR_TYPES:
+            attr_value_fr = getattr(groupTheme_fr, attr)
+            attr_value_en = getattr(groupTheme_en, attr)
+            attr_value_es = getattr(groupTheme_es, attr)
+            attr_value_pt = getattr(groupTheme_pt, attr)
+            if attr == "text":
+                self.assertNotEqual(attr_value_fr, attr_value_en)
+                self.assertNotEqual(attr_value_fr, attr_value_es)
+                self.assertNotEqual(attr_value_fr, attr_value_pt)
+            else:
+                self.assertEqual(attr_value_fr, attr_value_en)
+                self.assertEqual(attr_value_fr, attr_value_es)
+                self.assertEqual(attr_value_fr, attr_value_pt)
+
     def test_keyword_detailed(self):
         """GET :keywords/{keyword_uuid}"""
 
@@ -968,7 +1008,9 @@ class TestKeywordsComplete(unittest.TestCase):
             )
             # pick one randomly
             random_keyword_dict = sample(thesaurus_keywords.results, 1)[0]
-            random_keyword = self.isogeo.keyword.get(random_keyword_dict.get("_id"))
+            random_keyword = self.isogeo.keyword.get(
+                keyword_id=random_keyword_dict.get("_id"), lang=lang
+            )
             # tests attributes structure
             self.assertTrue(hasattr(random_keyword, "_abilities"))
             self.assertTrue(hasattr(random_keyword, "_id"))
