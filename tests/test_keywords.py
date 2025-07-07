@@ -386,7 +386,7 @@ class TestKeywordsComplete(unittest.TestCase):
         self.assertEqual(keywords_metadata_isogeo, metadata_keywords_isogeo)
 
     def test_keywords_list_metadata_multilingual(self):
-        """GET :resources/{metadata_uuid}/keywords"""
+        """GET :resources/{metadata_uuid}/keywords?_lang="""
         # retrieve metadata keywords from keywords api module
         keywords_metadata = self.isogeo.keyword.metadata(
             metadata_id=METADATA_TEST_FIXTURE_UUID_ML
@@ -444,7 +444,7 @@ class TestKeywordsComplete(unittest.TestCase):
         self.assertEqual(keywords_metadata_isogeo, metadata_keywords_isogeo)
 
     def test_keywords_list_metadata_multilingual_fr(self):
-        """GET :resources/{metadata_uuid}/keywords"""
+        """GET :resources/{metadata_uuid}/keywords?_lang="""
         # retrieve metadata keywords from keywords api module
         keywords_metadata = self.isogeo.keyword.metadata(
             metadata_id=METADATA_TEST_FIXTURE_UUID_ML, lang="fr"
@@ -502,7 +502,7 @@ class TestKeywordsComplete(unittest.TestCase):
         self.assertEqual(keywords_metadata_isogeo, metadata_keywords_isogeo)
 
     def test_keywords_list_metadata_multilingual_en(self):
-        """GET :resources/{metadata_uuid}/keywords"""
+        """GET :resources/{metadata_uuid}/keywords?_lang="""
         # retrieve metadata keywords from keywords api module
         keywords_metadata = self.isogeo.keyword.metadata(
             metadata_id=METADATA_TEST_FIXTURE_UUID_ML, lang="en"
@@ -560,7 +560,7 @@ class TestKeywordsComplete(unittest.TestCase):
         self.assertEqual(keywords_metadata_isogeo, metadata_keywords_isogeo)
 
     def test_keywords_list_metadata_multilingual_es(self):
-        """GET :resources/{metadata_uuid}/keywords"""
+        """GET :resources/{metadata_uuid}/keywords?_lang="""
         # retrieve metadata keywords from keywords api module
         keywords_metadata = self.isogeo.keyword.metadata(
             metadata_id=METADATA_TEST_FIXTURE_UUID_ML, lang="es"
@@ -618,7 +618,7 @@ class TestKeywordsComplete(unittest.TestCase):
         self.assertEqual(keywords_metadata_isogeo, metadata_keywords_isogeo)
 
     def test_keywords_search_workgroup(self):
-        """GET :groups/{workgroup_uuid}/keywords/search}"""
+        """GET :groups/{workgroup_uuid}/keywords/{search}"""
         # retrieve workgroup keywords
         wg_keywords = self.isogeo.keyword.workgroup(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, whole_results=0, page_size=20
@@ -653,7 +653,7 @@ class TestKeywordsComplete(unittest.TestCase):
             self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
 
     def test_keywords_search_workgroup_whole_results(self):
-        """GET :groups/{workgroup_uuid}/keywords/search}"""
+        """GET :groups/{workgroup_uuid}/keywords/{search}"""
         # retrieve workgroup keywords
         wg_keywords = self.isogeo.keyword.workgroup(
             workgroup_id=WORKGROUP_TEST_FIXTURE_UUID, whole_results=1, page_size=20
@@ -684,8 +684,96 @@ class TestKeywordsComplete(unittest.TestCase):
             self.assertEqual(keyword.text, i.get("text"))
             self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
 
+    def test_keywords_search_workgroup_whole_results_multilingual(self):
+        """GET :groups/{workgroup_uuid}/keywords/{search}?_lang="""
+        # retrieve workgroup keywords
+        wg_keywords_searches = [        
+            self.isogeo.keyword.workgroup(
+                workgroup_id=WORKGROUP_TEST_FIXTURE_UUID_ML,
+                whole_results=1, lang="fr"
+            ),
+            self.isogeo.keyword.workgroup(
+                workgroup_id=WORKGROUP_TEST_FIXTURE_UUID_ML,
+                whole_results=1, lang="en"
+            ),
+            self.isogeo.keyword.workgroup(
+                workgroup_id=WORKGROUP_TEST_FIXTURE_UUID_ML,
+                whole_results=1, lang="es"
+            ),
+        ]
+        for search in wg_keywords_searches:
+            self.assertEqual(len(search.results), search.total)
+
+            # parse and test object loader
+            for i in search.results:
+                # load it
+                keyword = Keyword(**i)
+                # tests attributes structure
+                self.assertTrue(hasattr(keyword, "_abilities"))
+                self.assertTrue(hasattr(keyword, "_id"))
+                self.assertTrue(hasattr(keyword, "_tag"))
+                self.assertTrue(hasattr(keyword, "code"))
+                self.assertTrue(hasattr(keyword, "count"))
+                self.assertTrue(hasattr(keyword, "description"))
+                self.assertTrue(hasattr(keyword, "text"))
+                self.assertTrue(hasattr(keyword, "thesaurus"))
+                # tests attributes value
+                self.assertEqual(keyword._abilities, i.get("_abilities"))
+                self.assertEqual(keyword._id, i.get("_id"))
+                self.assertEqual(keyword._tag, i.get("_tag"))
+                self.assertEqual(keyword.code, i.get("code"))
+                self.assertEqual(keyword.count, i.get("count"))
+                self.assertEqual(keyword.description, i.get("description"))
+                self.assertEqual(keyword.text, i.get("text"))
+                self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
+
+    def test_keywords_search_workgroup_groupTheme_whole_results_multilingual(self):
+        """GET :groups/{workgroup_uuid}/keywords/{search}?_lang="""
+        # retrieve all multilingual workgroup group themes in 3 different languages
+        wg_groupThemes_fr = self.isogeo.keyword.workgroup(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID_ML,
+            thesaurus_id=GROUPTHEME_THESAURUS_ID,
+            whole_results=1, page_size=20, lang="fr"
+        ).results
+        wg_groupThemes_en = self.isogeo.keyword.workgroup(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID_ML,
+            thesaurus_id=GROUPTHEME_THESAURUS_ID,
+            whole_results=1, page_size=20, lang="en"
+        ).results
+        wg_groupThemes_es = self.isogeo.keyword.workgroup(
+            workgroup_id=WORKGROUP_TEST_FIXTURE_UUID_ML,
+            thesaurus_id=GROUPTHEME_THESAURUS_ID,
+            whole_results=1, page_size=20, lang="es"
+        ).results
+        # parse results to make theme easier to compare
+        wg_groupThemes_fr_raw = [
+            self.make_dict_hashable(kw) for kw in wg_groupThemes_fr
+        ]
+        wg_groupThemes_en_raw = [
+            self.make_dict_hashable(kw) for kw in wg_groupThemes_en
+        ]
+        wg_groupThemes_es_raw = [
+            self.make_dict_hashable(kw) for kw in wg_groupThemes_es
+        ]
+        wg_groupThemes_fr_raw_noText = [
+            self.make_dict_hashable(kw, ["text"]) for kw in wg_groupThemes_fr
+        ]
+        wg_groupThemes_en_raw_noText = [
+            self.make_dict_hashable(kw, ["text"]) for kw in wg_groupThemes_en
+        ]
+        wg_groupThemes_es_raw_noText = [
+            self.make_dict_hashable(kw, ["text"]) for kw in wg_groupThemes_es
+        ]
+
+        self.assertNotEqual(Counter(wg_groupThemes_en_raw), Counter(wg_groupThemes_fr_raw))
+        self.assertNotEqual(Counter(wg_groupThemes_es_raw), Counter(wg_groupThemes_fr_raw))
+
+        self.assertEqual(Counter(wg_groupThemes_en_raw_noText), Counter(wg_groupThemes_fr_raw_noText))
+        self.assertEqual(Counter(wg_groupThemes_es_raw_noText), Counter(wg_groupThemes_fr_raw_noText))
+
+
     def test_keywords_search_thesaurus(self):
-        """GET :thesauri/{thesauri_uuid}/keywords/search}"""
+        """GET :thesauri/{thesauri_uuid}/keywords/{search}"""
 
         # retrieve thesauri keywords
         for thesaurus_id in [ISOGEO_THESAURUS_ID, GROUPTHEME_THESAURUS_ID]:
@@ -720,7 +808,7 @@ class TestKeywordsComplete(unittest.TestCase):
                 self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
 
     def test_keywords_search_thesaurus_multilingual_fr(self):
-        """GET :thesauri/{thesauri_uuid}/keywords/search}"""
+        """GET :thesauri/{thesauri_uuid}/keywords/{search}?_lang="""
 
         # retrieve thesauri keywords
         for thesaurus_id in [ISOGEO_THESAURUS_ID, GROUPTHEME_THESAURUS_ID]:
@@ -755,7 +843,7 @@ class TestKeywordsComplete(unittest.TestCase):
                 self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
 
     def test_keywords_search_thesaurus_whole_results(self):
-        """GET :thesauri/{thesauri_uuid}/keywords/search}"""
+        """GET :thesauri/{thesauri_uuid}/keywords/{search}"""
 
         # retrieve thesauri keywords
         th_keywords = self.isogeo.keyword.thesaurus(
@@ -791,7 +879,7 @@ class TestKeywordsComplete(unittest.TestCase):
             self.assertEqual(keyword.thesaurus, i.get("thesaurus"))
 
     def test_keywords_search_thesaurus_whole_results_multilingual(self):
-        """GET :thesauri/{thesauri_uuid}/keywords/search}"""
+        """GET :thesauri/{thesauri_uuid}/keywords/{search}?_lang="""
 
         # retrieve all group themes in 4 different languages
         groupThemes_fr = self.isogeo.keyword.thesaurus(
@@ -870,7 +958,7 @@ class TestKeywordsComplete(unittest.TestCase):
             self.assertEqual(random_keyword_dict.get("thesaurus"), random_keyword.thesaurus)
 
     def test_keyword_detailed_multilingual(self):
-        """GET :keywords/{keyword_uuid}"""
+        """GET :keywords/{keyword_uuid}?_lang="""
 
         # retrieve a random thesauri keywords
         for thesaurus_id in [ISOGEO_THESAURUS_ID, GROUPTHEME_THESAURUS_ID]:
