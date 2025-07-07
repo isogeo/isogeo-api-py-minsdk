@@ -968,6 +968,66 @@ class TestKeywordsComplete(unittest.TestCase):
                 self.assertEqual(attr_value_fr, attr_value_es)
                 self.assertEqual(attr_value_fr, attr_value_pt)
 
+    def test_keyword_get_from_text_groupTheme_multilingual(self):
+        """GET :keywords/{keyword_uuid}?_lang="""
+
+        groupTheme_fr = Keyword(
+            **self.isogeo.keyword.get_from_text(
+                text="PitouFR",
+                thesaurus_id=GROUPTHEME_THESAURUS_ID,
+                lang="fr"
+            )[0]
+        )
+        groupTheme_en = Keyword(
+            **self.isogeo.keyword.get_from_text(
+                text="PitouEN",
+                thesaurus_id=GROUPTHEME_THESAURUS_ID,
+                lang="en"
+            )[0]
+        )
+        groupTheme_es = Keyword(
+            **self.isogeo.keyword.get_from_text(
+                text="PitouES",
+                thesaurus_id=GROUPTHEME_THESAURUS_ID,
+                lang="es"
+            )[0]
+        )
+        groupTheme_pt = Keyword(
+            **self.isogeo.keyword.get_from_text(
+                text="PitouPT",
+                thesaurus_id=GROUPTHEME_THESAURUS_ID,
+                lang="pt"
+            )[0]
+        )
+        # parse and test object loader
+        for keyword in [groupTheme_fr, groupTheme_en, groupTheme_es, groupTheme_pt]:
+            # tests attributes structure
+            self.assertTrue(hasattr(keyword, "_abilities"))
+            self.assertTrue(hasattr(keyword, "_id"))
+            self.assertTrue(hasattr(keyword, "_tag"))
+            self.assertTrue(hasattr(keyword, "code"))
+            self.assertTrue(hasattr(keyword, "count"))
+            self.assertTrue(hasattr(keyword, "description"))
+            self.assertTrue(hasattr(keyword, "text"))
+            self.assertTrue(hasattr(keyword, "thesaurus"))
+            # tests keyword match
+            self.assertEqual(keyword._id, GROUP_THEME_TEST_FIXTURE_TRANSLATED_UUID)
+
+        # compare each version of the group theme
+        for attr in Keyword.ATTR_TYPES:
+            attr_value_fr = getattr(groupTheme_fr, attr)
+            attr_value_en = getattr(groupTheme_en, attr)
+            attr_value_es = getattr(groupTheme_es, attr)
+            attr_value_pt = getattr(groupTheme_pt, attr)
+            if attr == "text":
+                self.assertNotEqual(attr_value_fr, attr_value_en)
+                self.assertNotEqual(attr_value_fr, attr_value_es)
+                self.assertNotEqual(attr_value_fr, attr_value_pt)
+            else:
+                self.assertEqual(attr_value_fr, attr_value_en)
+                self.assertEqual(attr_value_fr, attr_value_es)
+                self.assertEqual(attr_value_fr, attr_value_pt)
+
     def test_keyword_detailed(self):
         """GET :keywords/{keyword_uuid}"""
 
