@@ -171,14 +171,17 @@ stages:
         python -m pip install -U -r ./requirements_dev.txt --cache-dir ./.pipcache
       displayName: 'Install dependencies'
 
-    - script: python setup.py egg_info
-      displayName: 'Build package metadata'
+    # - script: python setup.py egg_info
+    #   displayName: 'Build package metadata'
 
-    - script: python setup.py sdist
-      displayName: 'Build sdist'
+    # - script: python setup.py sdist
+    #   displayName: 'Build sdist'
 
-    - script: python setup.py bdist_wheel
-      displayName: 'Build wheel'
+    # - script: python setup.py bdist_wheel
+    #   displayName: 'Build wheel'
+
+    - script: python -m build
+      displayName: 'Build project'
 
     - task: PublishPipelineArtifact@1
       displayName: 'Publish Artifact: Isogeo Python SDK package'
