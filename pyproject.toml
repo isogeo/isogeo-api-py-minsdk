@@ -8,7 +8,7 @@ version = "3.9.0"  # sera surchargé dynamiquement via isogeo_pysdk.__about__
 description = "Python SDK for Isogeo API"
 readme = "README.md"
 requires-python = ">=3.9,<4"
-license = { file = "LICENSE" }
+license = "LGPL-3.0-or-later"
 authors = [
   { name = "Isogeo", email = "contact@isogeo.com" }
 ]
@@ -23,7 +23,6 @@ classifiers = [
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Development Status :: 5 - Production/Stable",
-  "License :: OSI Approved :: GNU General Public License v3 (GPLv3)",
   "Operating System :: OS Independent",
   "Topic :: Software Development :: Libraries :: Python Modules"
 ]
