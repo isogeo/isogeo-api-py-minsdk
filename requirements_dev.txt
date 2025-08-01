@@ -28,7 +28,7 @@ tox~=4.15
 
 # Documentation (for devs)
 sphinx~=7.3
-sphinx-autodoc-typehints~=2.1
+sphinx-autodoc-typehints~=2.3
 sphinx-copybutton~=0.5
 sphinx-markdown-tables==0.0.17
 sphinx-rtd-theme~=2.0
