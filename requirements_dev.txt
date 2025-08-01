@@ -16,7 +16,7 @@
 
 # Lint and formatting
 black~=24.4
-flake8~=7.0
+flake8~=7.3
 
 # Tests
 python-dotenv~=1.0
