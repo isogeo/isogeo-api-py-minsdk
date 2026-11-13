@@ -332,7 +332,12 @@ class ApiFeatureAttribute:
 
     # -- Extra methods as helpers --------------------------------------------------
     def import_from_dataset(
-        self, metadata_source: Metadata, metadata_dest: Metadata, mode: str = "add", case_sensitive_matching: bool = True
+        self,
+        metadata_source: Metadata,
+        metadata_dest: Metadata,
+        mode: str = "add",
+        case_sensitive_matching: bool = True,
+        fields_to_update: tuple = ("alias", "dataType", "description", "language"),
     ) -> bool:
         """Import feature-attributes from another vector (or DTNG) metadata.
 
@@ -345,9 +350,13 @@ class ApiFeatureAttribute:
             - 'update_or_add': update the attributes with the same name or create
         : param bool case_sensitive_matching: False to make feature attributes's name
         matching case-insensitive when mode == "update"
+        :param tuple fields_to_update: fields copied from the source attributes to the destination attributes they update \
+            ('update' and 'update_or_add' modes): the other fields of the destination attributes are left unchanged. Must be \
+            writable fields of FeatureAttribute, except 'name' used to match the attributes. Created attributes are always \
+            copied entirely. Defaults to ("alias", "dataType", "description", "language").
 
         :raises TypeError: if one metadata is not a vector or DTNG
-        :raises ValueError: if mode is not one of accepted value
+        :raises ValueError: if mode is not one of accepted value or if a field to update is not a writable field
 
         :Example:
 
@@ -359,8 +368,22 @@ class ApiFeatureAttribute:
 
             # launch import
             isogeo.metadata.attributes.import_from_dataset(md_source, md_dest, "add")
+
+            # update the destination attributes without overwriting their data type
+            isogeo.metadata.attributes.import_from_dataset(
+                md_source, md_dest, "update", fields_to_update=("alias", "description", "language")
+            )
         """
         accepted_modes = ("add", "update", "update_or_add")
+        # name is excluded because it is the matching key between source and destination attributes
+        updatable_fields = [field for field in FeatureAttribute.ATTR_CREA if field != "name"]
+        unknown_fields = [field for field in fields_to_update if field not in updatable_fields]
+        if unknown_fields:
+            raise ValueError(
+                "Incorrect fields_to_update value(s) ({}). Must be among: {}".format(
+                    ", ".join(unknown_fields), " | ".join(updatable_fields)
+                )
+            )
 
         is_src_md_type_ok = metadata_source.type in available_resource_types
         is_dst_md_type_ok = metadata_dest.type in available_resource_types
@@ -426,10 +449,8 @@ class ApiFeatureAttribute:
                 else:
                     continue
 
-                attr_dst.alias = attr_src.alias
-                attr_dst.dataType = attr_src.dataType
-                attr_dst.description = attr_src.description
-                attr_dst.language = attr_src.language
+                for field in fields_to_update:
+                    setattr(attr_dst, field, getattr(attr_src, field))
                 self.update(metadata=metadata_dest, attribute=attr_dst)
                 logger.debug(
                     "Attribute with the same name ({}) spotted. It has been updated.".format(
@@ -448,10 +469,8 @@ class ApiFeatureAttribute:
                             if attr.get("name") == attr_src.name
                         ][0]
                     )
-                    attr_dst.alias = attr_src.alias
-                    attr_dst.dataType = attr_src.dataType
-                    attr_dst.description = attr_src.description
-                    attr_dst.language = attr_src.language
+                    for field in fields_to_update:
+                        setattr(attr_dst, field, getattr(attr_src, field))
                     self.update(metadata=metadata_dest, attribute=attr_dst)
                     logger.debug(
                         "Attribute with the same name ({}) spotted. It has been updated.".format(

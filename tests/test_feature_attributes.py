@@ -402,6 +402,29 @@ class TestFeatureAttributes(unittest.TestCase):
         self.assertEqual(dest_attributes.get("ATTR_A").get("dataType"), "varchar")
         self.assertEqual(dest_attributes.get("ATTR_B").get("alias"), "source alias B")
 
+    def test_featureAttributes_import_update_fields_to_update(self):
+        """Import feature-attributes updating only some fields of the existing ones."""
+        md_source = self._create_metadata_with_attributes(
+            [FeatureAttribute(name="ATTR_A", dataType="varchar", alias="source alias", description="source description", language="en")]
+        )
+        md_dest = self._create_metadata_with_attributes(
+            [FeatureAttribute(name="ATTR_A", dataType="integer", alias="dest alias", description="dest description", language="fr")]
+        )
+
+        # unknown or matching fields are rejected
+        for fields_to_update in (("alias", "unknown"), ("name",)):
+            with self.assertRaises(ValueError):
+                self.isogeo.metadata.attributes.import_from_dataset(md_source, md_dest, mode="update", fields_to_update=fields_to_update)
+
+        # the data type and the language of the destination are kept
+        self.isogeo.metadata.attributes.import_from_dataset(md_source, md_dest, mode="update", fields_to_update=("alias", "description"))
+
+        dest_attribute = self.isogeo.metadata.attributes.listing(md_dest)[0]
+        self.assertEqual(dest_attribute.get("alias"), "source alias")
+        self.assertEqual(dest_attribute.get("description"), "source description")
+        self.assertEqual(dest_attribute.get("dataType"), "integer")
+        self.assertEqual(dest_attribute.get("language"), "fr")
+
 
 # ##############################################################################
 # ##### Stand alone program ########
