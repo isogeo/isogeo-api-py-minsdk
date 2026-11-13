@@ -83,6 +83,97 @@ class ApiLink:
         return req_links.json()
 
     @ApiDecorators._check_bearer_validity
+    def workgroup(
+        self,
+        workgroup_id: str,
+        query: str = None,
+        include_hosted: bool = False,
+        check: bool = None,
+        offset: int = 0,
+        page_size: int = 20,
+        whole_results: bool = False,
+    ) -> dict:
+        """List the distinct links (URLs) used by the metadata of a workgroup, with the metadata using them and the result of \
+        their check (availability, errors, authentication). Requires a user authentication with a membership in the workgroup.
+
+        :param str workgroup_id: workgroup UUID
+        :param str query: only returns links whose URL contains this text
+        :param bool include_hosted: also returns the hosted files. Defaults to False.
+        :param bool check: check the links of the returned page. Only workgroup administrators can check links (403 otherwise), \
+            which is the default for them. Defaults to None (API default).
+        :param int offset: offset to start page size from a specific results index
+        :param int page_size: number of links per page. Capped to 100 by the API. Defaults to 20.
+        :param bool whole_results: request the next pages to return all the links. Defaults to False.
+
+        :rtype: dict
+        :returns: links as {"results": [...], "offset": int, "limit": int, "total": int}. Each link is described by its \
+            "url", "type" (url or hosted), "fileName", "kinds", "count" of metadata using it, "resources" using it (with the \
+            "target" link to update) and "check" (with a "status" among notChecked, ok, authenticationRequired, accessDenied, \
+            notFound, clientError, serverError, serviceError, timeout, unreachable, invalid, inconclusive).
+
+        :Example:
+
+        .. code-block:: python
+
+            # list the unavailable links of a workgroup
+            wg_links = isogeo.metadata.links.workgroup(WORKGROUP_UUID, check=True, whole_results=True)
+            broken_links = [lk for lk in wg_links.get("results") if lk.get("check").get("hasError")]
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID: {}".format(workgroup_id))
+
+        # handling request parameters
+        payload = {
+            "_limit": page_size,
+            "_offset": offset,
+            "q": query,
+            "includeHosted": str(bool(include_hosted)).lower(),
+        }
+        if check is not None:
+            payload["check"] = str(bool(check)).lower()
+
+        # request URL
+        url_workgroup_links = self.utils.get_request_base_url(route="groups/{}/links".format(workgroup_id))
+
+        # request
+        req_workgroup_links = self.api_client.get(
+            url=url_workgroup_links,
+            headers=self.api_client.header,
+            params=payload,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_workgroup_links)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        workgroup_links = req_workgroup_links.json()
+
+        # the API caps the page size, so the next pages are requested one by one
+        nb_results = len(workgroup_links.get("results"))
+        if whole_results and nb_results and workgroup_links.get("total") > offset + nb_results:
+            next_links = self.workgroup(
+                workgroup_id=workgroup_id,
+                query=query,
+                include_hosted=include_hosted,
+                check=check,
+                offset=offset + nb_results,
+                page_size=page_size,
+                whole_results=True,
+            )
+            if isinstance(next_links, tuple):
+                return next_links
+            workgroup_links["results"].extend(next_links.get("results"))
+            workgroup_links["limit"] = len(workgroup_links.get("results"))
+
+        # end of method
+        return workgroup_links
+
+    @ApiDecorators._check_bearer_validity
     def get(self, metadata_id: str, link_id: str) -> Link:
         """Get details about a specific link.
 

@@ -296,6 +296,38 @@ class TestLinks(unittest.TestCase):
         )
         self.assertTupleEqual(cleaned_actions_data, ("download", "other"))
 
+    # -- GET workgroup links --
+    def test_links_workgroup(self):
+        """GET :groups/{workgroup_uuid}/links"""
+        check_statuses = (
+            "notChecked", "ok", "authenticationRequired", "accessDenied", "notFound", "clientError",
+            "serverError", "serviceError", "timeout", "unreachable", "invalid", "inconclusive",
+        )
+
+        # one page without check
+        wg_links = self.isogeo.metadata.links.workgroup(WORKGROUP_TEST_FIXTURE_UUID, check=False, page_size=5)
+        self.assertIsInstance(wg_links, dict)
+        self.assertEqual(wg_links.get("offset"), 0)
+        self.assertEqual(wg_links.get("limit"), 5)
+        self.assertLessEqual(len(wg_links.get("results")), 5)
+        for link in wg_links.get("results"):
+            self.assertEqual(link.get("type"), "url")
+            self.assertIsInstance(link.get("resources"), list)
+            self.assertEqual(link.get("check").get("status"), "notChecked")
+
+        # all the pages, requested 5 by 5
+        wg_links_all = self.isogeo.metadata.links.workgroup(
+            WORKGROUP_TEST_FIXTURE_UUID, check=False, page_size=5, whole_results=True
+        )
+        self.assertEqual(len(wg_links_all.get("results")), wg_links_all.get("total"))
+        self.assertEqual(len({link.get("url") for link in wg_links_all.get("results")}), wg_links_all.get("total"))
+
+        # filtered and checked page (the test user administrates the workgroup)
+        wg_links_checked = self.isogeo.metadata.links.workgroup(WORKGROUP_TEST_FIXTURE_UUID, query="HTTP", check=True, page_size=2)
+        for link in wg_links_checked.get("results"):
+            self.assertIn("http", link.get("url").lower())
+            self.assertIn(link.get("check").get("status"), check_statuses)
+
 
 # ##############################################################################
 # ##### Stand alone program ########
