@@ -71,7 +71,7 @@ class ApiService:
         service_format: str = None,
         service_title: str = None,
         check_exists: bool = 1,
-        ignore_avaibility: bool = 0,
+        ignore_availability: bool = 0,
         http_verb: str = "HEAD",
     ) -> Metadata:
         """Add a new metadata of a geographic webservice to a workgroup.
@@ -84,7 +84,7 @@ class ApiService:
         :param str service_format: format of the web service. Must be one of the accepted codes in API (Non exhaustive list: 'efs', 'ems', 'wfs', 'wms', 'wmts'). If is None, so the it'll try to guess it from the URL.
         :param str service_title: title for the metadata service in case of analisis fail. OPTIONNAL.
         :param bool check_exists: check if a metadata with the same service base URL and format alerady exists. Defaults to True.
-        :param bool ignore_avaibility: the service URL is tested to determine if it can be reached (HEAD then GET). This option allow to ignore the test result.\
+        :param bool ignore_availability: the service URL is tested to determine if it can be reached (HEAD then GET). This option allow to ignore the test result.\
             Can be useful if the service is only reachable by certains URLs or domains like *.isogeo.com. Defaults to False.
         :param str http_verb: HTTP verb to use to check the if the service is available. Must be one of: GET, HEAD
 
@@ -152,13 +152,13 @@ class ApiService:
                 service_format=service_format,
                 service_title=service_title,
                 check_exists=check_exists,
-                ignore_avaibility=ignore_avaibility,
+                ignore_availability=ignore_availability,
                 http_verb="GET",
             )
         elif req_check_reachable.status_code >= 400 and http_verb == "GET":
-            if ignore_avaibility:
+            if ignore_availability:
                 logger.error(
-                    "GET failed. Geographic server doesn't seem to be reachable but the avaibility is set to be ignored."
+                    "GET failed. Geographic server doesn't seem to be reachable but the availability is set to be ignored."
                 )
             else:
                 logger.warning(
@@ -236,7 +236,7 @@ class ApiService:
             # let's use the passed service format
             pass
 
-        # retrive available formats for services within Isogeo API
+        # retrieve available formats for services within Isogeo API
         if len(self.api_client._formats_geo):  # using the cache if exists
             formats = self.api_client._formats_geo
         else:
