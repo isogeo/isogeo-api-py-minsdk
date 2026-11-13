@@ -126,7 +126,9 @@ class IsogeoChecker(object):
             # ensure response got a JSON.
             # See: https://github.com/isogeo/isogeo-api-py-minsdk/issues/136
             try:
-                resp_error_msg = response.json().get("error")
+                resp_json = response.json()
+                # authentication errors use 'error', other API errors use 'message'
+                resp_error_msg = resp_json.get("error") or resp_json.get("message")
             except JSONDecodeError:
                 resp_error_msg = ""
 
