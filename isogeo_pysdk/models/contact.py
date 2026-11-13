@@ -19,7 +19,7 @@ import pprint
 # ########## Classes ###############
 # ##################################
 class Contact(object):
-    """Contacts are entities used into Isogeo adress book that can be associated to metadata."""
+    """Contacts are entities used into Isogeo address book that can be associated to metadata."""
 
     ATTR_TYPES = {
         "_abilities": str,
