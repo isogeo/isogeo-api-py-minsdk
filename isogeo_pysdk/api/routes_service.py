@@ -63,6 +63,90 @@ class ApiService:
         # initialize
         super(ApiService, self).__init__()
 
+    @ApiDecorators._check_bearer_validity
+    def workgroup(
+        self,
+        workgroup_id: str,
+        query: str = None,
+        check: bool = None,
+        offset: int = 0,
+        page_size: int = 10,
+        whole_results: bool = False,
+    ) -> dict:
+        """List the services of a workgroup with the result of their check: availability of the service and comparison \
+        between the layers described in Isogeo and those published by the service. Requires a user authentication with a \
+        membership in the workgroup.
+
+        :param str workgroup_id: workgroup UUID
+        :param str query: only returns services whose title or URL contains this text
+        :param bool check: check the services of the returned page. Only workgroup administrators can check services (403 \
+            otherwise), which is the default for them. Defaults to None (API default).
+        :param int offset: offset to start page size from a specific results index
+        :param int page_size: number of services per page. Capped to 50 by the API. Defaults to 10.
+        :param bool whole_results: request the next pages to return all the services. Defaults to False.
+
+        :rtype: dict
+        :returns: services as {"results": [...], "offset": int, "limit": int, "total": int}. Each service is described by its \
+            "_id", "title", "name", "path", "format", "check" (same structure as links checks) and "layers" (with a "status" \
+            among notChecked, match, mismatch, unreadable, tooLarge, unknownFormat, and the "missing", "added" and "changed" \
+            layers).
+
+        :Example:
+
+        .. code-block:: python
+
+            # list the services whose published layers differ from the described ones
+            wg_services = isogeo.services.workgroup(WORKGROUP_UUID, check=True, whole_results=True)
+            mismatches = [srv for srv in wg_services.get("results") if srv.get("layers").get("status") == "mismatch"]
+        """
+        # check workgroup UUID
+        if not checker.check_is_uuid(workgroup_id):
+            raise ValueError("Workgroup ID is not a correct UUID: {}".format(workgroup_id))
+
+        # handling request parameters
+        payload = {"_limit": page_size, "_offset": offset, "q": query}
+        if check is not None:
+            payload["check"] = str(bool(check)).lower()
+
+        # request URL
+        url_workgroup_services = self.utils.get_request_base_url(route="groups/{}/services".format(workgroup_id))
+
+        # request
+        req_workgroup_services = self.api_client.get(
+            url=url_workgroup_services,
+            headers=self.api_client.header,
+            params=payload,
+            proxies=self.api_client.proxies,
+            verify=self.api_client.ssl,
+            timeout=self.api_client.timeout,
+        )
+
+        # checking response
+        req_check = checker.check_api_response(req_workgroup_services)
+        if isinstance(req_check, tuple):
+            return req_check
+
+        workgroup_services = req_workgroup_services.json()
+
+        # the API caps the page size, so the next pages are requested one by one
+        nb_results = len(workgroup_services.get("results"))
+        if whole_results and nb_results and workgroup_services.get("total") > offset + nb_results:
+            next_services = self.workgroup(
+                workgroup_id=workgroup_id,
+                query=query,
+                check=check,
+                offset=offset + nb_results,
+                page_size=page_size,
+                whole_results=True,
+            )
+            if isinstance(next_services, tuple):
+                return next_services
+            workgroup_services["results"].extend(next_services.get("results"))
+            workgroup_services["limit"] = len(workgroup_services.get("results"))
+
+        # end of method
+        return workgroup_services
+
     def create(
         self,
         workgroup_id: str,
