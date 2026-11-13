@@ -66,10 +66,10 @@ class Workgroup(object):
             },
             'hasCswClient': True,
             'hasScanFme': True,
-            'hasFlashScan': True,
             'hasNewScriptScan': True,
             'hasAGSScan': True,
             'baseMapUrl': 'https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}',
+            'layerName': 'World Imagery',
             'isMultilingual': False,
             'availableLanguages': []
             'keywordsCasing': 'lowercase',
@@ -110,10 +110,10 @@ class Workgroup(object):
         "contact": Contact,
         "hasCswClient": bool,
         "hasScanFme": bool,
-        "hasFlashScan": bool,
         "hasNewScriptScan": bool,
         "hasAGSScan": bool,
         "baseMapUrl": str,
+        "layerName": str,
         "isMultilingual": bool,
         "availableLanguages": list,
         "limits": dict,
@@ -158,10 +158,10 @@ class Workgroup(object):
         contact: Contact = None,
         hasCswClient: bool = None,
         hasScanFme: bool = None,
-        hasFlashScan: bool = None,
         hasNewScriptScan: bool = None,
         hasAGSScan: bool = None,
         baseMapUrl: str = None,
+        layerName: str = None,
         isMultilingual: bool = None,
         availableLanguages: list = None,
         keywordsCasing: str = None,
@@ -184,10 +184,10 @@ class Workgroup(object):
         self._contact = Contact
         self._hasCswClient = None
         self._hasScanFme = None
-        self._hasFlashScan = None
         self._hasNewScriptScan = None
         self._hasAGSScan = None
         self._baseMapUrl = None
+        self._layerName = None
         self._isMultilingual = None
         self._availableLanguages = None
         self._keywordsCasing = None
@@ -219,14 +219,14 @@ class Workgroup(object):
             self._hasCswClient = hasCswClient
         if hasScanFme is not None:
             self._hasScanFme = hasScanFme
-        if hasFlashScan is not None:
-            self._hasFlashScan = hasFlashScan
         if hasNewScriptScan is not None:
             self._hasNewScriptScan = hasNewScriptScan
         if hasAGSScan is not None:
             self._hasAGSScan = hasAGSScan
         if baseMapUrl is not None:
             self._baseMapUrl = baseMapUrl
+        if layerName is not None:
+            self._layerName = layerName
         if isMultilingual is not None:
             self._isMultilingual = isMultilingual
         if availableLanguages is not None:
@@ -421,25 +421,6 @@ class Workgroup(object):
 
         self._hasScanFme = hasScanFme
 
-    # hasFlashScan
-    @property
-    def hasFlashScan(self) -> bool:
-        """Find out if the group has access to the Scan.
-
-        :return: The hasFlashScan value of this Workgroup.
-        :rtype: bool
-        """
-        return self._hasFlashScan
-
-    @hasFlashScan.setter
-    def hasFlashScan(self, hasFlashScan: bool):
-        """Sets the access of the group to the Scan.
-
-        :param bool hasFlashScan: The hasFlashScan of this Workgroup.
-        """
-
-        self._hasFlashScan = hasFlashScan
-
     # hasNewScriptScan
     @property
     def hasNewScriptScan(self) -> bool:
@@ -496,6 +477,25 @@ class Workgroup(object):
         """
 
         self._baseMapUrl = baseMapUrl
+
+    # layerName
+    @property
+    def layerName(self) -> str:
+        """Gets the name of the base map layer of this Workgroup.
+
+        :return: The layerName value of this Workgroup.
+        :rtype: str
+        """
+        return self._layerName
+
+    @layerName.setter
+    def layerName(self, layerName: str):
+        """Sets the name of the base map layer of this Workgroup.
+
+        :param str layerName: The layerName of this Workgroup (128 chars max).
+        """
+
+        self._layerName = layerName
 
     # isMultilingual
     @property

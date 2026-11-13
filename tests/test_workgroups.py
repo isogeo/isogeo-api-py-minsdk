@@ -393,7 +393,6 @@ class TestWorkgroups(unittest.TestCase):
         # modify local object
         workgroup_fixture.hasAGSScan = True
         workgroup_fixture.hasCswClient = True
-        workgroup_fixture.hasFlashScan = True
         workgroup_fixture.hasNewScriptScan = True
         workgroup_fixture.hasScanFme = True
         workgroup_fixture.areKeywordsRestricted = False
@@ -406,7 +405,6 @@ class TestWorkgroups(unittest.TestCase):
 
         self.assertTrue(workgroup_fixture_updated.hasAGSScan)
         self.assertTrue(workgroup_fixture.hasCswClient)
-        self.assertTrue(workgroup_fixture.hasFlashScan)
         self.assertTrue(workgroup_fixture.hasNewScriptScan)
         self.assertTrue(workgroup_fixture.hasScanFme)
         self.assertFalse(workgroup_fixture.areKeywordsRestricted)
