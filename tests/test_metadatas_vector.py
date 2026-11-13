@@ -882,3 +882,40 @@ class TestMetadatasVector(unittest.TestCase):
 
         # final check
         self.assertEqual(len(updated_metadata.translations), 3)
+
+    def test_metadatas_update_multilingual_empty_translation(self):
+        """PATCH and PUT :resources/{metadata_uuid} - empty translations are forbidden (API 2.26.0)"""
+        # create a dedicated metadata with only a french translation
+        metadata_title = "{} - {}".format(get_test_marker(), self.discriminator)
+        created_metadata = self.isogeo.metadata.create(
+            WORKGROUP_TEST_FIXTURE_UUID_ML,
+            metadata=Metadata(title=metadata_title, abstract=f"{metadata_title} ABSTRACT", type="vectorDataset"),
+            lang="fr",
+        )
+        self.assertIsInstance(created_metadata, Metadata)
+        self.li_fixtures_to_delete.append(created_metadata._id)
+        metadata_toUpdate = self.isogeo.metadata.get(created_metadata._id, ("translations",), "fr")
+
+        # creating a translation without title is rejected, whatever the HTTP method
+        metadata_toUpdate.title = None
+        metadata_toUpdate.abstract = "English summary without title"
+        for http_method in ("PATCH", "PUT"):
+            self.assertEqual(
+                self.isogeo.metadata.update(metadata=metadata_toUpdate, _http_method=http_method, lang="en"),
+                (False, 400),
+            )
+        updated_metadata = self.isogeo.metadata.get(created_metadata._id, ("translations",), "fr")
+        self.assertEqual([trans.get("languageCode") for trans in updated_metadata.translations], ["fr"])
+
+        # a translation with a title is created
+        metadata_toUpdate.title = "Title in English"
+        self.assertIsInstance(self.isogeo.metadata.update(metadata=metadata_toUpdate, lang="en"), Metadata)
+        updated_metadata = self.isogeo.metadata.get(created_metadata._id, ("translations",), "en")
+        self.assertEqual(sorted(trans.get("languageCode") for trans in updated_metadata.translations), ["en", "fr"])
+
+        # emptying both title and abstract deletes the translation
+        metadata_toUpdate.title = None
+        metadata_toUpdate.abstract = None
+        self.assertIsInstance(self.isogeo.metadata.update(metadata=metadata_toUpdate, lang="en"), Metadata)
+        updated_metadata = self.isogeo.metadata.get(created_metadata._id, ("translations",), "fr")
+        self.assertEqual([trans.get("languageCode") for trans in updated_metadata.translations], ["fr"])

@@ -288,9 +288,15 @@ class ApiMetadata:
 
         See: https://github.com/isogeo/isogeo-api-py-minsdk/issues/116
 
+        In a multilingual workgroup, title and abstract are stored as the translation of the `lang` language:
+
+          - creating a translation (language not translated yet) requires a title, otherwise the API returns a 400 error;
+          - emptying both title and abstract of an existing translation deletes this translation.
+
         :param Metadata metadata: metadata object to update
         :param str _http_method: HTTP method (verb) to use. \
             Default to 'PATCH' but can be set to 'PUT' in certain cases (services).
+        :param str lang: language code of the translation to create or update (multilingual workgroups only)
 
         :rtype: Metadata
         :returns: the updated metadata or the request error.
