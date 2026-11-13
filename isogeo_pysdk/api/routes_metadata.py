@@ -368,10 +368,13 @@ class ApiMetadata:
 
     # -- Routes to manage the related objects ------------------------------------------
     @ApiDecorators._check_bearer_validity
-    def download_xml(self, metadata: Metadata) -> Response:
+    def download_xml(self, metadata: Metadata, lang: str = None) -> Response:
         """Download the metadata exported into XML ISO 19139.
 
+        The export of a metadata of a multilingual workgroup is not available: the API returns an error.
+
         :param Metadata metadata: metadata object to export
+        :param str lang: language code used to localize the export. Defaults to the client language.
 
         :rtype: Response
 
@@ -396,7 +399,7 @@ class ApiMetadata:
 
         # URL
         url_metadata_dl_xml = self.utils.get_request_base_url(
-            route="resources/{}.xml".format(metadata._id)
+            route="resources/{}.xml".format(metadata._id), lang=lang
         )
 
         # request

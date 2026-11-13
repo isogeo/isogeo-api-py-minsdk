@@ -919,3 +919,17 @@ class TestMetadatasVector(unittest.TestCase):
         self.assertIsInstance(self.isogeo.metadata.update(metadata=metadata_toUpdate, lang="en"), Metadata)
         updated_metadata = self.isogeo.metadata.get(created_metadata._id, ("translations",), "fr")
         self.assertEqual([trans.get("languageCode") for trans in updated_metadata.translations], ["fr"])
+
+    def test_metadatas_download_xml(self):
+        """GET :resources/{metadata_uuid}.xml"""
+        # default client language, then a specific one
+        for lang in (None, "en"):
+            xml_stream = self.isogeo.metadata.download_xml(self.fixture_metadata, lang=lang)
+            self.assertEqual(xml_stream.status_code, 200)
+            self.assertIn("_lang={}".format(lang or self.isogeo.lang), xml_stream.url)
+            self.assertIn(b"MD_Metadata", xml_stream.content)
+
+        # export of a multilingual workgroup metadata is not available
+        failed_download = self.isogeo.metadata.download_xml(self.fixture_metadata_ml, lang="fr")
+        self.assertIsInstance(failed_download, tuple)
+        self.assertFalse(failed_download[0])
