@@ -8,7 +8,6 @@
 
 # Standard library
 import logging
-from functools import lru_cache
 
 # 3rd party
 from requests import Session

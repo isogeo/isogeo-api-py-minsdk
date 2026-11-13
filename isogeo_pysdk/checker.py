@@ -10,7 +10,6 @@
 # Standard library
 import logging
 import socket
-import warnings
 from collections import Counter
 from json import JSONDecodeError
 from uuid import UUID

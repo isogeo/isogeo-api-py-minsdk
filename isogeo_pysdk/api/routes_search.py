@@ -15,7 +15,7 @@
 import asyncio
 from concurrent.futures import ThreadPoolExecutor
 import logging
-from functools import lru_cache, partial
+from functools import partial
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker

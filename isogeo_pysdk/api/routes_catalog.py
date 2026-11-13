@@ -13,7 +13,6 @@
 
 # Standard library
 import logging
-from functools import lru_cache
 from typing import Tuple, Union
 
 # 3rd party

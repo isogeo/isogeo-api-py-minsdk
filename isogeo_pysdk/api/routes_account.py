@@ -13,7 +13,6 @@
 
 # Standard library
 import logging
-from functools import lru_cache
 
 # submodules
 from isogeo_pysdk.checker import IsogeoChecker
