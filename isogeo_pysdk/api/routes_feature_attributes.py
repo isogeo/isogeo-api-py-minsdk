@@ -460,7 +460,7 @@ class ApiFeatureAttribute:
                     )
                 else:
                     # or create it
-                    self.create(metadata_dest, attribute)
+                    self.create(metadata_dest, attr_src)
         else:
             raise ValueError(
                 "Incorrect mode value ({}). Must be one of: {}".format(

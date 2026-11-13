@@ -374,6 +374,34 @@ class TestFeatureAttributes(unittest.TestCase):
                 else:
                     pass
 
+    def _create_metadata_with_attributes(self, attributes: list) -> Metadata:
+        """Create a vector metadata holding the given feature attributes, deleted after the test."""
+        md = self.isogeo.metadata.create(
+            WORKGROUP_TEST_FIXTURE_UUID, metadata=Metadata(title="{} - {}".format(get_test_marker(), self.discriminator), type="vectorDataset")
+        )
+        self.addCleanup(self.isogeo.metadata.delete, md._id)
+        for attribute in attributes:
+            self.isogeo.metadata.attributes.create(md, attribute)
+        return md
+
+    def test_featureAttributes_import_update_or_add(self):
+        """Import feature-attributes updating the existing ones and creating the missing ones."""
+        md_source = self._create_metadata_with_attributes(
+            [
+                FeatureAttribute(name="ATTR_A", dataType="varchar", alias="source alias A"),
+                FeatureAttribute(name="ATTR_B", dataType="integer", alias="source alias B"),
+            ]
+        )
+        md_dest = self._create_metadata_with_attributes([FeatureAttribute(name="ATTR_A", dataType="text", alias="dest alias A")])
+
+        self.isogeo.metadata.attributes.import_from_dataset(md_source, md_dest, mode="update_or_add")
+
+        dest_attributes = {attr.get("name"): attr for attr in self.isogeo.metadata.attributes.listing(md_dest)}
+        self.assertEqual(sorted(dest_attributes), ["ATTR_A", "ATTR_B"])
+        self.assertEqual(dest_attributes.get("ATTR_A").get("alias"), "source alias A")
+        self.assertEqual(dest_attributes.get("ATTR_A").get("dataType"), "varchar")
+        self.assertEqual(dest_attributes.get("ATTR_B").get("alias"), "source alias B")
+
 
 # ##############################################################################
 # ##### Stand alone program ########
